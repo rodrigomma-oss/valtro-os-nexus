@@ -25,27 +25,27 @@ const VALUES = [
 
 export function Values() {
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-24 md:py-32 bg-surface border-y border-border">
       <div className="container-page">
         <div className="max-w-2xl">
-          <div className="text-xs font-medium uppercase tracking-[0.18em] text-brand">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Princípios
           </div>
-          <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight">
+          <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground">
             Nossa forma de construir tecnologia.
           </h2>
         </div>
 
-        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {VALUES.map(({ icon: Icon, title, text }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-border bg-surface-elevated p-6 hover:border-foreground/20 transition-colors"
+              className="group rounded-2xl border border-border bg-background p-7 shadow-soft hover:shadow-elevated hover:border-primary/30 transition-all duration-200"
             >
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-soft text-brand group-hover:scale-105 transition-transform">
-                <Icon className="h-5 w-5" />
+              <div className="grid h-12 w-12 place-items-center rounded-xl bg-brand-soft text-primary group-hover:scale-105 transition-transform">
+                <Icon className="h-5 w-5" strokeWidth={1.75} />
               </div>
-              <h3 className="mt-5 text-lg font-semibold tracking-tight text-foreground">
+              <h3 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
                 {title}
               </h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
