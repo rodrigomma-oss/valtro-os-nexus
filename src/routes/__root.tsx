@@ -90,17 +90,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Ecossistema de soluções SaaS para simplificar operações, apoiar decisões e impulsionar negócios digitais.",
+          "A Valtro Labs desenvolve soluções SaaS proprietárias para simplificar decisões, automatizar processos e impulsionar negócios digitais.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://valtrolabs.pro" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Valtro Labs" },
+      { name: "twitter:title", content: "Valtro Labs — Soluções inteligentes para negócios digitais" },
       {
         name: "twitter:description",
         content:
-          "Soluções SaaS proprietárias para simplificar operações e impulsionar negócios digitais.",
+          "A Valtro Labs desenvolve soluções SaaS proprietárias para simplificar decisões, automatizar processos e impulsionar negócios digitais.",
       },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/x7hY6BBKGJQAicQWvxdL5VMGquB3/social-images/social-1783895000377-Capa_Whatsapp.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/x7hY6BBKGJQAicQWvxdL5VMGquB3/social-images/social-1783895000377-Capa_Whatsapp.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
