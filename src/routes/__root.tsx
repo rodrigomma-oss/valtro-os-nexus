@@ -77,21 +77,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Valtro Labs — Soluções inteligentes para negócios digitais" },
+      {
+        name: "description",
+        content:
+          "A Valtro Labs desenvolve soluções SaaS proprietárias para simplificar decisões, automatizar processos e impulsionar negócios digitais.",
+      },
+      { name: "author", content: "Valtro Labs" },
+      { name: "theme-color", content: "#ffffff" },
+      { property: "og:site_name", content: "Valtro Labs" },
+      { property: "og:title", content: "Valtro Labs — Soluções inteligentes para negócios digitais" },
+      {
+        property: "og:description",
+        content:
+          "Ecossistema de soluções SaaS para simplificar operações, apoiar decisões e impulsionar negócios digitais.",
+      },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://valtrolabs.pro" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Valtro Labs" },
+      {
+        name: "twitter:description",
+        content:
+          "Soluções SaaS proprietárias para simplificar operações e impulsionar negócios digitais.",
+      },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "canonical", href: "https://valtrolabs.pro/" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
