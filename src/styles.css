@@ -23,6 +23,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -37,78 +38,66 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-deep: var(--brand-deep);
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--destructive);
+  --color-info: var(--info);
 
-  --shadow-soft: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
-  --shadow-elevated: 0 8px 24px -6px rgb(15 23 42 / 0.08), 0 2px 6px -2px rgb(15 23 42 / 0.04);
-  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--brand) 40%, transparent);
+  --shadow-soft: 0 1px 2px 0 rgb(11 31 94 / 0.04), 0 1px 3px 0 rgb(11 31 94 / 0.06);
+  --shadow-elevated: 0 8px 24px -6px rgb(11 31 94 / 0.10), 0 2px 6px -2px rgb(11 31 94 / 0.06);
+  --shadow-glow: 0 20px 60px -20px rgb(37 99 235 / 0.35);
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 0.75rem;
 
-  --background: oklch(0.995 0.002 260);
-  --foreground: oklch(0.18 0.02 260);
+  /* Valtro Labs official palette */
+  --background: #F8FAFC;
+  --foreground: #0B1F5E;          /* Azul institucional escuro — títulos e textos principais */
 
-  --surface: oklch(0.985 0.003 260);
-  --surface-elevated: oklch(1 0 0);
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 260);
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 260);
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
 
-  --primary: oklch(0.22 0.03 265);
-  --primary-foreground: oklch(0.985 0.003 260);
+  --primary: #2563EB;             /* Azul Valtro primário */
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #1D4ED8;
 
-  --secondary: oklch(0.965 0.005 260);
-  --secondary-foreground: oklch(0.22 0.03 265);
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0B1F5E;
 
-  --muted: oklch(0.965 0.005 260);
-  --muted-foreground: oklch(0.52 0.02 260);
+  --muted: #F1F5F9;
+  --muted-foreground: #475569;    /* Texto secundário */
 
-  --accent: oklch(0.955 0.012 260);
-  --accent-foreground: oklch(0.22 0.03 265);
+  --accent: #EFF6FF;
+  --accent-foreground: #0B1F5E;
 
-  --destructive: oklch(0.6 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
 
-  --border: oklch(0.92 0.006 260);
-  --input: oklch(0.92 0.006 260);
-  --ring: oklch(0.55 0.14 258);
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --info: #0EA5E9;
 
-  --brand: oklch(0.55 0.18 262);
-  --brand-foreground: oklch(0.99 0 0);
-  --brand-soft: oklch(0.96 0.03 262);
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #2563EB;
 
-  --gradient-hero: radial-gradient(ellipse at top right, color-mix(in oklab, var(--brand) 12%, transparent), transparent 60%);
-  --gradient-brand: linear-gradient(135deg, oklch(0.5 0.19 265), oklch(0.62 0.16 258));
-}
+  --brand: #2563EB;
+  --brand-deep: #0B1F5E;
+  --brand-foreground: #FFFFFF;
+  --brand-soft: #EFF6FF;
 
-.dark {
-  --background: oklch(0.14 0.02 260);
-  --foreground: oklch(0.98 0.003 260);
-  --surface: oklch(0.17 0.02 260);
-  --surface-elevated: oklch(0.2 0.02 260);
-  --card: oklch(0.19 0.02 260);
-  --card-foreground: oklch(0.98 0.003 260);
-  --popover: oklch(0.19 0.02 260);
-  --popover-foreground: oklch(0.98 0.003 260);
-  --primary: oklch(0.98 0.003 260);
-  --primary-foreground: oklch(0.18 0.02 260);
-  --secondary: oklch(0.24 0.02 260);
-  --secondary-foreground: oklch(0.98 0.003 260);
-  --muted: oklch(0.24 0.02 260);
-  --muted-foreground: oklch(0.7 0.02 260);
-  --accent: oklch(0.26 0.03 260);
-  --accent-foreground: oklch(0.98 0.003 260);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.65 0.15 260);
-  --brand: oklch(0.68 0.17 262);
-  --brand-soft: oklch(0.28 0.06 262);
+  --gradient-hero: radial-gradient(ellipse at top right, rgb(37 99 235 / 0.08), transparent 60%);
+  --gradient-brand: linear-gradient(135deg, #0B1F5E 0%, #2563EB 100%);
 }
 
 @layer base {
@@ -120,14 +109,18 @@
   }
   body {
     background-color: var(--color-background);
-    color: var(--color-foreground);
+    color: #0F172A;
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+    letter-spacing: -0.02em;
+  }
   ::selection {
-    background-color: color-mix(in oklab, var(--brand) 25%, transparent);
+    background-color: rgb(37 99 235 / 0.18);
     color: var(--foreground);
   }
 }
@@ -155,9 +148,9 @@
 
 @utility bg-grid-subtle {
   background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
+    linear-gradient(to right, rgb(11 31 94 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(11 31 94 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
 @keyframes float-slow {

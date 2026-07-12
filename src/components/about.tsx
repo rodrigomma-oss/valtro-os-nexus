@@ -13,10 +13,10 @@ export function About() {
       <div className="container-page">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           <div className="lg:col-span-5">
-            <div className="text-xs font-medium uppercase tracking-[0.18em] text-brand">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Quem somos
             </div>
-            <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight">
+            <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground">
               Uma empresa brasileira construindo o futuro dos negócios digitais.
             </h2>
           </div>
@@ -25,7 +25,7 @@ export function About() {
             <p>
               A <span className="text-foreground font-medium">Valtro Labs</span> é uma empresa
               de tecnologia dedicada ao desenvolvimento de soluções SaaS proprietárias, criadas
-              para tornar operações digitais mais simples, inteligentes e eficientes.
+              para tornar operações de vendedores em marketplaces mais simples, inteligentes e eficientes.
             </p>
             <p>
               Combinamos engenharia de software, dados e design para entregar ferramentas
@@ -33,14 +33,14 @@ export function About() {
               marketplaces, e-commerces e operações digitais.
             </p>
 
-            <div className="mt-8 grid sm:grid-cols-2 gap-3">
+            <div className="mt-10 grid sm:grid-cols-2 gap-3">
               {HIGHLIGHTS.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-surface-elevated px-4 py-3"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 shadow-soft"
                 >
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
-                    <Icon className="h-4 w-4" />
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-primary">
+                    <Icon className="h-4 w-4" strokeWidth={1.75} />
                   </div>
                   <span className="text-sm font-medium text-foreground">{label}</span>
                 </div>
