@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "A Valtro Labs desenvolve soluções SaaS proprietárias para simplificar decisões, automatizar processos e impulsionar negócios digitais.",
       },
       { name: "author", content: "Valtro Labs" },
-      { name: "theme-color", content: "#ffffff" },
+      { name: "theme-color", content: "#2563EB" },
       { property: "og:site_name", content: "Valtro Labs" },
       { property: "og:title", content: "Valtro Labs — Soluções inteligentes para negócios digitais" },
       {
