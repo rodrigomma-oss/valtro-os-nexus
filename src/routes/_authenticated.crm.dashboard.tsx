@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { PageHeader } from "@/components/app/page-header";
 import { OperationHero } from "@/components/app/operations/operation-hero";
 import { QueueCard } from "@/components/app/operations/queue-card";
@@ -16,6 +18,7 @@ import {
   agenda,
   metrics,
 } from "@/mocks/operations";
+import { getLeadsKpis } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
