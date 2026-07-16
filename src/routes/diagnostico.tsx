@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Sparkles, ClipboardList, Search, FileText, Handshake } from "lucide-react";
+import { ArrowRight, Sparkles, ClipboardList, Search, FileText, Handshake, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,14 @@ export const Route = createFileRoute("/diagnostico")({
 
 type Screen = "welcome" | "how" | "step" | "success";
 
+const STORAGE_KEY = "valtro:diagnostico:v1";
+
+interface PersistedState {
+  screen: Screen;
+  stepIndex: number;
+  data: DiagnosisData;
+}
+
 const OBJETIVO_OPTIONS = [
   "Aumentar vendas",
   "Melhorar margem",
@@ -41,26 +49,118 @@ const OBJETIVO_OPTIONS = [
   "Reduzir custos operacionais",
 ];
 
+/* ---------------- Validation ---------------- */
+
+function validateStep(index: number, d: DiagnosisData): string | null {
+  switch (index) {
+    case 0:
+      if (!d.nome.trim()) return "Informe o seu nome para continuarmos.";
+      if (!d.empresa.trim()) return "Informe o nome da empresa.";
+      if (!d.segmento.trim()) return "Informe o segmento de atuação.";
+      if (!d.tempoAtuacao) return "Selecione o tempo de atuação.";
+      return null;
+    case 1:
+      if (!d.marketplace) return "Selecione o marketplace principal.";
+      if (!d.qtdProdutos) return "Informe a quantidade aproximada de produtos.";
+      if (!d.faturamento) return "Informe o faturamento aproximado.";
+      return null;
+    case 2:
+      if (d.objetivos.length === 0 && !d.objetivosOutro.trim())
+        return "Selecione ao menos um objetivo ou descreva o seu.";
+      return null;
+    case 3:
+      if (!d.usaShopeeAds) return "Informe o uso de Shopee Ads.";
+      if (!d.investimento) return "Informe o investimento mensal em anúncios.";
+      return null;
+    case 4:
+      if (!d.equipe) return "Informe o tamanho da equipe.";
+      if (!d.estoque) return "Selecione o modelo de estoque.";
+      if (!d.expedicao) return "Selecione o modelo de expedição.";
+      return null;
+    default:
+      return null;
+  }
+}
+
 function DiagnosticoPage() {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [stepIndex, setStepIndex] = useState(0);
   const [data, setData] = useState<DiagnosisData>(initialData);
+  const [hydrated, setHydrated] = useState(false);
+  const [resumed, setResumed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const update = <K extends keyof DiagnosisData>(key: K, value: DiagnosisData[K]) =>
+  // Hydrate from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as PersistedState;
+        if (parsed && parsed.data) {
+          setData({ ...initialData, ...parsed.data });
+          if (parsed.screen === "step" || parsed.screen === "how") {
+            setScreen(parsed.screen);
+            setStepIndex(Math.min(parsed.stepIndex ?? 0, STEPS.length - 1));
+            setResumed(true);
+          }
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    setHydrated(true);
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      if (screen === "success" || screen === "welcome") {
+        // don't overwrite an in-progress draft from welcome unless clearing
+      }
+      const payload: PersistedState = { screen, stepIndex, data };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      /* ignore */
+    }
+  }, [screen, stepIndex, data, hydrated]);
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const update = <K extends keyof DiagnosisData>(key: K, value: DiagnosisData[K]) => {
     setData((d) => ({ ...d, [key]: value }));
+    if (error) setError(null);
+  };
 
   const toggleObjetivo = (v: string) => {
     setData((d) => ({
       ...d,
       objetivos: d.objetivos.includes(v) ? d.objetivos.filter((o) => o !== v) : [...d.objetivos, v],
     }));
+    if (error) setError(null);
   };
 
   const goNext = () => {
+    const err = validateStep(stepIndex, data);
+    if (err) {
+      setError(err);
+      return;
+    }
+    setError(null);
     if (stepIndex < STEPS.length - 1) setStepIndex((i) => i + 1);
-    else setScreen("success");
+    else {
+      setScreen("success");
+      clearDraft();
+    }
   };
   const goBack = () => {
+    setError(null);
     if (stepIndex === 0) setScreen("how");
     else setStepIndex((i) => i - 1);
   };
@@ -70,7 +170,26 @@ function DiagnosticoPage() {
   return (
     <DiagnosisLayout topSlot={showProgress ? <ProgressHeader currentStep={stepIndex} /> : null}>
       <AnimatePresence mode="wait">
-        {screen === "welcome" && <WelcomeScreen key="welcome" onStart={() => setScreen("how")} />}
+        {screen === "welcome" && (
+          <WelcomeScreen
+            key="welcome"
+            resumed={resumed}
+            onStart={() => {
+              setResumed(false);
+              setScreen("how");
+            }}
+            onResume={() => {
+              setResumed(false);
+              setScreen("step");
+            }}
+            onDiscard={() => {
+              clearDraft();
+              setData(initialData);
+              setStepIndex(0);
+              setResumed(false);
+            }}
+          />
+        )}
         {screen === "how" && <HowItWorks key="how" onContinue={() => setScreen("step")} onBack={() => setScreen("welcome")} />}
         {screen === "step" && (
           <DiagnosisSection key={`step-${stepIndex}`} keyId={`step-${stepIndex}`}>
@@ -93,12 +212,18 @@ function DiagnosticoPage() {
             {stepIndex === 4 && <OperacaoStep data={data} update={update} />}
             {stepIndex === 5 && <ReviewStep data={data} onEdit={setStepIndex} />}
 
+            {error && (
+              <div
+                role="alert"
+                className="mt-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+              >
+                {error}
+              </div>
+            )}
+
             <NavigationFooter
               onBack={goBack}
               onNext={goNext}
-              onSaveLater={() => {
-                /* placeholder */
-              }}
               nextLabel={stepIndex === STEPS.length - 1 ? "Enviar diagnóstico" : "Continuar"}
             />
           </DiagnosisSection>
@@ -108,6 +233,7 @@ function DiagnosticoPage() {
             key="success"
             nome={data.nome}
             onFinish={() => {
+              clearDraft();
               setScreen("welcome");
               setStepIndex(0);
               setData(initialData);
@@ -121,7 +247,17 @@ function DiagnosticoPage() {
 
 /* ---------------- Screens ---------------- */
 
-function WelcomeScreen({ onStart }: { onStart: () => void }) {
+function WelcomeScreen({
+  onStart,
+  onResume,
+  onDiscard,
+  resumed,
+}: {
+  onStart: () => void;
+  onResume: () => void;
+  onDiscard: () => void;
+  resumed: boolean;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -139,18 +275,42 @@ function WelcomeScreen({ onStart }: { onStart: () => void }) {
       </h1>
       <p className="mt-5 text-lg text-muted-foreground leading-relaxed max-w-[640px]">
         Este diagnóstico foi desenhado para captar, de forma objetiva, o essencial da sua operação. Com base nas suas
-        respostas, nossa equipe prepara um retorno personalizado com direção clara para os próximos passos.
+        respostas, nossa equipe prepara um retorno consultivo com direção clara para os próximos passos.
       </p>
+
+      {resumed && (
+        <div className="mt-8 rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-primary/10 grid place-items-center">
+              <RotateCcw className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">Você tem um diagnóstico em andamento.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Salvamos suas respostas neste navegador. Deseja continuar de onde parou?
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button size="sm" onClick={onResume} className="gap-2">
+                  Continuar diagnóstico <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button size="sm" variant="ghost" onClick={onDiscard}>
+                  Recomeçar do zero
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
         <li className="flex gap-3"><span className="text-primary">·</span> Leva entre 10 e 15 minutos para ser concluído.</li>
         <li className="flex gap-3"><span className="text-primary">·</span> Suas respostas orientam a análise da nossa equipe.</li>
-        <li className="flex gap-3"><span className="text-primary">·</span> As informações são tratadas com sigilo e usadas apenas para preparar a sua proposta.</li>
+        <li className="flex gap-3"><span className="text-primary">·</span> Progresso salvo automaticamente neste navegador.</li>
       </ul>
 
       <div className="mt-10">
         <Button size="lg" onClick={onStart} className="gap-2 min-w-[200px]">
-          Iniciar diagnóstico <ArrowRight className="h-4 w-4" />
+          {resumed ? "Iniciar um novo diagnóstico" : "Iniciar diagnóstico"} <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </motion.div>
@@ -236,10 +396,10 @@ function EmpresaStep({ data, update }: { data: DiagnosisData; update: <K extends
           </SelectContent>
         </Select>
       </DiagnosisQuestion>
-      <DiagnosisQuestion label="Cidade" htmlFor="cidade">
+      <DiagnosisQuestion label="Cidade" htmlFor="cidade" optional>
         <Input id="cidade" value={data.cidade} onChange={(e) => update("cidade", e.target.value)} placeholder="Cidade" />
       </DiagnosisQuestion>
-      <DiagnosisQuestion label="Estado" htmlFor="estado">
+      <DiagnosisQuestion label="Estado" htmlFor="estado" optional>
         <Input id="estado" value={data.estado} onChange={(e) => update("estado", e.target.value)} placeholder="UF" />
       </DiagnosisQuestion>
     </div>
@@ -421,6 +581,7 @@ function OperacaoStep({ data, update }: { data: DiagnosisData; update: <K extend
         label="Principais dificuldades atuais"
         htmlFor="dificuldades"
         hint="Compartilhe com sinceridade — isso guia nossa análise."
+        optional
       >
         <Textarea
           id="dificuldades"
