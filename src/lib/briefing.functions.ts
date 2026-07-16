@@ -294,7 +294,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
       // Sprint 2B.3.4 — prefill com dados já coletados no Lead
       const { data: lead } = await supabaseAdmin
         .from("leads")
-        .select("contact_name, company_name, segment, city, state")
+        .select("contact_name, company_name, segment, city, state, phone, email")
         .eq("id", t.lead_id)
         .maybeSingle();
 
@@ -305,6 +305,8 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
         if (lead.segment) prefill.segmento = lead.segment;
         if (lead.city) prefill.cidade = lead.city;
         if (lead.state) prefill.estado = lead.state;
+        if (lead.phone) prefill.whatsapp = lead.phone;
+        if (lead.email) prefill.email = lead.email;
       }
 
       const { data: created, error: createErr } = await supabaseAdmin
