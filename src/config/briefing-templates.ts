@@ -1,13 +1,14 @@
 /**
- * Valtro Briefing Engine — Templates (Sprint 2B.3.3)
+ * Valtro Briefing Engine — Templates (Sprint 2B.3.3 / 2B.3.4)
  *
  * A lógica do Portal é orientada por Template, nunca por condicionais
  * espalhadas na UI. Cada Template define suas etapas e perguntas.
  *
  * Nesta Sprint apenas dois Templates: `loja` e `projeto`.
- * O mapeamento `template_type → template key` está em `resolveTemplate`.
+ * A cadeia é `service_type → template_type → template key`, centralizada
+ * em `templateTypeForService` e `resolveTemplateKey`.
  */
-import type { TemplateType } from "@/types/briefing";
+import type { ServiceType, TemplateType } from "@/types/briefing";
 
 export type QuestionKind =
   | "text"
