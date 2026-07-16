@@ -430,6 +430,30 @@ function CrmLeads() {
           </Button>
         </div>
       </div>
+      )}
+    </div>
+  );
+}
+
+function LeadsSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border bg-surface shadow-soft overflow-hidden">
+      <div className="border-b border-border px-4 py-3 flex gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-3 flex-1 rounded bg-muted animate-pulse" />
+        ))}
+      </div>
+      {Array.from({ length: 6 }).map((_, r) => (
+        <div key={r} className="border-b border-border last:border-0 px-4 py-4 flex gap-4">
+          {Array.from({ length: 6 }).map((_, c) => (
+            <div
+              key={c}
+              className="h-3 flex-1 rounded bg-muted/70 animate-pulse"
+              style={{ animationDelay: `${(r * 6 + c) * 30}ms` }}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
