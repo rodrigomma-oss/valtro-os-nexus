@@ -26,12 +26,13 @@ export interface BriefingToken {
 
 export const SERVICE_TYPE_LABEL: Record<ServiceType, string> = {
   nao_definido: "Não definido",
+  desenvolvimento_projeto: "Desenvolvimento de Projeto",
   gestao_shopee: "Gestão Shopee",
   gestao_mercadolivre: "Gestão Mercado Livre",
   gestao_amazon: "Gestão Amazon",
   gestao_multicanal: "Gestão Multicanal",
   consultoria: "Consultoria",
-  diagnostico: "Diagnóstico",
+  diagnostico: "Diagnóstico / Otimização de Loja",
   trafego_pago: "Tráfego Pago",
   outro: "Outro",
 };
