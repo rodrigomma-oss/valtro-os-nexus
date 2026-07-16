@@ -73,9 +73,18 @@ function CrmLeads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+
+  // Skeleton curto no primeiro paint para transmitir "carregando".
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(t);
+  }, []);
+
+  const term = search.trim().toLowerCase();
+  const hasFilters = term.length > 0 || statusFilter !== "todos";
 
   const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase();
     return MOCK_LEADS.filter((lead) => {
       const matchStatus =
         statusFilter === "todos" || lead.status === statusFilter;
@@ -86,7 +95,18 @@ function CrmLeads() {
         lead.cidade.toLowerCase().includes(term);
       return matchStatus && matchTerm;
     });
-  }, [search, statusFilter]);
+  }, [term, statusFilter]);
+
+  const kpis = useMemo(() => {
+    const total = MOCK_LEADS.length;
+    const novos = MOCK_LEADS.filter((l) => l.status === "novo").length;
+    const emAndamento = MOCK_LEADS.filter((l) =>
+      ["contato", "qualificado", "proposta"].includes(l.status),
+    ).length;
+    const ganhos = MOCK_LEADS.filter((l) => l.status === "ganho").length;
+    const conversao = total > 0 ? Math.round((ganhos / total) * 100) : 0;
+    return { total, novos, emAndamento, conversao };
+  }, []);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -94,6 +114,12 @@ function CrmLeads() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
+
+  const clearFilters = () => {
+    setSearch("");
+    setStatusFilter("todos");
+    setPage(1);
+  };
 
   const columns: DataTableColumn<Lead>[] = [
     {
