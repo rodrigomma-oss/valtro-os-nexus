@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { PageHeader } from "@/components/app/page-header";
 import { OperationHero } from "@/components/app/operations/operation-hero";
 import { QueueCard } from "@/components/app/operations/queue-card";
@@ -16,6 +18,7 @@ import {
   agenda,
   metrics,
 } from "@/mocks/operations";
+import { getLeadsKpis } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
@@ -55,12 +58,21 @@ function Section({
 }
 
 function CrmDashboard() {
+  const getLeadsKpisFn = useServerFn(getLeadsKpis);
+  const kpisQuery = useQuery({
+    queryKey: ["leads-kpis"],
+    queryFn: () => getLeadsKpisFn(),
+    staleTime: 30_000,
+  });
+  const kpis = kpisQuery.data;
+
   return (
     <div className="p-6 md:p-10 space-y-12 max-w-[1400px] mx-auto">
       <PageHeader
         title="Centro de Operações"
         description="O que precisa da sua atenção agora — priorizado pela nossa metodologia consultiva."
       />
+
 
       <OperationHero summary={operationSummary} />
 
@@ -118,8 +130,36 @@ function CrmDashboard() {
           </Section>
         </div>
         <div>
-          <Section title="Indicadores" description="Leitura rápida da semana.">
+          <Section title="Indicadores" description="Leitura rápida da base de leads.">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+              <MetricCard
+                index={0}
+                label="Total de leads"
+                value={kpis ? String(kpis.total) : "—"}
+                hint="Base ativa"
+                trend="neutral"
+              />
+              <MetricCard
+                index={1}
+                label="Novos"
+                value={kpis ? String(kpis.novos) : "—"}
+                hint="Aguardando abordagem"
+                trend="neutral"
+              />
+              <MetricCard
+                index={2}
+                label="Em andamento"
+                value={kpis ? String(kpis.emAndamento) : "—"}
+                hint="Contato · qualificado · proposta"
+                trend="neutral"
+              />
+              <MetricCard
+                index={3}
+                label="Conversão"
+                value={kpis ? `${kpis.conversao}%` : "—"}
+                hint={kpis ? `${kpis.ganhos} ganhos` : ""}
+                trend={kpis && kpis.conversao > 20 ? "up" : "neutral"}
+              />
               {metrics.map((m, i) => (
                 <MetricCard
                   key={m.id}
@@ -127,12 +167,13 @@ function CrmDashboard() {
                   value={m.value}
                   hint={m.hint}
                   trend={m.trend}
-                  index={i}
+                  index={i + 4}
                 />
               ))}
             </div>
           </Section>
         </div>
+
       </div>
     </div>
   );

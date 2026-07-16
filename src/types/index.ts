@@ -1,1 +1,1 @@
-export type { Lead, LeadStatus, LeadOrigem } from "./lead";
+export type { Lead, LeadStatus, LeadSource } from "./lead";

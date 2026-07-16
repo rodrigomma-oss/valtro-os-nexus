@@ -14,6 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
+      lead_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          lead_id: string
+          metadata: Json
+          type: Database["public"]["Enums"]["lead_event_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id: string
+          metadata?: Json
+          type: Database["public"]["Enums"]["lead_event_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string
+          metadata?: Json
+          type?: Database["public"]["Enums"]["lead_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_events_created_by_profile_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          lead_id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notes_created_by_profile_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          archived_at: string | null
+          city: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          instagram: string | null
+          owner_id: string | null
+          phone: string | null
+          segment: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          state: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          city?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          state?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          city?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          state?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_owner_id_profile_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -80,6 +232,32 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      lead_event_type:
+        | "lead_criado"
+        | "status_alterado"
+        | "observacao_adicionada"
+        | "observacao_editada"
+        | "observacao_removida"
+        | "briefing_enviado"
+        | "briefing_recebido"
+        | "lead_arquivado"
+        | "lead_atualizado"
+      lead_source:
+        | "instagram"
+        | "indicacao"
+        | "site"
+        | "google"
+        | "evento"
+        | "outbound"
+        | "diagnostico"
+        | "manual"
+      lead_status:
+        | "novo"
+        | "contato"
+        | "qualificado"
+        | "proposta"
+        | "ganho"
+        | "perdido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -208,6 +386,35 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      lead_event_type: [
+        "lead_criado",
+        "status_alterado",
+        "observacao_adicionada",
+        "observacao_editada",
+        "observacao_removida",
+        "briefing_enviado",
+        "briefing_recebido",
+        "lead_arquivado",
+        "lead_atualizado",
+      ],
+      lead_source: [
+        "instagram",
+        "indicacao",
+        "site",
+        "google",
+        "evento",
+        "outbound",
+        "diagnostico",
+        "manual",
+      ],
+      lead_status: [
+        "novo",
+        "contato",
+        "qualificado",
+        "proposta",
+        "ganho",
+        "perdido",
+      ],
     },
   },
 } as const
