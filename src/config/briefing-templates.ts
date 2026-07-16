@@ -65,9 +65,10 @@ const templateLoja: BriefingTemplate = {
   steps: [
     {
       id: "empresa",
-      label: "Empresa",
-      title: "Sobre a sua empresa",
-      description: "Comece nos contando um pouco sobre você e o seu negócio.",
+      label: "Seus dados",
+      title: "Confirme seus dados",
+      description:
+        "Já coletamos algumas informações durante nosso atendimento. Confira os dados abaixo e faça alterações apenas se necessário.",
       questions: [
         { id: "nome", label: "Seu nome", kind: "text", placeholder: "Como podemos te chamar" },
         { id: "empresa", label: "Empresa", kind: "text", placeholder: "Nome da sua empresa" },
