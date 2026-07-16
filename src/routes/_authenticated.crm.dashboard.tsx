@@ -130,8 +130,36 @@ function CrmDashboard() {
           </Section>
         </div>
         <div>
-          <Section title="Indicadores" description="Leitura rápida da semana.">
+          <Section title="Indicadores" description="Leitura rápida da base de leads.">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+              <MetricCard
+                index={0}
+                label="Total de leads"
+                value={kpis ? String(kpis.total) : "—"}
+                hint="Base ativa"
+                trend="neutral"
+              />
+              <MetricCard
+                index={1}
+                label="Novos"
+                value={kpis ? String(kpis.novos) : "—"}
+                hint="Aguardando abordagem"
+                trend="neutral"
+              />
+              <MetricCard
+                index={2}
+                label="Em andamento"
+                value={kpis ? String(kpis.emAndamento) : "—"}
+                hint="Contato · qualificado · proposta"
+                trend="neutral"
+              />
+              <MetricCard
+                index={3}
+                label="Conversão"
+                value={kpis ? `${kpis.conversao}%` : "—"}
+                hint={kpis ? `${kpis.ganhos} ganhos` : ""}
+                trend={kpis && kpis.conversao > 20 ? "up" : "neutral"}
+              />
               {metrics.map((m, i) => (
                 <MetricCard
                   key={m.id}
@@ -139,12 +167,13 @@ function CrmDashboard() {
                   value={m.value}
                   hint={m.hint}
                   trend={m.trend}
-                  index={i}
+                  index={i + 4}
                 />
               ))}
             </div>
           </Section>
         </div>
+
       </div>
     </div>
   );
