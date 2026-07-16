@@ -8,10 +8,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-/**
- * Mapeamento de segmentos de rota → rótulo humano.
- * Segmentos não mapeados são renderizados com capitalização automática (ex: id do lead).
- */
 const SEGMENT_LABELS: Record<string, string> = {
   crm: "CRM",
   leads: "Leads",
@@ -33,6 +29,8 @@ function labelFor(segment: string): string {
 
 /**
  * Breadcrumb do painel — deriva os itens diretamente do pathname atual.
+ * Separadores são renderizados como irmãos dos itens (nunca aninhados) para
+ * evitar `<li>` dentro de `<li>` e o consequente hydration mismatch.
  */
 export function AppBreadcrumb() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -40,35 +38,35 @@ export function AppBreadcrumb() {
 
   if (segments.length === 0) return null;
 
+  const nodes = segments.flatMap((segment, idx) => {
+    const href = "/" + segments.slice(0, idx + 1).join("/");
+    const isLast = idx === segments.length - 1;
+    const item = (
+      <BreadcrumbItem key={`item-${href}`}>
+        {isLast ? (
+          <BreadcrumbPage className="text-foreground font-medium">
+            {labelFor(segment)}
+          </BreadcrumbPage>
+        ) : (
+          <BreadcrumbLink asChild>
+            <Link
+              to={href}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {labelFor(segment)}
+            </Link>
+          </BreadcrumbLink>
+        )}
+      </BreadcrumbItem>
+    );
+    return isLast
+      ? [item]
+      : [item, <BreadcrumbSeparator key={`sep-${href}`} />];
+  });
+
   return (
     <Breadcrumb>
-      <BreadcrumbList>
-        {segments.map((segment, idx) => {
-          const href = "/" + segments.slice(0, idx + 1).join("/");
-          const isLast = idx === segments.length - 1;
-          return (
-            <BreadcrumbItem key={href}>
-              {isLast ? (
-                <BreadcrumbPage className="text-foreground font-medium">
-                  {labelFor(segment)}
-                </BreadcrumbPage>
-              ) : (
-                <>
-                  <BreadcrumbLink asChild>
-                    <Link
-                      to={href}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {labelFor(segment)}
-                    </Link>
-                  </BreadcrumbLink>
-                  <BreadcrumbSeparator />
-                </>
-              )}
-            </BreadcrumbItem>
-          );
-        })}
-      </BreadcrumbList>
+      <BreadcrumbList>{nodes}</BreadcrumbList>
     </Breadcrumb>
   );
 }
