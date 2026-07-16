@@ -149,6 +149,44 @@ export function BriefingViewerDrawer({
                 </dl>
               </section>
             ))}
+            {(() => {
+              const known = new Set<string>();
+              template.steps.forEach((s) =>
+                s.questions.forEach((q) => known.add(q.id)),
+              );
+              const legacyKeys = Object.keys(responseData).filter(
+                (k) => !known.has(k) && responseData[k] !== "" && responseData[k] != null,
+              );
+              if (legacyKeys.length === 0) return null;
+              return (
+                <section className="rounded-xl border border-dashed border-border bg-muted/30 p-5">
+                  <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-1">
+                    Respostas legadas
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Campos preenchidos em uma versão anterior deste briefing.
+                  </p>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                    {legacyKeys.map((k) => {
+                      const v = responseData[k];
+                      const display = Array.isArray(v)
+                        ? (v as unknown[]).join(", ")
+                        : String(v);
+                      return (
+                        <div key={k} className="sm:col-span-2">
+                          <dt className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+                            {k}
+                          </dt>
+                          <dd className="text-sm text-foreground whitespace-pre-wrap break-words">
+                            {display}
+                          </dd>
+                        </div>
+                      );
+                    })}
+                  </dl>
+                </section>
+              );
+            })()}
             {!query.data?.response?.completed_at && (
               <p className="text-xs text-muted-foreground text-center italic">
                 Este briefing ainda não foi concluído pelo cliente. As respostas
