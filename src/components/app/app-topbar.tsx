@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Bell, Search, LogOut, User as UserIcon, Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -12,6 +13,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface AppTopbarProps {
   breadcrumb?: ReactNode;
@@ -23,6 +26,33 @@ export interface AppTopbarProps {
  * Direita: busca global, notificações, avatar/menu do usuário.
  */
 export function AppTopbar({ breadcrumb }: AppTopbarProps) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setEmail(data.user?.email ?? null);
+      const meta = data.user?.user_metadata as { full_name?: string; name?: string } | undefined;
+      setFullName(meta?.full_name ?? meta?.name ?? null);
+    });
+  }, []);
+
+  const initials = (fullName ?? email ?? "VL")
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase() ?? "")
+    .join("") || "VL";
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
   return (
     <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 flex items-center gap-4 px-4 md:px-6">
       <div className="flex-1 min-w-0 flex items-center gap-4">
@@ -66,15 +96,15 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
           >
             <Avatar className="h-9 w-9 border border-border">
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                VL
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden xl:flex flex-col items-start leading-tight">
               <span className="text-sm font-medium text-foreground">
-                Valtro Admin
+                {fullName ?? "Minha conta"}
               </span>
               <span className="text-xs text-muted-foreground">
-                admin@valtrolabs.pro
+                {email ?? ""}
               </span>
             </div>
           </button>
@@ -91,7 +121,7 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
             Preferências
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem onSelect={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" strokeWidth={1.75} />
             Sair
           </DropdownMenuItem>

@@ -15,7 +15,7 @@ import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card"
 import { Button } from "@/components/ui/button";
 import { MOCK_LEADS } from "@/mocks/leads";
 
-export const Route = createFileRoute("/crm/leads/$id")({
+export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
   loader: ({ params }) => {
     const lead = MOCK_LEADS.find((l) => l.id === params.id);
     if (!lead) throw notFound();

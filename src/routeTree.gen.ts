@@ -10,19 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
-import { Route as CrmRouteImport } from './routes/crm'
 import { Route as BriefingRouteImport } from './routes/briefing'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CrmIndexRouteImport } from './routes/crm.index'
-import { Route as CrmDashboardRouteImport } from './routes/crm.dashboard'
-import { Route as CrmLeadsIndexRouteImport } from './routes/crm.leads.index'
-import { Route as CrmLeadsIdRouteImport } from './routes/crm.leads.$id'
+import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
+import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
+import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
+import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
@@ -30,19 +38,18 @@ const DiagnosticoRoute = DiagnosticoRouteImport.update({
   path: '/diagnostico',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CrmRoute = CrmRouteImport.update({
-  id: '/crm',
-  path: '/crm',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BriefingRoute = BriefingRouteImport.update({
   id: '/briefing',
   path: '/briefing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -50,72 +57,93 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CrmIndexRoute = CrmIndexRouteImport.update({
+const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => CrmRoute,
+  getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
-const CrmDashboardRoute = CrmDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => CrmRoute,
-} as any)
-const CrmLeadsIndexRoute = CrmLeadsIndexRouteImport.update({
-  id: '/leads/',
-  path: '/leads/',
-  getParentRoute: () => CrmRoute,
-} as any)
-const CrmLeadsIdRoute = CrmLeadsIdRouteImport.update({
+const AuthenticatedCrmDashboardRoute =
+  AuthenticatedCrmDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmLeadsIndexRoute =
+  AuthenticatedCrmLeadsIndexRouteImport.update({
+    id: '/leads/',
+    path: '/leads/',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
   id: '/leads/$id',
   path: '/leads/$id',
-  getParentRoute: () => CrmRoute,
+  getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/briefing': typeof BriefingRoute
-  '/crm': typeof CrmRouteWithChildren
   '/diagnostico': typeof DiagnosticoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/crm/dashboard': typeof CrmDashboardRoute
-  '/crm/': typeof CrmIndexRoute
-  '/crm/leads/$id': typeof CrmLeadsIdRoute
-  '/crm/leads/': typeof CrmLeadsIndexRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/briefing': typeof BriefingRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/crm/dashboard': typeof CrmDashboardRoute
-  '/crm': typeof CrmIndexRoute
-  '/crm/leads/$id': typeof CrmLeadsIdRoute
-  '/crm/leads': typeof CrmLeadsIndexRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm': typeof AuthenticatedCrmIndexRoute
+  '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
   '/briefing': typeof BriefingRoute
-  '/crm': typeof CrmRouteWithChildren
   '/diagnostico': typeof DiagnosticoRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/crm/dashboard': typeof CrmDashboardRoute
-  '/crm/': typeof CrmIndexRoute
-  '/crm/leads/$id': typeof CrmLeadsIdRoute
-  '/crm/leads/': typeof CrmLeadsIndexRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/auth'
     | '/briefing'
-    | '/crm'
     | '/diagnostico'
+    | '/reset-password'
     | '/sitemap.xml'
+    | '/admin'
+    | '/crm'
     | '/crm/dashboard'
     | '/crm/'
     | '/crm/leads/$id'
@@ -123,10 +151,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
+    | '/auth'
     | '/briefing'
     | '/diagnostico'
+    | '/reset-password'
     | '/sitemap.xml'
+    | '/admin'
     | '/crm/dashboard'
     | '/crm'
     | '/crm/leads/$id'
@@ -134,23 +164,27 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/_authenticated'
+    | '/auth'
     | '/briefing'
-    | '/crm'
     | '/diagnostico'
+    | '/reset-password'
     | '/sitemap.xml'
-    | '/crm/dashboard'
-    | '/crm/'
-    | '/crm/leads/$id'
-    | '/crm/leads/'
+    | '/_authenticated/admin'
+    | '/_authenticated/crm'
+    | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/'
+    | '/_authenticated/crm/leads/$id'
+    | '/_authenticated/crm/leads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BriefingRoute: typeof BriefingRoute
-  CrmRoute: typeof CrmRouteWithChildren
   DiagnosticoRoute: typeof DiagnosticoRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -163,18 +197,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/diagnostico': {
       id: '/diagnostico'
       path: '/diagnostico'
       fullPath: '/diagnostico'
       preLoaderRoute: typeof DiagnosticoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/crm': {
-      id: '/crm'
-      path: '/crm'
-      fullPath: '/crm'
-      preLoaderRoute: typeof CrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/briefing': {
@@ -184,11 +218,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -198,59 +239,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crm/': {
-      id: '/crm/'
+    '/_authenticated/crm': {
+      id: '/_authenticated/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof AuthenticatedCrmRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
       path: '/'
       fullPath: '/crm/'
-      preLoaderRoute: typeof CrmIndexRouteImport
-      parentRoute: typeof CrmRoute
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
-    '/crm/dashboard': {
-      id: '/crm/dashboard'
+    '/_authenticated/crm/dashboard': {
+      id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
       fullPath: '/crm/dashboard'
-      preLoaderRoute: typeof CrmDashboardRouteImport
-      parentRoute: typeof CrmRoute
+      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
-    '/crm/leads/': {
-      id: '/crm/leads/'
+    '/_authenticated/crm/leads/': {
+      id: '/_authenticated/crm/leads/'
       path: '/leads'
       fullPath: '/crm/leads/'
-      preLoaderRoute: typeof CrmLeadsIndexRouteImport
-      parentRoute: typeof CrmRoute
+      preLoaderRoute: typeof AuthenticatedCrmLeadsIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
-    '/crm/leads/$id': {
-      id: '/crm/leads/$id'
+    '/_authenticated/crm/leads/$id': {
+      id: '/_authenticated/crm/leads/$id'
       path: '/leads/$id'
       fullPath: '/crm/leads/$id'
-      preLoaderRoute: typeof CrmLeadsIdRouteImport
-      parentRoute: typeof CrmRoute
+      preLoaderRoute: typeof AuthenticatedCrmLeadsIdRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
     }
   }
 }
 
-interface CrmRouteChildren {
-  CrmDashboardRoute: typeof CrmDashboardRoute
-  CrmIndexRoute: typeof CrmIndexRoute
-  CrmLeadsIdRoute: typeof CrmLeadsIdRoute
-  CrmLeadsIndexRoute: typeof CrmLeadsIndexRoute
+interface AuthenticatedCrmRouteChildren {
+  AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
+  AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
+  AuthenticatedCrmLeadsIndexRoute: typeof AuthenticatedCrmLeadsIndexRoute
 }
 
-const CrmRouteChildren: CrmRouteChildren = {
-  CrmDashboardRoute: CrmDashboardRoute,
-  CrmIndexRoute: CrmIndexRoute,
-  CrmLeadsIdRoute: CrmLeadsIdRoute,
-  CrmLeadsIndexRoute: CrmLeadsIndexRoute,
+const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
+  AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
+  AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
+  AuthenticatedCrmLeadsIndexRoute: AuthenticatedCrmLeadsIndexRoute,
 }
 
-const CrmRouteWithChildren = CrmRoute._addFileChildren(CrmRouteChildren)
+const AuthenticatedCrmRouteWithChildren =
+  AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
   BriefingRoute: BriefingRoute,
-  CrmRoute: CrmRouteWithChildren,
   DiagnosticoRoute: DiagnosticoRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
