@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
 import { DiagnosisLayout } from "@/components/diagnosis/DiagnosisLayout";
 
-export const Route = createFileRoute("/briefing")({
+export const Route = createFileRoute("/briefing/")({
   component: BriefingIndexPage,
   head: () => ({
     meta: [
