@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as CrmRouteImport } from './routes/crm'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -22,6 +23,11 @@ import { Route as CrmLeadsIdRouteImport } from './routes/crm.leads.$id'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CrmRoute = CrmRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/briefing': typeof BriefingRoute
   '/crm': typeof CrmRouteWithChildren
+  '/diagnostico': typeof DiagnosticoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/crm/dashboard': typeof CrmDashboardRoute
   '/crm/': typeof CrmIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/briefing': typeof BriefingRoute
+  '/diagnostico': typeof DiagnosticoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/crm/dashboard': typeof CrmDashboardRoute
   '/crm': typeof CrmIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/briefing': typeof BriefingRoute
   '/crm': typeof CrmRouteWithChildren
+  '/diagnostico': typeof DiagnosticoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/crm/dashboard': typeof CrmDashboardRoute
   '/crm/': typeof CrmIndexRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/briefing'
     | '/crm'
+    | '/diagnostico'
     | '/sitemap.xml'
     | '/crm/dashboard'
     | '/crm/'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/briefing'
+    | '/diagnostico'
     | '/sitemap.xml'
     | '/crm/dashboard'
     | '/crm'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/briefing'
     | '/crm'
+    | '/diagnostico'
     | '/sitemap.xml'
     | '/crm/dashboard'
     | '/crm/'
@@ -138,6 +150,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   BriefingRoute: typeof BriefingRoute
   CrmRoute: typeof CrmRouteWithChildren
+  DiagnosticoRoute: typeof DiagnosticoRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/crm': {
@@ -230,6 +250,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   BriefingRoute: BriefingRoute,
   CrmRoute: CrmRouteWithChildren,
+  DiagnosticoRoute: DiagnosticoRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
