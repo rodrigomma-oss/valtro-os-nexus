@@ -60,7 +60,7 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
       .object({
         lead_id: z.string().uuid(),
         service_type: z.enum(SERVICE_TYPE_VALUES),
-        template_type: z.enum(TEMPLATE_TYPE_VALUES).default("padrao"),
+        template_type: z.enum(TEMPLATE_TYPE_VALUES).optional(),
         ttl_days: z.number().int().min(1).max(90).optional(),
       })
       .parse(data),
@@ -69,12 +69,31 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
     const ttl = data.ttl_days ?? DEFAULT_TTL_DAYS;
     const expires_at = new Date(Date.now() + ttl * 24 * 60 * 60 * 1000).toISOString();
 
+    // Sprint 2B.3.4 — regra "1 briefing ativo por lead" (pendente/ativo)
+    const { data: active, error: activeErr } = await context.supabase
+      .from("briefing_tokens")
+      .select("id")
+      .eq("lead_id", data.lead_id)
+      .in("status", ["pendente", "ativo"])
+      .limit(1);
+    if (activeErr) throw new Error(activeErr.message);
+    if (active && active.length > 0) {
+      throw new Error(
+        "Este Lead já possui um briefing ativo. Conclua ou revogue o briefing atual antes de gerar um novo.",
+      );
+    }
+
+    // Resolução centralizada service_type → template_type
+    const { templateTypeForService } = await import("@/config/briefing-templates");
+    const template_type =
+      data.template_type ?? templateTypeForService(data.service_type);
+
     const { data: row, error } = await context.supabase
       .from("briefing_tokens")
       .insert({
         lead_id: data.lead_id,
         service_type: data.service_type,
-        template_type: data.template_type,
+        template_type,
         status: "pendente",
         created_by: context.userId,
         expires_at,
@@ -272,13 +291,29 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     let response = existingResp;
 
     if (!response) {
+      // Sprint 2B.3.4 — prefill com dados já coletados no Lead
+      const { data: lead } = await supabaseAdmin
+        .from("leads")
+        .select("contact_name, company_name, segment, city, state")
+        .eq("id", t.lead_id)
+        .maybeSingle();
+
+      const prefill: Record<string, string> = {};
+      if (lead) {
+        if (lead.contact_name) prefill.nome = lead.contact_name;
+        if (lead.company_name) prefill.empresa = lead.company_name;
+        if (lead.segment) prefill.segmento = lead.segment;
+        if (lead.city) prefill.cidade = lead.city;
+        if (lead.state) prefill.estado = lead.state;
+      }
+
       const { data: created, error: createErr } = await supabaseAdmin
         .from("briefing_responses")
         .insert({
           token_id: t.id,
           lead_id: t.lead_id,
           template_type: t.template_type,
-          data: {},
+          data: prefill,
           current_step: 0,
         })
         .select("data, current_step, completed_at, started_at")
@@ -446,3 +481,42 @@ function publicToken(t: BriefingToken): PortalPayload["token"] {
     completed_at: t.completed_at,
   };
 }
+
+// =============================================================
+// getBriefingResponseForOperator (autenticada) — Sprint 2B.3.4
+// -------------------------------------------------------------
+// Retorna o token + response para o operador. RLS garante que
+// apenas o dono do Lead (via briefing_tokens policies) consegue ler.
+// =============================================================
+export const getBriefingResponseForOperator = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ token_id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: token, error: tokenErr } = await context.supabase
+      .from("briefing_tokens")
+      .select(TOKEN_SELECT)
+      .eq("id", data.token_id)
+      .maybeSingle();
+    if (tokenErr) throw new Error(tokenErr.message);
+    if (!token) throw new Error("Briefing não encontrado.");
+
+    const { data: response, error: respErr } = await context.supabase
+      .from("briefing_responses")
+      .select("data, current_step, started_at, completed_at, updated_at")
+      .eq("token_id", data.token_id)
+      .maybeSingle();
+    if (respErr) throw new Error(respErr.message);
+
+    return {
+      token: token as BriefingToken,
+      response: response
+        ? {
+            data: (response.data as Record<string, any>) ?? {},
+            current_step: response.current_step ?? 0,
+            started_at: response.started_at as string | null,
+            completed_at: response.completed_at as string | null,
+            updated_at: response.updated_at as string,
+          }
+        : null,
+    };
+  });

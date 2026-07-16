@@ -1,13 +1,14 @@
 /**
- * Valtro Briefing Engine — Templates (Sprint 2B.3.3)
+ * Valtro Briefing Engine — Templates (Sprint 2B.3.3 / 2B.3.4)
  *
  * A lógica do Portal é orientada por Template, nunca por condicionais
  * espalhadas na UI. Cada Template define suas etapas e perguntas.
  *
  * Nesta Sprint apenas dois Templates: `loja` e `projeto`.
- * O mapeamento `template_type → template key` está em `resolveTemplate`.
+ * A cadeia é `service_type → template_type → template key`, centralizada
+ * em `templateTypeForService` e `resolveTemplateKey`.
  */
-import type { TemplateType } from "@/types/briefing";
+import type { ServiceType, TemplateType } from "@/types/briefing";
 
 export type QuestionKind =
   | "text"
@@ -64,9 +65,10 @@ const templateLoja: BriefingTemplate = {
   steps: [
     {
       id: "empresa",
-      label: "Empresa",
-      title: "Sobre a sua empresa",
-      description: "Comece nos contando um pouco sobre você e o seu negócio.",
+      label: "Seus dados",
+      title: "Confirme seus dados",
+      description:
+        "Já coletamos algumas informações durante nosso atendimento. Confira os dados abaixo e faça alterações apenas se necessário.",
       questions: [
         { id: "nome", label: "Seu nome", kind: "text", placeholder: "Como podemos te chamar" },
         { id: "empresa", label: "Empresa", kind: "text", placeholder: "Nome da sua empresa" },
@@ -261,9 +263,10 @@ const templateProjeto: BriefingTemplate = {
   steps: [
     {
       id: "identificacao",
-      label: "Identificação",
-      title: "Sobre você",
-      description: "Precisamos apenas do essencial para começar.",
+      label: "Seus dados",
+      title: "Confirme seus dados",
+      description:
+        "Já coletamos algumas informações durante nosso atendimento. Confira os dados abaixo e faça alterações apenas se necessário.",
       questions: [
         { id: "nome", label: "Seu nome", kind: "text", placeholder: "Como podemos te chamar" },
         { id: "empresa", label: "Empresa ou projeto", kind: "text", placeholder: "Nome da empresa ou do projeto" },
@@ -393,6 +396,33 @@ export function resolveTemplateKey(templateType: TemplateType): TemplateKey {
     case "multicanal":
     default:
       return "loja";
+  }
+}
+
+/**
+ * Mapeia `service_type` (armazenado no Lead) → `template_type` do Briefing.
+ * Ponto único de decisão — a UI nunca deve escolher template_type manualmente.
+ */
+export function templateTypeForService(service: ServiceType): TemplateType {
+  switch (service) {
+    case "consultoria":
+      return "consultoria";
+    case "trafego_pago":
+      return "custom";
+    case "diagnostico":
+      return "diagnostico";
+    case "gestao_shopee":
+      return "shopee";
+    case "gestao_mercadolivre":
+      return "mercadolivre";
+    case "gestao_amazon":
+      return "amazon";
+    case "gestao_multicanal":
+      return "multicanal";
+    case "outro":
+    case "nao_definido":
+    default:
+      return "padrao";
   }
 }
 
