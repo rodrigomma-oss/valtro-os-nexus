@@ -13,11 +13,13 @@ import {
   Trash2,
   Pencil,
   RefreshCcw,
+  Ban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
+import { BriefingsCard } from "@/components/app/briefings-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,6 +86,13 @@ const EVENT_META: Record<
     icon: FileText,
     tone: "success",
     title: "Briefing recebido",
+  },
+  briefing_gerado: { icon: FileText, tone: "success", title: "Briefing gerado" },
+  briefing_revogado: { icon: Ban, tone: "muted", title: "Briefing revogado" },
+  briefing_reenviado: {
+    icon: RefreshCcw,
+    tone: "default",
+    title: "Briefing reenviado",
   },
   lead_arquivado: { icon: Archive, tone: "muted", title: "Lead arquivado" },
   lead_atualizado: { icon: Pencil, tone: "default", title: "Lead atualizado" },
@@ -337,6 +346,8 @@ function CrmLeadDetail() {
               </ul>
             )}
           </ActionCard>
+
+          <BriefingsCard lead={lead} canWrite={canWrite} />
 
           <TimelineCard title="Linha do tempo" items={timeline} />
         </div>

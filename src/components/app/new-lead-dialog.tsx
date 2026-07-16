@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { createLead } from "@/lib/leads.functions";
 import { SOURCE_LABEL, type LeadSource } from "@/types/lead";
+import { SERVICE_CATALOG, dbValueForId } from "@/config/service-catalog";
 
 interface NewLeadDialogProps {
   open: boolean;
@@ -39,40 +40,46 @@ const SOURCES: LeadSource[] = [
   "manual",
 ];
 
+const INITIAL = {
+  company_name: "",
+  contact_name: "",
+  phone: "",
+  email: "",
+  instagram: "",
+  city: "",
+  state: "",
+  segment: "",
+  source: "manual" as LeadSource,
+  service_id: "",
+};
+
 export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
-  const [form, setForm] = useState({
-    company_name: "",
-    contact_name: "",
-    phone: "",
-    email: "",
-    instagram: "",
-    city: "",
-    state: "",
-    segment: "",
-    source: "manual" as LeadSource,
-  });
+  const [form, setForm] = useState(INITIAL);
 
   const qc = useQueryClient();
   const createLeadFn = useServerFn(createLead);
   const mutation = useMutation({
     mutationFn: (payload: typeof form) =>
-      createLeadFn({ data: payload }),
+      createLeadFn({
+        data: {
+          company_name: payload.company_name,
+          contact_name: payload.contact_name,
+          phone: payload.phone,
+          email: payload.email,
+          instagram: payload.instagram,
+          city: payload.city,
+          state: payload.state,
+          segment: payload.segment,
+          source: payload.source,
+          service_type: dbValueForId(payload.service_id),
+        },
+      }),
     onSuccess: () => {
       toast.success("Lead criado com sucesso.");
       qc.invalidateQueries({ queryKey: ["leads"] });
       qc.invalidateQueries({ queryKey: ["leads-kpis"] });
       onOpenChange(false);
-      setForm({
-        company_name: "",
-        contact_name: "",
-        phone: "",
-        email: "",
-        instagram: "",
-        city: "",
-        state: "",
-        segment: "",
-        source: "manual",
-      });
+      setForm(INITIAL);
     },
     onError: (err: Error) => {
       toast.error("Não foi possível criar o lead.", { description: err.message });
@@ -86,6 +93,10 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
     e.preventDefault();
     if (!form.company_name.trim() || !form.contact_name.trim()) {
       toast.error("Empresa e contato são obrigatórios.");
+      return;
+    }
+    if (!form.service_id) {
+      toast.error("Selecione o tipo de serviço.");
       return;
     }
     mutation.mutate(form);
@@ -172,6 +183,24 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
                 maxLength={2}
                 placeholder="SP"
               />
+            </div>
+            <div className="col-span-2 space-y-1.5">
+              <Label htmlFor="service_id">Tipo de serviço *</Label>
+              <Select
+                value={form.service_id}
+                onValueChange={(v) => update("service_id", v)}
+              >
+                <SelectTrigger id="service_id">
+                  <SelectValue placeholder="Selecione o tipo de serviço" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SERVICE_CATALOG.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="col-span-2 space-y-1.5">
               <Label htmlFor="source">Origem</Label>

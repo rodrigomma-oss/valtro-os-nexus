@@ -8,6 +8,7 @@ import type { Database } from "@/integrations/supabase/types";
 export type LeadStatus = Database["public"]["Enums"]["lead_status"];
 export type LeadSource = Database["public"]["Enums"]["lead_source"];
 export type LeadEventType = Database["public"]["Enums"]["lead_event_type"];
+export type LeadServiceType = Database["public"]["Enums"]["service_type"];
 
 export interface Lead {
   id: string;
@@ -21,6 +22,7 @@ export interface Lead {
   segment: string | null;
   source: LeadSource;
   status: LeadStatus;
+  service_type: LeadServiceType;
   owner_id: string | null;
   owner_name: string | null;
   archived_at: string | null;
