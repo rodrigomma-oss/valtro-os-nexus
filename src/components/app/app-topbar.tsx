@@ -96,15 +96,15 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
           >
             <Avatar className="h-9 w-9 border border-border">
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                VL
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden xl:flex flex-col items-start leading-tight">
               <span className="text-sm font-medium text-foreground">
-                Valtro Admin
+                {fullName ?? "Minha conta"}
               </span>
               <span className="text-xs text-muted-foreground">
-                admin@valtrolabs.pro
+                {email ?? ""}
               </span>
             </div>
           </button>
@@ -121,7 +121,7 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
             Preferências
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem onSelect={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" strokeWidth={1.75} />
             Sair
           </DropdownMenuItem>
