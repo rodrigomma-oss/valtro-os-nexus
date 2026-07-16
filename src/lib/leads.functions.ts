@@ -67,8 +67,9 @@ function mapLead(row: RawLead): Lead {
 }
 
 const LEAD_SELECT = sel(
-  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, owner_id, archived_at, created_at, updated_at, owner:profiles!leads_owner_id_fkey(full_name)",
+  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, owner_id, archived_at, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
 );
+
 
 // =============================================================
 // listLeads
