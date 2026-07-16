@@ -10,11 +10,13 @@ import {
   UserCog,
   Activity,
   Tag,
+  Briefcase,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "./status-badge";
 import type { Lead } from "@/types/lead";
 import { SOURCE_LABEL } from "@/types/lead";
+import { labelForDbValue } from "@/config/service-catalog";
 
 interface InfoRowProps {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -57,6 +59,11 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
         <InfoRow icon={MapPin} label="Localização" value={location ?? dash} />
         <InfoRow icon={Tag} label="Segmento" value={lead.segment ?? dash} />
         <InfoRow icon={Compass} label="Origem" value={SOURCE_LABEL[lead.source]} />
+        <InfoRow
+          icon={Briefcase}
+          label="Tipo de serviço"
+          value={labelForDbValue(lead.service_type)}
+        />
         <InfoRow icon={UserCog} label="Responsável" value={lead.owner_name ?? dash} />
         <InfoRow
           icon={Activity}
