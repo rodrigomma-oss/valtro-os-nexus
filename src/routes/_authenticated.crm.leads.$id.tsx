@@ -1,117 +1,221 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   Sparkles,
   MessageCircle,
+  FileText,
   Send,
-  Clock,
-  Mail,
+  Archive,
+  Loader2,
+  Trash2,
   Pencil,
+  RefreshCcw,
 } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
-import { MOCK_LEADS } from "@/mocks/leads";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { StatusBadge } from "@/components/app/status-badge";
+import {
+  addLeadNote,
+  deleteLeadNote,
+  getLead,
+  updateLead,
+  archiveLead,
+  getMyRoles,
+} from "@/lib/leads.functions";
+import type { LeadEvent, LeadEventType, LeadNote, LeadStatus } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
-  loader: ({ params }) => {
-    const lead = MOCK_LEADS.find((l) => l.id === params.id);
-    if (!lead) throw notFound();
-    return { lead };
-  },
   component: CrmLeadDetail,
-  notFoundComponent: LeadNotFound,
-  head: ({ loaderData }) => ({
+  head: () => ({
     meta: [
-      {
-        title: loaderData
-          ? `${loaderData.lead.empresa} — Lead — Valtro Labs`
-          : "Lead não encontrado",
-      },
+      { title: "Lead — CRM Valtro Labs" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
 });
 
-function LeadNotFound() {
-  return (
-    <div className="p-6 md:p-10">
-      <PageHeader
-        title="Lead não encontrado"
-        description="O lead solicitado não existe ou foi arquivado."
-        actions={
-          <Button asChild variant="outline">
-            <Link to="/crm/leads">
-              <ArrowLeft className="h-4 w-4 mr-2" strokeWidth={1.75} />
-              Voltar para leads
-            </Link>
-          </Button>
-        }
-      />
-    </div>
-  );
-}
+const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
+  { value: "novo", label: "Novo" },
+  { value: "contato", label: "Em contato" },
+  { value: "qualificado", label: "Qualificado" },
+  { value: "proposta", label: "Proposta" },
+  { value: "ganho", label: "Ganho" },
+  { value: "perdido", label: "Perdido" },
+];
 
-function buildTimeline(createdAt: string): TimelineItem[] {
-  const base = new Date(createdAt);
-  const fmt = (offsetDays: number) =>
-    new Date(base.getTime() + offsetDays * 86400000).toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+const EVENT_META: Record<
+  LeadEventType,
+  { icon: typeof Sparkles; tone: TimelineItem["tone"]; title: string }
+> = {
+  lead_criado: { icon: Sparkles, tone: "default", title: "Lead criado" },
+  status_alterado: { icon: RefreshCcw, tone: "warning", title: "Status alterado" },
+  observacao_adicionada: {
+    icon: MessageCircle,
+    tone: "default",
+    title: "Observação adicionada",
+  },
+  observacao_editada: {
+    icon: Pencil,
+    tone: "default",
+    title: "Observação editada",
+  },
+  observacao_removida: {
+    icon: Trash2,
+    tone: "muted",
+    title: "Observação removida",
+  },
+  briefing_enviado: { icon: Send, tone: "success", title: "Briefing enviado" },
+  briefing_recebido: {
+    icon: FileText,
+    tone: "success",
+    title: "Briefing recebido",
+  },
+  lead_arquivado: { icon: Archive, tone: "muted", title: "Lead arquivado" },
+  lead_atualizado: { icon: Pencil, tone: "default", title: "Lead atualizado" },
+};
 
-  return [
-    {
-      id: "criado",
-      icon: Sparkles,
-      title: "Lead criado",
-      description: "Cadastro inicial registrado no CRM da Valtro Labs.",
-      date: fmt(0),
-      tone: "default",
-    },
-    {
-      id: "contato",
-      icon: MessageCircle,
-      title: "Primeiro contato",
-      description:
-        "Contato inicial via WhatsApp — apresentação da Valtro Labs e da esteira Pricing.",
-      date: fmt(1),
-      tone: "default",
-    },
-    {
-      id: "link",
-      icon: Send,
-      title: "Link enviado",
-      description:
-        "Enviado link do portal de briefing e materiais institucionais para o cliente.",
-      date: fmt(2),
-      tone: "success",
-    },
-    {
-      id: "aguardando",
-      icon: Clock,
-      title: "Aguardando briefing",
-      description:
-        "Cliente sinalizou interesse — aguardando preenchimento do briefing técnico.",
-      date: fmt(3),
-      tone: "warning",
-    },
-  ];
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function CrmLeadDetail() {
-  const { lead } = Route.useLoaderData();
-  const timeline = buildTimeline(lead.dataCriacao);
+  const { id } = Route.useParams();
+  const qc = useQueryClient();
+
+  const getLeadFn = useServerFn(getLead);
+  const addNoteFn = useServerFn(addLeadNote);
+  const deleteNoteFn = useServerFn(deleteLeadNote);
+  const updateLeadFn = useServerFn(updateLead);
+  const archiveLeadFn = useServerFn(archiveLead);
+  const getMyRolesFn = useServerFn(getMyRoles);
+
+  const leadQuery = useQuery({
+    queryKey: ["lead", id],
+    queryFn: () => getLeadFn({ data: { id } }),
+  });
+  const rolesQuery = useQuery({
+    queryKey: ["my-roles"],
+    queryFn: () => getMyRolesFn(),
+    staleTime: 60_000,
+  });
+
+  const [note, setNote] = useState("");
+
+  const canWrite = rolesQuery.data?.canWrite ?? false;
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["lead", id] });
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    qc.invalidateQueries({ queryKey: ["leads-kpis"] });
+  };
+
+  const addNoteMutation = useMutation({
+    mutationFn: () => addNoteFn({ data: { lead_id: id, content: note } }),
+    onSuccess: () => {
+      toast.success("Observação adicionada.");
+      setNote("");
+      invalidate();
+    },
+    onError: (err: Error) =>
+      toast.error("Não foi possível salvar.", { description: err.message }),
+  });
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: (noteId: string) =>
+      deleteNoteFn({ data: { id: noteId, lead_id: id } }),
+    onSuccess: () => {
+      toast.success("Observação removida.");
+      invalidate();
+    },
+    onError: (err: Error) =>
+      toast.error("Não foi possível remover.", { description: err.message }),
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: (status: LeadStatus) =>
+      updateLeadFn({ data: { id, status } }),
+    onSuccess: () => {
+      toast.success("Status atualizado.");
+      invalidate();
+    },
+    onError: (err: Error) =>
+      toast.error("Não foi possível atualizar o status.", {
+        description: err.message,
+      }),
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveLeadFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Lead arquivado.");
+      invalidate();
+    },
+    onError: (err: Error) =>
+      toast.error("Não foi possível arquivar.", { description: err.message }),
+  });
+
+  if (leadQuery.isLoading) {
+    return (
+      <div className="p-10 flex items-center gap-3 text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" /> Carregando lead...
+      </div>
+    );
+  }
+
+  if (leadQuery.isError) {
+    return (
+      <div className="p-6 md:p-10">
+        <PageHeader
+          title="Erro ao carregar lead"
+          description={
+            leadQuery.error instanceof Error
+              ? leadQuery.error.message
+              : "Tente novamente em instantes."
+          }
+          actions={
+            <Button variant="outline" onClick={() => leadQuery.refetch()}>
+              Tentar novamente
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  const payload = leadQuery.data;
+  if (!payload) throw notFound();
+
+  const { lead, events, notes } = payload;
+
+  const timeline: TimelineItem[] = buildTimeline(events, notes);
 
   return (
     <div className="p-6 md:p-10 space-y-6">
       <PageHeader
-        title={lead.empresa}
-        description={`Detalhamento do lead — ${lead.nome} · ${lead.cidade}`}
+        title={lead.company_name}
+        description={`Detalhamento do lead — ${lead.contact_name}${
+          lead.city ? " · " + lead.city : ""
+        }`}
         actions={
           <>
             <Button variant="outline" size="sm" asChild>
@@ -120,13 +224,38 @@ function CrmLeadDetail() {
                 Voltar
               </Link>
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Mail className="h-4 w-4" strokeWidth={1.75} />
-              Contatar
-            </Button>
-            <Button size="sm" className="gap-2">
-              <Pencil className="h-4 w-4" strokeWidth={1.75} />
-              Editar lead
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                Status
+              </span>
+              <Select
+                value={lead.status}
+                onValueChange={(v) => statusMutation.mutate(v as LeadStatus)}
+                disabled={!canWrite || statusMutation.isPending}
+              >
+                <SelectTrigger className="w-[170px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      <StatusBadge status={o.value} />
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-destructive"
+              disabled={!canWrite || !!lead.archived_at || archiveMutation.isPending}
+              onClick={() => {
+                if (confirm("Arquivar este lead?")) archiveMutation.mutate();
+              }}
+            >
+              <Archive className="h-4 w-4" strokeWidth={1.75} />
+              {lead.archived_at ? "Arquivado" : "Arquivar"}
             </Button>
           </>
         }
@@ -142,23 +271,71 @@ function CrmLeadDetail() {
             title="Observações"
             description="Anotações internas do time comercial sobre o lead."
           >
-            <div className="rounded-lg bg-muted/40 p-4 text-sm text-foreground leading-relaxed">
-              <p>
-                Cliente demonstrou forte interesse na esteira{" "}
-                <span className="font-semibold">Valtro Pricing</span>. Já
-                possui operação estruturada em marketplace e busca
-                automatizar a precificação dinâmica de SKUs.
+            {canWrite && (
+              <div className="space-y-3 mb-4">
+                <Textarea
+                  placeholder="Escreva uma observação sobre este lead..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={3}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={
+                      !note.trim() || addNoteMutation.isPending
+                    }
+                    onClick={() => addNoteMutation.mutate()}
+                  >
+                    {addNoteMutation.isPending
+                      ? "Salvando..."
+                      : "Adicionar observação"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {notes.length === 0 ? (
+              <p className="text-sm text-muted-foreground italic">
+                Nenhuma observação registrada ainda.
               </p>
-              <p className="mt-3">
-                Preferência declarada por reuniões pela manhã. Decisor final é
-                o próprio contato, sem necessidade de escalonamento. Ticket
-                estimado compatível com plano Pro.
-              </p>
-              <p className="mt-3 text-muted-foreground italic">
-                Próximo passo: aguardar retorno do briefing enviado por e-mail
-                e agendar call de descoberta técnica.
-              </p>
-            </div>
+            ) : (
+              <ul className="space-y-3">
+                {notes.map((n) => (
+                  <li
+                    key={n.id}
+                    className="rounded-lg bg-muted/40 p-4 text-sm text-foreground"
+                  >
+                    <div className="flex items-center justify-between gap-3 mb-2 text-xs text-muted-foreground">
+                      <span>
+                        <span className="font-medium text-foreground">
+                          {n.created_by_name ?? "Você"}
+                        </span>{" "}
+                        · {formatDate(n.created_at)}
+                      </span>
+                      {canWrite && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-muted-foreground hover:text-destructive"
+                          onClick={() => {
+                            if (confirm("Remover esta observação?")) {
+                              deleteNoteMutation.mutate(n.id);
+                            }
+                          }}
+                          disabled={deleteNoteMutation.isPending}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                    <p className="whitespace-pre-wrap leading-relaxed">
+                      {n.content}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </ActionCard>
 
           <TimelineCard title="Linha do tempo" items={timeline} />
@@ -166,4 +343,19 @@ function CrmLeadDetail() {
       </div>
     </div>
   );
+}
+
+function buildTimeline(events: LeadEvent[], _notes: LeadNote[]): TimelineItem[] {
+  return events.map((e) => {
+    const meta = EVENT_META[e.type];
+    const author = e.created_by_name ? ` · ${e.created_by_name}` : "";
+    return {
+      id: e.id,
+      icon: meta.icon,
+      title: meta.title,
+      description: (e.description ?? "") + author,
+      date: formatDate(e.created_at),
+      tone: meta.tone,
+    };
+  });
 }
