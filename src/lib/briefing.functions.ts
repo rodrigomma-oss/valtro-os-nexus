@@ -255,7 +255,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     const isFirstAccess = !t.last_access_at;
 
     // Ativa o token na primeira interação
-    const patch: Record<string, any> = {
+    const patch: { last_access_at: string; status?: TokenStatus } = {
       last_access_at: new Date().toISOString(),
     };
     if (t.status === "pendente") patch.status = "ativo";
