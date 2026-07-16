@@ -1,29 +1,102 @@
-import { Bell, Search } from "lucide-react";
+import type { ReactNode } from "react";
+import { Bell, Search, LogOut, User as UserIcon, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+
+export interface AppTopbarProps {
+  breadcrumb?: ReactNode;
+}
 
 /**
- * Topbar placeholder da área autenticada. Estrutura visual apenas.
+ * Topbar definitiva do painel autenticado.
+ * Esquerda: slot de breadcrumb (renderizado pela página).
+ * Direita: busca global, notificações, avatar/menu do usuário.
  */
-export function AppTopbar() {
+export function AppTopbar({ breadcrumb }: AppTopbarProps) {
   return (
-    <header className="h-16 shrink-0 border-b border-border bg-background flex items-center gap-4 px-6">
-      <div className="flex-1 max-w-md relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input
+    <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 flex items-center gap-4 px-4 md:px-6">
+      <div className="flex-1 min-w-0 flex items-center gap-4">
+        <div className="min-w-0 hidden md:block">{breadcrumb}</div>
+      </div>
+
+      <div className="relative w-full max-w-xs hidden lg:block">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+          strokeWidth={1.75}
+        />
+        <Input
           type="search"
-          placeholder="Buscar..."
-          className="w-full h-10 pl-9 pr-3 rounded-lg border border-input bg-surface text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          placeholder="Buscar leads, clientes..."
+          className="pl-9 h-10 bg-surface"
+          aria-label="Pesquisa global"
         />
       </div>
-      <button
-        type="button"
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative shrink-0"
         aria-label="Notificações"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <Bell className="h-4 w-4" strokeWidth={1.75} />
-      </button>
-      <div className="h-9 w-9 rounded-full bg-brand-soft text-primary grid place-items-center text-sm font-semibold">
-        V
-      </div>
+        <Badge
+          className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] font-semibold bg-primary text-primary-foreground border-2 border-background"
+          variant="default"
+        >
+          3
+        </Badge>
+      </Button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center gap-3 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-opacity hover:opacity-90"
+            aria-label="Menu do usuário"
+          >
+            <Avatar className="h-9 w-9 border border-border">
+              <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                VL
+              </AvatarFallback>
+            </Avatar>
+            <div className="hidden xl:flex flex-col items-start leading-tight">
+              <span className="text-sm font-medium text-foreground">
+                Valtro Admin
+              </span>
+              <span className="text-xs text-muted-foreground">
+                admin@valtrolabs.pro
+              </span>
+            </div>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled>
+            <UserIcon className="mr-2 h-4 w-4" strokeWidth={1.75} />
+            Perfil
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            <Settings className="mr-2 h-4 w-4" strokeWidth={1.75} />
+            Preferências
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled>
+            <LogOut className="mr-2 h-4 w-4" strokeWidth={1.75} />
+            Sair
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
 }
