@@ -85,6 +85,13 @@ const EVENT_META: Record<
     tone: "success",
     title: "Briefing recebido",
   },
+  briefing_gerado: { icon: FileText, tone: "success", title: "Briefing gerado" },
+  briefing_revogado: { icon: Ban, tone: "muted", title: "Briefing revogado" },
+  briefing_reenviado: {
+    icon: RefreshCcw,
+    tone: "default",
+    title: "Briefing reenviado",
+  },
   lead_arquivado: { icon: Archive, tone: "muted", title: "Lead arquivado" },
   lead_atualizado: { icon: Pencil, tone: "default", title: "Lead atualizado" },
 };
