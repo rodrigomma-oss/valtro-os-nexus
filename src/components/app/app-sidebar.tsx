@@ -6,6 +6,7 @@ import {
   FileSignature,
   Building2,
   Settings,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
@@ -16,38 +17,56 @@ interface NavItem {
   to: string;
   icon: LucideIcon;
   disabled?: boolean;
+  external?: boolean;
 }
 
-const NAV_MAIN: NavItem[] = [
-  { label: "Dashboard", to: "/crm/dashboard", icon: LayoutDashboard, disabled: true },
-  { label: "Leads", to: "/crm/leads", icon: Users },
-  { label: "Análises", to: "/crm/analises", icon: BarChart3, disabled: true },
-  { label: "Propostas", to: "/crm/propostas", icon: FileSignature, disabled: true },
-  { label: "Clientes", to: "/crm/clientes", icon: Building2, disabled: true },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Operação",
+    items: [
+      { label: "Centro de Operações", to: "/crm/dashboard", icon: LayoutDashboard },
+      { label: "Leads", to: "/crm/leads", icon: Users },
+    ],
+  },
+  {
+    label: "Ferramentas",
+    items: [
+      { label: "Portal de Diagnóstico", to: "/diagnostico", icon: ClipboardList, external: true },
+    ],
+  },
+  {
+    label: "Em breve",
+    items: [
+      { label: "Análises", to: "/crm/analises", icon: BarChart3, disabled: true },
+      { label: "Propostas", to: "/crm/propostas", icon: FileSignature, disabled: true },
+      { label: "Clientes", to: "/crm/clientes", icon: Building2, disabled: true },
+    ],
+  },
 ];
 
 const NAV_FOOTER: NavItem[] = [
   { label: "Configurações", to: "/crm/configuracoes", icon: Settings, disabled: true },
 ];
 
-/**
- * Sidebar definitiva do painel comercial da Valtro Labs.
- * Largura fixa (w-64), ícones Lucide, destaque de rota ativa.
- * Preparada para colapso futuro (Sprint 1B+).
- */
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const renderItem = (item: NavItem) => {
     const active =
-      pathname === item.to || pathname.startsWith(`${item.to}/`);
+      !item.disabled && (pathname === item.to || pathname.startsWith(`${item.to}/`));
 
     const baseClasses = cn(
-      "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
       active
         ? "bg-primary text-primary-foreground shadow-sm"
         : "text-muted-foreground hover:bg-accent hover:text-foreground",
-      item.disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
+      item.disabled &&
+        "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
     );
 
     const content = (
@@ -76,6 +95,20 @@ export function AppSidebar() {
       );
     }
 
+    if (item.external) {
+      return (
+        <a
+          key={item.to}
+          href={item.to}
+          target="_blank"
+          rel="noreferrer"
+          className={baseClasses}
+        >
+          {content}
+        </a>
+      );
+    }
+
     return (
       <Link key={item.to} to={item.to} className={baseClasses}>
         {content}
@@ -86,18 +119,20 @@ export function AppSidebar() {
   return (
     <aside className="hidden md:flex md:w-64 shrink-0 flex-col border-r border-border bg-surface">
       <div className="flex h-16 items-center px-6 border-b border-border">
-        <Link to="/crm/leads" className="flex items-center">
+        <Link to="/crm/dashboard" className="flex items-center">
           <Logo variant="compact" />
         </Link>
       </div>
 
-      <nav className="flex-1 flex flex-col p-3">
-        <div className="space-y-1">
-          <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
-            Comercial
-          </p>
-          {NAV_MAIN.map(renderItem)}
-        </div>
+      <nav className="flex-1 flex flex-col p-3 gap-4">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label} className="space-y-1">
+            <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
+              {group.label}
+            </p>
+            {group.items.map(renderItem)}
+          </div>
+        ))}
 
         <div className="mt-auto space-y-1 pt-4 border-t border-border">
           {NAV_FOOTER.map(renderItem)}
