@@ -38,7 +38,7 @@ import {
 import { MOCK_LEADS } from "@/mocks/leads";
 import type { Lead, LeadStatus } from "@/types/lead";
 
-export const Route = createFileRoute("/crm/leads/")({
+export const Route = createFileRoute("/_authenticated/crm/leads/")({
   component: CrmLeads,
   head: () => ({
     meta: [

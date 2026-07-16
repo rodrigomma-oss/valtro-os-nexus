@@ -17,7 +17,7 @@ import {
   metrics,
 } from "@/mocks/operations";
 
-export const Route = createFileRoute("/crm/dashboard")({
+export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
   head: () => ({
     meta: [
