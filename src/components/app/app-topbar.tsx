@@ -26,6 +26,33 @@ export interface AppTopbarProps {
  * Direita: busca global, notificações, avatar/menu do usuário.
  */
 export function AppTopbar({ breadcrumb }: AppTopbarProps) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setEmail(data.user?.email ?? null);
+      const meta = data.user?.user_metadata as { full_name?: string; name?: string } | undefined;
+      setFullName(meta?.full_name ?? meta?.name ?? null);
+    });
+  }, []);
+
+  const initials = (fullName ?? email ?? "VL")
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase() ?? "")
+    .join("") || "VL";
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
   return (
     <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 flex items-center gap-4 px-4 md:px-6">
       <div className="flex-1 min-w-0 flex items-center gap-4">
