@@ -185,6 +185,24 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               />
             </div>
             <div className="col-span-2 space-y-1.5">
+              <Label htmlFor="service_id">Tipo de serviço *</Label>
+              <Select
+                value={form.service_id}
+                onValueChange={(v) => update("service_id", v)}
+              >
+                <SelectTrigger id="service_id">
+                  <SelectValue placeholder="Selecione o tipo de serviço" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SERVICE_CATALOG.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2 space-y-1.5">
               <Label htmlFor="source">Origem</Label>
               <Select
                 value={form.source}
