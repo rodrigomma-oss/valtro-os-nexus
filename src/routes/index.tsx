@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Header } from "@/components/header";
-import { Hero } from "@/components/hero";
-import { About } from "@/components/about";
-import { Solutions } from "@/components/solutions";
-import { Values } from "@/components/values";
-import { InstitutionalBanner } from "@/components/institutional-banner";
-import { CTA } from "@/components/cta";
-import { Footer } from "@/components/footer";
+import { PublicLayout } from "@/layouts/public-layout";
+import { Hero } from "@/components/marketing/hero";
+import { About } from "@/components/marketing/about";
+import { Solutions } from "@/components/marketing/solutions";
+import { Values } from "@/components/marketing/values";
+import { InstitutionalBanner } from "@/components/marketing/institutional-banner";
+import { CTA } from "@/components/marketing/cta";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -40,17 +39,13 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <main>
-        <Hero />
-        <About />
-        <Solutions />
-        <Values />
-        <InstitutionalBanner />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <PublicLayout>
+      <Hero />
+      <About />
+      <Solutions />
+      <Values />
+      <InstitutionalBanner />
+      <CTA />
+    </PublicLayout>
   );
 }
