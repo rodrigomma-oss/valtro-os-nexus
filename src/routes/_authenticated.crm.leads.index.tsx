@@ -25,6 +25,7 @@ import { StatusBadge } from "@/components/app/status-badge";
 import { StatCard } from "@/components/app/stat-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { NewLeadDialog } from "@/components/app/new-lead-dialog";
+import { formatPhone } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -189,7 +190,7 @@ function CrmLeads() {
         row.phone ? (
           <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
             <Phone className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {row.phone}
+            {formatPhone(row.phone)}
           </span>
         ) : (
           <span className="text-sm text-muted-foreground">—</span>
