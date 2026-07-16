@@ -360,7 +360,7 @@ export const saveBriefingProgress = createServerFn({ method: "POST" })
       .eq("token_id", data.token)
       .maybeSingle();
 
-    const patch: Record<string, any> = {
+    const patch: { data: any; current_step: number; started_at?: string } = {
       data: data.data,
       current_step: data.current_step,
     };
