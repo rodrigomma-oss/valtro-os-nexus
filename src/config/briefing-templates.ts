@@ -263,9 +263,10 @@ const templateProjeto: BriefingTemplate = {
   steps: [
     {
       id: "identificacao",
-      label: "Identificação",
-      title: "Sobre você",
-      description: "Precisamos apenas do essencial para começar.",
+      label: "Seus dados",
+      title: "Confirme seus dados",
+      description:
+        "Já coletamos algumas informações durante nosso atendimento. Confira os dados abaixo e faça alterações apenas se necessário.",
       questions: [
         { id: "nome", label: "Seu nome", kind: "text", placeholder: "Como podemos te chamar" },
         { id: "empresa", label: "Empresa ou projeto", kind: "text", placeholder: "Nome da empresa ou do projeto" },
