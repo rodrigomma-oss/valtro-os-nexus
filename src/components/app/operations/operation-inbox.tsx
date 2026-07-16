@@ -53,16 +53,20 @@ export function OperationInbox({ items, onItemClick }: OperationInboxProps) {
               <it.icon className="h-4 w-4" strokeWidth={1.75} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-foreground truncate">{it.title}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-foreground truncate">{it.title}</p>
+                <span className="text-xs text-muted-foreground shrink-0">· {it.time}</span>
+              </div>
               <p className="text-xs text-muted-foreground truncate">{it.description}</p>
-            </div>
-            <div className="hidden sm:flex flex-col items-end shrink-0">
-              <span className="text-xs text-muted-foreground">{it.time}</span>
-              <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-primary sm:hidden">
                 {it.actionLabel}
+                <ChevronRight className="h-3 w-3" />
               </span>
             </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
+            <div className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-primary shrink-0">
+              {it.actionLabel}
+              <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </div>
           </button>
         </motion.li>
       ))}
