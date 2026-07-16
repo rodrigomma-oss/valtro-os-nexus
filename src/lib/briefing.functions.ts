@@ -481,3 +481,42 @@ function publicToken(t: BriefingToken): PortalPayload["token"] {
     completed_at: t.completed_at,
   };
 }
+
+// =============================================================
+// getBriefingResponseForOperator (autenticada) — Sprint 2B.3.4
+// -------------------------------------------------------------
+// Retorna o token + response para o operador. RLS garante que
+// apenas o dono do Lead (via briefing_tokens policies) consegue ler.
+// =============================================================
+export const getBriefingResponseForOperator = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ token_id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: token, error: tokenErr } = await context.supabase
+      .from("briefing_tokens")
+      .select(TOKEN_SELECT)
+      .eq("id", data.token_id)
+      .maybeSingle();
+    if (tokenErr) throw new Error(tokenErr.message);
+    if (!token) throw new Error("Briefing não encontrado.");
+
+    const { data: response, error: respErr } = await context.supabase
+      .from("briefing_responses")
+      .select("data, current_step, started_at, completed_at, updated_at")
+      .eq("token_id", data.token_id)
+      .maybeSingle();
+    if (respErr) throw new Error(respErr.message);
+
+    return {
+      token: token as BriefingToken,
+      response: response
+        ? {
+            data: (response.data as Record<string, any>) ?? {},
+            current_step: response.current_step ?? 0,
+            started_at: response.started_at as string | null,
+            completed_at: response.completed_at as string | null,
+            updated_at: response.updated_at as string,
+          }
+        : null,
+    };
+  });
