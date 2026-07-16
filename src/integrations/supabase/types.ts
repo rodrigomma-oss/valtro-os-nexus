@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      briefing_responses: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          data: Json
+          id: string
+          lead_id: string
+          started_at: string | null
+          template_type: Database["public"]["Enums"]["template_type"]
+          token_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json
+          id?: string
+          lead_id: string
+          started_at?: string | null
+          template_type: Database["public"]["Enums"]["template_type"]
+          token_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json
+          id?: string
+          lead_id?: string
+          started_at?: string | null
+          template_type?: Database["public"]["Enums"]["template_type"]
+          token_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "briefing_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "briefing_responses_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "briefing_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       briefing_tokens: {
         Row: {
           completed_at: string | null
@@ -301,6 +355,9 @@ export type Database = {
         | "briefing_gerado"
         | "briefing_revogado"
         | "briefing_reenviado"
+        | "briefing_iniciado"
+        | "briefing_retomado"
+        | "briefing_concluido"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -478,6 +535,9 @@ export const Constants = {
         "briefing_gerado",
         "briefing_revogado",
         "briefing_reenviado",
+        "briefing_iniciado",
+        "briefing_retomado",
+        "briefing_concluido",
       ],
       lead_source: [
         "instagram",
