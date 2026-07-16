@@ -58,12 +58,21 @@ function Section({
 }
 
 function CrmDashboard() {
+  const getLeadsKpisFn = useServerFn(getLeadsKpis);
+  const kpisQuery = useQuery({
+    queryKey: ["leads-kpis"],
+    queryFn: () => getLeadsKpisFn(),
+    staleTime: 30_000,
+  });
+  const kpis = kpisQuery.data;
+
   return (
     <div className="p-6 md:p-10 space-y-12 max-w-[1400px] mx-auto">
       <PageHeader
         title="Centro de Operações"
         description="O que precisa da sua atenção agora — priorizado pela nossa metodologia consultiva."
       />
+
 
       <OperationHero summary={operationSummary} />
 
