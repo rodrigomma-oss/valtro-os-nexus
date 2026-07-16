@@ -1,16 +1,33 @@
 /**
- * BriefingsCard — Seção de Briefings na tela do Lead.
+ * BriefingsCard — Histórico de Briefings na tela do Lead (Sprint 2B.3.4).
  *
- * Estrutura preparada para crescimento (ADR-008 / VBE-DAT-001):
- * hoje exibe Tokens; no futuro cada envelope também exibirá
- * Briefing → Diagnóstico → Proposta sem reorganizar o layout.
+ * Regras de negócio:
+ *  - Título "Histórico de Briefings" (linha do tempo dos envios).
+ *  - Apenas um briefing ativo por Lead (pendente/ativo).
+ *  - Card evoluído com Status, Template, Criado, Último acesso, Concluído.
+ *  - Ações por estado (ver spec Sprint 2B.3.4 §7).
  */
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Link2, RefreshCcw, Ban, FileText, Plus, Loader2 } from "lucide-react";
+import {
+  Copy,
+  Link2,
+  RefreshCcw,
+  Ban,
+  FileText,
+  Plus,
+  Loader2,
+  Eye,
+  Info,
+} from "lucide-react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
@@ -20,12 +37,10 @@ import {
   resendBriefingToken,
   revokeBriefingToken,
 } from "@/lib/briefing.functions";
-import type {
-  BriefingToken,
-  TokenStatus,
-} from "@/types/briefing";
+import type { BriefingToken, TokenStatus } from "@/types/briefing";
 import { TEMPLATE_TYPE_LABEL, TOKEN_STATUS_LABEL } from "@/types/briefing";
 import type { Lead } from "@/types/lead";
+import { BriefingViewerDrawer } from "./briefing-viewer-drawer";
 
 interface BriefingsCardProps {
   lead: Lead;
@@ -40,6 +55,8 @@ const STATUS_TONE: Record<TokenStatus, string> = {
   expirado: "bg-amber-50 text-amber-700 border-amber-200",
   revogado: "bg-rose-50 text-rose-700 border-rose-200",
 };
+
+const ACTIVE_STATUSES: TokenStatus[] = ["pendente", "ativo"];
 
 function formatDate(iso: string | null | undefined) {
   if (!iso) return "—";
@@ -64,6 +81,8 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
   const revokeFn = useServerFn(revokeBriefingToken);
   const resendFn = useServerFn(resendBriefingToken);
 
+  const [viewerToken, setViewerToken] = useState<BriefingToken | null>(null);
+
   const tokensQuery = useQuery({
     queryKey: ["briefing", "tokens", lead.id],
     queryFn: () => listFn({ data: { lead_id: lead.id } }),
@@ -82,7 +101,7 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
         data: {
           lead_id: lead.id,
           service_type: lead.service_type,
-          template_type: "padrao",
+          // template_type é resolvido no servidor via templateTypeForService.
         },
       }),
     onSuccess: () => {
@@ -116,116 +135,144 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
   const tokens = tokensQuery.data ?? [];
   const isLoading = tokensQuery.isLoading;
 
+  const hasActive = tokens.some((t) => ACTIVE_STATUSES.includes(t.status));
   const canGenerate =
     canWrite &&
     lead.service_type !== "nao_definido" &&
-    !lead.archived_at;
+    !lead.archived_at &&
+    !hasActive;
+
+  const generateBtn = (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => generate.mutate()}
+      disabled={generate.isPending}
+      className="gap-2"
+    >
+      {generate.isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
+      ) : (
+        <Plus className="h-4 w-4" strokeWidth={1.75} />
+      )}
+      Novo briefing
+    </Button>
+  );
 
   return (
-    <Card className="shadow-soft">
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-        <div>
-          <CardTitle className="text-base">Briefings</CardTitle>
-          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Ciclo de vida dos briefings enviados a este lead.
-          </p>
-        </div>
-        {tokens.length > 0 && canGenerate && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => generate.mutate()}
-            disabled={generate.isPending}
-            className="gap-2"
-          >
-            {generate.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
-            ) : (
-              <Plus className="h-4 w-4" strokeWidth={1.75} />
-            )}
-            Novo briefing
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="pt-0">
-        {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground py-6">
-            <Loader2 className="h-4 w-4 animate-spin" /> Carregando briefings...
+    <>
+      <Card className="shadow-soft">
+        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+          <div>
+            <CardTitle className="text-base">Histórico de Briefings</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+              Histórico de todos os briefings enviados para este Lead durante o
+              relacionamento comercial.
+            </p>
           </div>
-        ) : tokens.length === 0 ? (
-          <EmptyState
-            icon={FileText}
-            title="Nenhum briefing foi gerado para este lead."
-            description={
-              canGenerate
-                ? "Gere o primeiro briefing consultivo para iniciar o diagnóstico com o cliente."
-                : lead.service_type === "nao_definido"
-                  ? "Defina o tipo de serviço deste lead para gerar um briefing."
-                  : "Você não tem permissão para gerar briefings."
-            }
-            action={
-              canGenerate ? (
-                <Button
-                  onClick={() => generate.mutate()}
-                  disabled={generate.isPending}
-                  className="gap-2"
-                >
-                  {generate.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
-                  ) : (
-                    <Plus className="h-4 w-4" strokeWidth={1.75} />
-                  )}
-                  Gerar Briefing
-                </Button>
-              ) : undefined
-            }
-          />
-        ) : (
-          <ul className="space-y-3">
-            {tokens.map((t) => (
-              <BriefingEnvelope
-                key={t.id}
-                token={t}
-                canWrite={canWrite}
-                onRevoke={() => revoke.mutate(t.id)}
-                onResend={() => resend.mutate(t.id)}
-                revoking={revoke.isPending && revoke.variables === t.id}
-                resending={resend.isPending && resend.variables === t.id}
-              />
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+          {tokens.length > 0 && canGenerate && generateBtn}
+        </CardHeader>
+        <CardContent className="pt-0 space-y-3">
+          {hasActive && canWrite && !lead.archived_at && (
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
+              <Info className="h-4 w-4 shrink-0 mt-0.5" strokeWidth={1.75} />
+              <span>
+                Este Lead já possui um briefing ativo. Para gerar um novo,
+                conclua ou revogue o briefing atual.
+              </span>
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-6">
+              <Loader2 className="h-4 w-4 animate-spin" /> Carregando
+              briefings…
+            </div>
+          ) : tokens.length === 0 ? (
+            <EmptyState
+              icon={FileText}
+              title="Nenhum briefing foi gerado para este lead."
+              description={
+                canGenerate
+                  ? "Gere o primeiro briefing consultivo para iniciar o diagnóstico com o cliente."
+                  : lead.service_type === "nao_definido"
+                    ? "Defina o tipo de serviço deste lead para gerar um briefing."
+                    : hasActive
+                      ? "Conclua ou revogue o briefing ativo antes de gerar um novo."
+                      : "Você não tem permissão para gerar briefings."
+              }
+              action={
+                canGenerate ? (
+                  <Button
+                    onClick={() => generate.mutate()}
+                    disabled={generate.isPending}
+                    className="gap-2"
+                  >
+                    {generate.isPending ? (
+                      <Loader2
+                        className="h-4 w-4 animate-spin"
+                        strokeWidth={1.75}
+                      />
+                    ) : (
+                      <Plus className="h-4 w-4" strokeWidth={1.75} />
+                    )}
+                    Gerar Briefing
+                  </Button>
+                ) : undefined
+              }
+            />
+          ) : (
+            <ul className="space-y-3">
+              {tokens.map((t) => (
+                <BriefingEnvelope
+                  key={t.id}
+                  token={t}
+                  canWrite={canWrite}
+                  onOpen={() => setViewerToken(t)}
+                  onRevoke={() => revoke.mutate(t.id)}
+                  onResend={() => resend.mutate(t.id)}
+                  revoking={revoke.isPending && revoke.variables === t.id}
+                  resending={resend.isPending && resend.variables === t.id}
+                />
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      {viewerToken && (
+        <BriefingViewerDrawer
+          open={!!viewerToken}
+          onOpenChange={(o) => !o && setViewerToken(null)}
+          token={viewerToken}
+        />
+      )}
+    </>
   );
 }
 
 interface BriefingEnvelopeProps {
   token: BriefingToken;
   canWrite: boolean;
+  onOpen: () => void;
   onRevoke: () => void;
   onResend: () => void;
   revoking: boolean;
   resending: boolean;
 }
 
-/**
- * Envelope de um briefing. Hoje contém apenas o Token; futuramente
- * receberá também Briefing → Diagnóstico → Proposta como subseções
- * dentro do mesmo card, sem reorganizar a interface.
- */
 function BriefingEnvelope({
   token,
   canWrite,
+  onOpen,
   onRevoke,
   onResend,
   revoking,
   resending,
 }: BriefingEnvelopeProps) {
   const [copied, setCopied] = useState(false);
-  const isActive = token.status === "ativo" || token.status === "pendente";
-  const isCompleted = token.status === "concluido";
-  const isFinal = isCompleted || token.status === "revogado";
+  const isActive =
+    token.status === "ativo" || token.status === "pendente";
 
   const copyLink = async () => {
     try {
@@ -255,61 +302,72 @@ function BriefingEnvelope({
               Template · {TEMPLATE_TYPE_LABEL[token.template_type]}
             </span>
           </div>
-          <dl className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs">
+          <dl className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs">
             <MetaItem label="Criado em" value={formatDate(token.created_at)} />
-            <MetaItem label="Expira em" value={formatDate(token.expires_at)} />
             <MetaItem
               label="Último acesso"
               value={formatDate(token.last_access_at)}
             />
+            {token.completed_at ? (
+              <MetaItem
+                label="Concluído em"
+                value={formatDate(token.completed_at)}
+              />
+            ) : (
+              <MetaItem label="Expira em" value={formatDate(token.expires_at)} />
+            )}
           </dl>
         </div>
-        {!isFinal && canWrite && (
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              onClick={copyLink}
-            >
-              {copied ? (
-                <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />
-              ) : (
-                <Link2 className="h-3.5 w-3.5" strokeWidth={1.75} />
-              )}
-              Copiar link
-            </Button>
-            {isActive && (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5"
-                  disabled={resending}
-                  onClick={onResend}
-                >
-                  <RefreshCcw
-                    className={cn("h-3.5 w-3.5", resending && "animate-spin")}
-                    strokeWidth={1.75}
-                  />
-                  Reenviar
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5 text-destructive hover:text-destructive"
-                  disabled={revoking}
-                  onClick={() => {
-                    if (confirm("Revogar este briefing?")) onRevoke();
-                  }}
-                >
-                  <Ban className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  Revogar
-                </Button>
-              </>
-            )}
-          </div>
-        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={onOpen}>
+            <Eye className="h-3.5 w-3.5" strokeWidth={1.75} />
+            Abrir briefing
+          </Button>
+
+          {isActive && canWrite && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={copyLink}
+              >
+                {copied ? (
+                  <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />
+                ) : (
+                  <Link2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                )}
+                Copiar link
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                disabled={resending}
+                onClick={onResend}
+              >
+                <RefreshCcw
+                  className={cn("h-3.5 w-3.5", resending && "animate-spin")}
+                  strokeWidth={1.75}
+                />
+                Reenviar
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-destructive hover:text-destructive"
+                disabled={revoking}
+                onClick={() => {
+                  if (confirm("Revogar este briefing?")) onRevoke();
+                }}
+              >
+                <Ban className="h-3.5 w-3.5" strokeWidth={1.75} />
+                Revogar
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </li>
   );
