@@ -2,11 +2,7 @@ import { motion } from "framer-motion";
 
 interface OperationHeroProps {
   name?: string;
-  summary: {
-    diagnosticosPendentes: number;
-    propostasPendentes: number;
-    briefingsHoje: number;
-  };
+  parts: string[];
 }
 
 function greeting() {
@@ -16,12 +12,7 @@ function greeting() {
   return "Boa noite";
 }
 
-export function OperationHero({ name = "Rodrigo", summary }: OperationHeroProps) {
-  const parts: string[] = [];
-  if (summary.diagnosticosPendentes) parts.push(`${summary.diagnosticosPendentes} diagnósticos aguardando análise`);
-  if (summary.propostasPendentes) parts.push(`${summary.propostasPendentes} propostas pendentes`);
-  if (summary.briefingsHoje) parts.push(`${summary.briefingsHoje} briefing recebido hoje`);
-
+export function OperationHero({ name, parts }: OperationHeroProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -31,7 +22,7 @@ export function OperationHero({ name = "Rodrigo", summary }: OperationHeroProps)
     >
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Centro de operações</p>
       <h1 className="mt-2 text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-        {greeting()}, {name}.
+        {greeting()}{name ? `, ${name}` : ""}.
       </h1>
       {parts.length > 0 ? (
         <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed max-w-[720px]">
@@ -44,7 +35,7 @@ export function OperationHero({ name = "Rodrigo", summary }: OperationHeroProps)
           ))}
         </p>
       ) : (
-        <p className="mt-3 text-sm md:text-base text-muted-foreground">Nenhuma pendência crítica no momento.</p>
+        <p className="mt-3 text-sm md:text-base text-muted-foreground">Nenhuma pendência no momento.</p>
       )}
     </motion.div>
   );
