@@ -279,7 +279,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
         .eq("id", t.lead_id)
         .maybeSingle();
 
-      const prefill: Record<string, unknown> = {};
+      const prefill: Record<string, string> = {};
       if (lead) {
         if (lead.contact_name) prefill.nome = lead.contact_name;
         if (lead.company_name) prefill.empresa = lead.company_name;
