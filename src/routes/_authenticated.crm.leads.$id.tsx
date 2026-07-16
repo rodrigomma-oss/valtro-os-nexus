@@ -13,6 +13,7 @@ import {
   Trash2,
   Pencil,
   RefreshCcw,
+  Ban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
