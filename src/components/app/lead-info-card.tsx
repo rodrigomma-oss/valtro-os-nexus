@@ -17,6 +17,7 @@ import { StatusBadge } from "./status-badge";
 import type { Lead } from "@/types/lead";
 import { SOURCE_LABEL } from "@/types/lead";
 import { labelForDbValue } from "@/config/service-catalog";
+import { formatPhone } from "@/lib/formatters";
 
 interface InfoRowProps {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -53,7 +54,7 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
       <CardContent className="pt-0">
         <InfoRow icon={User} label="Contato" value={lead.contact_name} />
         <InfoRow icon={Building2} label="Empresa" value={lead.company_name} />
-        <InfoRow icon={Phone} label="Telefone" value={lead.phone ?? dash} />
+        <InfoRow icon={Phone} label="Telefone" value={lead.phone ? formatPhone(lead.phone) : dash} />
         <InfoRow icon={Mail} label="E-mail" value={lead.email ?? dash} />
         <InfoRow icon={Instagram} label="Instagram" value={lead.instagram ?? dash} />
         <InfoRow icon={MapPin} label="Localização" value={location ?? dash} />
