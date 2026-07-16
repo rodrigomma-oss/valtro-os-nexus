@@ -16,6 +16,7 @@ import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
@@ -57,6 +58,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BriefingTokenRoute = BriefingTokenRouteImport.update({
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => BriefingRoute,
+} as any)
 const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   id: '/crm',
   path: '/crm',
@@ -93,12 +99,13 @@ const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/briefing': typeof BriefingRoute
+  '/briefing': typeof BriefingRouteWithChildren
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/briefing/$token': typeof BriefingTokenRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -107,11 +114,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/briefing': typeof BriefingRoute
+  '/briefing': typeof BriefingRouteWithChildren
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/briefing/$token': typeof BriefingTokenRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -122,12 +130,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
-  '/briefing': typeof BriefingRoute
+  '/briefing': typeof BriefingRouteWithChildren
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/briefing/$token': typeof BriefingTokenRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin'
     | '/crm'
+    | '/briefing/$token'
     | '/crm/dashboard'
     | '/crm/'
     | '/crm/leads/$id'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/admin'
+    | '/briefing/$token'
     | '/crm/dashboard'
     | '/crm'
     | '/crm/leads/$id'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/crm'
+    | '/briefing/$token'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/'
     | '/_authenticated/crm/leads/$id'
@@ -182,7 +194,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
-  BriefingRoute: typeof BriefingRoute
+  BriefingRoute: typeof BriefingRouteWithChildren
   DiagnosticoRoute: typeof DiagnosticoRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -238,6 +250,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/briefing/$token': {
+      id: '/briefing/$token'
+      path: '/$token'
+      fullPath: '/briefing/$token'
+      preLoaderRoute: typeof BriefingTokenRouteImport
+      parentRoute: typeof BriefingRoute
     }
     '/_authenticated/crm': {
       id: '/_authenticated/crm'
@@ -315,11 +334,23 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface BriefingRouteChildren {
+  BriefingTokenRoute: typeof BriefingTokenRoute
+}
+
+const BriefingRouteChildren: BriefingRouteChildren = {
+  BriefingTokenRoute: BriefingTokenRoute,
+}
+
+const BriefingRouteWithChildren = BriefingRoute._addFileChildren(
+  BriefingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
-  BriefingRoute: BriefingRoute,
+  BriefingRoute: BriefingRouteWithChildren,
   DiagnosticoRoute: DiagnosticoRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

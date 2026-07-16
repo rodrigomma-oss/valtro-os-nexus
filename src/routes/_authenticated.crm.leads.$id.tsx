@@ -14,6 +14,9 @@ import {
   Pencil,
   RefreshCcw,
   Ban,
+  PlayCircle,
+  RotateCcw,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
@@ -94,6 +97,9 @@ const EVENT_META: Record<
     tone: "default",
     title: "Briefing reenviado",
   },
+  briefing_iniciado: { icon: PlayCircle, tone: "default", title: "Cliente iniciou o Briefing" },
+  briefing_retomado: { icon: RotateCcw, tone: "default", title: "Cliente retomou o Briefing" },
+  briefing_concluido: { icon: CheckCircle2, tone: "success", title: "Briefing concluído" },
   lead_arquivado: { icon: Archive, tone: "muted", title: "Lead arquivado" },
   lead_atualizado: { icon: Pencil, tone: "default", title: "Lead atualizado" },
 };
