@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Instagram, Menu, X } from "lucide-react";
-import { Logo } from "./logo";
+import { Logo } from "@/components/shared/logo";
 
 const NAV = [
   { label: "Soluções", href: "#solucoes" },

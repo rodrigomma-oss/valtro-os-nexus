@@ -1,5 +1,5 @@
 import { Instagram } from "lucide-react";
-import { Logo } from "./logo";
+import { Logo } from "@/components/shared/logo";
 
 const FUTURE_LINKS = ["Política de Privacidade", "Termos de Uso", "Contato"];
 
