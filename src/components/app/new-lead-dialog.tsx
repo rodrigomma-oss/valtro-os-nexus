@@ -23,6 +23,7 @@ import {
 import { createLead } from "@/lib/leads.functions";
 import { SOURCE_LABEL, type LeadSource } from "@/types/lead";
 import { SERVICE_CATALOG, dbValueForId } from "@/config/service-catalog";
+import { maskPhoneInput, onlyDigits } from "@/lib/formatters";
 
 interface NewLeadDialogProps {
   open: boolean;
@@ -64,7 +65,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
         data: {
           company_name: payload.company_name,
           contact_name: payload.contact_name,
-          phone: payload.phone,
+          phone: onlyDigits(payload.phone),
           email: payload.email,
           instagram: payload.instagram,
           city: payload.city,
@@ -137,8 +138,12 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               <Input
                 id="phone"
                 value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
+                onChange={(e) => update("phone", maskPhoneInput(e.target.value))}
+                inputMode="tel"
+                placeholder="(00) 00000-0000"
+                maxLength={16}
               />
+
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="email">E-mail</Label>
