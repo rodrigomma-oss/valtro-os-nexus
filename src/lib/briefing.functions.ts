@@ -60,7 +60,7 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
       .object({
         lead_id: z.string().uuid(),
         service_type: z.enum(SERVICE_TYPE_VALUES),
-        template_type: z.enum(TEMPLATE_TYPE_VALUES).default("padrao"),
+        template_type: z.enum(TEMPLATE_TYPE_VALUES).optional(),
         ttl_days: z.number().int().min(1).max(90).optional(),
       })
       .parse(data),
@@ -69,12 +69,31 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
     const ttl = data.ttl_days ?? DEFAULT_TTL_DAYS;
     const expires_at = new Date(Date.now() + ttl * 24 * 60 * 60 * 1000).toISOString();
 
+    // Sprint 2B.3.4 — regra "1 briefing ativo por lead" (pendente/ativo)
+    const { data: active, error: activeErr } = await context.supabase
+      .from("briefing_tokens")
+      .select("id")
+      .eq("lead_id", data.lead_id)
+      .in("status", ["pendente", "ativo"])
+      .limit(1);
+    if (activeErr) throw new Error(activeErr.message);
+    if (active && active.length > 0) {
+      throw new Error(
+        "Este Lead já possui um briefing ativo. Conclua ou revogue o briefing atual antes de gerar um novo.",
+      );
+    }
+
+    // Resolução centralizada service_type → template_type
+    const { templateTypeForService } = await import("@/config/briefing-templates");
+    const template_type =
+      data.template_type ?? templateTypeForService(data.service_type);
+
     const { data: row, error } = await context.supabase
       .from("briefing_tokens")
       .insert({
         lead_id: data.lead_id,
         service_type: data.service_type,
-        template_type: data.template_type,
+        template_type,
         status: "pendente",
         created_by: context.userId,
         expires_at,
