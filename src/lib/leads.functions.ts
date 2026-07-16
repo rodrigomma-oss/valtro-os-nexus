@@ -110,10 +110,10 @@ export const getLead = createServerFn({ method: "GET" })
     if (!leadRow) return null;
 
     const eventsSel = sel(
-      "id, lead_id, type, description, created_by, created_at, author:profiles!lead_events_created_by_fkey(full_name)",
+      "id, lead_id, type, description, created_by, created_at, author:profiles!lead_events_created_by_profile_fkey(full_name)",
     );
     const notesSel = sel(
-      "id, lead_id, content, created_by, created_at, updated_at, author:profiles!lead_notes_created_by_fkey(full_name)",
+      "id, lead_id, content, created_by, created_at, updated_at, author:profiles!lead_notes_created_by_profile_fkey(full_name)",
     );
 
     const [eventsRes, notesRes] = await Promise.all([
