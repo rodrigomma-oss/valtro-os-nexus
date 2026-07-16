@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
+import { BriefingsCard } from "@/components/app/briefings-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -345,6 +346,8 @@ function CrmLeadDetail() {
               </ul>
             )}
           </ActionCard>
+
+          <BriefingsCard lead={lead} canWrite={canWrite} />
 
           <TimelineCard title="Linha do tempo" items={timeline} />
         </div>
