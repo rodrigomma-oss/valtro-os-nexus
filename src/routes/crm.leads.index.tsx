@@ -231,11 +231,41 @@ function CrmLeads() {
     },
   ];
 
+  const emptyState = hasFilters ? (
+    <EmptyState
+      icon={SearchX}
+      title="Nenhum lead corresponde aos filtros"
+      description={
+        term
+          ? `Não encontramos leads para "${search.trim()}". Ajuste a busca ou remova filtros para ver mais resultados.`
+          : "Nenhum lead corresponde a este status no momento."
+      }
+      action={
+        <Button variant="outline" size="sm" onClick={clearFilters} className="gap-2">
+          <X className="h-4 w-4" />
+          Limpar filtros
+        </Button>
+      }
+    />
+  ) : (
+    <EmptyState
+      icon={Users}
+      title="Nenhum lead cadastrado ainda"
+      description="Cadastre o primeiro lead para começar a acompanhar oportunidades no funil consultivo da Valtro Labs."
+      action={
+        <Button size="sm" className="gap-2">
+          <Plus className="h-4 w-4" />
+          Novo lead
+        </Button>
+      }
+    />
+  );
+
   return (
     <div className="p-6 md:p-10 space-y-6">
       <PageHeader
         title="Leads"
-        description="Gerencie oportunidades comerciais, acompanhe status e responsáveis do funil da Valtro Labs."
+        description="Acompanhe oportunidades, status e responsáveis do funil comercial da Valtro Labs."
         actions={
           <>
             <Button variant="outline" size="sm" className="gap-2">
@@ -244,11 +274,24 @@ function CrmLeads() {
             </Button>
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" strokeWidth={2} />
-              Novo Lead
+              Novo lead
             </Button>
           </>
         }
       />
+
+      {/* KPIs resumidos */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Total de leads" value={kpis.total} hint="Base atual" />
+        <StatCard label="Novos" value={kpis.novos} hint="Aguardando abordagem" />
+        <StatCard label="Em andamento" value={kpis.emAndamento} hint="Contato, qualificado ou proposta" />
+        <StatCard
+          label="Conversão"
+          value={`${kpis.conversao}%`}
+          hint={`${MOCK_LEADS.filter((l) => l.status === "ganho").length} ganhos`}
+          trend={kpis.conversao > 20 ? "up" : "neutral"}
+        />
+      </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1 max-w-md">
@@ -264,8 +307,21 @@ function CrmLeads() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="pl-9 bg-surface"
+            className="pl-9 pr-9 bg-surface"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setPage(1);
+              }}
+              aria-label="Limpar busca"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Select
@@ -292,33 +348,53 @@ function CrmLeads() {
         </div>
       </div>
 
-      <DataTable<Lead>
-        columns={columns}
-        data={paginated}
-        getRowId={(row) => row.id}
-        onRowClick={(row) =>
-          navigate({ to: "/crm/leads/$id", params: { id: row.id } })
-        }
-        emptyState={
-          <EmptyState
-            icon={Users}
-            title="Nenhum lead encontrado"
-            description="Ajuste os filtros ou cadastre um novo lead para começar a acompanhar o funil comercial."
-          />
-        }
-      />
+      {/* Feedback de busca */}
+      {!loading && hasFilters && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm">
+          <p className="text-muted-foreground">
+            <span className="font-medium text-foreground">{filtered.length}</span>{" "}
+            {filtered.length === 1 ? "lead encontrado" : "leads encontrados"}
+            {term && (
+              <> para <span className="font-medium text-foreground">“{search.trim()}”</span></>
+            )}
+            {statusFilter !== "todos" && (
+              <>
+                {" "}· status{" "}
+                <span className="font-medium text-foreground">
+                  {STATUS_OPTIONS.find((s) => s.value === statusFilter)?.label}
+                </span>
+              </>
+            )}
+          </p>
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1 h-8">
+            <X className="h-3.5 w-3.5" />
+            Limpar
+          </Button>
+        </div>
+      )}
 
+      {loading ? (
+        <LeadsSkeleton />
+      ) : (
+        <DataTable<Lead>
+          columns={columns}
+          data={paginated}
+          getRowId={(row) => row.id}
+          onRowClick={(row) =>
+            navigate({ to: "/crm/leads/$id", params: { id: row.id } })
+          }
+          emptyState={emptyState}
+        />
+      )}
+
+      {!loading && filtered.length > 0 && (
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
         <p className="text-muted-foreground">
           Mostrando{" "}
-          <span className="font-medium text-foreground">
-            {paginated.length}
-          </span>{" "}
+          <span className="font-medium text-foreground">{paginated.length}</span>{" "}
           de{" "}
-          <span className="font-medium text-foreground">
-            {filtered.length}
-          </span>{" "}
-          leads
+          <span className="font-medium text-foreground">{filtered.length}</span>{" "}
+          {filtered.length === 1 ? "lead" : "leads"}
         </p>
         <div className="flex items-center gap-1">
           <Button
