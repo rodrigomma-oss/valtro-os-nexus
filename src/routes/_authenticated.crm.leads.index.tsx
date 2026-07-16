@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   Plus,
   Search,
@@ -14,12 +16,15 @@ import {
   MapPin,
   X,
   SearchX,
+  Archive,
 } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { DataTable, type DataTableColumn } from "@/components/app/data-table";
 import { StatusBadge } from "@/components/app/status-badge";
 import { StatCard } from "@/components/app/stat-card";
 import { EmptyState } from "@/components/shared/empty-state";
+import { NewLeadDialog } from "@/components/app/new-lead-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,7 +40,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MOCK_LEADS } from "@/mocks/leads";
+import {
+  archiveLead,
+  getMyRoles,
+  listLeads,
+} from "@/lib/leads.functions";
 import type { Lead, LeadStatus } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
@@ -70,43 +79,57 @@ function formatDate(iso: string) {
 
 function CrmLeads() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const listLeadsFn = useServerFn(listLeads);
+  const getMyRolesFn = useServerFn(getMyRoles);
+  const archiveLeadFn = useServerFn(archiveLead);
+
+  const leadsQuery = useQuery({
+    queryKey: ["leads"],
+    queryFn: () => listLeadsFn({ data: { includeArchived: false } }),
+  });
+  const rolesQuery = useQuery({
+    queryKey: ["my-roles"],
+    queryFn: () => getMyRolesFn(),
+    staleTime: 60_000,
+  });
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Skeleton curto no primeiro paint para transmitir "carregando".
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(t);
-  }, []);
+  const canWrite = rolesQuery.data?.canWrite ?? false;
+  const isAdmin = rolesQuery.data?.isAdmin ?? false;
+  const leads = leadsQuery.data ?? [];
 
   const term = search.trim().toLowerCase();
   const hasFilters = term.length > 0 || statusFilter !== "todos";
 
   const filtered = useMemo(() => {
-    return MOCK_LEADS.filter((lead) => {
+    return leads.filter((lead) => {
       const matchStatus =
         statusFilter === "todos" || lead.status === statusFilter;
       const matchTerm =
         term.length === 0 ||
-        lead.empresa.toLowerCase().includes(term) ||
-        lead.nome.toLowerCase().includes(term) ||
-        lead.cidade.toLowerCase().includes(term);
+        lead.company_name.toLowerCase().includes(term) ||
+        lead.contact_name.toLowerCase().includes(term) ||
+        (lead.city ?? "").toLowerCase().includes(term);
       return matchStatus && matchTerm;
     });
-  }, [term, statusFilter]);
+  }, [leads, term, statusFilter]);
 
   const kpis = useMemo(() => {
-    const total = MOCK_LEADS.length;
-    const novos = MOCK_LEADS.filter((l) => l.status === "novo").length;
-    const emAndamento = MOCK_LEADS.filter((l) =>
+    const total = leads.length;
+    const novos = leads.filter((l) => l.status === "novo").length;
+    const emAndamento = leads.filter((l) =>
       ["contato", "qualificado", "proposta"].includes(l.status),
     ).length;
-    const ganhos = MOCK_LEADS.filter((l) => l.status === "ganho").length;
+    const ganhos = leads.filter((l) => l.status === "ganho").length;
     const conversao = total > 0 ? Math.round((ganhos / total) * 100) : 0;
-    return { total, novos, emAndamento, conversao };
-  }, []);
+    return { total, novos, emAndamento, ganhos, conversao };
+  }, [leads]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -121,6 +144,17 @@ function CrmLeads() {
     setPage(1);
   };
 
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => archiveLeadFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Lead arquivado.");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      qc.invalidateQueries({ queryKey: ["leads-kpis"] });
+    },
+    onError: (err: Error) =>
+      toast.error("Não foi possível arquivar.", { description: err.message }),
+  });
+
   const columns: DataTableColumn<Lead>[] = [
     {
       key: "empresa",
@@ -129,12 +163,14 @@ function CrmLeads() {
       render: (row) => (
         <div className="min-w-0">
           <p className="font-semibold text-foreground truncate">
-            {row.empresa}
+            {row.company_name}
           </p>
-          <p className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-0.5">
-            <Instagram className="h-3 w-3" strokeWidth={1.75} />
-            {row.instagram}
-          </p>
+          {row.instagram && (
+            <p className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+              <Instagram className="h-3 w-3" strokeWidth={1.75} />
+              {row.instagram}
+            </p>
+          )}
         </div>
       ),
     },
@@ -143,28 +179,34 @@ function CrmLeads() {
       header: "Contato",
       sortable: true,
       render: (row) => (
-        <span className="text-sm text-foreground">{row.nome}</span>
+        <span className="text-sm text-foreground">{row.contact_name}</span>
       ),
     },
     {
       key: "telefone",
       header: "Telefone",
-      render: (row) => (
-        <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Phone className="h-3.5 w-3.5" strokeWidth={1.75} />
-          {row.telefone}
-        </span>
-      ),
+      render: (row) =>
+        row.phone ? (
+          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Phone className="h-3.5 w-3.5" strokeWidth={1.75} />
+            {row.phone}
+          </span>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        ),
     },
     {
       key: "cidade",
       header: "Cidade",
-      render: (row) => (
-        <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5" strokeWidth={1.75} />
-          {row.cidade}
-        </span>
-      ),
+      render: (row) =>
+        row.city ? (
+          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" strokeWidth={1.75} />
+            {row.city}
+          </span>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        ),
     },
     {
       key: "status",
@@ -176,7 +218,9 @@ function CrmLeads() {
       key: "responsavel",
       header: "Responsável",
       render: (row) => (
-        <span className="text-sm text-muted-foreground">{row.responsavel}</span>
+        <span className="text-sm text-muted-foreground">
+          {row.owner_name ?? "—"}
+        </span>
       ),
     },
     {
@@ -185,7 +229,7 @@ function CrmLeads() {
       sortable: true,
       render: (row) => (
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          {formatDate(row.dataCriacao)}
+          {formatDate(row.created_at)}
         </span>
       ),
     },
@@ -201,7 +245,7 @@ function CrmLeads() {
               size="icon"
               className="h-8 w-8"
               onClick={(e) => e.stopPropagation()}
-              aria-label={`Ações para ${row.empresa}`}
+              aria-label={`Ações para ${row.company_name}`}
             >
               <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
             </Button>
@@ -220,9 +264,16 @@ function CrmLeads() {
             >
               Ver detalhes
             </DropdownMenuItem>
-            <DropdownMenuItem disabled>Editar</DropdownMenuItem>
-            <DropdownMenuItem disabled>Enviar briefing</DropdownMenuItem>
-            <DropdownMenuItem disabled className="text-destructive">
+            <DropdownMenuItem
+              disabled={!canWrite && !isAdmin}
+              onClick={() => {
+                if (confirm(`Arquivar o lead "${row.company_name}"?`)) {
+                  archiveMutation.mutate(row.id);
+                }
+              }}
+              className="text-destructive"
+            >
+              <Archive className="h-4 w-4 mr-2" strokeWidth={1.75} />
               Arquivar
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -230,6 +281,8 @@ function CrmLeads() {
       ),
     },
   ];
+
+  const loading = leadsQuery.isLoading;
 
   const emptyState = hasFilters ? (
     <EmptyState
@@ -253,10 +306,12 @@ function CrmLeads() {
       title="Nenhum lead cadastrado ainda"
       description="Cadastre o primeiro lead para começar a acompanhar oportunidades no funil consultivo da Valtro Labs."
       action={
-        <Button size="sm" className="gap-2">
-          <Plus className="h-4 w-4" />
-          Novo lead
-        </Button>
+        canWrite ? (
+          <Button size="sm" className="gap-2" onClick={() => setDialogOpen(true)}>
+            <Plus className="h-4 w-4" />
+            Novo lead
+          </Button>
+        ) : undefined
       }
     />
   );
@@ -268,11 +323,16 @@ function CrmLeads() {
         description="Acompanhe oportunidades, status e responsáveis do funil comercial da Valtro Labs."
         actions={
           <>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2" disabled>
               <Download className="h-4 w-4" strokeWidth={1.75} />
               Exportar
             </Button>
-            <Button size="sm" className="gap-2">
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={() => setDialogOpen(true)}
+              disabled={!canWrite}
+            >
               <Plus className="h-4 w-4" strokeWidth={2} />
               Novo lead
             </Button>
@@ -280,15 +340,18 @@ function CrmLeads() {
         }
       />
 
-      {/* KPIs resumidos */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total de leads" value={kpis.total} hint="Base atual" />
+        <StatCard label="Total de leads" value={kpis.total} hint="Base ativa" />
         <StatCard label="Novos" value={kpis.novos} hint="Aguardando abordagem" />
-        <StatCard label="Em andamento" value={kpis.emAndamento} hint="Contato, qualificado ou proposta" />
+        <StatCard
+          label="Em andamento"
+          value={kpis.emAndamento}
+          hint="Contato, qualificado ou proposta"
+        />
         <StatCard
           label="Conversão"
           value={`${kpis.conversao}%`}
-          hint={`${MOCK_LEADS.filter((l) => l.status === "ganho").length} ganhos`}
+          hint={`${kpis.ganhos} ganhos`}
           trend={kpis.conversao > 20 ? "up" : "neutral"}
         />
       </div>
@@ -342,20 +405,24 @@ function CrmLeads() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" aria-label="Mais filtros">
+          <Button variant="outline" size="icon" aria-label="Mais filtros" disabled>
             <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} />
           </Button>
         </div>
       </div>
 
-      {/* Feedback de busca */}
       {!loading && hasFilters && (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm">
           <p className="text-muted-foreground">
             <span className="font-medium text-foreground">{filtered.length}</span>{" "}
             {filtered.length === 1 ? "lead encontrado" : "leads encontrados"}
             {term && (
-              <> para <span className="font-medium text-foreground">“{search.trim()}”</span></>
+              <>
+                {" "}para{" "}
+                <span className="font-medium text-foreground">
+                  “{search.trim()}”
+                </span>
+              </>
             )}
             {statusFilter !== "todos" && (
               <>
@@ -375,6 +442,25 @@ function CrmLeads() {
 
       {loading ? (
         <LeadsSkeleton />
+      ) : leadsQuery.isError ? (
+        <EmptyState
+          icon={SearchX}
+          title="Não foi possível carregar leads"
+          description={
+            leadsQuery.error instanceof Error
+              ? leadsQuery.error.message
+              : "Tente novamente em instantes."
+          }
+          action={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => leadsQuery.refetch()}
+            >
+              Tentar novamente
+            </Button>
+          }
+        />
       ) : (
         <DataTable<Lead>
           columns={columns}
@@ -388,49 +474,53 @@ function CrmLeads() {
       )}
 
       {!loading && filtered.length > 0 && (
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
-        <p className="text-muted-foreground">
-          Mostrando{" "}
-          <span className="font-medium text-foreground">{paginated.length}</span>{" "}
-          de{" "}
-          <span className="font-medium text-foreground">{filtered.length}</span>{" "}
-          {filtered.length === 1 ? "lead" : "leads"}
-        </p>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            disabled={currentPage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
-            Anterior
-          </Button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
+          <p className="text-muted-foreground">
+            Mostrando{" "}
+            <span className="font-medium text-foreground">
+              {paginated.length}
+            </span>{" "}
+            de{" "}
+            <span className="font-medium text-foreground">{filtered.length}</span>{" "}
+            {filtered.length === 1 ? "lead" : "leads"}
+          </p>
+          <div className="flex items-center gap-1">
             <Button
-              key={p}
-              variant={p === currentPage ? "default" : "outline"}
+              variant="outline"
               size="sm"
-              className="h-9 w-9 p-0"
-              onClick={() => setPage(p)}
+              className="gap-1"
+              disabled={currentPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              {p}
+              <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
+              Anterior
             </Button>
-          ))}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            disabled={currentPage >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Próximo
-            <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
-          </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Button
+                key={p}
+                variant={p === currentPage ? "default" : "outline"}
+                size="sm"
+                className="h-9 w-9 p-0"
+                onClick={() => setPage(p)}
+              >
+                {p}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Próximo
+              <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
+            </Button>
+          </div>
         </div>
-      </div>
       )}
+
+      <NewLeadDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   );
 }
@@ -444,7 +534,10 @@ function LeadsSkeleton() {
         ))}
       </div>
       {Array.from({ length: 6 }).map((_, r) => (
-        <div key={r} className="border-b border-border last:border-0 px-4 py-4 flex gap-4">
+        <div
+          key={r}
+          className="border-b border-border last:border-0 px-4 py-4 flex gap-4"
+        >
           {Array.from({ length: 6 }).map((_, c) => (
             <div
               key={c}
