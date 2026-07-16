@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Plus,
@@ -12,10 +12,13 @@ import {
   Phone,
   Instagram,
   MapPin,
+  X,
+  SearchX,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 import { DataTable, type DataTableColumn } from "@/components/app/data-table";
 import { StatusBadge } from "@/components/app/status-badge";
+import { StatCard } from "@/components/app/stat-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
