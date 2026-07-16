@@ -178,6 +178,18 @@ export const getLead = createServerFn({ method: "GET" })
 // =============================================================
 // createLead
 // =============================================================
+const SERVICE_TYPE_VALUES = [
+  "nao_definido",
+  "gestao_shopee",
+  "gestao_mercadolivre",
+  "gestao_amazon",
+  "gestao_multicanal",
+  "consultoria",
+  "diagnostico",
+  "trafego_pago",
+  "outro",
+] as const;
+
 const createLeadSchema = z.object({
   company_name: z.string().trim().min(1, "Empresa é obrigatória"),
   contact_name: z.string().trim().min(1, "Contato é obrigatório"),
@@ -189,6 +201,7 @@ const createLeadSchema = z.object({
   segment: z.string().trim().optional().nullable(),
   source: z.enum(LEAD_SOURCE_VALUES).default("manual"),
   status: z.enum(LEAD_STATUS_VALUES).default("novo"),
+  service_type: z.enum(SERVICE_TYPE_VALUES).default("nao_definido"),
 });
 
 export const createLead = createServerFn({ method: "POST" })
@@ -206,6 +219,7 @@ export const createLead = createServerFn({ method: "POST" })
       segment: data.segment || null,
       source: data.source,
       status: data.status,
+      service_type: data.service_type,
       owner_id: context.userId,
       created_by: context.userId,
     };
