@@ -10,11 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as CrmRouteImport } from './routes/crm'
+import { Route as BriefingRouteImport } from './routes/briefing'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CrmIndexRouteImport } from './routes/crm.index'
+import { Route as CrmLeadsRouteImport } from './routes/crm.leads'
+import { Route as CrmDashboardRouteImport } from './routes/crm.dashboard'
+import { Route as CrmLeadsIdRouteImport } from './routes/crm.leads.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmRoute = CrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BriefingRoute = BriefingRouteImport.update({
+  id: '/briefing',
+  path: '/briefing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +44,100 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CrmIndexRoute = CrmIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CrmRoute,
+} as any)
+const CrmLeadsRoute = CrmLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => CrmRoute,
+} as any)
+const CrmDashboardRoute = CrmDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CrmRoute,
+} as any)
+const CrmLeadsIdRoute = CrmLeadsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CrmLeadsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/briefing': typeof BriefingRoute
+  '/crm': typeof CrmRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/crm/dashboard': typeof CrmDashboardRoute
+  '/crm/leads': typeof CrmLeadsRouteWithChildren
+  '/crm/': typeof CrmIndexRoute
+  '/crm/leads/$id': typeof CrmLeadsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/briefing': typeof BriefingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/crm/dashboard': typeof CrmDashboardRoute
+  '/crm/leads': typeof CrmLeadsRouteWithChildren
+  '/crm': typeof CrmIndexRoute
+  '/crm/leads/$id': typeof CrmLeadsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/briefing': typeof BriefingRoute
+  '/crm': typeof CrmRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/crm/dashboard': typeof CrmDashboardRoute
+  '/crm/leads': typeof CrmLeadsRouteWithChildren
+  '/crm/': typeof CrmIndexRoute
+  '/crm/leads/$id': typeof CrmLeadsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/briefing'
+    | '/crm'
+    | '/sitemap.xml'
+    | '/crm/dashboard'
+    | '/crm/leads'
+    | '/crm/'
+    | '/crm/leads/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sitemap.xml'
-  id: '__root__' | '/' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/admin'
+    | '/briefing'
+    | '/sitemap.xml'
+    | '/crm/dashboard'
+    | '/crm/leads'
+    | '/crm'
+    | '/crm/leads/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/briefing'
+    | '/crm'
+    | '/sitemap.xml'
+    | '/crm/dashboard'
+    | '/crm/leads'
+    | '/crm/'
+    | '/crm/leads/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  BriefingRoute: typeof BriefingRoute
+  CrmRoute: typeof CrmRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -58,6 +150,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/crm': {
+      id: '/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof CrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/briefing': {
+      id: '/briefing'
+      path: '/briefing'
+      fullPath: '/briefing'
+      preLoaderRoute: typeof BriefingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +178,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/crm/': {
+      id: '/crm/'
+      path: '/'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof CrmIndexRouteImport
+      parentRoute: typeof CrmRoute
+    }
+    '/crm/leads': {
+      id: '/crm/leads'
+      path: '/leads'
+      fullPath: '/crm/leads'
+      preLoaderRoute: typeof CrmLeadsRouteImport
+      parentRoute: typeof CrmRoute
+    }
+    '/crm/dashboard': {
+      id: '/crm/dashboard'
+      path: '/dashboard'
+      fullPath: '/crm/dashboard'
+      preLoaderRoute: typeof CrmDashboardRouteImport
+      parentRoute: typeof CrmRoute
+    }
+    '/crm/leads/$id': {
+      id: '/crm/leads/$id'
+      path: '/$id'
+      fullPath: '/crm/leads/$id'
+      preLoaderRoute: typeof CrmLeadsIdRouteImport
+      parentRoute: typeof CrmLeadsRoute
+    }
   }
 }
 
+interface CrmLeadsRouteChildren {
+  CrmLeadsIdRoute: typeof CrmLeadsIdRoute
+}
+
+const CrmLeadsRouteChildren: CrmLeadsRouteChildren = {
+  CrmLeadsIdRoute: CrmLeadsIdRoute,
+}
+
+const CrmLeadsRouteWithChildren = CrmLeadsRoute._addFileChildren(
+  CrmLeadsRouteChildren,
+)
+
+interface CrmRouteChildren {
+  CrmDashboardRoute: typeof CrmDashboardRoute
+  CrmLeadsRoute: typeof CrmLeadsRouteWithChildren
+  CrmIndexRoute: typeof CrmIndexRoute
+}
+
+const CrmRouteChildren: CrmRouteChildren = {
+  CrmDashboardRoute: CrmDashboardRoute,
+  CrmLeadsRoute: CrmLeadsRouteWithChildren,
+  CrmIndexRoute: CrmIndexRoute,
+}
+
+const CrmRouteWithChildren = CrmRoute._addFileChildren(CrmRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  BriefingRoute: BriefingRoute,
+  CrmRoute: CrmRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
