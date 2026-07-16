@@ -14,6 +14,9 @@ import {
   Pencil,
   RefreshCcw,
   Ban,
+  PlayCircle,
+  RotateCcw,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
