@@ -1,11 +1,14 @@
 /**
- * BriefingsCard — Histórico de Briefings na tela do Lead (Sprint 2B.3.4).
+ * BriefingsCard — Histórico de Briefings (Sprint 2C.2).
  *
- * Regras de negócio:
- *  - Título "Histórico de Briefings" (linha do tempo dos envios).
- *  - Apenas um briefing ativo por Lead (pendente/ativo).
- *  - Card evoluído com Status, Template, Criado, Último acesso, Concluído.
- *  - Ações por estado (ver spec Sprint 2B.3.4 §7).
+ * Novo modelo:
+ *  - Botão "Novo briefing" abre o Modal `NewBriefingDialog`.
+ *  - Operador escolhe apenas o Serviço; o Template é resolvido no servidor
+ *    via `templateTypeForService`.
+ *  - Um Lead pode ter vários Briefings, mas somente 1 ATIVO por Serviço.
+ *  - Histórico exibe Serviço + Template + Status + datas.
+ *  - Compatibilidade com briefings antigos: se `service_type` estiver
+ *    presente, usamos o rótulo do catálogo; senão exibimos "—".
  */
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -19,7 +22,6 @@ import {
   Plus,
   Loader2,
   Eye,
-  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -37,10 +39,12 @@ import {
   resendBriefingToken,
   revokeBriefingToken,
 } from "@/lib/briefing.functions";
-import type { BriefingToken, TokenStatus } from "@/types/briefing";
+import type { BriefingToken, ServiceType, TokenStatus } from "@/types/briefing";
 import { TEMPLATE_TYPE_LABEL, TOKEN_STATUS_LABEL } from "@/types/briefing";
 import type { Lead } from "@/types/lead";
+import { briefingServiceLabel } from "@/config/briefing-service-catalog";
 import { BriefingViewerDrawer } from "./briefing-viewer-drawer";
+import { NewBriefingDialog } from "./new-briefing-dialog";
 
 interface BriefingsCardProps {
   lead: Lead;
@@ -82,6 +86,7 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
   const resendFn = useServerFn(resendBriefingToken);
 
   const [viewerToken, setViewerToken] = useState<BriefingToken | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const tokensQuery = useQuery({
     queryKey: ["briefing", "tokens", lead.id],
@@ -96,20 +101,23 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
   };
 
   const generate = useMutation({
-    mutationFn: () =>
+    mutationFn: (service: Exclude<ServiceType, "nao_definido">) =>
       generateFn({
         data: {
           lead_id: lead.id,
-          service_type: lead.service_type,
+          service_type: service,
           // template_type é resolvido no servidor via templateTypeForService.
         },
       }),
     onSuccess: () => {
       toast.success("Briefing gerado.");
+      setDialogOpen(false);
       invalidate();
     },
     onError: (err: Error) =>
-      toast.error("Não foi possível gerar o briefing.", { description: err.message }),
+      toast.error("Não foi possível gerar o briefing.", {
+        description: err.message,
+      }),
   });
 
   const revoke = useMutation({
@@ -135,26 +143,16 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
   const tokens = tokensQuery.data ?? [];
   const isLoading = tokensQuery.isLoading;
 
-  const hasActive = tokens.some((t) => ACTIVE_STATUSES.includes(t.status));
-  const canGenerate =
-    canWrite &&
-    lead.service_type !== "nao_definido" &&
-    !lead.archived_at &&
-    !hasActive;
+  const canGenerate = canWrite && !lead.archived_at;
 
   const generateBtn = (
     <Button
       size="sm"
       variant="outline"
-      onClick={() => generate.mutate()}
-      disabled={generate.isPending}
+      onClick={() => setDialogOpen(true)}
       className="gap-2"
     >
-      {generate.isPending ? (
-        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
-      ) : (
-        <Plus className="h-4 w-4" strokeWidth={1.75} />
-      )}
+      <Plus className="h-4 w-4" strokeWidth={1.75} />
       Novo briefing
     </Button>
   );
@@ -166,23 +164,14 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
           <div>
             <CardTitle className="text-base">Histórico de Briefings</CardTitle>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-              Histórico de todos os briefings enviados para este Lead durante o
-              relacionamento comercial.
+              Histórico de todos os briefings enviados ao cliente durante o
+              relacionamento comercial. Cada serviço contratado gera seu
+              próprio briefing.
             </p>
           </div>
           {tokens.length > 0 && canGenerate && generateBtn}
         </CardHeader>
         <CardContent className="pt-0 space-y-3">
-          {hasActive && canWrite && !lead.archived_at && (
-            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" strokeWidth={1.75} />
-              <span>
-                Este Lead já possui um briefing ativo. Para gerar um novo,
-                conclua ou revogue o briefing atual.
-              </span>
-            </div>
-          )}
-
           {isLoading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-6">
               <Loader2 className="h-4 w-4 animate-spin" /> Carregando
@@ -195,27 +184,15 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
               description={
                 canGenerate
                   ? "Gere o primeiro briefing consultivo para iniciar o diagnóstico com o cliente."
-                  : lead.service_type === "nao_definido"
-                    ? "Defina o tipo de serviço deste lead para gerar um briefing."
-                    : hasActive
-                      ? "Conclua ou revogue o briefing ativo antes de gerar um novo."
-                      : "Você não tem permissão para gerar briefings."
+                  : "Você não tem permissão para gerar briefings."
               }
               action={
                 canGenerate ? (
                   <Button
-                    onClick={() => generate.mutate()}
-                    disabled={generate.isPending}
+                    onClick={() => setDialogOpen(true)}
                     className="gap-2"
                   >
-                    {generate.isPending ? (
-                      <Loader2
-                        className="h-4 w-4 animate-spin"
-                        strokeWidth={1.75}
-                      />
-                    ) : (
-                      <Plus className="h-4 w-4" strokeWidth={1.75} />
-                    )}
+                    <Plus className="h-4 w-4" strokeWidth={1.75} />
                     Gerar Briefing
                   </Button>
                 ) : undefined
@@ -239,6 +216,14 @@ export function BriefingsCard({ lead, canWrite, onChanged }: BriefingsCardProps)
           )}
         </CardContent>
       </Card>
+
+      <NewBriefingDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        defaultService={lead.service_type}
+        submitting={generate.isPending}
+        onSubmit={(s) => generate.mutate(s)}
+      />
 
       {viewerToken && (
         <BriefingViewerDrawer
@@ -271,8 +256,7 @@ function BriefingEnvelope({
   resending,
 }: BriefingEnvelopeProps) {
   const [copied, setCopied] = useState(false);
-  const isActive =
-    token.status === "ativo" || token.status === "pendente";
+  const isActive = ACTIVE_STATUSES.includes(token.status);
 
   const copyLink = async () => {
     try {
@@ -290,6 +274,9 @@ function BriefingEnvelope({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-foreground">
+              {briefingServiceLabel(token.service_type)}
+            </span>
             <span
               className={cn(
                 "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",

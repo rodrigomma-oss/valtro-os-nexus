@@ -384,6 +384,7 @@ export type Database = {
         | "diagnostico"
         | "trafego_pago"
         | "outro"
+        | "desenvolvimento_projeto"
       template_type:
         | "padrao"
         | "shopee"
@@ -567,6 +568,7 @@ export const Constants = {
         "diagnostico",
         "trafego_pago",
         "outro",
+        "desenvolvimento_projeto",
       ],
       template_type: [
         "padrao",

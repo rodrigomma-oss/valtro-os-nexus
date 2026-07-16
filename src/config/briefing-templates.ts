@@ -628,6 +628,8 @@ export function resolveTemplateKey(templateType: TemplateType): TemplateKey {
  */
 export function templateTypeForService(service: ServiceType): TemplateType {
   switch (service) {
+    case "desenvolvimento_projeto":
+      return "custom";
     case "consultoria":
       return "consultoria";
     case "trafego_pago":

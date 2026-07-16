@@ -182,6 +182,7 @@ export const getLead = createServerFn({ method: "GET" })
 // =============================================================
 const SERVICE_TYPE_VALUES = [
   "nao_definido",
+  "desenvolvimento_projeto",
   "gestao_shopee",
   "gestao_mercadolivre",
   "gestao_amazon",

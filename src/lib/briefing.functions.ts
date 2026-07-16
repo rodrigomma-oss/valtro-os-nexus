@@ -24,6 +24,7 @@ import type {
 
 const SERVICE_TYPE_VALUES = [
   "nao_definido",
+  "desenvolvimento_projeto",
   "gestao_shopee",
   "gestao_mercadolivre",
   "gestao_amazon",
@@ -69,17 +70,20 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
     const ttl = data.ttl_days ?? DEFAULT_TTL_DAYS;
     const expires_at = new Date(Date.now() + ttl * 24 * 60 * 60 * 1000).toISOString();
 
-    // Sprint 2B.3.4 — regra "1 briefing ativo por lead" (pendente/ativo)
+    // Sprint 2C.2 — regra "1 briefing ativo por serviço" (pendente/ativo).
+    // Um mesmo Lead pode ter vários briefings, desde que sejam de serviços
+    // diferentes ou que os anteriores estejam concluídos/revogados/expirados.
     const { data: active, error: activeErr } = await context.supabase
       .from("briefing_tokens")
       .select("id")
       .eq("lead_id", data.lead_id)
+      .eq("service_type", data.service_type)
       .in("status", ["pendente", "ativo"])
       .limit(1);
     if (activeErr) throw new Error(activeErr.message);
     if (active && active.length > 0) {
       throw new Error(
-        "Este Lead já possui um briefing ativo. Conclua ou revogue o briefing atual antes de gerar um novo.",
+        "Já existe um briefing ativo para este serviço. Conclua ou revogue o briefing atual antes de criar outro.",
       );
     }
 
