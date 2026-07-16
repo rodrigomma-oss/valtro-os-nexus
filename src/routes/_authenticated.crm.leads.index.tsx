@@ -25,6 +25,7 @@ import { StatusBadge } from "@/components/app/status-badge";
 import { StatCard } from "@/components/app/stat-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { NewLeadDialog } from "@/components/app/new-lead-dialog";
+import { formatPhone } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
