@@ -176,7 +176,7 @@ export interface PortalPayload {
     completed_at: string | null;
   } | null;
   response: {
-    data: Record<string, unknown>;
+    data: Record<string, any>;
     current_step: number;
     completed_at: string | null;
   } | null;
@@ -226,7 +226,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
         token: publicToken(t),
         response: resp
           ? {
-              data: (resp.data as Record<string, unknown>) ?? {},
+              data: (resp.data as Record<string, any>) ?? {},
               current_step: resp.current_step ?? 0,
               completed_at: resp.completed_at,
             }
@@ -255,7 +255,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     const isFirstAccess = !t.last_access_at;
 
     // Ativa o token na primeira interação
-    const patch: Record<string, unknown> = {
+    const patch: Record<string, any> = {
       last_access_at: new Date().toISOString(),
     };
     if (t.status === "pendente") patch.status = "ativo";
@@ -312,7 +312,7 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
         last_access_at: patch.last_access_at as string,
       }),
       response: {
-        data: (response.data as Record<string, unknown>) ?? {},
+        data: (response.data as Record<string, any>) ?? {},
         current_step: response.current_step ?? 0,
         completed_at: response.completed_at,
       },
@@ -329,7 +329,7 @@ export const saveBriefingProgress = createServerFn({ method: "POST" })
     z
       .object({
         token: z.string().uuid(),
-        data: z.record(z.string(), z.unknown()),
+        data: z.record(z.string(), z.any()),
         current_step: z.number().int().min(0).max(50),
       })
       .parse(data),
@@ -360,7 +360,7 @@ export const saveBriefingProgress = createServerFn({ method: "POST" })
       .eq("token_id", data.token)
       .maybeSingle();
 
-    const patch: Record<string, unknown> = {
+    const patch: Record<string, any> = {
       data: data.data,
       current_step: data.current_step,
     };
@@ -389,7 +389,7 @@ export const completeBriefing = createServerFn({ method: "POST" })
     z
       .object({
         token: z.string().uuid(),
-        data: z.record(z.string(), z.unknown()),
+        data: z.record(z.string(), z.any()),
       })
       .parse(data),
   )
