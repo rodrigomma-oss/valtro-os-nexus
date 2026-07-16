@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      briefing_tokens: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          last_access_at: string | null
+          lead_id: string
+          revoked_at: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["token_status"]
+          template_type: Database["public"]["Enums"]["template_type"]
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          last_access_at?: string | null
+          lead_id: string
+          revoked_at?: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["token_status"]
+          template_type: Database["public"]["Enums"]["template_type"]
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          last_access_at?: string | null
+          lead_id?: string
+          revoked_at?: string | null
+          service_type?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["token_status"]
+          template_type?: Database["public"]["Enums"]["template_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "briefing_tokens_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_events: {
         Row: {
           created_at: string
@@ -115,6 +168,7 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           segment: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
           source: Database["public"]["Enums"]["lead_source"]
           state: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -133,6 +187,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
+          service_type?: Database["public"]["Enums"]["service_type"]
           source?: Database["public"]["Enums"]["lead_source"]
           state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -151,6 +206,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
+          service_type?: Database["public"]["Enums"]["service_type"]
           source?: Database["public"]["Enums"]["lead_source"]
           state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -258,6 +314,26 @@ export type Database = {
         | "proposta"
         | "ganho"
         | "perdido"
+      service_type:
+        | "nao_definido"
+        | "gestao_shopee"
+        | "gestao_mercadolivre"
+        | "gestao_amazon"
+        | "gestao_multicanal"
+        | "consultoria"
+        | "diagnostico"
+        | "trafego_pago"
+        | "outro"
+      template_type:
+        | "padrao"
+        | "shopee"
+        | "mercadolivre"
+        | "amazon"
+        | "multicanal"
+        | "consultoria"
+        | "diagnostico"
+        | "custom"
+      token_status: "pendente" | "ativo" | "concluido" | "expirado" | "revogado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -415,6 +491,28 @@ export const Constants = {
         "ganho",
         "perdido",
       ],
+      service_type: [
+        "nao_definido",
+        "gestao_shopee",
+        "gestao_mercadolivre",
+        "gestao_amazon",
+        "gestao_multicanal",
+        "consultoria",
+        "diagnostico",
+        "trafego_pago",
+        "outro",
+      ],
+      template_type: [
+        "padrao",
+        "shopee",
+        "mercadolivre",
+        "amazon",
+        "multicanal",
+        "consultoria",
+        "diagnostico",
+        "custom",
+      ],
+      token_status: ["pendente", "ativo", "concluido", "expirado", "revogado"],
     },
   },
 } as const
