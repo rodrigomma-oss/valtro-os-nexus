@@ -272,13 +272,29 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     let response = existingResp;
 
     if (!response) {
+      // Sprint 2B.3.4 — prefill com dados já coletados no Lead
+      const { data: lead } = await supabaseAdmin
+        .from("leads")
+        .select("contact_name, company_name, segment, city, state")
+        .eq("id", t.lead_id)
+        .maybeSingle();
+
+      const prefill: Record<string, unknown> = {};
+      if (lead) {
+        if (lead.contact_name) prefill.nome = lead.contact_name;
+        if (lead.company_name) prefill.empresa = lead.company_name;
+        if (lead.segment) prefill.segmento = lead.segment;
+        if (lead.city) prefill.cidade = lead.city;
+        if (lead.state) prefill.estado = lead.state;
+      }
+
       const { data: created, error: createErr } = await supabaseAdmin
         .from("briefing_responses")
         .insert({
           token_id: t.id,
           lead_id: t.lead_id,
           template_type: t.template_type,
-          data: {},
+          data: prefill,
           current_step: 0,
         })
         .select("data, current_step, completed_at, started_at")
