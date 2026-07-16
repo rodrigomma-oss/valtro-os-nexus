@@ -399,6 +399,33 @@ export function resolveTemplateKey(templateType: TemplateType): TemplateKey {
   }
 }
 
+/**
+ * Mapeia `service_type` (armazenado no Lead) → `template_type` do Briefing.
+ * Ponto único de decisão — a UI nunca deve escolher template_type manualmente.
+ */
+export function templateTypeForService(service: ServiceType): TemplateType {
+  switch (service) {
+    case "consultoria":
+      return "consultoria";
+    case "trafego_pago":
+      return "custom";
+    case "diagnostico":
+      return "diagnostico";
+    case "gestao_shopee":
+      return "shopee";
+    case "gestao_mercadolivre":
+      return "mercadolivre";
+    case "gestao_amazon":
+      return "amazon";
+    case "gestao_multicanal":
+      return "multicanal";
+    case "outro":
+    case "nao_definido":
+    default:
+      return "padrao";
+  }
+}
+
 export function getTemplate(templateType: TemplateType): BriefingTemplate {
   return BRIEFING_TEMPLATES[resolveTemplateKey(templateType)];
 }
