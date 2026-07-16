@@ -1,16 +1,26 @@
 /**
  * Valtro Briefing Engine (VBE) — Server Functions
- * Sprint 2B.3.1: fundação. Sem Portal público, sem templates, sem timeline.
  *
- * Estas server functions são autenticadas e respeitam RLS via
- * `requireSupabaseAuth`. A validação pública de token (chamada pelo cliente
- * final via link) será implementada em sprint futura — a estrutura já está
- * preparada, mas o handler retorna 501 até então.
+ * Sprint 2B.3.1: fundação (generate / list / revoke / resend autenticadas).
+ * Sprint 2B.3.3: Portal Público (validate / save / complete anônimas).
+ *
+ * Escritas do Portal Público usam `supabaseAdmin` (bypass RLS) porque o
+ * cliente final é anônimo — a autorização é feita pelo próprio token
+ * (existência, status, expiração, revogação).
+ *
+ * `supabaseAdmin` é importado dinamicamente dentro dos handlers para
+ * evitar vazamento do módulo server-only no bundle client
+ * (ver tanstack-supabase-import-graph).
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { BriefingToken, ServiceType, TemplateType } from "@/types/briefing";
+import type {
+  BriefingToken,
+  ServiceType,
+  TemplateType,
+  TokenStatus,
+} from "@/types/briefing";
 
 const SERVICE_TYPE_VALUES = [
   "nao_definido",
@@ -38,11 +48,10 @@ const TEMPLATE_TYPE_VALUES = [
 const TOKEN_SELECT =
   "id, lead_id, service_type, template_type, status, created_by, created_at, expires_at, last_access_at, revoked_at, completed_at, updated_at";
 
-// Default: 14 dias
 const DEFAULT_TTL_DAYS = 14;
 
 // =============================================================
-// generateBriefingToken
+// generateBriefingToken (autenticada)
 // =============================================================
 export const generateBriefingToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -78,7 +87,7 @@ export const generateBriefingToken = createServerFn({ method: "POST" })
   });
 
 // =============================================================
-// listLeadBriefingTokens
+// listLeadBriefingTokens (autenticada)
 // =============================================================
 export const listLeadBriefingTokens = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -95,7 +104,7 @@ export const listLeadBriefingTokens = createServerFn({ method: "GET" })
   });
 
 // =============================================================
-// revokeBriefingToken
+// revokeBriefingToken (autenticada)
 // =============================================================
 export const revokeBriefingToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -111,10 +120,7 @@ export const revokeBriefingToken = createServerFn({ method: "POST" })
   });
 
 // =============================================================
-// resendBriefingToken (estrutura preparada)
-// -------------------------------------------------------------
-// Sprint futura: dispara reenvio por e-mail/WhatsApp e estende expires_at.
-// Nesta sprint apenas estende validade e reativa se estava expirado.
+// resendBriefingToken (autenticada)
 // =============================================================
 export const resendBriefingToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -130,7 +136,6 @@ export const resendBriefingToken = createServerFn({ method: "POST" })
     const ttl = data.ttl_days ?? DEFAULT_TTL_DAYS;
     const expires_at = new Date(Date.now() + ttl * 24 * 60 * 60 * 1000).toISOString();
 
-    // Reativa apenas se ainda não concluído/revogado
     const { data: current, error: readErr } = await context.supabase
       .from("briefing_tokens")
       .select("status")
@@ -147,21 +152,297 @@ export const resendBriefingToken = createServerFn({ method: "POST" })
       .update({ status: "ativo", expires_at })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
-    // TODO(sprint futura): enfileirar envio de e-mail / WhatsApp com o link.
     return { ok: true, expires_at };
   });
 
 // =============================================================
-// validateBriefingToken (estrutura preparada — Portal Público)
+// Portal Público — resultados retornados ao cliente anônimo
+// =============================================================
+export type PortalTokenState =
+  | "valido"
+  | "expirado"
+  | "revogado"
+  | "concluido"
+  | "invalido";
+
+export interface PortalPayload {
+  state: PortalTokenState;
+  token: {
+    id: string;
+    template_type: TemplateType;
+    service_type: ServiceType;
+    status: TokenStatus;
+    expires_at: string;
+    completed_at: string | null;
+  } | null;
+  response: {
+    data: Record<string, unknown>;
+    current_step: number;
+    completed_at: string | null;
+  } | null;
+}
+
+// =============================================================
+// validateBriefingToken — Portal Público (anônima)
 // -------------------------------------------------------------
-// Chamado pelo cliente final via link com token; NÃO usa requireSupabaseAuth
-// porque o cliente final é anônimo. Implementação completa em sprint futura,
-// quando o Portal Público for construído. Por enquanto retorna 501.
+// Valida token, atualiza last_access_at, garante briefing_response,
+// emite eventos de Timeline (iniciado / retomado) e retorna payload.
 // =============================================================
 export const validateBriefingToken = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ token: z.string().uuid() }).parse(data))
-  .handler(async () => {
-    // Sprint futura: validar via supabaseAdmin (bypass RLS), checar expires_at,
-    // status ativo/pendente, atualizar last_access_at, retornar template + dados.
-    throw new Error("validateBriefingToken: not implemented (Sprint futura — Portal Público).");
+  .handler(async ({ data }): Promise<PortalPayload> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: token, error } = await supabaseAdmin
+      .from("briefing_tokens")
+      .select(TOKEN_SELECT)
+      .eq("id", data.token)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!token) {
+      return { state: "invalido", token: null, response: null };
+    }
+
+    const t = token as BriefingToken;
+
+    // Estados finais
+    if (t.status === "revogado") {
+      return {
+        state: "revogado",
+        token: publicToken(t),
+        response: null,
+      };
+    }
+    if (t.status === "concluido") {
+      // Carrega response para exibir tela de conclusão personalizada
+      const { data: resp } = await supabaseAdmin
+        .from("briefing_responses")
+        .select("data, current_step, completed_at")
+        .eq("token_id", t.id)
+        .maybeSingle();
+      return {
+        state: "concluido",
+        token: publicToken(t),
+        response: resp
+          ? {
+              data: (resp.data as Record<string, unknown>) ?? {},
+              current_step: resp.current_step ?? 0,
+              completed_at: resp.completed_at,
+            }
+          : null,
+      };
+    }
+
+    // Expiração (por data)
+    if (new Date(t.expires_at).getTime() < Date.now()) {
+      // Marca como expirado de forma preguiçosa
+      if (t.status !== "expirado") {
+        await supabaseAdmin
+          .from("briefing_tokens")
+          .update({ status: "expirado" })
+          .eq("id", t.id);
+      }
+      return { state: "expirado", token: publicToken(t), response: null };
+    }
+
+    // Explicit `expirado`
+    if (t.status === "expirado") {
+      return { state: "expirado", token: publicToken(t), response: null };
+    }
+
+    // Token utilizável (pendente ou ativo) → materializa response e ativa
+    const isFirstAccess = !t.last_access_at;
+
+    // Ativa o token na primeira interação
+    const patch: Record<string, unknown> = {
+      last_access_at: new Date().toISOString(),
+    };
+    if (t.status === "pendente") patch.status = "ativo";
+
+    await supabaseAdmin.from("briefing_tokens").update(patch).eq("id", t.id);
+
+    // Garante briefing_response
+    const { data: existingResp } = await supabaseAdmin
+      .from("briefing_responses")
+      .select("data, current_step, completed_at, started_at")
+      .eq("token_id", t.id)
+      .maybeSingle();
+
+    let response = existingResp;
+
+    if (!response) {
+      const { data: created, error: createErr } = await supabaseAdmin
+        .from("briefing_responses")
+        .insert({
+          token_id: t.id,
+          lead_id: t.lead_id,
+          template_type: t.template_type,
+          data: {},
+          current_step: 0,
+        })
+        .select("data, current_step, completed_at, started_at")
+        .single();
+      if (createErr) throw new Error(createErr.message);
+      response = created;
+    }
+
+    // Timeline: iniciado (primeiro acesso) OU retomado (acessos subsequentes)
+    if (isFirstAccess) {
+      await supabaseAdmin.from("lead_events").insert({
+        lead_id: t.lead_id,
+        type: "briefing_iniciado",
+        description: "Cliente acessou o Briefing pela primeira vez.",
+        metadata: { token_id: t.id },
+      });
+    } else {
+      await supabaseAdmin.from("lead_events").insert({
+        lead_id: t.lead_id,
+        type: "briefing_retomado",
+        description: "Cliente retomou o preenchimento do Briefing.",
+        metadata: { token_id: t.id },
+      });
+    }
+
+    return {
+      state: "valido",
+      token: publicToken({
+        ...t,
+        status: patch.status ? (patch.status as TokenStatus) : t.status,
+        last_access_at: patch.last_access_at as string,
+      }),
+      response: {
+        data: (response.data as Record<string, unknown>) ?? {},
+        current_step: response.current_step ?? 0,
+        completed_at: response.completed_at,
+      },
+    };
   });
+
+// =============================================================
+// saveBriefingProgress — Portal Público (anônima)
+// -------------------------------------------------------------
+// Auto Save. Persiste `data` + `current_step`. Idempotente.
+// =============================================================
+export const saveBriefingProgress = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({
+        token: z.string().uuid(),
+        data: z.record(z.string(), z.unknown()),
+        current_step: z.number().int().min(0).max(50),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Verifica token utilizável antes de salvar
+    const { data: token, error: tokenErr } = await supabaseAdmin
+      .from("briefing_tokens")
+      .select("id, status, expires_at")
+      .eq("id", data.token)
+      .maybeSingle();
+    if (tokenErr) throw new Error(tokenErr.message);
+    if (!token) throw new Error("Token inválido.");
+    if (token.status === "revogado") throw new Error("Acesso desativado.");
+    if (token.status === "concluido") throw new Error("Briefing já concluído.");
+    if (new Date(token.expires_at).getTime() < Date.now()) {
+      throw new Error("Link expirado.");
+    }
+
+    const now = new Date().toISOString();
+
+    // Marca started_at apenas na primeira escrita
+    const { data: existing } = await supabaseAdmin
+      .from("briefing_responses")
+      .select("started_at")
+      .eq("token_id", data.token)
+      .maybeSingle();
+
+    const patch: Record<string, unknown> = {
+      data: data.data,
+      current_step: data.current_step,
+    };
+    if (existing && !existing.started_at) patch.started_at = now;
+
+    const { error } = await supabaseAdmin
+      .from("briefing_responses")
+      .update(patch)
+      .eq("token_id", data.token);
+    if (error) throw new Error(error.message);
+
+    // Atualiza last_access_at para refletir atividade recente
+    await supabaseAdmin
+      .from("briefing_tokens")
+      .update({ last_access_at: now })
+      .eq("id", data.token);
+
+    return { ok: true, saved_at: now };
+  });
+
+// =============================================================
+// completeBriefing — Portal Público (anônima)
+// =============================================================
+export const completeBriefing = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({
+        token: z.string().uuid(),
+        data: z.record(z.string(), z.unknown()),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: token, error: tokenErr } = await supabaseAdmin
+      .from("briefing_tokens")
+      .select("id, lead_id, status, expires_at")
+      .eq("id", data.token)
+      .maybeSingle();
+    if (tokenErr) throw new Error(tokenErr.message);
+    if (!token) throw new Error("Token inválido.");
+    if (token.status === "revogado") throw new Error("Acesso desativado.");
+    if (token.status === "concluido") return { ok: true, already: true };
+    if (new Date(token.expires_at).getTime() < Date.now()) {
+      throw new Error("Link expirado.");
+    }
+
+    const now = new Date().toISOString();
+
+    const { error: respErr } = await supabaseAdmin
+      .from("briefing_responses")
+      .update({ data: data.data, completed_at: now })
+      .eq("token_id", data.token);
+    if (respErr) throw new Error(respErr.message);
+
+    const { error: tokErr } = await supabaseAdmin
+      .from("briefing_tokens")
+      .update({ status: "concluido", completed_at: now })
+      .eq("id", data.token);
+    if (tokErr) throw new Error(tokErr.message);
+
+    await supabaseAdmin.from("lead_events").insert({
+      lead_id: token.lead_id,
+      type: "briefing_concluido",
+      description: "Cliente concluiu o preenchimento do Briefing.",
+      metadata: { token_id: token.id },
+    });
+
+    return { ok: true, already: false };
+  });
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function publicToken(t: BriefingToken): PortalPayload["token"] {
+  return {
+    id: t.id,
+    template_type: t.template_type,
+    service_type: t.service_type,
+    status: t.status,
+    expires_at: t.expires_at,
+    completed_at: t.completed_at,
+  };
+}
