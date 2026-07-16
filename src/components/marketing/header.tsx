@@ -6,6 +6,7 @@ const NAV = [
   { label: "Soluções", href: "#solucoes" },
   { label: "Sobre", href: "#sobre" },
   { label: "Contato", href: "#contato" },
+  { label: "Área Restrita", href: "/auth" },
 ];
 
 export function Header() {
