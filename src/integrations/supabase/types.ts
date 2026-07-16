@@ -298,6 +298,9 @@ export type Database = {
         | "briefing_recebido"
         | "lead_arquivado"
         | "lead_atualizado"
+        | "briefing_gerado"
+        | "briefing_revogado"
+        | "briefing_reenviado"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -472,6 +475,9 @@ export const Constants = {
         "briefing_recebido",
         "lead_arquivado",
         "lead_atualizado",
+        "briefing_gerado",
+        "briefing_revogado",
+        "briefing_reenviado",
       ],
       lead_source: [
         "instagram",
