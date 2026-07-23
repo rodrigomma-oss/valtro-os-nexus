@@ -25,6 +25,7 @@ import { MetricCard } from "@/components/app/operations/metric-card";
 import { cn } from "@/lib/utils";
 import { getOperationsOverview, type EventKind, type InboxItemDTO, type ActivityItemDTO, type PipelineStageDTO } from "@/lib/operations.functions";
 import { getFollowUpsOverview } from "@/lib/leads.functions";
+import { getProposalsOverview } from "@/lib/proposals.functions";
 import { CalendarClock, Phone as PhoneIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
