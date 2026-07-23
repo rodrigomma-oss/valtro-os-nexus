@@ -149,6 +149,9 @@ const NEXT_STEPS = [
 ];
 
 function ContatoPage() {
+  const search = useSearch({ from: "/contato" });
+  const initialInterest =
+    (search.interesse && QUERY_INTEREST_MAP[search.interesse]) || "";
   return (
     <PublicLayout>
       <PageHero
