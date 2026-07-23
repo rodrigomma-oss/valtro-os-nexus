@@ -466,6 +466,12 @@ function CrmLeadDetail() {
         canWrite={canWrite}
         onContactCreated={invalidate}
       />
+
+      <ConvertToClientDialog
+        lead={lead}
+        open={convertOpen}
+        onOpenChange={setConvertOpen}
+      />
     </div>
   );
 }
