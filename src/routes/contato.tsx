@@ -275,7 +275,7 @@ function ContatoPage() {
               </div>
             </div>
 
-            <ContactForm />
+            <ContactForm initialInterest={initialInterest} />
           </div>
         </div>
       </section>
