@@ -121,6 +121,71 @@ export type Database = {
           },
         ]
       }
+      clients: {
+        Row: {
+          archived_at: string | null
+          city: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+          owner_id: string | null
+          phone: string | null
+          segment: string | null
+          state: string | null
+          status: Database["public"]["Enums"]["client_status"]
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          city?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          city?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_contacts: {
         Row: {
           channel: Database["public"]["Enums"]["lead_contact_channel"]
@@ -263,6 +328,7 @@ export type Database = {
         Row: {
           archived_at: string | null
           city: string | null
+          client_id: string | null
           company_name: string
           contact_name: string
           created_at: string
@@ -288,6 +354,7 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           city?: string | null
+          client_id?: string | null
           company_name: string
           contact_name: string
           created_at?: string
@@ -313,6 +380,7 @@ export type Database = {
         Update: {
           archived_at?: string | null
           city?: string | null
+          client_id?: string | null
           company_name?: string
           contact_name?: string
           created_at?: string
@@ -336,6 +404,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "leads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "leads_owner_id_profile_fkey"
             columns: ["owner_id"]
@@ -374,6 +449,110 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      project_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          project_id: string
+          type: Database["public"]["Enums"]["project_event_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          project_id: string
+          type: Database["public"]["Enums"]["project_event_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          project_id?: string
+          type?: Database["public"]["Enums"]["project_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          client_id: string
+          code: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          proposal_id: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          code?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          proposal_id?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          code?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          proposal_id?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       proposal_items: {
         Row: {
@@ -554,6 +733,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      convert_lead_to_client: { Args: { _lead_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -564,6 +744,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      client_status: "ativo" | "inativo" | "arquivado"
       lead_contact_channel:
         | "whatsapp"
         | "email"
@@ -635,6 +816,24 @@ export type Database = {
         | "briefing_enviado"
         | "em_analise"
         | "descartado"
+      project_event_type:
+        | "projeto_criado"
+        | "status_alterado"
+        | "responsavel_alterado"
+        | "datas_alteradas"
+        | "observacao_adicionada"
+        | "projeto_concluido"
+        | "projeto_cancelado"
+        | "vinculo_proposta"
+        | "cliente_atualizado"
+      project_status:
+        | "nao_iniciado"
+        | "planejamento"
+        | "em_desenvolvimento"
+        | "em_revisao"
+        | "aguardando_cliente"
+        | "concluido"
+        | "cancelado"
       proposal_negotiation_type:
         | "contraproposta"
         | "desconto"
@@ -798,6 +997,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      client_status: ["ativo", "inativo", "arquivado"],
       lead_contact_channel: [
         "whatsapp",
         "email",
@@ -874,6 +1074,26 @@ export const Constants = {
         "briefing_enviado",
         "em_analise",
         "descartado",
+      ],
+      project_event_type: [
+        "projeto_criado",
+        "status_alterado",
+        "responsavel_alterado",
+        "datas_alteradas",
+        "observacao_adicionada",
+        "projeto_concluido",
+        "projeto_cancelado",
+        "vinculo_proposta",
+        "cliente_atualizado",
+      ],
+      project_status: [
+        "nao_iniciado",
+        "planejamento",
+        "em_desenvolvimento",
+        "em_revisao",
+        "aguardando_cliente",
+        "concluido",
+        "cancelado",
       ],
       proposal_negotiation_type: [
         "contraproposta",
