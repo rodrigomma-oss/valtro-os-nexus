@@ -26,6 +26,10 @@ import {
   Phone,
   CalendarClock,
   CalendarCheck,
+  Receipt,
+  CheckSquare,
+  XSquare,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
