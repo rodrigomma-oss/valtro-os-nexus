@@ -1,7 +1,7 @@
 import { Instagram } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 
-const FUTURE_LINKS = ["Política de Privacidade", "Termos de Uso", "Contato"] as const;
+const FUTURE_LINKS = ["Política de Privacidade", "Termos de Uso"] as const;
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -49,11 +49,19 @@ export function Footer() {
             </ul>
           </nav>
 
-          <div className="md:col-span-2">
+          <nav aria-label="Institucional" className="md:col-span-2">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
               Institucional
             </p>
             <ul className="mt-5 space-y-3 text-sm">
+              <li>
+                <a
+                  href="/contato"
+                  className="text-muted-foreground hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                >
+                  Contato
+                </a>
+              </li>
               {FUTURE_LINKS.map((l) => (
                 <li key={l} className="flex items-center gap-2 text-muted-foreground">
                   <span>{l}</span>
@@ -63,7 +71,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           <nav aria-label="Redes sociais" className="md:col-span-2">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
