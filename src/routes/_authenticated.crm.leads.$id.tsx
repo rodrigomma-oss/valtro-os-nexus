@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
+import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
