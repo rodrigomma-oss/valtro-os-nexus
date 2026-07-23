@@ -18,13 +18,14 @@ export function About() {
               id="sobre-title"
               className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground text-balance"
             >
-              Vender em marketplace virou um problema de software — não de esforço.
+              Negócios digitais crescem quando decisões deixam de depender só de esforço.
             </h2>
             <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
-              A Valtro Labs nasceu para resolver o gargalo real do vendedor digital brasileiro:
-              decisões críticas tomadas em planilhas, à noite, no achismo. Construímos
-              tecnologia proprietária para que preço, mídia e análise deixem de ser tarefa
-              e voltem a ser vantagem competitiva.
+              À medida que os negócios digitais crescem, decisões importantes deixam
+              de depender apenas de esforço e passam a exigir tecnologia. É para
+              resolver esse desafio que a Valtro Labs desenvolve soluções simples,
+              inteligentes e em constante evolução — começando pelo Valtro Pricing,
+              a primeira aplicação dessa visão.
             </p>
           </div>
 
