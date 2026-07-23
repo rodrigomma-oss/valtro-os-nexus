@@ -132,8 +132,13 @@ function CrmLeads() {
     staleTime: 60_000,
   });
 
+  const search_ = Route.useSearch();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
+  const [sourceFilter, setSourceFilter] = useState<LeadSource | "todas">("todas");
+  const [quickView, setQuickView] = useState<
+    "novos-do-site" | "aguardando-triagem" | "sem-responsavel" | null
+  >(search_.view ?? null);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -142,30 +147,52 @@ function CrmLeads() {
   const leads = leadsQuery.data ?? [];
 
   const term = search.trim().toLowerCase();
-  const hasFilters = term.length > 0 || statusFilter !== "todos";
+  const hasFilters =
+    term.length > 0 ||
+    statusFilter !== "todos" ||
+    sourceFilter !== "todas" ||
+    quickView !== null;
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
       const matchStatus =
         statusFilter === "todos" || lead.status === statusFilter;
+      const matchSource =
+        sourceFilter === "todas" || lead.source === sourceFilter;
       const matchTerm =
         term.length === 0 ||
         lead.company_name.toLowerCase().includes(term) ||
         lead.contact_name.toLowerCase().includes(term) ||
         (lead.city ?? "").toLowerCase().includes(term);
-      return matchStatus && matchTerm;
+      const matchQuick =
+        quickView === null ||
+        (quickView === "novos-do-site" &&
+          lead.source === "site" &&
+          lead.status === "novo") ||
+        (quickView === "aguardando-triagem" &&
+          ["novo", "em_triagem"].includes(lead.status)) ||
+        (quickView === "sem-responsavel" && !lead.owner_id);
+      return matchStatus && matchSource && matchTerm && matchQuick;
     });
-  }, [leads, term, statusFilter]);
+  }, [leads, term, statusFilter, sourceFilter, quickView]);
 
   const kpis = useMemo(() => {
     const total = leads.length;
     const novos = leads.filter((l) => l.status === "novo").length;
+    const emTriagem = leads.filter((l) => l.status === "em_triagem").length;
     const emAndamento = leads.filter((l) =>
-      ["contato", "qualificado", "proposta"].includes(l.status),
+      [
+        "contato",
+        "qualificado",
+        "aguardando_briefing",
+        "briefing_enviado",
+        "em_analise",
+        "proposta",
+      ].includes(l.status),
     ).length;
     const ganhos = leads.filter((l) => l.status === "ganho").length;
     const conversao = total > 0 ? Math.round((ganhos / total) * 100) : 0;
-    return { total, novos, emAndamento, ganhos, conversao };
+    return { total, novos, emTriagem, emAndamento, ganhos, conversao };
   }, [leads]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -178,6 +205,8 @@ function CrmLeads() {
   const clearFilters = () => {
     setSearch("");
     setStatusFilter("todos");
+    setSourceFilter("todas");
+    setQuickView(null);
     setPage(1);
   };
 
