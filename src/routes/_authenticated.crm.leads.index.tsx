@@ -146,9 +146,9 @@ function CrmLeads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
   const [sourceFilter, setSourceFilter] = useState<LeadSource | "todas">("todas");
-  const [quickView, setQuickView] = useState<
-    "novos-do-site" | "aguardando-triagem" | "sem-responsavel" | null
-  >(search_.view ?? null);
+  const [quickView, setQuickView] = useState<QuickView | null>(
+    search_.view ?? null,
+  );
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
