@@ -304,6 +304,8 @@ function CrmLeadDetail() {
         </div>
 
         <div className="lg:col-span-2 space-y-6">
+          <TriageCard lead={lead} canWrite={canWrite} onChanged={invalidate} />
+
           <ActionCard
             title="Observações"
             description="Anotações internas do time comercial sobre o lead."
