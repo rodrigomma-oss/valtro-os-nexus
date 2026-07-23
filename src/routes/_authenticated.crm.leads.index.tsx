@@ -46,10 +46,21 @@ import {
   getMyRoles,
   listLeads,
 } from "@/lib/leads.functions";
-import type { Lead, LeadStatus } from "@/types/lead";
+import type { Lead, LeadSource, LeadStatus } from "@/types/lead";
+import { SOURCE_LABEL, STATUS_LABEL } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
   component: CrmLeads,
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { view?: "novos-do-site" | "aguardando-triagem" | "sem-responsavel" } => ({
+    view:
+      s.view === "novos-do-site" ||
+      s.view === "aguardando-triagem" ||
+      s.view === "sem-responsavel"
+        ? s.view
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Leads — CRM Valtro Labs" },
@@ -58,14 +69,39 @@ export const Route = createFileRoute("/_authenticated/crm/leads/")({
   }),
 });
 
+const STATUS_ORDER: LeadStatus[] = [
+  "novo",
+  "em_triagem",
+  "contato",
+  "qualificado",
+  "aguardando_briefing",
+  "briefing_enviado",
+  "em_analise",
+  "proposta",
+  "ganho",
+  "perdido",
+  "descartado",
+];
+
 const STATUS_OPTIONS: { value: LeadStatus | "todos"; label: string }[] = [
   { value: "todos", label: "Todos os status" },
-  { value: "novo", label: "Novo" },
-  { value: "contato", label: "Em contato" },
-  { value: "qualificado", label: "Qualificado" },
-  { value: "proposta", label: "Proposta" },
-  { value: "ganho", label: "Ganho" },
-  { value: "perdido", label: "Perdido" },
+  ...STATUS_ORDER.map((v) => ({ value: v, label: STATUS_LABEL[v] })),
+];
+
+const SOURCE_ORDER: LeadSource[] = [
+  "site",
+  "instagram",
+  "indicacao",
+  "google",
+  "evento",
+  "outbound",
+  "diagnostico",
+  "manual",
+];
+
+const SOURCE_OPTIONS: { value: LeadSource | "todas"; label: string }[] = [
+  { value: "todas", label: "Todas as origens" },
+  ...SOURCE_ORDER.map((v) => ({ value: v, label: SOURCE_LABEL[v] })),
 ];
 
 const PAGE_SIZE = 8;
