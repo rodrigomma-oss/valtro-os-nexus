@@ -438,6 +438,44 @@ function CrmDashboard() {
         </Section>
       )}
 
+      {(clients.data || projects.data) && (
+        <Section
+          title="Clientes & Projetos"
+          description="Base de relacionamento e execução."
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <FollowUpTile
+              label="Clientes ativos"
+              value={clients.data?.ativos ?? 0}
+              tone="success"
+              icon={Building2}
+              to="/crm/clientes"
+            />
+            <FollowUpTile
+              label="Projetos ativos"
+              value={projects.data?.ativos ?? 0}
+              tone="primary"
+              icon={FolderKanban}
+              to="/crm/projetos"
+            />
+            <FollowUpTile
+              label="Aguardando cliente"
+              value={projects.data?.aguardandoCliente ?? 0}
+              tone="warning"
+              icon={FolderKanban}
+              to="/crm/projetos"
+            />
+            <FollowUpTile
+              label="Projetos atrasados"
+              value={projects.data?.atrasados ?? 0}
+              tone="danger"
+              icon={AlertTriangleIcon}
+              to="/crm/projetos"
+            />
+          </div>
+        </Section>
+      )}
+
 
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
         <InboxList
