@@ -230,7 +230,7 @@ function CrmDashboard() {
           description: "Leads novos que precisam de primeiro contato.",
           icon: UserPlus,
           tone: "info" as const,
-          onClick: () => navigate({ to: "/crm/leads" }),
+          onClick: () => navigate({ to: "/crm/leads", search: { view: "novos-do-site" } }),
           show: true,
         },
         {
@@ -271,6 +271,16 @@ function CrmDashboard() {
       <PageHeader
         title="Centro de Operações"
         description="O que precisa da sua atenção agora — priorizado pela nossa metodologia consultiva."
+        actions={
+          <Link
+            to="/crm/leads"
+            search={{ view: "novos-do-site" }}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <UserPlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            Novos do site
+          </Link>
+        }
       />
 
       <OperationHero parts={heroParts} />
