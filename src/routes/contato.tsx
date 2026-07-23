@@ -378,29 +378,116 @@ function HelpCard({ option }: { option: HelpOption }) {
   );
 }
 
-function ContactForm() {
-  const [phone, setPhone] = useState("");
-  const [interest, setInterest] = useState<InterestValue | "">("");
-  const [submitted, setSubmitted] = useState(false);
+interface ContactFormProps {
+  initialInterest: InterestValue | "";
+}
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+function ContactForm({ initialInterest }: ContactFormProps) {
+  const submit = useServerFn(submitContactRequest);
+  const [phone, setPhone] = useState("");
+  const [interest, setInterest] = useState<InterestValue | "">(initialInterest);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialInterest) setInterest(initialInterest);
+  }, [initialInterest]);
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Sprint 6: apenas UI, sem integração
-    setSubmitted(true);
+    if (status === "loading") return;
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const payload = {
+      nome: String(fd.get("nome") ?? ""),
+      empresa: String(fd.get("empresa") ?? ""),
+      email: String(fd.get("email") ?? ""),
+      whatsapp: String(fd.get("whatsapp") ?? ""),
+      interesse: interest,
+      mensagem: String(fd.get("mensagem") ?? ""),
+    };
+
+    if (!payload.interesse) {
+      setErrorMsg("Selecione um tipo de interesse.");
+      setStatus("error");
+      return;
+    }
+    if (payload.mensagem.trim().length < 10) {
+      setErrorMsg("Descreva sua necessidade com um pouco mais de detalhe.");
+      setStatus("error");
+      return;
+    }
+
+    setStatus("loading");
+    setErrorMsg(null);
+    try {
+      await submit({ data: payload });
+      setStatus("success");
+    } catch {
+      setErrorMsg(
+        "Não foi possível enviar sua solicitação agora. Tente novamente em instantes.",
+      );
+      setStatus("error");
+    }
   };
+
+  if (status === "success") {
+    return (
+      <div
+        role="status"
+        className="rounded-2xl border border-border bg-background p-8 md:p-10 shadow-soft text-center"
+        aria-labelledby="form-title"
+      >
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-soft text-primary">
+          <CheckCircle2 className="h-7 w-7" aria-hidden />
+        </div>
+        <h3 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
+          Recebemos sua solicitação.
+        </h3>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+          Nossa equipe analisará as informações enviadas e entrará em contato para
+          dar continuidade ao atendimento.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:bg-primary-hover transition-colors shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <Home className="h-4 w-4" aria-hidden />
+            Voltar para Home
+          </Link>
+          <a
+            href="https://pricing.valtrolabs.pro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:border-primary/40 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Conhecer o Valtro Pricing
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const isLoading = status === "loading";
 
   return (
     <form
       onSubmit={onSubmit}
       className="rounded-2xl border border-border bg-background p-7 md:p-8 shadow-soft space-y-5"
       aria-labelledby="form-title"
+      noValidate
     >
-      {submitted && (
+      {status === "error" && errorMsg && (
         <div
-          role="status"
-          className="rounded-xl border border-primary/20 bg-brand-soft px-4 py-3 text-sm text-primary"
+          role="alert"
+          className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
         >
-          Obrigado! Recebemos sua solicitação (simulação). Em breve integraremos ao CRM.
+          {errorMsg}
         </div>
       )}
 
@@ -418,8 +505,10 @@ function ContactForm() {
               id="nome"
               name="nome"
               required
+              maxLength={120}
               placeholder="Seu nome"
               className="pl-9"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -436,8 +525,10 @@ function ContactForm() {
             <Input
               id="empresa"
               name="empresa"
+              maxLength={160}
               placeholder="Nome da empresa"
               className="pl-9"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -456,8 +547,10 @@ function ContactForm() {
               name="email"
               type="email"
               required
+              maxLength={200}
               placeholder="voce@empresa.com"
               className="pl-9"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -480,6 +573,7 @@ function ContactForm() {
               value={phone}
               onChange={(e) => setPhone(maskPhoneInput(e.target.value))}
               className="pl-9"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -496,9 +590,10 @@ function ContactForm() {
                 type="button"
                 role="radio"
                 aria-checked={active}
+                disabled={isLoading}
                 onClick={() => setInterest(opt.value)}
                 className={
-                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
+                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 " +
                   (active
                     ? "border-primary bg-brand-soft text-primary"
                     : "border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/40")
@@ -521,16 +616,28 @@ function ContactForm() {
           name="mensagem"
           required
           rows={5}
+          maxLength={2000}
           placeholder="Contexto do projeto, desafio atual, prazo esperado…"
+          disabled={isLoading}
         />
       </div>
 
       <button
         type="submit"
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-3 text-sm font-semibold hover:bg-primary-hover transition-colors shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+        disabled={isLoading}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-3 text-sm font-semibold hover:bg-primary-hover transition-colors shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70 disabled:cursor-not-allowed sm:w-auto"
       >
-        <Send className="h-4 w-4" aria-hidden />
-        Enviar solicitação
+        {isLoading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            Enviando…
+          </>
+        ) : (
+          <>
+            <Send className="h-4 w-4" aria-hidden />
+            Enviar solicitação
+          </>
+        )}
       </button>
       <p className="text-xs text-muted-foreground">
         Ao enviar, você concorda em ser contatado pela Valtro Labs sobre esta solicitação.
@@ -538,3 +645,4 @@ function ContactForm() {
     </form>
   );
 }
+
