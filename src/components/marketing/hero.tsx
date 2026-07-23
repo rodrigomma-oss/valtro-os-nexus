@@ -1,5 +1,7 @@
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { HeroVisual } from "./hero-visual";
+
+const MARKETPLACES = ["Mercado Livre", "Shopee", "Amazon", "Magalu", "Shopify"] as const;
 
 export function Hero() {
   return (
@@ -22,19 +24,21 @@ export function Hero() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
               </span>
-              Ecossistema Valtro Labs
+              Ecossistema Valtro Labs · Beta
             </div>
 
             <h1
               id="hero-title"
               className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-foreground text-balance"
             >
-              Transformamos <span className="text-primary">complexidade</span> em clareza.
+              Software inteligente para{" "}
+              <span className="text-primary">vender melhor</span> em marketplaces.
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">
-              A Valtro Labs desenvolve soluções inteligentes para simplificar decisões,
-              automatizar processos e impulsionar negócios digitais de vendedores em marketplaces.
+              A Valtro Labs constrói um ecossistema SaaS para vendedores que operam em
+              marketplaces — do preço à mídia, da automação à análise. Menos planilha,
+              mais decisão.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -42,7 +46,7 @@ export function Hero() {
                 href="https://pricing.valtrolabs.pro"
                 className="group inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-6 py-3.5 text-sm font-medium hover:bg-primary-hover transition-colors shadow-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Conheça o Valtro Pricing
+                Começar com o Valtro Pricing
                 <ArrowRight
                   className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                   aria-hidden
@@ -52,14 +56,26 @@ export function Hero() {
                 href="#solucoes"
                 className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-6 py-3.5 text-sm font-medium text-foreground hover:border-primary/40 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Conheça nossas soluções
+                Ver o ecossistema
               </a>
             </div>
 
-            <p className="mt-10 inline-flex items-center gap-2 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
-              Primeira solução já disponível · Novas ferramentas em desenvolvimento
-            </p>
+            <div className="mt-10 flex flex-col gap-3">
+              <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden />
+                Feito para operações em
+              </p>
+              <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                {MARKETPLACES.map((m) => (
+                  <li
+                    key={m}
+                    className="text-sm font-medium text-foreground/70"
+                  >
+                    {m}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           <div

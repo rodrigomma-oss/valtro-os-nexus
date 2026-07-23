@@ -11,6 +11,7 @@ interface Solution {
   icon: LucideIcon;
   status: Status;
   href?: string;
+  order: string;
 }
 
 const SOLUTIONS: Solution[] = [
@@ -22,6 +23,7 @@ const SOLUTIONS: Solution[] = [
     icon: Tag,
     status: "available",
     href: "https://pricing.valtrolabs.pro",
+    order: "01",
   },
   {
     name: "Valtro Ads",
@@ -30,6 +32,7 @@ const SOLUTIONS: Solution[] = [
       "Otimização e orquestração de campanhas de mídia paga, com automações e visão unificada de performance.",
     icon: Megaphone,
     status: "developing",
+    order: "02",
   },
   {
     name: "Valtro Analytics",
@@ -38,11 +41,12 @@ const SOLUTIONS: Solution[] = [
       "Camada de analytics unificada para transformar dados operacionais em decisões claras e acionáveis.",
     icon: BarChart3,
     status: "planning",
+    order: "03",
   },
 ];
 
 const STATUS_LABEL: Record<Status, string> = {
-  available: "Disponível",
+  available: "Disponível agora",
   developing: "Em desenvolvimento",
   planning: "Em planejamento",
 };
@@ -56,13 +60,13 @@ export function Solutions() {
     >
       <div className="container-page">
         <SectionHeader
-          eyebrow="Soluções"
+          eyebrow="Ecossistema"
           title={
             <span id="solucoes-title">
-              Um ecossistema de produtos em expansão contínua.
+              Três produtos, uma única operação.
             </span>
           }
-          description="Cada produto Valtro é pensado para resolver uma etapa crítica da operação digital — do preço à performance, da mídia à análise."
+          description="Construímos um ecossistema modular para vendedores em marketplaces. Comece pelo Valtro Pricing — a primeira solução disponível — e cresça com o resto do stack conforme lançamos."
         />
 
         <ul className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6 not-prose">
@@ -78,7 +82,7 @@ export function Solutions() {
 }
 
 function SolutionCard({ solution }: { solution: Solution }) {
-  const { name, tagline, description, icon: Icon, status, href } = solution;
+  const { name, tagline, description, icon: Icon, status, href, order } = solution;
   const isAvailable = status === "available";
 
   return (
@@ -116,7 +120,9 @@ function SolutionCard({ solution }: { solution: Solution }) {
       </div>
 
       <div className="mt-7 flex-1">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="font-mono text-foreground/40">{order}</span>
+          <span aria-hidden className="h-px w-4 bg-border" />
           {tagline}
         </p>
         <h3 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground">
@@ -134,7 +140,7 @@ function SolutionCard({ solution }: { solution: Solution }) {
             aria-label={`Conhecer ${name}`}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background group/link"
           >
-            Conhecer
+            Conhecer o {name}
             <ArrowUpRight
               className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
               aria-hidden
