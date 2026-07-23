@@ -230,7 +230,7 @@ function CrmDashboard() {
           description: "Leads novos que precisam de primeiro contato.",
           icon: UserPlus,
           tone: "info" as const,
-          onClick: () => navigate({ to: "/crm/leads" }),
+          onClick: () => navigate({ to: "/crm/leads", search: { view: "novos-do-site" } }),
           show: true,
         },
         {
