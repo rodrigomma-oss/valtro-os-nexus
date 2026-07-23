@@ -78,23 +78,14 @@ test.describe("Sprint 11 — Propostas comerciais", () => {
     await drawer
       .getByRole("button", { name: /Adicionar da biblioteca/i })
       .click();
-    // Popover — clica no primeiro item disponível
-    const firstServiceOption = page
-      .locator('[role="dialog"] , body')
+    // Radix Popover — clica no primeiro item de serviço listado.
+    const popover = page.locator("[data-radix-popper-content-wrapper]").last();
+    await expect(popover).toBeVisible();
+    await popover
       .locator("button")
-      .filter({ hasText: /./ })
-      .first(); // fallback improvável
-    // Popover do Radix não é dialog — usa o container mais próximo com role none.
-    // Selecionamos pelo texto do primeiro item da lista renderizada.
-    const popoverItem = page
-      .locator("div[role='dialog'], body >> [data-radix-popper-content-wrapper] button")
-      .first();
-    if (await popoverItem.count()) {
-      await popoverItem.click();
-    } else {
-      // Fallback: clica no primeiro botão dentro do popper wrapper.
-      await firstServiceOption.click();
-    }
+      .filter({ hasNotText: /personalizado/i })
+      .first()
+      .click();
 
     // Aguarda a linha aparecer
     const itemRow = drawer.getByTestId("proposal-item-row").first();
