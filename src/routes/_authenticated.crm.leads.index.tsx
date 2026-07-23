@@ -46,10 +46,21 @@ import {
   getMyRoles,
   listLeads,
 } from "@/lib/leads.functions";
-import type { Lead, LeadStatus } from "@/types/lead";
+import type { Lead, LeadSource, LeadStatus } from "@/types/lead";
+import { SOURCE_LABEL, STATUS_LABEL } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
   component: CrmLeads,
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { view?: "novos-do-site" | "aguardando-triagem" | "sem-responsavel" } => ({
+    view:
+      s.view === "novos-do-site" ||
+      s.view === "aguardando-triagem" ||
+      s.view === "sem-responsavel"
+        ? s.view
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Leads — CRM Valtro Labs" },
@@ -58,14 +69,39 @@ export const Route = createFileRoute("/_authenticated/crm/leads/")({
   }),
 });
 
+const STATUS_ORDER: LeadStatus[] = [
+  "novo",
+  "em_triagem",
+  "contato",
+  "qualificado",
+  "aguardando_briefing",
+  "briefing_enviado",
+  "em_analise",
+  "proposta",
+  "ganho",
+  "perdido",
+  "descartado",
+];
+
 const STATUS_OPTIONS: { value: LeadStatus | "todos"; label: string }[] = [
   { value: "todos", label: "Todos os status" },
-  { value: "novo", label: "Novo" },
-  { value: "contato", label: "Em contato" },
-  { value: "qualificado", label: "Qualificado" },
-  { value: "proposta", label: "Proposta" },
-  { value: "ganho", label: "Ganho" },
-  { value: "perdido", label: "Perdido" },
+  ...STATUS_ORDER.map((v) => ({ value: v, label: STATUS_LABEL[v] })),
+];
+
+const SOURCE_ORDER: LeadSource[] = [
+  "site",
+  "instagram",
+  "indicacao",
+  "google",
+  "evento",
+  "outbound",
+  "diagnostico",
+  "manual",
+];
+
+const SOURCE_OPTIONS: { value: LeadSource | "todas"; label: string }[] = [
+  { value: "todas", label: "Todas as origens" },
+  ...SOURCE_ORDER.map((v) => ({ value: v, label: SOURCE_LABEL[v] })),
 ];
 
 const PAGE_SIZE = 8;
@@ -96,8 +132,13 @@ function CrmLeads() {
     staleTime: 60_000,
   });
 
+  const search_ = Route.useSearch();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
+  const [sourceFilter, setSourceFilter] = useState<LeadSource | "todas">("todas");
+  const [quickView, setQuickView] = useState<
+    "novos-do-site" | "aguardando-triagem" | "sem-responsavel" | null
+  >(search_.view ?? null);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -106,30 +147,52 @@ function CrmLeads() {
   const leads = leadsQuery.data ?? [];
 
   const term = search.trim().toLowerCase();
-  const hasFilters = term.length > 0 || statusFilter !== "todos";
+  const hasFilters =
+    term.length > 0 ||
+    statusFilter !== "todos" ||
+    sourceFilter !== "todas" ||
+    quickView !== null;
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
       const matchStatus =
         statusFilter === "todos" || lead.status === statusFilter;
+      const matchSource =
+        sourceFilter === "todas" || lead.source === sourceFilter;
       const matchTerm =
         term.length === 0 ||
         lead.company_name.toLowerCase().includes(term) ||
         lead.contact_name.toLowerCase().includes(term) ||
         (lead.city ?? "").toLowerCase().includes(term);
-      return matchStatus && matchTerm;
+      const matchQuick =
+        quickView === null ||
+        (quickView === "novos-do-site" &&
+          lead.source === "site" &&
+          lead.status === "novo") ||
+        (quickView === "aguardando-triagem" &&
+          ["novo", "em_triagem"].includes(lead.status)) ||
+        (quickView === "sem-responsavel" && !lead.owner_id);
+      return matchStatus && matchSource && matchTerm && matchQuick;
     });
-  }, [leads, term, statusFilter]);
+  }, [leads, term, statusFilter, sourceFilter, quickView]);
 
   const kpis = useMemo(() => {
     const total = leads.length;
     const novos = leads.filter((l) => l.status === "novo").length;
+    const emTriagem = leads.filter((l) => l.status === "em_triagem").length;
     const emAndamento = leads.filter((l) =>
-      ["contato", "qualificado", "proposta"].includes(l.status),
+      [
+        "contato",
+        "qualificado",
+        "aguardando_briefing",
+        "briefing_enviado",
+        "em_analise",
+        "proposta",
+      ].includes(l.status),
     ).length;
     const ganhos = leads.filter((l) => l.status === "ganho").length;
     const conversao = total > 0 ? Math.round((ganhos / total) * 100) : 0;
-    return { total, novos, emAndamento, ganhos, conversao };
+    return { total, novos, emTriagem, emAndamento, ganhos, conversao };
   }, [leads]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -142,6 +205,8 @@ function CrmLeads() {
   const clearFilters = () => {
     setSearch("");
     setStatusFilter("todos");
+    setSourceFilter("todas");
+    setQuickView(null);
     setPage(1);
   };
 
@@ -341,13 +406,18 @@ function CrmLeads() {
         }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Total de leads" value={kpis.total} hint="Base ativa" />
         <StatCard label="Novos" value={kpis.novos} hint="Aguardando abordagem" />
         <StatCard
+          label="Em triagem"
+          value={kpis.emTriagem}
+          hint="Validação comercial em curso"
+        />
+        <StatCard
           label="Em andamento"
           value={kpis.emAndamento}
-          hint="Contato, qualificado ou proposta"
+          hint="Contato, qualificado, briefing ou proposta"
         />
         <StatCard
           label="Conversão"
@@ -356,6 +426,39 @@ function CrmLeads() {
           trend={kpis.conversao > 20 ? "up" : "neutral"}
         />
       </div>
+
+      {/* Quick views */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground mr-1">
+          Visões rápidas:
+        </span>
+        {[
+          { key: "novos-do-site", label: "Novos do site" },
+          { key: "aguardando-triagem", label: "Aguardando triagem" },
+          { key: "sem-responsavel", label: "Sem responsável" },
+        ].map((v) => {
+          const active = quickView === v.key;
+          return (
+            <button
+              key={v.key}
+              type="button"
+              onClick={() => {
+                setQuickView(active ? null : (v.key as typeof quickView));
+                setPage(1);
+              }}
+              className={
+                "rounded-full border px-3 py-1 text-xs transition-colors " +
+                (active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-surface text-muted-foreground border-border hover:text-foreground")
+              }
+            >
+              {v.label}
+            </button>
+          );
+        })}
+      </div>
+
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1 max-w-md">
@@ -400,6 +503,24 @@ function CrmLeads() {
             </SelectTrigger>
             <SelectContent>
               {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={sourceFilter}
+            onValueChange={(value) => {
+              setSourceFilter(value as LeadSource | "todas");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[170px] bg-surface">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SOURCE_OPTIONS.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
