@@ -184,6 +184,7 @@ function CrmLeadDetail() {
 
   const [note, setNote] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
+  const [convertOpen, setConvertOpen] = useState(false);
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
 
