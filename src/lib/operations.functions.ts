@@ -19,7 +19,11 @@ export type EventKind =
   | "briefing_retomado"
   | "briefing_concluido"
   | "observacao_adicionada"
-  | "observacao_removida";
+  | "observacao_removida"
+  | "proposta_criada"
+  | "proposta_status_alterado"
+  | "proposta_aprovada"
+  | "proposta_rejeitada";
 
 export interface InboxItemDTO {
   id: string;
@@ -82,6 +86,10 @@ const EVENT_TITLE: Record<EventKind, string> = {
   briefing_concluido: "Briefing concluído",
   observacao_adicionada: "Nova observação",
   observacao_removida: "Observação removida",
+  proposta_criada: "Proposta criada",
+  proposta_status_alterado: "Proposta — status alterado",
+  proposta_aprovada: "Proposta aprovada",
+  proposta_rejeitada: "Proposta rejeitada",
 };
 
 const EVENT_ACTION: Record<EventKind, string> = {
@@ -96,6 +104,10 @@ const EVENT_ACTION: Record<EventKind, string> = {
   briefing_concluido: "concluiu o briefing",
   observacao_adicionada: "recebeu uma observação",
   observacao_removida: "teve uma observação removida",
+  proposta_criada: "recebeu uma nova proposta",
+  proposta_status_alterado: "teve o status da proposta alterado",
+  proposta_aprovada: "teve uma proposta aprovada",
+  proposta_rejeitada: "teve uma proposta rejeitada",
 };
 
 export const getOperationsOverview = createServerFn({ method: "GET" })

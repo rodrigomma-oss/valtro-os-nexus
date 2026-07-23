@@ -375,6 +375,159 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          position: number
+          proposal_id: string
+          quantity: number
+          service_key: string | null
+          service_label: string
+          subtotal: number
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          position?: number
+          proposal_id: string
+          quantity?: number
+          service_key?: string | null
+          service_label: string
+          subtotal?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          position?: number
+          proposal_id?: string
+          quantity?: number
+          service_key?: string | null
+          service_label?: string
+          subtotal?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_items_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_negotiations: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json | null
+          proposal_id: string
+          type: Database["public"]["Enums"]["proposal_negotiation_type"]
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          proposal_id: string
+          type: Database["public"]["Enums"]["proposal_negotiation_type"]
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          proposal_id?: string
+          type?: Database["public"]["Enums"]["proposal_negotiation_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_negotiations_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          discount_amount: number
+          final_amount: number
+          id: string
+          internal_notes: string | null
+          issued_at: string
+          lead_id: string
+          number: string
+          owner_id: string | null
+          snapshot_json: Json | null
+          status: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          total_amount: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          discount_amount?: number
+          final_amount?: number
+          id?: string
+          internal_notes?: string | null
+          issued_at?: string
+          lead_id: string
+          number: string
+          owner_id?: string | null
+          snapshot_json?: Json | null
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          total_amount?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          discount_amount?: number
+          final_amount?: number
+          id?: string
+          internal_notes?: string | null
+          issued_at?: string
+          lead_id?: string
+          number?: string
+          owner_id?: string | null
+          snapshot_json?: Json | null
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title?: string
+          total_amount?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -457,6 +610,10 @@ export type Database = {
         | "contato_registrado"
         | "follow_up_agendado"
         | "follow_up_concluido"
+        | "proposta_criada"
+        | "proposta_status_alterado"
+        | "proposta_aprovada"
+        | "proposta_rejeitada"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -478,6 +635,20 @@ export type Database = {
         | "briefing_enviado"
         | "em_analise"
         | "descartado"
+      proposal_negotiation_type:
+        | "contraproposta"
+        | "desconto"
+        | "alteracao"
+        | "observacao"
+      proposal_status:
+        | "rascunho"
+        | "em_elaboracao"
+        | "enviada"
+        | "em_negociacao"
+        | "aprovada"
+        | "rejeitada"
+        | "expirada"
+        | "cancelada"
       service_type:
         | "nao_definido"
         | "gestao_shopee"
@@ -676,6 +847,10 @@ export const Constants = {
         "contato_registrado",
         "follow_up_agendado",
         "follow_up_concluido",
+        "proposta_criada",
+        "proposta_status_alterado",
+        "proposta_aprovada",
+        "proposta_rejeitada",
       ],
       lead_source: [
         "instagram",
@@ -699,6 +874,22 @@ export const Constants = {
         "briefing_enviado",
         "em_analise",
         "descartado",
+      ],
+      proposal_negotiation_type: [
+        "contraproposta",
+        "desconto",
+        "alteracao",
+        "observacao",
+      ],
+      proposal_status: [
+        "rascunho",
+        "em_elaboracao",
+        "enviada",
+        "em_negociacao",
+        "aprovada",
+        "rejeitada",
+        "expirada",
+        "cancelada",
       ],
       service_type: [
         "nao_definido",

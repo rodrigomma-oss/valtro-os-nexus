@@ -26,6 +26,10 @@ import {
   Phone,
   CalendarClock,
   CalendarCheck,
+  Receipt,
+  CheckSquare,
+  XSquare,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
@@ -33,6 +37,7 @@ import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
 import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
+import { ProposalsCard } from "@/components/app/proposals-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -135,6 +140,10 @@ const EVENT_META: Record<
   contato_registrado: { icon: Phone, tone: "default", title: "Contato registrado" },
   follow_up_agendado: { icon: CalendarClock, tone: "default", title: "Follow-up agendado" },
   follow_up_concluido: { icon: CalendarCheck, tone: "success", title: "Follow-up concluído" },
+  proposta_criada: { icon: Receipt, tone: "default", title: "Proposta criada" },
+  proposta_status_alterado: { icon: RefreshCw, tone: "default", title: "Proposta — status alterado" },
+  proposta_aprovada: { icon: CheckSquare, tone: "success", title: "Proposta aprovada" },
+  proposta_rejeitada: { icon: XSquare, tone: "muted", title: "Proposta rejeitada" },
 };
 
 function formatDate(iso: string) {
@@ -414,6 +423,13 @@ function CrmLeadDetail() {
           </ActionCard>
 
           <BriefingsCard lead={lead} canWrite={canWrite} />
+
+          <ProposalsCard
+            lead={lead}
+            canWrite={canWrite}
+            isAdmin={rolesQuery.data?.isAdmin ?? false}
+          />
+
 
           <ContactHistoryCard leadId={lead.id} canWrite={canWrite} />
 
