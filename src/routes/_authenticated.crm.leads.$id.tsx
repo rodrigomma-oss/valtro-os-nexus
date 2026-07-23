@@ -37,6 +37,7 @@ import { LeadInfoCard } from "@/components/app/lead-info-card";
 import { ActionCard } from "@/components/app/action-card";
 import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
+import { ProposalsCard } from "@/components/app/proposals-card";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -422,6 +423,13 @@ function CrmLeadDetail() {
           </ActionCard>
 
           <BriefingsCard lead={lead} canWrite={canWrite} />
+
+          <ProposalsCard
+            lead={lead}
+            canWrite={canWrite}
+            isAdmin={rolesQuery.data?.isAdmin ?? false}
+          />
+
 
           <ContactHistoryCard leadId={lead.id} canWrite={canWrite} />
 
