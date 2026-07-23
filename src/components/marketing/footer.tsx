@@ -66,12 +66,14 @@ export function Footer() {
                   Contato
                 </a>
               </li>
-              {FUTURE_LINKS.map((l) => (
-                <li key={l} className="flex items-center gap-2 text-muted-foreground">
-                  <span>{l}</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                    Em breve
-                  </span>
+              {LEGAL_LINKS.map((l) => (
+                <li key={l.to}>
+                  <Link
+                    to={l.to}
+                    className="text-muted-foreground hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                  >
+                    {l.label}
+                  </Link>
                 </li>
               ))}
             </ul>
