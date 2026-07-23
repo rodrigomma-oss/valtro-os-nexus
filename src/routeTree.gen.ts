@@ -13,6 +13,7 @@ import { Route as SolucoesRouteImport } from './routes/solucoes'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -45,6 +46,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
     | '/sobre'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
     | '/sobre'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
     | '/sobre'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContatoRoute: typeof ContatoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
@@ -268,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diagnostico': {
@@ -401,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContatoRoute: ContatoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
