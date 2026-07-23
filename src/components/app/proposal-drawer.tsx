@@ -197,7 +197,7 @@ export function ProposalDrawer({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[92vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-hidden flex flex-col" data-testid="proposal-drawer">
         {!proposal ? (
           <div className="flex items-center gap-2 py-10 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Carregando proposta…
