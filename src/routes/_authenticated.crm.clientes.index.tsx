@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { listClients, getClientsOverview } from "@/lib/clients.functions";
+import { listClients } from "@/lib/clients.functions";
+import { getClientsOverview } from "@/lib/projects.functions";
 import { cn } from "@/lib/utils";
 import type { Client, ClientStatus } from "@/types/client";
 import { CLIENT_STATUS_LABEL, CLIENT_STATUS_TONE } from "@/types/client";

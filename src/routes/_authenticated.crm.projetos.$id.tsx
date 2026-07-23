@@ -47,12 +47,12 @@ const EVENT_META: Record<ProjectEventType, { icon: typeof Sparkles; tone: Timeli
   projeto_criado: { icon: Sparkles, tone: "default", title: "Projeto criado" },
   status_alterado: { icon: RefreshCcw, tone: "warning", title: "Status alterado" },
   responsavel_alterado: { icon: UserCog, tone: "default", title: "Responsável alterado" },
-  prazo_alterado: { icon: CalendarCheck, tone: "default", title: "Prazo alterado" },
+  datas_alteradas: { icon: CalendarCheck, tone: "default", title: "Datas alteradas" },
   projeto_concluido: { icon: CalendarCheck, tone: "success", title: "Projeto concluído" },
   projeto_cancelado: { icon: Ban, tone: "muted", title: "Projeto cancelado" },
-  proposta_vinculada: { icon: FileText, tone: "default", title: "Proposta vinculada" },
+  vinculo_proposta: { icon: FileText, tone: "default", title: "Proposta vinculada" },
   observacao_adicionada: { icon: MessageCircle, tone: "default", title: "Observação adicionada" },
-  projeto_atualizado: { icon: Pencil, tone: "default", title: "Projeto atualizado" },
+  cliente_atualizado: { icon: Pencil, tone: "default", title: "Cliente atualizado" },
 };
 
 function fmtDate(iso: string | null) {
