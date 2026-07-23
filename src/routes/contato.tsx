@@ -1,11 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   Building2,
+  CheckCircle2,
   ClipboardList,
   Handshake,
+  Home,
   LineChart,
+  Loader2,
   Mail,
   MessageSquare,
   Phone,
@@ -22,6 +26,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { maskPhoneInput } from "@/lib/formatters";
+import { submitContactRequest } from "@/lib/contact.functions";
+import { z } from "zod";
+
+const contatoSearchSchema = z.object({
+  interesse: z.string().optional(),
+});
 
 export const Route = createFileRoute("/contato")({
   component: ContatoPage,
