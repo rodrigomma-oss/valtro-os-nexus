@@ -3,9 +3,9 @@ import { Instagram, Menu, X } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 
 const NAV = [
-  { label: "Soluções", href: "#solucoes" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Contato", href: "#contato" },
+  { label: "Soluções", href: "/#solucoes" },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Contato", href: "/#contato" },
   { label: "Área Restrita", href: "/auth" },
 ] as const;
 

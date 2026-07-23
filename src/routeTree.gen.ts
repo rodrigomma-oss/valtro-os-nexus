@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
@@ -24,6 +25,11 @@ import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authent
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing': typeof BriefingIndexRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/diagnostico': typeof DiagnosticoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sobre'
     | '/admin'
     | '/crm'
     | '/briefing/$token'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sobre'
     | '/admin'
     | '/briefing/$token'
     | '/briefing'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/diagnostico'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sobre'
     | '/_authenticated/admin'
     | '/_authenticated/crm'
     | '/briefing/$token'
@@ -197,12 +209,20 @@ export interface RootRouteChildren {
   DiagnosticoRoute: typeof DiagnosticoRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SobreRoute: typeof SobreRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -342,6 +362,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiagnosticoRoute: DiagnosticoRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SobreRoute: SobreRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
 }
