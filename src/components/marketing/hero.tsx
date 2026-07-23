@@ -1,7 +1,7 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { HeroVisual } from "./hero-visual";
 
-const MARKETPLACES = ["Mercado Livre", "Shopee", "Amazon", "Magalu", "Shopify"] as const;
+const MARKETPLACES = ["Shopee", "Mercado Livre", "Amazon", "Magalu", "Shopify"] as const;
 
 export function Hero() {
   return (
