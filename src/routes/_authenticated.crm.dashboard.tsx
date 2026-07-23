@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Send,
   Undo2,
+  Receipt,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
@@ -50,6 +51,10 @@ const EVENT_ICON: Record<EventKind, LucideIcon> = {
   briefing_concluido: CheckCircle2,
   observacao_adicionada: MessageSquare,
   observacao_removida: MessageSquare,
+  proposta_criada: Receipt,
+  proposta_status_alterado: ArrowRightCircle,
+  proposta_aprovada: CheckCircle2,
+  proposta_rejeitada: AlertTriangle,
 };
 
 const EVENT_TONE: Record<EventKind, Tone> = {
