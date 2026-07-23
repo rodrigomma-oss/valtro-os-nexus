@@ -450,6 +450,8 @@ function CrmLeads() {
           { key: "novos-do-site", label: "Novos do site" },
           { key: "aguardando-triagem", label: "Aguardando triagem" },
           { key: "sem-responsavel", label: "Sem responsável" },
+          { key: "briefings-aguardando", label: "Briefings aguardando" },
+          { key: "briefings-concluidos", label: "Briefings concluídos" },
         ].map((v) => {
           const active = quickView === v.key;
           return (
