@@ -481,3 +481,76 @@ function FutureProductsCard() {
     </article>
   );
 }
+
+function EcosystemVisual() {
+  const items: { icon: LucideIcon; label: string; status: ProductStatus }[] = [
+    { icon: Tag, label: "Valtro Pricing", status: "available" },
+    { icon: Megaphone, label: "Valtro Ads", status: "developing" },
+    { icon: BarChart3, label: "Valtro Analytics", status: "planning" },
+  ];
+  return (
+    <div className="relative mx-auto w-full max-w-md">
+      <div
+        aria-hidden
+        className="absolute -inset-8 rounded-[2.5rem] bg-[radial-gradient(circle_at_center,theme(colors.primary/10),transparent_70%)]"
+      />
+      <div className="relative rounded-3xl border border-border bg-background/80 backdrop-blur-sm shadow-elevated p-6">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            Ecossistema Valtro
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[10px] font-medium text-primary">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            Em evolução
+          </span>
+        </div>
+
+        <ul className="mt-5 space-y-2.5">
+          {items.map((item, idx) => {
+            const Icon = item.icon;
+            const isActive = item.status === "available";
+            return (
+              <li
+                key={item.label}
+                className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors ${
+                  isActive
+                    ? "border-primary/25 bg-brand-soft/60"
+                    : "border-dashed border-border bg-transparent"
+                }`}
+              >
+                <div
+                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${
+                    isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold tracking-tight text-foreground">
+                    {item.label}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {STATUS_LABEL[item.status]}
+                  </p>
+                </div>
+                <span className="font-mono text-[10px] text-foreground/40">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          <Sparkles className="h-3 w-3 text-primary/70" />
+          <span>novas soluções em construção</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+      </div>
+    </div>
+  );
+}
