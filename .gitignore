@@ -30,3 +30,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright storageState (contains auth tokens)
+tests/e2e/.auth/
