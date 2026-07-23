@@ -54,7 +54,10 @@ type QuickView =
   | "aguardando-triagem"
   | "sem-responsavel"
   | "briefings-aguardando"
-  | "briefings-concluidos";
+  | "briefings-concluidos"
+  | "followups-vencidos"
+  | "followups-hoje"
+  | "followups-proximos";
 
 const QUICK_VIEWS: readonly QuickView[] = [
   "novos-do-site",
@@ -62,6 +65,9 @@ const QUICK_VIEWS: readonly QuickView[] = [
   "sem-responsavel",
   "briefings-aguardando",
   "briefings-concluidos",
+  "followups-vencidos",
+  "followups-hoje",
+  "followups-proximos",
 ] as const;
 
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
@@ -174,6 +180,12 @@ function CrmLeads() {
         lead.company_name.toLowerCase().includes(term) ||
         lead.contact_name.toLowerCase().includes(term) ||
         (lead.city ?? "").toLowerCase().includes(term);
+      const now = Date.now();
+      const startToday = new Date();
+      startToday.setHours(0, 0, 0, 0);
+      const endToday = startToday.getTime() + 24 * 60 * 60 * 1000;
+      const in7 = startToday.getTime() + 7 * 24 * 60 * 60 * 1000;
+      const followAt = lead.next_follow_up_at ? new Date(lead.next_follow_up_at).getTime() : null;
       const matchQuick =
         quickView === null ||
         (quickView === "novos-do-site" &&
@@ -185,7 +197,19 @@ function CrmLeads() {
         (quickView === "briefings-aguardando" &&
           lead.status === "briefing_enviado") ||
         (quickView === "briefings-concluidos" &&
-          lead.status === "em_analise");
+          lead.status === "em_analise") ||
+        (quickView === "followups-vencidos" &&
+          followAt !== null &&
+          followAt < startToday.getTime()) ||
+        (quickView === "followups-hoje" &&
+          followAt !== null &&
+          followAt >= startToday.getTime() &&
+          followAt < endToday) ||
+        (quickView === "followups-proximos" &&
+          followAt !== null &&
+          followAt >= endToday &&
+          followAt < in7);
+      void now;
       return matchStatus && matchSource && matchTerm && matchQuick;
     });
   }, [leads, term, statusFilter, sourceFilter, quickView]);
@@ -452,6 +476,9 @@ function CrmLeads() {
           { key: "sem-responsavel", label: "Sem responsável" },
           { key: "briefings-aguardando", label: "Briefings aguardando" },
           { key: "briefings-concluidos", label: "Briefings concluídos" },
+          { key: "followups-vencidos", label: "Follow-ups vencidos" },
+          { key: "followups-hoje", label: "Follow-ups hoje" },
+          { key: "followups-proximos", label: "Follow-ups próximos 7 dias" },
         ].map((v) => {
           const active = quickView === v.key;
           return (

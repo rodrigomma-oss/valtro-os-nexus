@@ -23,6 +23,9 @@ import {
   UserCog,
   Trophy,
   XCircle,
+  Phone,
+  CalendarClock,
+  CalendarCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
@@ -49,6 +52,10 @@ import {
   archiveLead,
   getMyRoles,
 } from "@/lib/leads.functions";
+import { listLeadBriefingTokens } from "@/lib/briefing.functions";
+import { FollowUpCard } from "@/components/app/follow-up-card";
+import { ContactHistoryCard } from "@/components/app/contact-history-card";
+import { MessageComposerDialog } from "@/components/app/message-composer-dialog";
 import type { LeadEvent, LeadEventType, LeadNote, LeadStatus } from "@/types/lead";
 import { STATUS_LABEL } from "@/types/lead";
 
@@ -125,6 +132,9 @@ const EVENT_META: Record<
   responsavel_alterado: { icon: UserCog, tone: "default", title: "Responsável alterado" },
   oportunidade_convertida: { icon: Trophy, tone: "success", title: "Oportunidade convertida" },
   oportunidade_descartada: { icon: XCircle, tone: "muted", title: "Oportunidade descartada" },
+  contato_registrado: { icon: Phone, tone: "default", title: "Contato registrado" },
+  follow_up_agendado: { icon: CalendarClock, tone: "default", title: "Follow-up agendado" },
+  follow_up_concluido: { icon: CalendarCheck, tone: "success", title: "Follow-up concluído" },
 };
 
 function formatDate(iso: string) {
@@ -146,6 +156,7 @@ function CrmLeadDetail() {
   const updateLeadFn = useServerFn(updateLead);
   const archiveLeadFn = useServerFn(archiveLead);
   const getMyRolesFn = useServerFn(getMyRoles);
+  const listBriefingsFn = useServerFn(listLeadBriefingTokens);
 
   const leadQuery = useQuery({
     queryKey: ["lead", id],
@@ -156,10 +167,23 @@ function CrmLeadDetail() {
     queryFn: () => getMyRolesFn(),
     staleTime: 60_000,
   });
+  const briefingsQuery = useQuery({
+    queryKey: ["briefing", "tokens", id],
+    queryFn: () => listBriefingsFn({ data: { lead_id: id } }),
+  });
 
   const [note, setNote] = useState("");
+  const [composerOpen, setComposerOpen] = useState(false);
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
+
+  const activeBriefing = (briefingsQuery.data ?? []).find(
+    (t) => t.status === "ativo" || t.status === "pendente",
+  );
+  const briefingLink =
+    activeBriefing && typeof window !== "undefined"
+      ? `${window.location.origin}/briefing/${activeBriefing.id}`
+      : null;
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["lead", id] });
@@ -286,6 +310,15 @@ function CrmLeadDetail() {
             <Button
               variant="outline"
               size="sm"
+              className="gap-2"
+              onClick={() => setComposerOpen(true)}
+            >
+              <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
+              Comunicação
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               className="gap-2 text-destructive"
               disabled={!canWrite || !!lead.archived_at || archiveMutation.isPending}
               onClick={() => {
@@ -302,7 +335,9 @@ function CrmLeadDetail() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-6">
           <LeadInfoCard lead={lead} />
+          <FollowUpCard lead={lead} canWrite={canWrite} onChanged={invalidate} />
         </div>
+
 
         <div className="lg:col-span-2 space-y-6">
           <TriageCard lead={lead} canWrite={canWrite} onChanged={invalidate} />
@@ -380,9 +415,20 @@ function CrmLeadDetail() {
 
           <BriefingsCard lead={lead} canWrite={canWrite} />
 
+          <ContactHistoryCard leadId={lead.id} canWrite={canWrite} />
+
           <TimelineCard title="Linha do tempo" items={timeline} />
         </div>
       </div>
+
+      <MessageComposerDialog
+        open={composerOpen}
+        onOpenChange={setComposerOpen}
+        lead={lead}
+        briefingLink={briefingLink}
+        canWrite={canWrite}
+        onContactCreated={invalidate}
+      />
     </div>
   );
 }

@@ -121,6 +121,57 @@ export type Database = {
           },
         ]
       }
+      lead_contacts: {
+        Row: {
+          channel: Database["public"]["Enums"]["lead_contact_channel"]
+          created_at: string
+          created_by: string | null
+          id: string
+          lead_id: string
+          notes: string | null
+          result: Database["public"]["Enums"]["lead_contact_result"]
+          type: Database["public"]["Enums"]["lead_contact_type"]
+          updated_at: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["lead_contact_channel"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id: string
+          notes?: string | null
+          result?: Database["public"]["Enums"]["lead_contact_result"]
+          type: Database["public"]["Enums"]["lead_contact_type"]
+          updated_at?: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["lead_contact_channel"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id?: string
+          notes?: string | null
+          result?: Database["public"]["Enums"]["lead_contact_result"]
+          type?: Database["public"]["Enums"]["lead_contact_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_contacts_created_by_profile_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_contacts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_events: {
         Row: {
           created_at: string
@@ -220,6 +271,9 @@ export type Database = {
           id: string
           instagram: string | null
           next_action: string | null
+          next_follow_up_at: string | null
+          next_follow_up_owner_id: string | null
+          next_follow_up_reason: string | null
           owner_id: string | null
           phone: string | null
           segment: string | null
@@ -242,6 +296,9 @@ export type Database = {
           id?: string
           instagram?: string | null
           next_action?: string | null
+          next_follow_up_at?: string | null
+          next_follow_up_owner_id?: string | null
+          next_follow_up_reason?: string | null
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
@@ -264,6 +321,9 @@ export type Database = {
           id?: string
           instagram?: string | null
           next_action?: string | null
+          next_follow_up_at?: string | null
+          next_follow_up_owner_id?: string | null
+          next_follow_up_reason?: string | null
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
@@ -351,6 +411,27 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      lead_contact_channel:
+        | "whatsapp"
+        | "email"
+        | "telefone"
+        | "reuniao"
+        | "outro"
+      lead_contact_result:
+        | "sem_resposta"
+        | "respondido"
+        | "interessado"
+        | "nao_interessado"
+        | "agendado"
+        | "concluido"
+      lead_contact_type:
+        | "primeiro_contato"
+        | "follow_up"
+        | "envio_briefing"
+        | "lembrete"
+        | "apresentacao"
+        | "proposta"
+        | "outro"
       lead_event_type:
         | "lead_criado"
         | "status_alterado"
@@ -373,6 +454,9 @@ export type Database = {
         | "responsavel_alterado"
         | "oportunidade_descartada"
         | "oportunidade_convertida"
+        | "contato_registrado"
+        | "follow_up_agendado"
+        | "follow_up_concluido"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -543,6 +627,30 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      lead_contact_channel: [
+        "whatsapp",
+        "email",
+        "telefone",
+        "reuniao",
+        "outro",
+      ],
+      lead_contact_result: [
+        "sem_resposta",
+        "respondido",
+        "interessado",
+        "nao_interessado",
+        "agendado",
+        "concluido",
+      ],
+      lead_contact_type: [
+        "primeiro_contato",
+        "follow_up",
+        "envio_briefing",
+        "lembrete",
+        "apresentacao",
+        "proposta",
+        "outro",
+      ],
       lead_event_type: [
         "lead_criado",
         "status_alterado",
@@ -565,6 +673,9 @@ export const Constants = {
         "responsavel_alterado",
         "oportunidade_descartada",
         "oportunidade_convertida",
+        "contato_registrado",
+        "follow_up_agendado",
+        "follow_up_concluido",
       ],
       lead_source: [
         "instagram",

@@ -65,6 +65,9 @@ interface RawLead {
   triage_notes: string | null;
   triage_started_at: string | null;
   archived_at: string | null;
+  next_follow_up_at: string | null;
+  next_follow_up_reason: string | null;
+  next_follow_up_owner_id: string | null;
   created_at: string;
   updated_at: string;
   owner: { full_name: string | null } | null;
@@ -90,13 +93,17 @@ function mapLead(row: RawLead): Lead {
     triage_notes: row.triage_notes,
     triage_started_at: row.triage_started_at,
     archived_at: row.archived_at,
+    next_follow_up_at: row.next_follow_up_at,
+    next_follow_up_reason: row.next_follow_up_reason,
+    next_follow_up_owner_id: row.next_follow_up_owner_id,
+    next_follow_up_owner_name: null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
 }
 
 const LEAD_SELECT = sel(
-  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, next_action, triage_notes, triage_started_at, archived_at, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
+  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, next_action, triage_notes, triage_started_at, archived_at, next_follow_up_at, next_follow_up_reason, next_follow_up_owner_id, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
 );
 
 
@@ -607,5 +614,114 @@ export const getMyRoles = createServerFn({ method: "GET" })
       isOperator: roles.includes("operator"),
       isViewer: roles.includes("viewer"),
       canWrite: roles.includes("admin") || roles.includes("operator"),
+    };
+  });
+
+// =============================================================
+// Sprint 10 — Follow-ups
+// =============================================================
+const setFollowUpSchema = z.object({
+  id: z.string().uuid(),
+  at: z.string().datetime({ offset: true }),
+  reason: z.string().trim().max(500).nullable().optional(),
+  owner_id: z.string().uuid().nullable().optional(),
+});
+
+export const setLeadFollowUp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => setFollowUpSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("leads")
+      .update({
+        next_follow_up_at: data.at,
+        next_follow_up_reason: data.reason ?? null,
+        next_follow_up_owner_id: data.owner_id ?? null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const completeLeadFollowUp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("leads")
+      .update({
+        next_follow_up_at: null,
+        next_follow_up_reason: null,
+        next_follow_up_owner_id: null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// =============================================================
+// Overview de follow-ups + contatos (para o Dashboard)
+// =============================================================
+export interface FollowUpsOverview {
+  contatosHoje: number;
+  followUpsVencidos: number;
+  followUpsHoje: number;
+  followUpsProximos7: number;
+  briefingsAguardando: number;
+  propostasAguardando: number;
+}
+
+export const getFollowUpsOverview = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<FollowUpsOverview> => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+    const in7 = new Date(startOfToday.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    const [contactsRes, followRes, statusRes] = await Promise.all([
+      context.supabase
+        .from("lead_contacts")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startOfToday.toISOString())
+        .lt("created_at", endOfToday.toISOString()),
+      context.supabase
+        .from("leads")
+        .select("next_follow_up_at")
+        .is("archived_at", null)
+        .not("next_follow_up_at", "is", null)
+        .returns<Array<{ next_follow_up_at: string }>>(),
+      context.supabase
+        .from("leads")
+        .select("status")
+        .is("archived_at", null)
+        .returns<Array<{ status: LeadStatus }>>(),
+    ]);
+    if (contactsRes.error) throw new Error(contactsRes.error.message);
+    if (followRes.error) throw new Error(followRes.error.message);
+    if (statusRes.error) throw new Error(statusRes.error.message);
+
+    const follows = followRes.data ?? [];
+    const followUpsVencidos = follows.filter((r) => new Date(r.next_follow_up_at) < startOfToday).length;
+    const followUpsHoje = follows.filter((r) => {
+      const d = new Date(r.next_follow_up_at);
+      return d >= startOfToday && d < endOfToday;
+    }).length;
+    const followUpsProximos7 = follows.filter((r) => {
+      const d = new Date(r.next_follow_up_at);
+      return d >= endOfToday && d < in7;
+    }).length;
+
+    const statuses = statusRes.data ?? [];
+    const briefingsAguardando = statuses.filter((r) => r.status === "briefing_enviado").length;
+    const propostasAguardando = statuses.filter((r) => r.status === "proposta").length;
+
+    return {
+      contatosHoje: contactsRes.count ?? 0,
+      followUpsVencidos,
+      followUpsHoje,
+      followUpsProximos7,
+      briefingsAguardando,
+      propostasAguardando,
     };
   });
