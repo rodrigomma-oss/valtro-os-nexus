@@ -31,14 +31,15 @@ export function Hero() {
               id="hero-title"
               className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-foreground text-balance"
             >
-              Software inteligente para{" "}
-              <span className="text-primary">vender melhor</span> em marketplaces.
+              Criamos software inteligente para{" "}
+              <span className="text-primary">simplificar negócios digitais</span>.
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">
-              A Valtro Labs constrói um ecossistema SaaS para vendedores que operam em
-              marketplaces — do preço à mídia, da automação à análise. Menos planilha,
-              mais decisão.
+              A Valtro Labs desenvolve soluções próprias para simplificar operações,
+              apoiar decisões e impulsionar negócios digitais. Nossa primeira solução
+              ajuda vendedores de marketplaces a precificar com mais segurança e
+              lucratividade.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
