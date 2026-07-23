@@ -314,6 +314,46 @@ function CrmDashboard() {
         </Section>
       )}
 
+      {followUps.data && (
+        <Section
+          title="Central de comunicação"
+          description="Follow-ups agendados e contatos operacionais."
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <FollowUpTile
+              label="Vencidos"
+              value={followUps.data.followUpsVencidos}
+              tone="danger"
+              icon={CalendarClock}
+              to="/crm/leads"
+              search={{ view: "followups-vencidos" as const }}
+            />
+            <FollowUpTile
+              label="Hoje"
+              value={followUps.data.followUpsHoje}
+              tone="primary"
+              icon={CalendarClock}
+              to="/crm/leads"
+              search={{ view: "followups-hoje" as const }}
+            />
+            <FollowUpTile
+              label="Próximos 7 dias"
+              value={followUps.data.followUpsProximos7}
+              tone="info"
+              icon={CalendarClock}
+              to="/crm/leads"
+              search={{ view: "followups-proximos" as const }}
+            />
+            <FollowUpTile
+              label="Contatos hoje"
+              value={followUps.data.contatosHoje}
+              tone="success"
+              icon={PhoneIcon}
+            />
+          </div>
+        </Section>
+      )}
+
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
         <InboxList
           items={data?.inbox ?? []}
