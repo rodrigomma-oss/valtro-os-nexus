@@ -207,9 +207,15 @@ function ActivityList({ items }: { items: ActivityItemDTO[] }) {
 function CrmDashboard() {
   const navigate = useNavigate();
   const getOverviewFn = useServerFn(getOperationsOverview);
+  const getFollowUpsFn = useServerFn(getFollowUpsOverview);
   const { data, isLoading } = useQuery({
     queryKey: ["operations-overview"],
     queryFn: () => getOverviewFn(),
+    staleTime: 30_000,
+  });
+  const followUps = useQuery({
+    queryKey: ["follow-ups-overview"],
+    queryFn: () => getFollowUpsFn(),
     staleTime: 30_000,
   });
 
