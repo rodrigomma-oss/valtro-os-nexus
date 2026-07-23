@@ -38,6 +38,7 @@ import { ActionCard } from "@/components/app/action-card";
 import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
 import { ProposalsCard } from "@/components/app/proposals-card";
+import { ConvertToClientDialog } from "@/components/app/convert-to-client-dialog";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
