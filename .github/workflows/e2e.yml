@@ -14,22 +14,20 @@ jobs:
     timeout-minutes: 20
 
     env:
-      # Supabase (public, safe values already committed in .env)
+      # Supabase (públicos — seguros como Variables)
       VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ezngjargedpcvxnyrgyq.supabase.co' }}
       VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
       VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID || 'ezngjargedpcvxnyrgyq' }}
       SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ezngjargedpcvxnyrgyq.supabase.co' }}
       SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
 
-      # Test target (existing lead uuid in the CRM)
+      # Alvo do teste (lead permanente do CRM)
       TEST_LEAD_ID: ${{ vars.TEST_LEAD_ID }}
 
-      # Dedicated CI test-session secret — a full Supabase session JSON for a
-      # non-privileged test user. Managed exclusively via GitHub Actions Secrets;
-      # never commit or echo this value.
-      LOVABLE_BROWSER_SUPABASE_STORAGE_KEY: ${{ secrets.E2E_SUPABASE_STORAGE_KEY }}
-      LOVABLE_BROWSER_SUPABASE_SESSION_JSON: ${{ secrets.E2E_SUPABASE_SESSION_JSON }}
-      LOVABLE_BROWSER_SUPABASE_COOKIES_JSON: ${{ secrets.E2E_SUPABASE_COOKIES_JSON }}
+      # Credenciais do usuário E2E dedicado (role operator, sem privilégios admin).
+      # Login fresco a cada execução — NUNCA impressos em logs.
+      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
 
       PLAYWRIGHT_BASE_URL: http://localhost:8080
 
@@ -75,7 +73,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
+          # Exclui o storageState (contém tokens) do artefato.
           path: |
             playwright-report/
             test-results/
+            !**/.auth/**
           retention-days: 7
