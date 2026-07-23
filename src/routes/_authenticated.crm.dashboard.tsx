@@ -448,3 +448,57 @@ function CrmDashboard() {
     </div>
   );
 }
+
+type TileTone = "primary" | "info" | "danger" | "success" | "warning";
+
+const TILE_TONE: Record<TileTone, { bg: string; text: string; ring: string }> = {
+  primary: { bg: "bg-primary/10", text: "text-primary", ring: "ring-primary/20" },
+  info: { bg: "bg-info/10", text: "text-info", ring: "ring-info/20" },
+  danger: { bg: "bg-destructive/10", text: "text-destructive", ring: "ring-destructive/20" },
+  success: { bg: "bg-success/10", text: "text-success", ring: "ring-success/20" },
+  warning: { bg: "bg-warning/10", text: "text-warning", ring: "ring-warning/20" },
+};
+
+function FollowUpTile({
+  label,
+  value,
+  tone,
+  icon: Icon,
+  to,
+  search,
+}: {
+  label: string;
+  value: number;
+  tone: TileTone;
+  icon: LucideIcon;
+  to?: string;
+  search?: Record<string, string>;
+}) {
+  const t = TILE_TONE[tone];
+  const inner = (
+    <div
+      className={cn(
+        "rounded-2xl border border-border bg-surface p-4 shadow-soft h-full flex items-start gap-3 transition-colors",
+        to ? "hover:bg-muted/40" : "",
+      )}
+    >
+      <div className={cn("grid h-9 w-9 place-items-center rounded-xl ring-1", t.bg, t.text, t.ring)}>
+        <Icon className="h-4 w-4" strokeWidth={1.75} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="text-2xl font-semibold text-foreground leading-tight mt-0.5">{value}</p>
+      </div>
+    </div>
+  );
+  if (!to) return inner;
+  return (
+    <Link
+      to={to}
+      search={search as never}
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
+    >
+      {inner}
+    </Link>
+  );
+}
