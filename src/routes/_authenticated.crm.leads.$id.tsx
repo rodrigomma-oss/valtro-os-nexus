@@ -327,6 +327,25 @@ function CrmLeadDetail() {
               <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
               Comunicação
             </Button>
+            {lead.client_id ? (
+              <Button variant="outline" size="sm" className="gap-2" asChild>
+                <Link to="/crm/clientes/$id" params={{ id: lead.client_id }}>
+                  <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
+                  Ver cliente
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                disabled={!canWrite}
+                onClick={() => setConvertOpen(true)}
+              >
+                <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
+                Converter em cliente
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
