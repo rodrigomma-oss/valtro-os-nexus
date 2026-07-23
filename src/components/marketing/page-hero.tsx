@@ -25,6 +25,8 @@ export interface PageHeroProps {
   secondaryCta?: PageHeroCTA;
   align?: "left" | "center";
   className?: string;
+  /** Slot visual opcional exibido à direita do conteúdo (desktop). */
+  visual?: ReactNode;
 }
 
 /**
