@@ -406,13 +406,18 @@ function CrmLeads() {
         }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Total de leads" value={kpis.total} hint="Base ativa" />
         <StatCard label="Novos" value={kpis.novos} hint="Aguardando abordagem" />
         <StatCard
+          label="Em triagem"
+          value={kpis.emTriagem}
+          hint="Validação comercial em curso"
+        />
+        <StatCard
           label="Em andamento"
           value={kpis.emAndamento}
-          hint="Contato, qualificado ou proposta"
+          hint="Contato, qualificado, briefing ou proposta"
         />
         <StatCard
           label="Conversão"
@@ -421,6 +426,39 @@ function CrmLeads() {
           trend={kpis.conversao > 20 ? "up" : "neutral"}
         />
       </div>
+
+      {/* Quick views */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground mr-1">
+          Visões rápidas:
+        </span>
+        {[
+          { key: "novos-do-site", label: "Novos do site" },
+          { key: "aguardando-triagem", label: "Aguardando triagem" },
+          { key: "sem-responsavel", label: "Sem responsável" },
+        ].map((v) => {
+          const active = quickView === v.key;
+          return (
+            <button
+              key={v.key}
+              type="button"
+              onClick={() => {
+                setQuickView(active ? null : (v.key as typeof quickView));
+                setPage(1);
+              }}
+              className={
+                "rounded-full border px-3 py-1 text-xs transition-colors " +
+                (active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-surface text-muted-foreground border-border hover:text-foreground")
+              }
+            >
+              {v.label}
+            </button>
+          );
+        })}
+      </div>
+
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1 max-w-md">
