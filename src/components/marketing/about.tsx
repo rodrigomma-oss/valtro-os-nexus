@@ -5,18 +5,19 @@ const HIGHLIGHTS = [
   { icon: Boxes, label: "Marketplaces & automação" },
   { icon: LineChart, label: "Inteligência de negócios" },
   { icon: Sparkles, label: "Produtividade em escala" },
-];
+] as const;
 
 export function About() {
   return (
-    <section id="sobre" className="py-24 md:py-32">
+    <section id="sobre" aria-labelledby="sobre-title" className="section-y">
       <div className="container-page">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           <div className="lg:col-span-5">
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              Quem somos
-            </div>
-            <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground">
+            <p className="eyebrow">Quem somos</p>
+            <h2
+              id="sobre-title"
+              className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground text-balance"
+            >
               Uma empresa brasileira construindo o futuro dos negócios digitais.
             </h2>
           </div>
@@ -33,19 +34,19 @@ export function About() {
               marketplaces, e-commerces e operações digitais.
             </p>
 
-            <div className="mt-10 grid sm:grid-cols-2 gap-3">
+            <ul className="mt-10 grid sm:grid-cols-2 gap-3 not-prose">
               {HIGHLIGHTS.map(({ icon: Icon, label }) => (
-                <div
+                <li
                   key={label}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 shadow-soft"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 shadow-soft transition-colors hover:border-primary/30"
                 >
                   <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-primary">
-                    <Icon className="h-4 w-4" strokeWidth={1.75} />
+                    <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                   </div>
                   <span className="text-sm font-medium text-foreground">{label}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       </div>

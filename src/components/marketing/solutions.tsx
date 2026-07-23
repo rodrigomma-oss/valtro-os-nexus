@@ -1,5 +1,6 @@
 import { ArrowUpRight, BarChart3, Megaphone, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { SectionHeader } from "@/components/shared/section-header";
 
 type Status = "available" | "developing" | "planning";
 
@@ -48,26 +49,29 @@ const STATUS_LABEL: Record<Status, string> = {
 
 export function Solutions() {
   return (
-    <section id="solucoes" className="py-24 md:py-32 bg-surface border-y border-border">
+    <section
+      id="solucoes"
+      aria-labelledby="solucoes-title"
+      className="section-y bg-surface border-y border-border"
+    >
       <div className="container-page">
-        <div className="max-w-2xl">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Soluções
-          </div>
-          <h2 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground">
-            Um ecossistema de produtos em expansão contínua.
-          </h2>
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-            Cada produto Valtro é pensado para resolver uma etapa crítica da operação
-            digital — do preço à performance, da mídia à análise.
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Soluções"
+          title={
+            <span id="solucoes-title">
+              Um ecossistema de produtos em expansão contínua.
+            </span>
+          }
+          description="Cada produto Valtro é pensado para resolver uma etapa crítica da operação digital — do preço à performance, da mídia à análise."
+        />
 
-        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6 not-prose">
           {SOLUTIONS.map((s) => (
-            <SolutionCard key={s.name} solution={s} />
+            <li key={s.name} className="flex">
+              <SolutionCard solution={s} />
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
@@ -79,38 +83,42 @@ function SolutionCard({ solution }: { solution: Solution }) {
 
   return (
     <article
-      className={`group relative flex flex-col rounded-2xl border p-7 transition-all duration-200 ${
+      aria-label={`${name} — ${STATUS_LABEL[status]}`}
+      className={`group relative flex w-full flex-col rounded-2xl border p-7 transition-all duration-200 ${
         isAvailable
-          ? "border-border bg-surface shadow-soft hover:shadow-elevated hover:border-primary/30 hover:-translate-y-0.5"
+          ? "border-border bg-background shadow-soft hover:shadow-elevated hover:border-primary/30 hover:-translate-y-0.5"
           : "border-dashed border-border bg-transparent"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div
-          className={`grid h-12 w-12 place-items-center rounded-xl ${
+          className={`grid h-12 w-12 place-items-center rounded-xl transition-transform ${
             isAvailable
-              ? "bg-brand-soft text-primary"
+              ? "bg-brand-soft text-primary group-hover:scale-105"
               : "bg-muted text-muted-foreground"
           }`}
         >
-          <Icon className="h-5 w-5" strokeWidth={1.75} />
+          <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
         </div>
         <span
           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-            isAvailable
-              ? "bg-brand-soft text-primary"
-              : "bg-muted text-muted-foreground"
+            isAvailable ? "bg-brand-soft text-primary" : "bg-muted text-muted-foreground"
           }`}
         >
-          {isAvailable && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+          {isAvailable && (
+            <span className="relative flex h-1.5 w-1.5" aria-hidden>
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+          )}
           {isAvailable ? STATUS_LABEL[status] : "Em breve"}
         </span>
       </div>
 
-      <div className="mt-7">
-        <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="mt-7 flex-1">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {tagline}
-        </div>
+        </p>
         <h3 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground">
           {name}
         </h3>
@@ -123,10 +131,14 @@ function SolutionCard({ solution }: { solution: Solution }) {
         {isAvailable && href ? (
           <a
             href={href}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover group/link"
+            aria-label={`Conhecer ${name}`}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background group/link"
           >
             Conhecer
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+            <ArrowUpRight
+              className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+              aria-hidden
+            />
           </a>
         ) : (
           <span className="text-xs font-medium text-muted-foreground">
