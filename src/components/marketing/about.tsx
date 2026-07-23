@@ -55,7 +55,7 @@ export function About() {
               <p className="text-sm text-foreground leading-relaxed">
                 <span className="font-semibold text-primary">Nossa aposta:</span>{" "}
                 um ecossistema modular, brasileiro e proprietário — construído com
-                engenharia, dados e design — que evolui junto com quem vende.
+                engenharia, dados e design — que evolui junto com cada negócio digital.
               </p>
             </div>
           </div>
