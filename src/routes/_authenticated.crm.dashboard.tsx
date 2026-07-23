@@ -235,6 +235,19 @@ function CrmDashboard() {
     queryFn: () => getProposalsFn(),
     staleTime: 30_000,
   });
+  const getProjectsFn = useServerFn(getProjectsOverview);
+  const getClientsFn = useServerFn(getClientsOverview);
+  const projects = useQuery({
+    queryKey: ["projects-overview"],
+    queryFn: () => getProjectsFn(),
+    staleTime: 30_000,
+  });
+  const clients = useQuery({
+    queryKey: ["clients-overview"],
+    queryFn: () => getClientsFn(),
+    staleTime: 30_000,
+  });
+
 
   const heroParts: string[] = [];
   if (data) {
