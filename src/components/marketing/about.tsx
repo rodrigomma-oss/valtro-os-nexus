@@ -1,10 +1,10 @@
 import { CheckCircle2 } from "lucide-react";
 
 const PROBLEMS = [
-  "Precificação manual e reativa que corrói a margem",
-  "Planilhas isoladas sem visão unificada do negócio",
-  "Falta de tempo para decisões estratégicas do dia a dia",
-  "Ferramentas genéricas que não entendem marketplaces",
+  "Decisões críticas presas em planilhas e no achismo do dia a dia",
+  "Operações digitais que crescem mais rápido do que os processos",
+  "Ferramentas genéricas que não acompanham a realidade do negócio",
+  "Falta de tecnologia própria para sustentar decisões estratégicas",
 ] as const;
 
 export function About() {
