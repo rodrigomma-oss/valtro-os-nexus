@@ -170,8 +170,10 @@ function SolucoesPage() {
         subtitle="Desenvolvemos soluções que ajudam empreendedores a tomar decisões melhores, automatizar processos e crescer com mais eficiência. O Valtro Pricing é o primeiro passo dessa jornada."
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Soluções" }]}
         cta={{ label: "Conheça o Valtro Pricing", href: "https://pricing.valtrolabs.pro" }}
-        secondaryCta={{ label: "Fale conosco", href: "/#contato" }}
+        secondaryCta={{ label: "Converse com nossa equipe", href: "/#contato" }}
+        visual={<EcosystemVisual />}
       />
+
 
       {/* 2. Nossa visão */}
       <section aria-labelledby="visao-title" className="section-y">
