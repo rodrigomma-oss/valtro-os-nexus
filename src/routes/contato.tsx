@@ -130,6 +130,16 @@ const INTERESTS: { value: InterestValue; label: string }[] = [
   { value: "outro", label: "Outro" },
 ];
 
+const QUERY_INTEREST_MAP: Record<string, InterestValue> = {
+  desenvolvimento: "desenvolvimento",
+  "analise-loja": "analise_loja",
+  analise_loja: "analise_loja",
+  pricing: "valtro_pricing",
+  valtro_pricing: "valtro_pricing",
+  parceria: "parceria",
+  outro: "outro",
+};
+
 const NEXT_STEPS = [
   "Recebemos sua solicitação.",
   "Analisamos a necessidade.",
