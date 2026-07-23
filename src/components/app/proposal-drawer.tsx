@@ -434,9 +434,9 @@ export function ProposalDrawer({
                       Nenhum registro de negociação ainda.
                     </div>
                   ) : (
-                    <ol className="space-y-2">
+                    <ol className="space-y-2" data-testid="proposal-negotiation-list">
                       {negotiations.map((n) => (
-                        <li key={n.id} className="rounded-lg border border-border bg-card p-3">
+                        <li key={n.id} className="rounded-lg border border-border bg-card p-3" data-testid="proposal-negotiation-item">
                           <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
                             <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 font-medium text-foreground">
                               {NEGOTIATION_TYPE_LABEL[n.type]}
