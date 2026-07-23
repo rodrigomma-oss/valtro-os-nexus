@@ -138,7 +138,12 @@ const EVENT_META: Record<
   oportunidade_descartada: { icon: XCircle, tone: "muted", title: "Oportunidade descartada" },
   contato_registrado: { icon: Phone, tone: "default", title: "Contato registrado" },
   follow_up_agendado: { icon: CalendarClock, tone: "default", title: "Follow-up agendado" },
+  follow_up_agendado: { icon: CalendarClock, tone: "default", title: "Follow-up agendado" },
   follow_up_concluido: { icon: CalendarCheck, tone: "success", title: "Follow-up concluído" },
+  proposta_criada: { icon: Receipt, tone: "default", title: "Proposta criada" },
+  proposta_status_alterado: { icon: RefreshCw, tone: "default", title: "Proposta — status alterado" },
+  proposta_aprovada: { icon: CheckSquare, tone: "success", title: "Proposta aprovada" },
+  proposta_rejeitada: { icon: XSquare, tone: "muted", title: "Proposta rejeitada" },
 };
 
 function formatDate(iso: string) {
