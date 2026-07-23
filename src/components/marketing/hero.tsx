@@ -64,7 +64,7 @@ export function Hero() {
             <div className="mt-10 flex flex-col gap-3">
               <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden />
-                Feito para operações em
+                Soluções pensadas para negócios digitais presentes em
               </p>
               <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
                 {MARKETPLACES.map((m) => (
