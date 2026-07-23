@@ -17,6 +17,12 @@ import {
   PlayCircle,
   RotateCcw,
   CheckCircle2,
+  ClipboardList,
+  Target,
+  Tag,
+  UserCog,
+  Trophy,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
@@ -43,6 +49,7 @@ import {
   getMyRoles,
 } from "@/lib/leads.functions";
 import type { LeadEvent, LeadEventType, LeadNote, LeadStatus } from "@/types/lead";
+import { STATUS_LABEL } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
   component: CrmLeadDetail,
@@ -54,14 +61,23 @@ export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
   }),
 });
 
-const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
-  { value: "novo", label: "Novo" },
-  { value: "contato", label: "Em contato" },
-  { value: "qualificado", label: "Qualificado" },
-  { value: "proposta", label: "Proposta" },
-  { value: "ganho", label: "Ganho" },
-  { value: "perdido", label: "Perdido" },
+const STATUS_ORDER: LeadStatus[] = [
+  "novo",
+  "em_triagem",
+  "contato",
+  "qualificado",
+  "aguardando_briefing",
+  "briefing_enviado",
+  "em_analise",
+  "proposta",
+  "ganho",
+  "perdido",
+  "descartado",
 ];
+
+const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = STATUS_ORDER.map(
+  (value) => ({ value, label: STATUS_LABEL[value] }),
+);
 
 const EVENT_META: Record<
   LeadEventType,
@@ -102,6 +118,12 @@ const EVENT_META: Record<
   briefing_concluido: { icon: CheckCircle2, tone: "success", title: "Briefing concluído" },
   lead_arquivado: { icon: Archive, tone: "muted", title: "Lead arquivado" },
   lead_atualizado: { icon: Pencil, tone: "default", title: "Lead atualizado" },
+  triagem_iniciada: { icon: ClipboardList, tone: "default", title: "Triagem iniciada" },
+  proxima_acao_alterada: { icon: Target, tone: "default", title: "Próxima ação alterada" },
+  interesse_alterado: { icon: Tag, tone: "default", title: "Interesse alterado" },
+  responsavel_alterado: { icon: UserCog, tone: "default", title: "Responsável alterado" },
+  oportunidade_convertida: { icon: Trophy, tone: "success", title: "Oportunidade convertida" },
+  oportunidade_descartada: { icon: XCircle, tone: "muted", title: "Oportunidade descartada" },
 };
 
 function formatDate(iso: string) {
