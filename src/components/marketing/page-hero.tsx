@@ -53,7 +53,9 @@ export function PageHero({
   secondaryCta,
   align = "left",
   className,
+  visual,
 }: PageHeroProps) {
+  const hasVisual = Boolean(visual) && align !== "center";
   return (
     <section
       className={cn(
@@ -65,11 +67,11 @@ export function PageHero({
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/12),transparent_60%)]"
       />
-      <div className="container-page relative pt-36 md:pt-44 pb-16 md:pb-24">
+      <div className="container-page relative pt-32 md:pt-36 pb-14 md:pb-20">
         {breadcrumb && breadcrumb.length > 0 && (
           <nav
             aria-label="Trilha de navegação"
-            className={cn("mb-6", align === "center" && "flex justify-center")}
+            className={cn("mb-4", align === "center" && "flex justify-center")}
           >
             <ol className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
               {breadcrumb.map((item, idx) => {
@@ -101,33 +103,47 @@ export function PageHero({
 
         <div
           className={cn(
-            "max-w-3xl",
-            align === "center" && "mx-auto text-center",
+            hasVisual
+              ? "grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-center"
+              : "",
           )}
         >
-          {eyebrow && (
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              {eyebrow}
-            </div>
-          )}
-          <h1 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-foreground">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
-              {subtitle}
-            </p>
-          )}
+          <div
+            className={cn(
+              "max-w-3xl",
+              align === "center" && "mx-auto text-center",
+            )}
+          >
+            {eyebrow && (
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                {eyebrow}
+              </div>
+            )}
+            <h1 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-foreground">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
+                {subtitle}
+              </p>
+            )}
 
-          {(cta || secondaryCta) && (
-            <div
-              className={cn(
-                "mt-8 flex flex-wrap items-center gap-3",
-                align === "center" && "justify-center",
-              )}
-            >
-              {cta && <PageHeroButton {...cta} />}
-              {secondaryCta && <PageHeroButton {...secondaryCta} variant={secondaryCta.variant ?? "secondary"} />}
+            {(cta || secondaryCta) && (
+              <div
+                className={cn(
+                  "mt-8 flex flex-wrap items-center gap-3",
+                  align === "center" && "justify-center",
+                )}
+              >
+                {cta && <PageHeroButton {...cta} />}
+                {secondaryCta && <PageHeroButton {...secondaryCta} variant={secondaryCta.variant ?? "secondary"} />}
+              </div>
+            )}
+          </div>
+
+          {hasVisual && (
+            <div className="hidden lg:block" aria-hidden>
+              {visual}
             </div>
           )}
         </div>
