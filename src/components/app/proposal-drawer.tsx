@@ -537,17 +537,24 @@ function TotalsRow({
   label,
   value,
   emphasis,
+  testId,
 }: {
   label: string;
   value: string;
   emphasis?: boolean;
+  testId?: string;
 }) {
   return (
     <div className="flex items-center justify-between text-sm">
       <span className={cn("text-muted-foreground", emphasis && "text-foreground font-semibold")}>
         {label}
       </span>
-      <span className={cn("font-medium", emphasis && "text-lg font-semibold")}>{value}</span>
+      <span
+        data-testid={testId}
+        className={cn("font-medium", emphasis && "text-lg font-semibold")}
+      >
+        {value}
+      </span>
     </div>
   );
 }
