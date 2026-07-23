@@ -52,11 +52,16 @@ export interface LeadNote {
 
 export const STATUS_LABEL: Record<LeadStatus, string> = {
   novo: "Novo",
+  em_triagem: "Em triagem",
   contato: "Em contato",
   qualificado: "Qualificado",
+  aguardando_briefing: "Aguardando briefing",
+  briefing_enviado: "Briefing enviado",
+  em_analise: "Em análise",
   proposta: "Proposta",
-  ganho: "Ganho",
+  ganho: "Convertido",
   perdido: "Perdido",
+  descartado: "Descartado",
 };
 
 export const SOURCE_LABEL: Record<LeadSource, string> = {
