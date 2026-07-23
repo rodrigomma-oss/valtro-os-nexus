@@ -398,7 +398,7 @@ const SERVICE_TYPE_VALUES_TRIAGE = [
 ] as const;
 
 async function insertEvent(
-  supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any,
+  supabase: any,
   leadId: string,
   type: string,
   description: string,
