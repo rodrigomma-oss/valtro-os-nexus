@@ -371,11 +371,221 @@ export const getLeadsKpis = createServerFn({ method: "GET" })
     const by = (s: LeadStatus) => rows.filter((r) => r.status === s).length;
     const total = rows.length;
     const novos = by("novo");
-    const emAndamento = by("contato") + by("qualificado") + by("proposta");
+    const emTriagem = by("em_triagem");
+    const emAndamento =
+      by("contato") + by("qualificado") + by("proposta") +
+      by("aguardando_briefing") + by("briefing_enviado") + by("em_analise");
     const ganhos = by("ganho");
     const conversao = total > 0 ? Math.round((ganhos / total) * 100) : 0;
-    return { total, novos, emAndamento, ganhos, conversao };
+    return { total, novos, emTriagem, emAndamento, ganhos, conversao };
   });
+
+// =============================================================
+// Sprint 9 — Triagem comercial
+// =============================================================
+
+const SERVICE_TYPE_VALUES_TRIAGE = [
+  "nao_definido",
+  "desenvolvimento_projeto",
+  "gestao_shopee",
+  "gestao_mercadolivre",
+  "gestao_amazon",
+  "gestao_multicanal",
+  "consultoria",
+  "diagnostico",
+  "trafego_pago",
+  "outro",
+] as const;
+
+async function insertEvent(
+  supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any,
+  leadId: string,
+  type: string,
+  description: string,
+  createdBy: string,
+  metadata?: Record<string, unknown>,
+) {
+  await supabase.from("lead_events").insert({
+    lead_id: leadId,
+    type,
+    description,
+    created_by: createdBy,
+    metadata: metadata ?? null,
+  });
+}
+
+// Inicia a triagem: seta status=em_triagem e triage_started_at=now(), se ainda não iniciada
+export const startTriage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: current, error: readErr } = await context.supabase
+      .from("leads")
+      .select("id, status, triage_started_at")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!current) throw new Error("Lead não encontrado.");
+
+    const patch: Record<string, unknown> = {};
+    if (!current.triage_started_at) patch.triage_started_at = new Date().toISOString();
+    if (current.status === "novo") patch.status = "em_triagem";
+    if (Object.keys(patch).length === 0) return { ok: true, already: true };
+
+    const { error } = await context.supabase
+      .from("leads")
+      .update(patch)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+
+    await insertEvent(
+      context.supabase,
+      data.id,
+      "triagem_iniciada",
+      "Triagem comercial iniciada.",
+      context.userId,
+    );
+    return { ok: true };
+  });
+
+// Atualiza campos de triagem: next_action, triage_notes, service_type (interesse), owner_id
+const updateTriageSchema = z.object({
+  id: z.string().uuid(),
+  next_action: z.enum(NEXT_ACTION_VALUES).nullable().optional(),
+  triage_notes: z.string().trim().nullable().optional(),
+  service_type: z.enum(SERVICE_TYPE_VALUES_TRIAGE).optional(),
+  owner_id: z.string().uuid().nullable().optional(),
+});
+
+export const updateTriage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => updateTriageSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { id, ...patch } = data;
+    if (Object.keys(patch).length === 0) return { ok: true };
+
+    const { data: before, error: readErr } = await context.supabase
+      .from("leads")
+      .select("service_type, next_action, owner_id")
+      .eq("id", id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!before) throw new Error("Lead não encontrado.");
+
+    const { error } = await context.supabase.from("leads").update(patch).eq("id", id);
+    if (error) throw new Error(error.message);
+
+    // Eventos de auditoria (mensagens amigáveis)
+    if (patch.service_type && patch.service_type !== before.service_type) {
+      await insertEvent(
+        context.supabase,
+        id,
+        "interesse_alterado",
+        `Interesse alterado de "${INTEREST_LABEL[before.service_type as keyof typeof INTEREST_LABEL] ?? before.service_type}" para "${INTEREST_LABEL[patch.service_type]}".`,
+        context.userId,
+        { from: before.service_type, to: patch.service_type },
+      );
+    }
+    if (patch.next_action !== undefined && patch.next_action !== before.next_action) {
+      const label = patch.next_action ? NEXT_ACTION_LABEL[patch.next_action] : "—";
+      await insertEvent(
+        context.supabase,
+        id,
+        "proxima_acao_alterada",
+        `Próxima ação definida: ${label}.`,
+        context.userId,
+        { from: before.next_action, to: patch.next_action },
+      );
+    }
+    if (patch.owner_id !== undefined && patch.owner_id !== before.owner_id) {
+      await insertEvent(
+        context.supabase,
+        id,
+        "responsavel_alterado",
+        patch.owner_id ? "Responsável atualizado." : "Responsável removido.",
+        context.userId,
+        { from: before.owner_id, to: patch.owner_id },
+      );
+    }
+    return { ok: true };
+  });
+
+// Descartar oportunidade
+export const discardLead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        reason: z.string().trim().max(500).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("leads")
+      .update({ status: "descartado", next_action: "descartar" })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await insertEvent(
+      context.supabase,
+      data.id,
+      "oportunidade_descartada",
+      data.reason
+        ? `Oportunidade descartada durante a triagem: ${data.reason}`
+        : "Oportunidade descartada durante a triagem.",
+      context.userId,
+    );
+    return { ok: true };
+  });
+
+// Converter (marcar como ganho)
+export const convertLead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("leads")
+      .update({ status: "ganho" })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await insertEvent(
+      context.supabase,
+      data.id,
+      "oportunidade_convertida",
+      "Oportunidade convertida.",
+      context.userId,
+    );
+    return { ok: true };
+  });
+
+// Lista de usuários atribuíveis (operator/admin) — para o seletor de responsável
+export const listAssignableUsers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("user_roles")
+      .select("user_id, role, profile:profiles!user_roles_user_id_fkey(id, full_name)")
+      .in("role", ["admin", "operator"])
+      .returns<
+        Array<{
+          user_id: string;
+          role: string;
+          profile: { id: string; full_name: string | null } | null;
+        }>
+      >();
+    if (error) throw new Error(error.message);
+    const map = new Map<string, { id: string; full_name: string | null }>();
+    for (const r of data ?? []) {
+      if (r.profile) map.set(r.profile.id, r.profile);
+    }
+    return Array.from(map.values()).sort((a, b) =>
+      (a.full_name ?? "").localeCompare(b.full_name ?? ""),
+    );
+  });
+
+// Referências auxiliares (para não deixar imports não-utilizados)
+void STATUS_LABEL;
 
 // =============================================================
 // Current user role (for UI gating)
