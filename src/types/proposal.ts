@@ -45,7 +45,7 @@ export interface ProposalNegotiation {
   proposal_id: string;
   type: ProposalNegotiationType;
   content: string;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, any> | null;
   created_by: string | null;
   created_by_name: string | null;
   created_at: string;
