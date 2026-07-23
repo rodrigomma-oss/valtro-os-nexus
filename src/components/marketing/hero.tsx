@@ -1,7 +1,7 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { HeroVisual } from "./hero-visual";
 
-const MARKETPLACES = ["Mercado Livre", "Shopee", "Amazon", "Magalu", "Shopify"] as const;
+const MARKETPLACES = ["Shopee", "Mercado Livre", "Amazon", "Magalu", "Shopify"] as const;
 
 export function Hero() {
   return (
@@ -31,14 +31,15 @@ export function Hero() {
               id="hero-title"
               className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-foreground text-balance"
             >
-              Software inteligente para{" "}
-              <span className="text-primary">vender melhor</span> em marketplaces.
+              Criamos software inteligente para{" "}
+              <span className="text-primary">simplificar negócios digitais</span>.
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">
-              A Valtro Labs constrói um ecossistema SaaS para vendedores que operam em
-              marketplaces — do preço à mídia, da automação à análise. Menos planilha,
-              mais decisão.
+              A Valtro Labs desenvolve soluções próprias para simplificar operações,
+              apoiar decisões e impulsionar negócios digitais. Nossa primeira solução
+              ajuda vendedores de marketplaces a precificar com mais segurança e
+              lucratividade.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -63,7 +64,7 @@ export function Hero() {
             <div className="mt-10 flex flex-col gap-3">
               <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden />
-                Feito para operações em
+                Soluções pensadas para negócios digitais presentes em
               </p>
               <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
                 {MARKETPLACES.map((m) => (

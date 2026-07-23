@@ -1,10 +1,10 @@
 import { CheckCircle2 } from "lucide-react";
 
 const PROBLEMS = [
-  "Precificação manual e reativa que corrói a margem",
-  "Planilhas isoladas sem visão unificada do negócio",
-  "Falta de tempo para decisões estratégicas do dia a dia",
-  "Ferramentas genéricas que não entendem marketplaces",
+  "Decisões críticas presas em planilhas e no achismo do dia a dia",
+  "Operações digitais que crescem mais rápido do que os processos",
+  "Ferramentas genéricas que não acompanham a realidade do negócio",
+  "Falta de tecnologia própria para sustentar decisões estratégicas",
 ] as const;
 
 export function About() {
@@ -18,13 +18,14 @@ export function About() {
               id="sobre-title"
               className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground text-balance"
             >
-              Vender em marketplace virou um problema de software — não de esforço.
+              Negócios digitais crescem quando decisões deixam de depender só de esforço.
             </h2>
             <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
-              A Valtro Labs nasceu para resolver o gargalo real do vendedor digital brasileiro:
-              decisões críticas tomadas em planilhas, à noite, no achismo. Construímos
-              tecnologia proprietária para que preço, mídia e análise deixem de ser tarefa
-              e voltem a ser vantagem competitiva.
+              À medida que os negócios digitais crescem, decisões importantes deixam
+              de depender apenas de esforço e passam a exigir tecnologia. É para
+              resolver esse desafio que a Valtro Labs desenvolve soluções simples,
+              inteligentes e em constante evolução — começando pelo Valtro Pricing,
+              a primeira aplicação dessa visão.
             </p>
           </div>
 
@@ -54,7 +55,7 @@ export function About() {
               <p className="text-sm text-foreground leading-relaxed">
                 <span className="font-semibold text-primary">Nossa aposta:</span>{" "}
                 um ecossistema modular, brasileiro e proprietário — construído com
-                engenharia, dados e design — que evolui junto com quem vende.
+                engenharia, dados e design — que evolui junto com cada negócio digital.
               </p>
             </div>
           </div>

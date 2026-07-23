@@ -63,10 +63,10 @@ export function Solutions() {
           eyebrow="Ecossistema"
           title={
             <span id="solucoes-title">
-              Três produtos, uma única operação.
+              Um ecossistema em construção, um produto por vez.
             </span>
           }
-          description="Construímos um ecossistema modular para vendedores em marketplaces. Comece pelo Valtro Pricing — a primeira solução disponível — e cresça com o resto do stack conforme lançamos."
+          description="A Valtro Labs desenvolve soluções modulares para negócios digitais. O Valtro Pricing é a primeira aplicação dessa visão — novas soluções já estão em desenvolvimento e planejamento."
         />
 
         <ul className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6 not-prose">
