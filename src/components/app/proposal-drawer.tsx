@@ -303,7 +303,7 @@ export function ProposalDrawer({
                         </thead>
                         <tbody>
                           {items.map((it) => (
-                            <tr key={it.id} className="border-t border-border align-top">
+                            <tr key={it.id} className="border-t border-border align-top" data-testid="proposal-item-row">
                               <td className="px-3 py-2">
                                 <Input
                                   value={it.service_label}
