@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils";
 import { getOperationsOverview, type EventKind, type InboxItemDTO, type ActivityItemDTO, type PipelineStageDTO } from "@/lib/operations.functions";
 import { getFollowUpsOverview } from "@/lib/leads.functions";
 import { getProposalsOverview } from "@/lib/proposals.functions";
-import { CalendarClock, Phone as PhoneIcon } from "lucide-react";
+import { getProjectsOverview, getClientsOverview } from "@/lib/projects.functions";
+import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
