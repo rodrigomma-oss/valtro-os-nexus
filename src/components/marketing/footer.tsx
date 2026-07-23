@@ -104,9 +104,17 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © {CURRENT_YEAR} Valtro Labs. Todos os direitos reservados.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Feito com foco em clareza, simplicidade e evolução contínua.
-          </p>
+          <nav aria-label="Legal" className="flex items-center gap-4 text-xs text-muted-foreground">
+            {LEGAL_LINKS.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>
