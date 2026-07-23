@@ -509,6 +509,24 @@ function CrmLeads() {
               ))}
             </SelectContent>
           </Select>
+          <Select
+            value={sourceFilter}
+            onValueChange={(value) => {
+              setSourceFilter(value as LeadSource | "todas");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[170px] bg-surface">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SOURCE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button variant="outline" size="icon" aria-label="Mais filtros" disabled>
             <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} />
           </Button>
