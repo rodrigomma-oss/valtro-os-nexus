@@ -68,6 +68,7 @@ interface RawLead {
   next_follow_up_at: string | null;
   next_follow_up_reason: string | null;
   next_follow_up_owner_id: string | null;
+  client_id: string | null;
   created_at: string;
   updated_at: string;
   owner: { full_name: string | null } | null;
@@ -97,13 +98,14 @@ function mapLead(row: RawLead): Lead {
     next_follow_up_reason: row.next_follow_up_reason,
     next_follow_up_owner_id: row.next_follow_up_owner_id,
     next_follow_up_owner_name: null,
+    client_id: row.client_id,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
 }
 
 const LEAD_SELECT = sel(
-  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, next_action, triage_notes, triage_started_at, archived_at, next_follow_up_at, next_follow_up_reason, next_follow_up_owner_id, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
+  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, next_action, triage_notes, triage_started_at, archived_at, next_follow_up_at, next_follow_up_reason, next_follow_up_owner_id, client_id, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
 );
 
 

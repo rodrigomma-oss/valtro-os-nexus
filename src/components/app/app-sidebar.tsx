@@ -7,6 +7,7 @@ import {
   Building2,
   Settings,
   ClipboardList,
+  FolderKanban,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
@@ -31,6 +32,8 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Centro de Operações", to: "/crm/dashboard", icon: LayoutDashboard },
       { label: "Leads", to: "/crm/leads", icon: Users },
+      { label: "Clientes", to: "/crm/clientes", icon: Building2 },
+      { label: "Projetos", to: "/crm/projetos", icon: FolderKanban },
     ],
   },
   {
@@ -44,7 +47,6 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Análises", to: "/crm/analises", icon: BarChart3, disabled: true },
       { label: "Propostas", to: "/crm/propostas", icon: FileSignature, disabled: true },
-      { label: "Clientes", to: "/crm/clientes", icon: Building2, disabled: true },
     ],
   },
 ];

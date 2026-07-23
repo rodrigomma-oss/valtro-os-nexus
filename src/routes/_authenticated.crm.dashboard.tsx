@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils";
 import { getOperationsOverview, type EventKind, type InboxItemDTO, type ActivityItemDTO, type PipelineStageDTO } from "@/lib/operations.functions";
 import { getFollowUpsOverview } from "@/lib/leads.functions";
 import { getProposalsOverview } from "@/lib/proposals.functions";
-import { CalendarClock, Phone as PhoneIcon } from "lucide-react";
+import { getProjectsOverview, getClientsOverview } from "@/lib/projects.functions";
+import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
@@ -234,6 +235,19 @@ function CrmDashboard() {
     queryFn: () => getProposalsFn(),
     staleTime: 30_000,
   });
+  const getProjectsFn = useServerFn(getProjectsOverview);
+  const getClientsFn = useServerFn(getClientsOverview);
+  const projects = useQuery({
+    queryKey: ["projects-overview"],
+    queryFn: () => getProjectsFn(),
+    staleTime: 30_000,
+  });
+  const clients = useQuery({
+    queryKey: ["clients-overview"],
+    queryFn: () => getClientsFn(),
+    staleTime: 30_000,
+  });
+
 
   const heroParts: string[] = [];
   if (data) {
@@ -419,6 +433,44 @@ function CrmDashboard() {
               value={`${proposals.data.conversion_rate}%`}
               hint="Aprovadas / total"
               trend={proposals.data.conversion_rate > 30 ? "up" : "neutral"}
+            />
+          </div>
+        </Section>
+      )}
+
+      {(clients.data || projects.data) && (
+        <Section
+          title="Clientes & Projetos"
+          description="Base de relacionamento e execução."
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <FollowUpTile
+              label="Clientes ativos"
+              value={clients.data?.ativos ?? 0}
+              tone="success"
+              icon={Building2}
+              to="/crm/clientes"
+            />
+            <FollowUpTile
+              label="Projetos ativos"
+              value={projects.data?.ativos ?? 0}
+              tone="primary"
+              icon={FolderKanban}
+              to="/crm/projetos"
+            />
+            <FollowUpTile
+              label="Aguardando cliente"
+              value={projects.data?.aguardandoCliente ?? 0}
+              tone="warning"
+              icon={FolderKanban}
+              to="/crm/projetos"
+            />
+            <FollowUpTile
+              label="Projetos atrasados"
+              value={projects.data?.atrasados ?? 0}
+              tone="danger"
+              icon={AlertTriangleIcon}
+              to="/crm/projetos"
             />
           </div>
         </Section>

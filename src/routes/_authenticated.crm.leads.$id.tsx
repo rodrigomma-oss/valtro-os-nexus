@@ -38,6 +38,7 @@ import { ActionCard } from "@/components/app/action-card";
 import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
 import { ProposalsCard } from "@/components/app/proposals-card";
+import { ConvertToClientDialog } from "@/components/app/convert-to-client-dialog";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -183,6 +184,7 @@ function CrmLeadDetail() {
 
   const [note, setNote] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
+  const [convertOpen, setConvertOpen] = useState(false);
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
 
@@ -325,6 +327,25 @@ function CrmLeadDetail() {
               <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
               Comunicação
             </Button>
+            {lead.client_id ? (
+              <Button variant="outline" size="sm" className="gap-2" asChild>
+                <Link to="/crm/clientes/$id" params={{ id: lead.client_id }}>
+                  <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
+                  Ver cliente
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                disabled={!canWrite}
+                onClick={() => setConvertOpen(true)}
+              >
+                <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
+                Converter em cliente
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -444,6 +465,12 @@ function CrmLeadDetail() {
         briefingLink={briefingLink}
         canWrite={canWrite}
         onContactCreated={invalidate}
+      />
+
+      <ConvertToClientDialog
+        lead={lead}
+        open={convertOpen}
+        onOpenChange={setConvertOpen}
       />
     </div>
   );

@@ -37,6 +37,7 @@ export interface Lead {
   next_follow_up_reason: string | null;
   next_follow_up_owner_id: string | null;
   next_follow_up_owner_name: string | null;
+  client_id: string | null;
   created_at: string;
   updated_at: string;
 }

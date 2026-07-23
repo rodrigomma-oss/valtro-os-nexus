@@ -26,8 +26,12 @@ import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.cr
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
+import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
+import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
+import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
+import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -114,10 +118,28 @@ const AuthenticatedCrmDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmProjetosIndexRoute =
+  AuthenticatedCrmProjetosIndexRouteImport.update({
+    id: '/projetos/',
+    path: '/projetos/',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmLeadsIndexRoute =
   AuthenticatedCrmLeadsIndexRouteImport.update({
     id: '/leads/',
     path: '/leads/',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmClientesIndexRoute =
+  AuthenticatedCrmClientesIndexRouteImport.update({
+    id: '/clientes/',
+    path: '/clientes/',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmProjetosIdRoute =
+  AuthenticatedCrmProjetosIdRouteImport.update({
+    id: '/projetos/$id',
+    path: '/projetos/$id',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
 const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
@@ -125,6 +147,12 @@ const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
   path: '/leads/$id',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const AuthenticatedCrmClientesIdRoute =
+  AuthenticatedCrmClientesIdRouteImport.update({
+    id: '/clientes/$id',
+    path: '/clientes/$id',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,8 +171,12 @@ export interface FileRoutesByFullPath {
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
+  '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,8 +194,12 @@ export interface FileRoutesByTo {
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
+  '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
+  '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,8 +220,12 @@ export interface FileRoutesById {
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
+  '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,8 +246,12 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/crm/dashboard'
     | '/crm/'
+    | '/crm/clientes/$id'
     | '/crm/leads/$id'
+    | '/crm/projetos/$id'
+    | '/crm/clientes/'
     | '/crm/leads/'
+    | '/crm/projetos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -225,8 +269,12 @@ export interface FileRouteTypes {
     | '/briefing'
     | '/crm/dashboard'
     | '/crm'
+    | '/crm/clientes/$id'
     | '/crm/leads/$id'
+    | '/crm/projetos/$id'
+    | '/crm/clientes'
     | '/crm/leads'
+    | '/crm/projetos'
   id:
     | '__root__'
     | '/'
@@ -246,8 +294,12 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/'
+    | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
+    | '/_authenticated/crm/projetos/$id'
+    | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
+    | '/_authenticated/crm/projetos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -387,11 +439,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/projetos/': {
+      id: '/_authenticated/crm/projetos/'
+      path: '/projetos'
+      fullPath: '/crm/projetos/'
+      preLoaderRoute: typeof AuthenticatedCrmProjetosIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/leads/': {
       id: '/_authenticated/crm/leads/'
       path: '/leads'
       fullPath: '/crm/leads/'
       preLoaderRoute: typeof AuthenticatedCrmLeadsIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/clientes/': {
+      id: '/_authenticated/crm/clientes/'
+      path: '/clientes'
+      fullPath: '/crm/clientes/'
+      preLoaderRoute: typeof AuthenticatedCrmClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
+    '/_authenticated/crm/projetos/$id': {
+      id: '/_authenticated/crm/projetos/$id'
+      path: '/projetos/$id'
+      fullPath: '/crm/projetos/$id'
+      preLoaderRoute: typeof AuthenticatedCrmProjetosIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
     '/_authenticated/crm/leads/$id': {
@@ -401,21 +474,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmLeadsIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/clientes/$id': {
+      id: '/_authenticated/crm/clientes/$id'
+      path: '/clientes/$id'
+      fullPath: '/crm/clientes/$id'
+      preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
   }
 }
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
+  AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
+  AuthenticatedCrmProjetosIdRoute: typeof AuthenticatedCrmProjetosIdRoute
+  AuthenticatedCrmClientesIndexRoute: typeof AuthenticatedCrmClientesIndexRoute
   AuthenticatedCrmLeadsIndexRoute: typeof AuthenticatedCrmLeadsIndexRoute
+  AuthenticatedCrmProjetosIndexRoute: typeof AuthenticatedCrmProjetosIndexRoute
 }
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
+  AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
+  AuthenticatedCrmProjetosIdRoute: AuthenticatedCrmProjetosIdRoute,
+  AuthenticatedCrmClientesIndexRoute: AuthenticatedCrmClientesIndexRoute,
   AuthenticatedCrmLeadsIndexRoute: AuthenticatedCrmLeadsIndexRoute,
+  AuthenticatedCrmProjetosIndexRoute: AuthenticatedCrmProjetosIndexRoute,
 }
 
 const AuthenticatedCrmRouteWithChildren =
