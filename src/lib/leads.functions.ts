@@ -427,7 +427,10 @@ export const startTriage = createServerFn({ method: "POST" })
     if (readErr) throw new Error(readErr.message);
     if (!current) throw new Error("Lead não encontrado.");
 
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      triage_started_at?: string;
+      status?: (typeof LEAD_STATUS_VALUES)[number];
+    } = {};
     if (!current.triage_started_at) patch.triage_started_at = new Date().toISOString();
     if (current.status === "novo") patch.status = "em_triagem";
     if (Object.keys(patch).length === 0) return { ok: true, already: true };
