@@ -219,6 +219,7 @@ export type Database = {
           email: string | null
           id: string
           instagram: string | null
+          next_action: string | null
           owner_id: string | null
           phone: string | null
           segment: string | null
@@ -226,6 +227,8 @@ export type Database = {
           source: Database["public"]["Enums"]["lead_source"]
           state: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          triage_notes: string | null
+          triage_started_at: string | null
           updated_at: string
         }
         Insert: {
@@ -238,6 +241,7 @@ export type Database = {
           email?: string | null
           id?: string
           instagram?: string | null
+          next_action?: string | null
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
@@ -245,6 +249,8 @@ export type Database = {
           source?: Database["public"]["Enums"]["lead_source"]
           state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          triage_notes?: string | null
+          triage_started_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -257,6 +263,7 @@ export type Database = {
           email?: string | null
           id?: string
           instagram?: string | null
+          next_action?: string | null
           owner_id?: string | null
           phone?: string | null
           segment?: string | null
@@ -264,6 +271,8 @@ export type Database = {
           source?: Database["public"]["Enums"]["lead_source"]
           state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          triage_notes?: string | null
+          triage_started_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -358,6 +367,12 @@ export type Database = {
         | "briefing_iniciado"
         | "briefing_retomado"
         | "briefing_concluido"
+        | "triagem_iniciada"
+        | "proxima_acao_alterada"
+        | "interesse_alterado"
+        | "responsavel_alterado"
+        | "oportunidade_descartada"
+        | "oportunidade_convertida"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -374,6 +389,11 @@ export type Database = {
         | "proposta"
         | "ganho"
         | "perdido"
+        | "em_triagem"
+        | "aguardando_briefing"
+        | "briefing_enviado"
+        | "em_analise"
+        | "descartado"
       service_type:
         | "nao_definido"
         | "gestao_shopee"
@@ -539,6 +559,12 @@ export const Constants = {
         "briefing_iniciado",
         "briefing_retomado",
         "briefing_concluido",
+        "triagem_iniciada",
+        "proxima_acao_alterada",
+        "interesse_alterado",
+        "responsavel_alterado",
+        "oportunidade_descartada",
+        "oportunidade_convertida",
       ],
       lead_source: [
         "instagram",
@@ -557,6 +583,11 @@ export const Constants = {
         "proposta",
         "ganho",
         "perdido",
+        "em_triagem",
+        "aguardando_briefing",
+        "briefing_enviado",
+        "em_analise",
+        "descartado",
       ],
       service_type: [
         "nao_definido",
