@@ -107,7 +107,7 @@ function ProjectDetail() {
   const timeline: TimelineItem[] = useMemo(() => {
     const evs = projectQuery.data?.events ?? [];
     return evs.map((e: ProjectEvent) => {
-      const meta = EVENT_META[e.type] ?? EVENT_META.projeto_atualizado;
+      const meta = EVENT_META[e.type] ?? EVENT_META.projeto_criado;
       const author = e.created_by_name ? ` · ${e.created_by_name}` : "";
       return {
         id: e.id,
