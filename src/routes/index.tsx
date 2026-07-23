@@ -4,7 +4,6 @@ import { Hero } from "@/components/marketing/hero";
 import { About } from "@/components/marketing/about";
 import { Solutions } from "@/components/marketing/solutions";
 import { Values } from "@/components/marketing/values";
-import { InstitutionalBanner } from "@/components/marketing/institutional-banner";
 import { CTA } from "@/components/marketing/cta";
 
 export const Route = createFileRoute("/")({
@@ -41,10 +40,9 @@ function Home() {
   return (
     <PublicLayout>
       <Hero />
-      <About />
       <Solutions />
+      <About />
       <Values />
-      <InstitutionalBanner />
       <CTA />
     </PublicLayout>
   );

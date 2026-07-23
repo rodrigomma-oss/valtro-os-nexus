@@ -1,10 +1,10 @@
-import { Boxes, Cpu, LineChart, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
-const HIGHLIGHTS = [
-  { icon: Cpu, label: "Desenvolvimento próprio" },
-  { icon: Boxes, label: "Marketplaces & automação" },
-  { icon: LineChart, label: "Inteligência de negócios" },
-  { icon: Sparkles, label: "Produtividade em escala" },
+const PROBLEMS = [
+  "Precificação manual e reativa que corrói a margem",
+  "Planilhas isoladas sem visão unificada do negócio",
+  "Falta de tempo para decisões estratégicas do dia a dia",
+  "Ferramentas genéricas que não entendem marketplaces",
 ] as const;
 
 export function About() {
@@ -13,40 +13,50 @@ export function About() {
       <div className="container-page">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           <div className="lg:col-span-5">
-            <p className="eyebrow">Quem somos</p>
+            <p className="eyebrow">Por que existimos</p>
             <h2
               id="sobre-title"
               className="mt-4 text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-foreground text-balance"
             >
-              Uma empresa brasileira construindo o futuro dos negócios digitais.
+              Vender em marketplace virou um problema de software — não de esforço.
             </h2>
+            <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
+              A Valtro Labs nasceu para resolver o gargalo real do vendedor digital brasileiro:
+              decisões críticas tomadas em planilhas, à noite, no achismo. Construímos
+              tecnologia proprietária para que preço, mídia e análise deixem de ser tarefa
+              e voltem a ser vantagem competitiva.
+            </p>
           </div>
 
-          <div className="lg:col-span-7 space-y-5 text-base md:text-lg text-muted-foreground leading-relaxed">
-            <p>
-              A <span className="text-foreground font-medium">Valtro Labs</span> é uma empresa
-              de tecnologia dedicada ao desenvolvimento de soluções SaaS proprietárias, criadas
-              para tornar operações de vendedores em marketplaces mais simples, inteligentes e eficientes.
+          <div className="lg:col-span-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">
+              Problemas que resolvemos
             </p>
-            <p>
-              Combinamos engenharia de software, dados e design para entregar ferramentas
-              que apoiam decisões, automatizam processos e ampliam a performance de
-              marketplaces, e-commerces e operações digitais.
-            </p>
-
-            <ul className="mt-10 grid sm:grid-cols-2 gap-3 not-prose">
-              {HIGHLIGHTS.map(({ icon: Icon, label }) => (
+            <ul className="mt-6 grid sm:grid-cols-2 gap-3 not-prose">
+              {PROBLEMS.map((problem) => (
                 <li
-                  key={label}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 shadow-soft transition-colors hover:border-primary/30"
+                  key={problem}
+                  className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-4 shadow-soft transition-colors hover:border-primary/30"
                 >
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-primary">
-                    <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                  </div>
-                  <span className="text-sm font-medium text-foreground">{label}</span>
+                  <CheckCircle2
+                    className="mt-0.5 h-5 w-5 shrink-0 text-primary"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  <span className="text-sm text-foreground leading-relaxed">
+                    {problem}
+                  </span>
                 </li>
               ))}
             </ul>
+
+            <div className="mt-8 rounded-2xl border border-dashed border-border bg-brand-soft/40 px-5 py-4">
+              <p className="text-sm text-foreground leading-relaxed">
+                <span className="font-semibold text-primary">Nossa aposta:</span>{" "}
+                um ecossistema modular, brasileiro e proprietário — construído com
+                engenharia, dados e design — que evolui junto com quem vende.
+              </p>
+            </div>
           </div>
         </div>
       </div>
