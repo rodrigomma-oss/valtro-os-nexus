@@ -360,11 +360,11 @@ function SobrePage() {
               <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                 <a
                   href="https://pricing.valtrolabs.pro"
-                  className="group inline-flex items-center gap-2 rounded-lg bg-white text-brand-deep px-7 py-3.5 text-sm font-semibold hover:bg-white/90 transition-colors shadow-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  className="group inline-flex items-center gap-2 rounded-lg bg-white text-brand-deep px-6 py-3.5 text-sm font-semibold hover:bg-white/95 transition-all duration-200 shadow-elevated hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   Conhecer o Valtro Pricing
                   <ArrowRight
-                    className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                    className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
                     aria-hidden
                   />
                 </a>

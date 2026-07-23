@@ -88,9 +88,9 @@ function SolutionCard({ solution }: { solution: Solution }) {
   return (
     <article
       aria-label={`${name} — ${STATUS_LABEL[status]}`}
-      className={`group relative flex w-full flex-col rounded-2xl border p-7 transition-all duration-200 ${
+      className={`group relative flex w-full flex-col rounded-2xl border p-7 ${
         isAvailable
-          ? "border-border bg-background shadow-soft hover:shadow-elevated hover:border-primary/30 hover:-translate-y-0.5"
+          ? "border-border bg-background shadow-soft card-hover hover:border-primary/30"
           : "border-dashed border-border bg-transparent"
       }`}
     >

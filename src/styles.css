@@ -46,9 +46,19 @@
   --color-error: var(--destructive);
   --color-info: var(--info);
 
-  --shadow-soft: 0 1px 2px 0 rgb(11 31 94 / 0.04), 0 1px 3px 0 rgb(11 31 94 / 0.06);
-  --shadow-elevated: 0 8px 24px -6px rgb(11 31 94 / 0.10), 0 2px 6px -2px rgb(11 31 94 / 0.06);
-  --shadow-glow: 0 20px 60px -20px rgb(37 99 235 / 0.35);
+  --shadow-soft:
+    0 1px 1px 0 rgb(11 31 94 / 0.03),
+    0 1px 2px 0 rgb(11 31 94 / 0.04),
+    0 2px 6px -2px rgb(11 31 94 / 0.05);
+  --shadow-elevated:
+    0 1px 1px 0 rgb(11 31 94 / 0.03),
+    0 4px 12px -4px rgb(11 31 94 / 0.08),
+    0 12px 32px -8px rgb(11 31 94 / 0.10);
+  --shadow-glow: 0 24px 64px -24px rgb(37 99 235 / 0.35);
+
+  --ease-out-brand: cubic-bezier(0.2, 0.65, 0.25, 1);
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
 }
 
 :root {
@@ -106,18 +116,26 @@
   }
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     background-color: var(--color-background);
-    color: #0F172A;
+    color: #334155;
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4, h5, h6 {
     color: var(--foreground);
     letter-spacing: -0.02em;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1 { letter-spacing: -0.03em; }
+  h2 { letter-spacing: -0.025em; }
+  a, button {
+    -webkit-tap-highlight-color: transparent;
   }
   ::selection {
     background-color: rgb(37 99 235 / 0.18);
@@ -164,7 +182,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   color: var(--primary);
 }
 
@@ -173,6 +191,16 @@
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
     border-radius: 0.5rem;
+  }
+}
+
+@utility card-hover {
+  transition: transform var(--duration-base) var(--ease-out-brand),
+              box-shadow var(--duration-base) var(--ease-out-brand),
+              border-color var(--duration-base) var(--ease-out-brand);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
   }
 }
 
@@ -193,5 +221,5 @@
   }
 }
 @utility animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
-@utility animate-fade-up { animation: fade-up 0.6s ease-out both; }
+@utility animate-fade-up { animation: fade-up 0.7s var(--ease-out-brand) both; }
 
