@@ -137,7 +137,7 @@ export function ProposalsCard({ lead, canWrite, isAdmin }: ProposalsCardProps) {
 
   return (
     <>
-      <Card className="shadow-soft">
+      <Card className="shadow-soft" data-testid="proposals-card">
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
           <div>
             <CardTitle className="text-base">Propostas</CardTitle>
