@@ -49,17 +49,27 @@ import {
 import type { Lead, LeadSource, LeadStatus } from "@/types/lead";
 import { SOURCE_LABEL, STATUS_LABEL } from "@/types/lead";
 
+type QuickView =
+  | "novos-do-site"
+  | "aguardando-triagem"
+  | "sem-responsavel"
+  | "briefings-aguardando"
+  | "briefings-concluidos";
+
+const QUICK_VIEWS: readonly QuickView[] = [
+  "novos-do-site",
+  "aguardando-triagem",
+  "sem-responsavel",
+  "briefings-aguardando",
+  "briefings-concluidos",
+] as const;
+
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
   component: CrmLeads,
-  validateSearch: (
-    s: Record<string, unknown>,
-  ): { view?: "novos-do-site" | "aguardando-triagem" | "sem-responsavel" } => ({
-    view:
-      s.view === "novos-do-site" ||
-      s.view === "aguardando-triagem" ||
-      s.view === "sem-responsavel"
-        ? s.view
-        : undefined,
+  validateSearch: (s: Record<string, unknown>): { view?: QuickView } => ({
+    view: QUICK_VIEWS.includes(s.view as QuickView)
+      ? (s.view as QuickView)
+      : undefined,
   }),
   head: () => ({
     meta: [
