@@ -1,18 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Lead, LeadEvent, LeadNote, LeadStatus } from "@/types/lead";
+import type { Lead, LeadEvent, LeadNote, LeadStatus, NextAction } from "@/types/lead";
+import {
+  INTEREST_LABEL,
+  NEXT_ACTION_LABEL,
+  STATUS_LABEL,
+} from "@/types/lead";
 
 // Skip Supabase's heavy select-string parsing at the type level.
 const sel = (s: string): string => s;
 
 const LEAD_STATUS_VALUES = [
   "novo",
+  "em_triagem",
   "contato",
   "qualificado",
+  "aguardando_briefing",
+  "briefing_enviado",
+  "em_analise",
   "proposta",
   "ganho",
   "perdido",
+  "descartado",
 ] as const;
 
 const LEAD_SOURCE_VALUES = [
@@ -24,6 +34,17 @@ const LEAD_SOURCE_VALUES = [
   "outbound",
   "diagnostico",
   "manual",
+] as const;
+
+const NEXT_ACTION_VALUES = [
+  "entrar_em_contato",
+  "enviar_briefing_projeto",
+  "enviar_briefing_loja",
+  "apresentar_pricing",
+  "avaliar_parceria",
+  "preparar_proposta",
+  "aguardar_retorno",
+  "descartar",
 ] as const;
 
 interface RawLead {
@@ -40,6 +61,9 @@ interface RawLead {
   status: LeadStatus;
   service_type: Lead["service_type"];
   owner_id: string | null;
+  next_action: NextAction | null;
+  triage_notes: string | null;
+  triage_started_at: string | null;
   archived_at: string | null;
   created_at: string;
   updated_at: string;
@@ -62,6 +86,9 @@ function mapLead(row: RawLead): Lead {
     service_type: row.service_type,
     owner_id: row.owner_id,
     owner_name: row.owner?.full_name ?? null,
+    next_action: row.next_action,
+    triage_notes: row.triage_notes,
+    triage_started_at: row.triage_started_at,
     archived_at: row.archived_at,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -69,8 +96,9 @@ function mapLead(row: RawLead): Lead {
 }
 
 const LEAD_SELECT = sel(
-  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, archived_at, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
+  "id, company_name, contact_name, phone, email, instagram, city, state, segment, source, status, service_type, owner_id, next_action, triage_notes, triage_started_at, archived_at, created_at, updated_at, owner:profiles!leads_owner_id_profile_fkey(full_name)",
 );
+
 
 
 // =============================================================
