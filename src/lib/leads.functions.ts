@@ -68,6 +68,7 @@ interface RawLead {
   next_follow_up_at: string | null;
   next_follow_up_reason: string | null;
   next_follow_up_owner_id: string | null;
+  client_id: string | null;
   created_at: string;
   updated_at: string;
   owner: { full_name: string | null } | null;
