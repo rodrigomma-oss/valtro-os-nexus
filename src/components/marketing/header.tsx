@@ -50,7 +50,7 @@ export function Header() {
           : "bg-transparent border-b border-transparent",
       )}
     >
-      <div className="container-page flex h-24 md:h-28 items-center justify-between gap-6">
+      <div className="container-page flex h-20 md:h-24 items-center justify-between gap-6">
         <Link
           to="/"
           className="flex items-center shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"

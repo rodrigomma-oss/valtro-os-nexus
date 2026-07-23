@@ -24,7 +24,7 @@ export function FeatureCard({
   return (
     <div
       className={cn(
-        "group rounded-2xl border border-border bg-background p-7 shadow-soft transition-all duration-200 hover:shadow-elevated hover:border-primary/30",
+        "group rounded-2xl border border-border bg-background p-7 shadow-soft card-hover hover:border-primary/30",
         className,
       )}
     >
