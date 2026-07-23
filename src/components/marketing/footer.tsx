@@ -1,7 +1,11 @@
 import { Instagram } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/logo";
 
-const FUTURE_LINKS = ["Política de Privacidade", "Termos de Uso"] as const;
+const LEGAL_LINKS = [
+  { label: "Política de Privacidade", to: "/privacidade" },
+  { label: "Termos de Uso", to: "/termos" },
+] as const;
 
 const CURRENT_YEAR = new Date().getFullYear();
 
