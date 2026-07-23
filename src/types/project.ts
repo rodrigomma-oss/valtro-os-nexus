@@ -31,7 +31,7 @@ export interface ProjectEvent {
   project_id: string;
   type: ProjectEventType;
   description: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, any> | null;
   created_by: string | null;
   created_by_name: string | null;
   created_at: string;
