@@ -387,11 +387,13 @@ export function ProposalDrawer({
                   )}
 
                   <div className="rounded-lg bg-muted/30 border border-border p-4 space-y-2">
-                    <TotalsRow label="Subtotal" value={fmtBRL(totals.total)} />
+                    <TotalsRow label="Subtotal" value={fmtBRL(totals.total)} testId="proposal-subtotal" />
                     <div className="flex items-center justify-between gap-3">
-                      <label className="text-sm text-muted-foreground">Desconto</label>
+                      <label className="text-sm text-muted-foreground" htmlFor="proposal-discount">Desconto</label>
                       <div className="flex items-center gap-2">
                         <Input
+                          id="proposal-discount"
+                          data-testid="proposal-discount"
                           type="number"
                           min="0"
                           step="0.01"
@@ -407,6 +409,7 @@ export function ProposalDrawer({
                       label="Valor final"
                       value={fmtBRL(totals.final)}
                       emphasis
+                      testId="proposal-final"
                     />
                   </div>
                 </TabsContent>
