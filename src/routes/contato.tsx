@@ -35,6 +35,7 @@ const contatoSearchSchema = z.object({
 
 export const Route = createFileRoute("/contato")({
   component: ContatoPage,
+  validateSearch: contatoSearchSchema,
   head: () => ({
     meta: [
       { title: "Contato | Valtro Labs" },
