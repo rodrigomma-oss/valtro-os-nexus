@@ -240,7 +240,8 @@ function CrmDashboard() {
           description: "Aguardando preenchimento pelo cliente.",
           icon: Send,
           tone: "primary" as const,
-          onClick: () => navigate({ to: "/crm/leads" }),
+          onClick: () =>
+            navigate({ to: "/crm/leads", search: { view: "briefings-aguardando" } }),
           show: data.queue.briefingsEnviados > 0,
         },
         {
@@ -250,7 +251,8 @@ function CrmDashboard() {
           description: "Prontos para análise da equipe.",
           icon: CheckCircle2,
           tone: "success" as const,
-          onClick: () => navigate({ to: "/crm/leads" }),
+          onClick: () =>
+            navigate({ to: "/crm/leads", search: { view: "briefings-concluidos" } }),
           show: data.queue.briefingsConcluidos > 0,
         },
         {

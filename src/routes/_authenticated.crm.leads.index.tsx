@@ -49,17 +49,27 @@ import {
 import type { Lead, LeadSource, LeadStatus } from "@/types/lead";
 import { SOURCE_LABEL, STATUS_LABEL } from "@/types/lead";
 
+type QuickView =
+  | "novos-do-site"
+  | "aguardando-triagem"
+  | "sem-responsavel"
+  | "briefings-aguardando"
+  | "briefings-concluidos";
+
+const QUICK_VIEWS: readonly QuickView[] = [
+  "novos-do-site",
+  "aguardando-triagem",
+  "sem-responsavel",
+  "briefings-aguardando",
+  "briefings-concluidos",
+] as const;
+
 export const Route = createFileRoute("/_authenticated/crm/leads/")({
   component: CrmLeads,
-  validateSearch: (
-    s: Record<string, unknown>,
-  ): { view?: "novos-do-site" | "aguardando-triagem" | "sem-responsavel" } => ({
-    view:
-      s.view === "novos-do-site" ||
-      s.view === "aguardando-triagem" ||
-      s.view === "sem-responsavel"
-        ? s.view
-        : undefined,
+  validateSearch: (s: Record<string, unknown>): { view?: QuickView } => ({
+    view: QUICK_VIEWS.includes(s.view as QuickView)
+      ? (s.view as QuickView)
+      : undefined,
   }),
   head: () => ({
     meta: [
@@ -136,9 +146,9 @@ function CrmLeads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "todos">("todos");
   const [sourceFilter, setSourceFilter] = useState<LeadSource | "todas">("todas");
-  const [quickView, setQuickView] = useState<
-    "novos-do-site" | "aguardando-triagem" | "sem-responsavel" | null
-  >(search_.view ?? null);
+  const [quickView, setQuickView] = useState<QuickView | null>(
+    search_.view ?? null,
+  );
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -171,7 +181,11 @@ function CrmLeads() {
           lead.status === "novo") ||
         (quickView === "aguardando-triagem" &&
           ["novo", "em_triagem"].includes(lead.status)) ||
-        (quickView === "sem-responsavel" && !lead.owner_id);
+        (quickView === "sem-responsavel" && !lead.owner_id) ||
+        (quickView === "briefings-aguardando" &&
+          lead.status === "briefing_enviado") ||
+        (quickView === "briefings-concluidos" &&
+          lead.status === "em_analise");
       return matchStatus && matchSource && matchTerm && matchQuick;
     });
   }, [leads, term, statusFilter, sourceFilter, quickView]);
@@ -436,6 +450,8 @@ function CrmLeads() {
           { key: "novos-do-site", label: "Novos do site" },
           { key: "aguardando-triagem", label: "Aguardando triagem" },
           { key: "sem-responsavel", label: "Sem responsável" },
+          { key: "briefings-aguardando", label: "Briefings aguardando" },
+          { key: "briefings-concluidos", label: "Briefings concluídos" },
         ].map((v) => {
           const active = quickView === v.key;
           return (
