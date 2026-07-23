@@ -145,8 +145,13 @@ export function TriageCard({ lead, canWrite, onChanged }: TriageCardProps) {
   });
 
   const updateMut = useMutation({
-    mutationFn: (patch: Parameters<typeof updateFn>[0]["data"]) =>
-      updateFn({ data: patch }),
+    mutationFn: (patch: {
+      id: string;
+      next_action?: NextAction | null;
+      triage_notes?: string | null;
+      service_type?: LeadServiceType;
+      owner_id?: string | null;
+    }) => updateFn({ data: patch }),
     onSuccess: () => {
       toast.success("Triagem atualizada.");
       setNotesDirty(false);
