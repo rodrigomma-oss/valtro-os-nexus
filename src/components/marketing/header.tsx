@@ -12,7 +12,7 @@ type NavItem = {
 };
 
 const NAV: readonly NavItem[] = [
-  { label: "Soluções", href: "/#solucoes" },
+  { label: "Soluções", href: "/solucoes", match: "/solucoes" },
   { label: "Sobre", href: "/sobre", match: "/sobre" },
   { label: "Contato", href: "/#contato" },
   { label: "Área Restrita", href: "/auth", match: "/auth" },
