@@ -10,6 +10,10 @@ export type LeadSource = Database["public"]["Enums"]["lead_source"];
 export type LeadEventType = Database["public"]["Enums"]["lead_event_type"];
 export type LeadServiceType = Database["public"]["Enums"]["service_type"];
 
+export type LeadContactChannel = Database["public"]["Enums"]["lead_contact_channel"];
+export type LeadContactType = Database["public"]["Enums"]["lead_contact_type"];
+export type LeadContactResult = Database["public"]["Enums"]["lead_contact_result"];
+
 export interface Lead {
   id: string;
   company_name: string;
@@ -29,9 +33,53 @@ export interface Lead {
   triage_notes: string | null;
   triage_started_at: string | null;
   archived_at: string | null;
+  next_follow_up_at: string | null;
+  next_follow_up_reason: string | null;
+  next_follow_up_owner_id: string | null;
+  next_follow_up_owner_name: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export interface LeadContact {
+  id: string;
+  lead_id: string;
+  channel: LeadContactChannel;
+  type: LeadContactType;
+  result: LeadContactResult;
+  notes: string | null;
+  created_by: string | null;
+  created_by_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const CONTACT_CHANNEL_LABEL: Record<LeadContactChannel, string> = {
+  whatsapp: "WhatsApp",
+  email: "E-mail",
+  telefone: "Telefone",
+  reuniao: "Reunião",
+  outro: "Outro",
+};
+
+export const CONTACT_TYPE_LABEL: Record<LeadContactType, string> = {
+  primeiro_contato: "Primeiro contato",
+  follow_up: "Follow-up",
+  envio_briefing: "Envio de briefing",
+  lembrete: "Lembrete",
+  apresentacao: "Apresentação",
+  proposta: "Proposta",
+  outro: "Outro",
+};
+
+export const CONTACT_RESULT_LABEL: Record<LeadContactResult, string> = {
+  sem_resposta: "Sem resposta",
+  respondido: "Respondido",
+  interessado: "Interessado",
+  nao_interessado: "Não interessado",
+  agendado: "Agendado",
+  concluido: "Concluído",
+};
 
 export type NextAction =
   | "entrar_em_contato"
