@@ -562,33 +562,32 @@ export const convertLead = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// Lista de usuários atribuíveis (operator/admin) — para o seletor de responsável
+// Lista de usuários atribuíveis (operator/admin) — para o seletor de responsável.
+// Observação: RLS de user_roles restringe a leitura a admin/self, por isso
+// operadores verão apenas a si mesmos. Um admin verá todos os elegíveis.
 export const listAssignableUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    const { data: roles, error } = await context.supabase
       .from("user_roles")
-      .select("user_id, role, profile:profiles!user_roles_user_id_fkey(id, full_name)")
-      .in("role", ["admin", "operator"])
-      .returns<
-        Array<{
-          user_id: string;
-          role: string;
-          profile: { id: string; full_name: string | null } | null;
-        }>
-      >();
+      .select("user_id, role")
+      .in("role", ["admin", "operator"]);
     if (error) throw new Error(error.message);
-    const map = new Map<string, { id: string; full_name: string | null }>();
-    for (const r of data ?? []) {
-      if (r.profile) map.set(r.profile.id, r.profile);
-    }
-    return Array.from(map.values()).sort((a, b) =>
+    const userIds = Array.from(new Set((roles ?? []).map((r) => r.user_id)));
+    if (userIds.length === 0) return [] as { id: string; full_name: string | null }[];
+    const { data: profiles, error: pErr } = await context.supabase
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", userIds)
+      .returns<Array<{ id: string; full_name: string | null }>>();
+    if (pErr) throw new Error(pErr.message);
+    return (profiles ?? []).sort((a, b) =>
       (a.full_name ?? "").localeCompare(b.full_name ?? ""),
     );
   });
 
-// Referências auxiliares (para não deixar imports não-utilizados)
 void STATUS_LABEL;
+
 
 // =============================================================
 // Current user role (for UI gating)
