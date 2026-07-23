@@ -19,7 +19,11 @@ export type EventKind =
   | "briefing_retomado"
   | "briefing_concluido"
   | "observacao_adicionada"
-  | "observacao_removida";
+  | "observacao_removida"
+  | "proposta_criada"
+  | "proposta_status_alterado"
+  | "proposta_aprovada"
+  | "proposta_rejeitada";
 
 export interface InboxItemDTO {
   id: string;
