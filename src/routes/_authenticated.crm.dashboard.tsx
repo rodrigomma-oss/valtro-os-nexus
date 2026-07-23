@@ -370,6 +370,61 @@ function CrmDashboard() {
         </Section>
       )}
 
+      {proposals.data && (
+        <Section
+          title="Propostas comerciais"
+          description="Pipeline de oportunidades em elaboração e negociação."
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <FollowUpTile
+              label="Em elaboração"
+              value={proposals.data.em_elaboracao}
+              tone="info"
+              icon={Receipt}
+            />
+            <FollowUpTile
+              label="Enviadas"
+              value={proposals.data.enviadas}
+              tone="primary"
+              icon={Send}
+            />
+            <FollowUpTile
+              label="Em negociação"
+              value={proposals.data.em_negociacao}
+              tone="warning"
+              icon={ArrowRightCircle}
+            />
+            <FollowUpTile
+              label="Aprovadas"
+              value={proposals.data.aprovadas}
+              tone="success"
+              icon={CheckCircle2}
+            />
+          </div>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <MetricCard
+              index={0}
+              label="Pipeline (valor)"
+              value={new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                maximumFractionDigits: 0,
+              }).format(proposals.data.pipeline_value)}
+              hint="Somatório de propostas ativas"
+              trend="neutral"
+            />
+            <MetricCard
+              index={1}
+              label="Conversão"
+              value={`${proposals.data.conversion_rate}%`}
+              hint="Aprovadas / total"
+              trend={proposals.data.conversion_rate > 30 ? "up" : "neutral"}
+            />
+          </div>
+        </Section>
+      )}
+
+
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
         <InboxList
           items={data?.inbox ?? []}
