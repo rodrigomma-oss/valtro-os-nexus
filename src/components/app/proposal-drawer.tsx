@@ -220,6 +220,7 @@ export function ProposalDrawer({
                       "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
                       PROPOSAL_STATUS_TONE[proposal.status],
                     )}
+                    data-testid="proposal-status-badge"
                   >
                     {PROPOSAL_STATUS_LABEL[proposal.status]}
                   </span>
