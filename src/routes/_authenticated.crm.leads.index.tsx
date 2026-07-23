@@ -181,7 +181,11 @@ function CrmLeads() {
           lead.status === "novo") ||
         (quickView === "aguardando-triagem" &&
           ["novo", "em_triagem"].includes(lead.status)) ||
-        (quickView === "sem-responsavel" && !lead.owner_id);
+        (quickView === "sem-responsavel" && !lead.owner_id) ||
+        (quickView === "briefings-aguardando" &&
+          lead.status === "briefing_enviado") ||
+        (quickView === "briefings-concluidos" &&
+          lead.status === "em_analise");
       return matchStatus && matchSource && matchTerm && matchQuick;
     });
   }, [leads, term, statusFilter, sourceFilter, quickView]);
