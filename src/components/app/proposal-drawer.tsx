@@ -197,7 +197,7 @@ export function ProposalDrawer({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[92vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-hidden flex flex-col" data-testid="proposal-drawer">
         {!proposal ? (
           <div className="flex items-center gap-2 py-10 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Carregando proposta…
@@ -220,6 +220,7 @@ export function ProposalDrawer({
                       "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
                       PROPOSAL_STATUS_TONE[proposal.status],
                     )}
+                    data-testid="proposal-status-badge"
                   >
                     {PROPOSAL_STATUS_LABEL[proposal.status]}
                   </span>
@@ -302,7 +303,7 @@ export function ProposalDrawer({
                         </thead>
                         <tbody>
                           {items.map((it) => (
-                            <tr key={it.id} className="border-t border-border align-top">
+                            <tr key={it.id} className="border-t border-border align-top" data-testid="proposal-item-row">
                               <td className="px-3 py-2">
                                 <Input
                                   value={it.service_label}
@@ -386,11 +387,13 @@ export function ProposalDrawer({
                   )}
 
                   <div className="rounded-lg bg-muted/30 border border-border p-4 space-y-2">
-                    <TotalsRow label="Subtotal" value={fmtBRL(totals.total)} />
+                    <TotalsRow label="Subtotal" value={fmtBRL(totals.total)} testId="proposal-subtotal" />
                     <div className="flex items-center justify-between gap-3">
-                      <label className="text-sm text-muted-foreground">Desconto</label>
+                      <label className="text-sm text-muted-foreground" htmlFor="proposal-discount">Desconto</label>
                       <div className="flex items-center gap-2">
                         <Input
+                          id="proposal-discount"
+                          data-testid="proposal-discount"
                           type="number"
                           min="0"
                           step="0.01"
@@ -406,6 +409,7 @@ export function ProposalDrawer({
                       label="Valor final"
                       value={fmtBRL(totals.final)}
                       emphasis
+                      testId="proposal-final"
                     />
                   </div>
                 </TabsContent>
@@ -430,9 +434,9 @@ export function ProposalDrawer({
                       Nenhum registro de negociação ainda.
                     </div>
                   ) : (
-                    <ol className="space-y-2">
+                    <ol className="space-y-2" data-testid="proposal-negotiation-list">
                       {negotiations.map((n) => (
-                        <li key={n.id} className="rounded-lg border border-border bg-card p-3">
+                        <li key={n.id} className="rounded-lg border border-border bg-card p-3" data-testid="proposal-negotiation-item">
                           <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
                             <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 font-medium text-foreground">
                               {NEGOTIATION_TYPE_LABEL[n.type]}
@@ -533,17 +537,24 @@ function TotalsRow({
   label,
   value,
   emphasis,
+  testId,
 }: {
   label: string;
   value: string;
   emphasis?: boolean;
+  testId?: string;
 }) {
   return (
     <div className="flex items-center justify-between text-sm">
       <span className={cn("text-muted-foreground", emphasis && "text-foreground font-semibold")}>
         {label}
       </span>
-      <span className={cn("font-medium", emphasis && "text-lg font-semibold")}>{value}</span>
+      <span
+        data-testid={testId}
+        className={cn("font-medium", emphasis && "text-lg font-semibold")}
+      >
+        {value}
+      </span>
     </div>
   );
 }
