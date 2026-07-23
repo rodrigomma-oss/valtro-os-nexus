@@ -29,18 +29,18 @@ export function CTA() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-300/70 animate-ping" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              Primeira solução já disponível
+              Primeira solução do ecossistema
             </div>
             <h2
               id="cta-title"
               className="mt-6 text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white text-balance"
             >
-              Comece agora com o Valtro Pricing.
+              Conheça a primeira solução do ecossistema Valtro Labs.
             </h2>
             <p className="mt-6 text-base md:text-lg text-white/80 max-w-xl mx-auto leading-relaxed">
-              A primeira solução da Valtro Labs já está disponível. Precifique de
-              forma inteligente, automatize regras e acompanhe a performance em
-              tempo real.
+              O Valtro Pricing inaugura o ecossistema Valtro Labs: precificação
+              inteligente, regras automatizadas e visão de performance em tempo real —
+              a base para as próximas soluções que estão por vir.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <a
