@@ -69,6 +69,10 @@ const EVENT_TONE: Record<EventKind, Tone> = {
   briefing_concluido: "success",
   observacao_adicionada: "info",
   observacao_removida: "warning",
+  proposta_criada: "info",
+  proposta_status_alterado: "info",
+  proposta_aprovada: "success",
+  proposta_rejeitada: "danger",
 };
 
 const PIPELINE_TONE: Record<PipelineStageDTO["id"], "info" | "primary" | "warning" | "success"> = {
