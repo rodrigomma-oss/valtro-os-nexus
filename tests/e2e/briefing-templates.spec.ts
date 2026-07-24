@@ -257,17 +257,83 @@ async function readPortalDiagnosticSummary(
   ].join("\n");
 }
 
+/**
+ * Captura artefatos de falha do Portal (screenshot + trace snippet).
+ * Nomeados por teste via `testInfo.outputPath`, anexados ao HTML report.
+ * Nunca lança — captura é best-effort e não deve mascarar a falha original.
+ */
+async function capturePortalFailureArtifacts(
+  page: Page,
+  label: string,
+  diagnostics: PortalDiagnostics,
+  state: PortalTerminalState | null,
+): Promise<void> {
+  const testInfo: TestInfo | undefined = (() => {
+    try {
+      return test.info();
+    } catch {
+      return undefined;
+    }
+  })();
+  if (!testInfo) return;
+
+  const safe = label.replace(/[^a-z0-9_-]+/gi, "_").toLowerCase();
+  const shotPath = testInfo.outputPath(`portal-failure-${safe}.png`);
+  const snippetPath = testInfo.outputPath(`portal-failure-${safe}.txt`);
+
+  try {
+    await page.screenshot({ path: shotPath, fullPage: false });
+    await testInfo.attach(`portal-failure-${safe}.png`, {
+      path: shotPath,
+      contentType: "image/png",
+    });
+  } catch {
+    /* best-effort */
+  }
+
+  try {
+    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
+    const domSnippet = maskUuid(
+      (await page.content().catch(() => "(sem DOM)")).slice(0, 4_000),
+    );
+    const snippet = [
+      `[capture] label=${label}`,
+      `[capture] timestamp=${new Date().toISOString()}`,
+      summary,
+      `[capture] dom-snippet=${domSnippet}`,
+    ].join("\n");
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(snippetPath, snippet, "utf8");
+    await testInfo.attach(`portal-failure-${safe}.txt`, {
+      path: snippetPath,
+      contentType: "text/plain",
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
 async function waitForPortalTerminalState(
   page: Page,
   diagnostics: PortalDiagnostics,
+  label = "terminal-state",
 ): Promise<PortalTerminalState> {
-  await expect
-    .poll(() => findPortalState(page), { timeout: 20_000 })
-    .not.toBeNull();
+  try {
+    await expect
+      .poll(() => findPortalState(page), { timeout: 20_000 })
+      .not.toBeNull();
+  } catch (err) {
+    await capturePortalFailureArtifacts(page, label, diagnostics, null);
+    const summary = await readPortalDiagnosticSummary(page, null, diagnostics);
+    throw new Error(
+      `Portal não saiu do estado de validação.\n${summary}\nOriginal: ${(err as Error).message}`,
+    );
+  }
 
   const state = await findPortalState(page);
   if (!state) {
-    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
+    await capturePortalFailureArtifacts(page, label, diagnostics, null);
+    const summary = await readPortalDiagnosticSummary(page, null, diagnostics);
     throw new Error(`Portal não saiu do estado de validação.\n${summary}`);
   }
 
