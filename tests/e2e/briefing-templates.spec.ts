@@ -110,16 +110,32 @@ async function createBriefingForService(
   });
 }
 
-async function copyPortalLink(
+async function getPortalUrl(
   page: Page,
   service: ServiceLabel,
 ): Promise<string> {
   const card = activeCardsForService(page, service).first();
-  await expect(card).toBeVisible();
-  await card.getByTestId("briefing-copy-link-button").click();
-  const url = await page.evaluate(() => navigator.clipboard.readText());
+  await expect(card).toBeVisible({ timeout: 15_000 });
+
+  // Fonte determinística: atributo estável no card (não depende do clipboard,
+  // que é instável em runners headless do GitHub Actions).
+  await expect
+    .poll(() => card.getAttribute("data-portal-url"), { timeout: 10_000 })
+    .toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
+
+  const url = await card.getAttribute("data-portal-url");
+  if (!url) {
+    const tokenId = await card.getAttribute("data-token-id");
+    throw new Error(
+      `Portal URL não encontrada no card do serviço "${service}". ` +
+        `data-token-id=${tokenId ?? "(null)"}.`,
+    );
+  }
+  expect(url).toBeTruthy();
   expect(url).toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
+  return url;
 }
+
 
 /**
  * Fonte da verdade da seleção de template no Portal: o badge
