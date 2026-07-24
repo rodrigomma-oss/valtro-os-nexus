@@ -592,26 +592,462 @@ const templateProjeto: BriefingTemplate = {
 };
 
 // ---------------------------------------------------------------------------
+// Template CONSULTORIA — Sprint 12.0B
+// Formulário específico para engajamentos consultivos. NÃO contém perguntas
+// de desenvolvimento de software, site, aplicativo ou loja virtual.
+// ---------------------------------------------------------------------------
+const templateConsultoria: BriefingTemplate = {
+  key: "consultoria",
+  name: "Briefing de Consultoria",
+  intro: {
+    eyebrow: "Briefing Valtro Labs · 8 a 12 minutos",
+    title: "Vamos entender seu contexto para desenhar a consultoria certa.",
+    description:
+      "Este briefing é consultivo. Cada pergunta ajuda nossa equipe a compreender o cenário atual da sua operação, identificar bloqueios e propor um plano de trabalho realista.",
+  },
+  steps: [
+    {
+      id: "identificacao",
+      label: "Seus dados",
+      title: "Confirme seus dados",
+      description:
+        "Já coletamos algumas informações no atendimento. Revise e ajuste se necessário.",
+      questions: [
+        { id: "nome", label: "Nome completo", kind: "text", placeholder: "Como podemos te chamar" },
+        { id: "empresa", label: "Empresa ou operação", kind: "text", placeholder: "Nome da empresa ou operação" },
+        { id: "whatsapp", label: "WhatsApp", kind: "text", placeholder: "(00) 00000-0000" },
+        { id: "email", label: "E-mail", kind: "text", placeholder: "voce@exemplo.com" },
+        { id: "cidade", label: "Cidade", kind: "text", optional: true, placeholder: "Cidade" },
+        { id: "estado", label: "Estado", kind: "text", optional: true, placeholder: "UF" },
+      ],
+    },
+    {
+      id: "negocio",
+      label: "Negócio",
+      title: "Seu negócio hoje",
+      description: "Uma visão geral da operação atual para contextualizar a consultoria.",
+      questions: [
+        {
+          id: "descricao_negocio",
+          label: "Descreva o negócio ou operação atual",
+          kind: "textarea",
+          placeholder: "O que sua empresa faz, para quem vende e como opera hoje",
+        },
+        {
+          id: "tempo_atuacao",
+          label: "Há quanto tempo você atua neste negócio?",
+          kind: "select",
+          options: [
+            { value: "menos-1", label: "Menos de 1 ano" },
+            { value: "1-3", label: "1 a 3 anos" },
+            { value: "3-5", label: "3 a 5 anos" },
+            { value: "5-10", label: "5 a 10 anos" },
+            { value: "10+", label: "Mais de 10 anos" },
+          ],
+        },
+        {
+          id: "cenario_atual",
+          label: "Como você descreveria o cenário atual?",
+          kind: "select",
+          options: [
+            { value: "iniciando", label: "Iniciando operação" },
+            { value: "estavel", label: "Operação estável" },
+            { value: "crescimento", label: "Em crescimento" },
+            { value: "estagnada", label: "Estagnada" },
+            { value: "queda", label: "Em queda" },
+            { value: "reestruturacao", label: "Em reestruturação" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "problema",
+      label: "Problema",
+      title: "O que motivou buscar consultoria",
+      description: "Quanto mais clara for a dor, mais precisa será nossa direção.",
+      questions: [
+        {
+          id: "principal_dificuldade",
+          label: "Qual a principal dificuldade que você enfrenta hoje?",
+          kind: "textarea",
+          placeholder: "O que mais tem gerado atrito, prejuízo ou incerteza?",
+        },
+        {
+          id: "objetivo_consultoria",
+          label: "Qual é o objetivo desta consultoria?",
+          kind: "textarea",
+          placeholder: "O que você espera resolver ou destravar com nosso apoio?",
+        },
+        {
+          id: "acoes_tentadas",
+          label: "O que você já tentou para resolver isso?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Iniciativas, ferramentas, contratações, mudanças de processo...",
+        },
+      ],
+    },
+    {
+      id: "contexto",
+      label: "Contexto",
+      title: "Ferramentas, canais e indicadores",
+      description: "Onde a operação vive hoje e o que você consegue medir.",
+      questions: [
+        {
+          id: "ferramentas_canais",
+          label: "Quais ferramentas ou canais você utiliza na operação?",
+          kind: "textarea",
+          optional: true,
+          hint: "Ex.: WhatsApp, ERP, planilhas, marketplaces, Instagram, CRM...",
+          placeholder: "Liste as principais ferramentas, sistemas e canais",
+        },
+        {
+          id: "indicadores",
+          label: "Você acompanha indicadores hoje?",
+          kind: "select",
+          options: [
+            { value: "nao", label: "Não acompanho" },
+            { value: "informal", label: "Acompanho de forma informal" },
+            { value: "planilha", label: "Acompanho em planilhas" },
+            { value: "sistema", label: "Acompanho em sistema" },
+          ],
+        },
+        {
+          id: "indicadores_quais",
+          label: "Se sim, quais indicadores você acompanha?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Ex.: faturamento, ticket médio, CAC, ROI, conversão...",
+        },
+      ],
+    },
+    {
+      id: "maturidade",
+      label: "Maturidade",
+      title: "Seu nível de conhecimento",
+      description: "Isso nos ajuda a calibrar linguagem e profundidade da consultoria.",
+      questions: [
+        {
+          id: "nivel_conhecimento",
+          label: "Como você avalia seu nível de conhecimento sobre o tema?",
+          kind: "select",
+          options: [
+            { value: "iniciante", label: "Iniciante" },
+            { value: "intermediario", label: "Intermediário" },
+            { value: "avancado", label: "Avançado" },
+          ],
+        },
+        {
+          id: "disponibilidade",
+          label: "Qual sua disponibilidade para reuniões semanais?",
+          kind: "select",
+          options: [
+            { value: "1h", label: "Até 1 hora por semana" },
+            { value: "2h", label: "1 a 2 horas por semana" },
+            { value: "4h", label: "2 a 4 horas por semana" },
+            { value: "flex", label: "Flexível conforme demanda" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "resultado",
+      label: "Resultado",
+      title: "Resultado esperado",
+      description: "Como será para você saber que a consultoria valeu a pena.",
+      questions: [
+        {
+          id: "resultado_esperado",
+          label: "Qual resultado você espera alcançar ao final da consultoria?",
+          kind: "textarea",
+          placeholder: "Descreva o cenário desejado ao final do trabalho",
+        },
+        {
+          id: "prazo_esperado",
+          label: "Em quanto tempo espera alcançar esse resultado?",
+          kind: "select",
+          options: [
+            { value: "30d", label: "Em até 30 dias" },
+            { value: "90d", label: "Em até 90 dias" },
+            { value: "6m", label: "Em até 6 meses" },
+            { value: "12m", label: "Em até 12 meses" },
+            { value: "sem_prazo", label: "Sem prazo definido" },
+          ],
+        },
+        {
+          id: "observacoes",
+          label: "Alguma informação adicional relevante?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Restrições, expectativas ou contexto que ainda não foi perguntado",
+        },
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Template DIAGNÓSTICO — Sprint 12.0B
+// Focado em diagnóstico / otimização de lojas em marketplaces.
+// NÃO contém perguntas de desenvolvimento de software.
+// ---------------------------------------------------------------------------
+const templateDiagnostico: BriefingTemplate = {
+  key: "diagnostico",
+  name: "Briefing de Diagnóstico",
+  intro: {
+    eyebrow: "Briefing Valtro Labs · 8 a 12 minutos",
+    title: "Vamos entender sua loja para preparar o diagnóstico.",
+    description:
+      "Este briefing é focado em diagnóstico e otimização. Suas respostas orientam a análise técnica que faremos da sua operação de vendas.",
+  },
+  steps: [
+    {
+      id: "loja",
+      label: "Loja",
+      title: "Sua loja",
+      description: "Confirme os dados básicos da loja que será analisada.",
+      questions: [
+        { id: "nome_loja", label: "Nome da loja", kind: "text", placeholder: "Como sua loja é chamada" },
+        { id: "link_loja", label: "Link da loja", kind: "text", placeholder: "https://" },
+        {
+          id: "marketplace",
+          label: "Marketplace principal",
+          kind: "select",
+          options: [
+            { value: "shopee", label: "Shopee" },
+            { value: "mercado-livre", label: "Mercado Livre" },
+            { value: "amazon", label: "Amazon" },
+            { value: "magalu", label: "Magalu" },
+            { value: "outros", label: "Outros" },
+          ],
+        },
+        {
+          id: "nicho",
+          label: "Nicho ou segmento",
+          kind: "text",
+          placeholder: "Ex.: moda, casa, eletrônicos, beleza...",
+        },
+        {
+          id: "tempo_operacao",
+          label: "Há quanto tempo a loja está em operação?",
+          kind: "select",
+          options: [
+            { value: "menos-6m", label: "Menos de 6 meses" },
+            { value: "6-12m", label: "6 a 12 meses" },
+            { value: "1-3", label: "1 a 3 anos" },
+            { value: "3-5", label: "3 a 5 anos" },
+            { value: "5+", label: "Mais de 5 anos" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "catalogo",
+      label: "Catálogo",
+      title: "Catálogo e produtos",
+      description: "O tamanho e o perfil do catálogo influenciam diretamente o diagnóstico.",
+      questions: [
+        {
+          id: "qtd_produtos",
+          label: "Quantos produtos ativos existem hoje?",
+          kind: "select",
+          options: [
+            { value: "1-20", label: "1 a 20" },
+            { value: "21-100", label: "21 a 100" },
+            { value: "101-500", label: "101 a 500" },
+            { value: "501-2000", label: "501 a 2.000" },
+            { value: "2000+", label: "Mais de 2.000" },
+          ],
+        },
+        {
+          id: "produtos_principais",
+          label: "Quais são seus produtos principais?",
+          kind: "textarea",
+          placeholder: "Liste os produtos ou categorias que mais representam a loja",
+        },
+        {
+          id: "anuncios_ativos",
+          label: "Quantos anúncios estão ativos hoje?",
+          kind: "select",
+          options: [
+            { value: "poucos", label: "Poucos (até 20)" },
+            { value: "medio", label: "Médio (20 a 100)" },
+            { value: "muitos", label: "Muitos (mais de 100)" },
+            { value: "nao_sei", label: "Não sei precisar" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "performance",
+      label: "Performance",
+      title: "Vendas e avaliações",
+      description: "Como está a performance atual da loja.",
+      questions: [
+        {
+          id: "faixa_vendas",
+          label: "Faixa de vendas mensais",
+          kind: "select",
+          options: [
+            { value: "0-20", label: "Até R$ 20 mil" },
+            { value: "20-50", label: "R$ 20 a 50 mil" },
+            { value: "50-100", label: "R$ 50 a 100 mil" },
+            { value: "100-300", label: "R$ 100 a 300 mil" },
+            { value: "300+", label: "Acima de R$ 300 mil" },
+            { value: "nao_informar", label: "Prefiro não informar" },
+          ],
+        },
+        {
+          id: "avaliacoes",
+          label: "Como está a reputação/avaliações da loja?",
+          kind: "select",
+          options: [
+            { value: "excelente", label: "Excelente" },
+            { value: "boa", label: "Boa" },
+            { value: "regular", label: "Regular" },
+            { value: "ruim", label: "Ruim" },
+            { value: "sem_avaliacoes", label: "Ainda sem avaliações relevantes" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "ads",
+      label: "Ads",
+      title: "Investimento em anúncios",
+      description: "Como está a estratégia de ads da loja hoje.",
+      questions: [
+        {
+          id: "usa_ads",
+          label: "A loja utiliza anúncios pagos?",
+          kind: "select",
+          options: [
+            { value: "sim", label: "Sim, ativamente" },
+            { value: "as-vezes", label: "Às vezes" },
+            { value: "nao", label: "Não" },
+          ],
+        },
+        {
+          id: "investimento_ads",
+          label: "Investimento mensal em anúncios",
+          kind: "select",
+          options: [
+            { value: "0", label: "Não invisto hoje" },
+            { value: "ate-1k", label: "Até R$ 1 mil" },
+            { value: "1-5k", label: "R$ 1 a 5 mil" },
+            { value: "5-15k", label: "R$ 5 a 15 mil" },
+            { value: "15k+", label: "Acima de R$ 15 mil" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "objetivo",
+      label: "Objetivo",
+      title: "Objetivo do diagnóstico",
+      description: "O que você espera obter com esta análise.",
+      questions: [
+        {
+          id: "dificuldades",
+          label: "Quais são suas principais dificuldades hoje?",
+          kind: "textarea",
+          placeholder: "Baixa conversão, tráfego insuficiente, margem apertada, operação, etc.",
+        },
+        {
+          id: "objetivo_analise",
+          label: "Qual é o objetivo desta análise?",
+          kind: "textarea",
+          placeholder: "O que você espera descobrir ou corrigir com o diagnóstico?",
+        },
+        {
+          id: "concorrentes",
+          label: "Concorrentes ou lojas de referência",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Cole links ou cite nomes de lojas que servem de referência",
+        },
+      ],
+    },
+    {
+      id: "autorizacao",
+      label: "Autorização",
+      title: "Autorização de análise",
+      description: "Precisamos da sua autorização para consultar publicamente sua loja.",
+      questions: [
+        {
+          id: "autoriza_consulta",
+          label: "Você autoriza nossa equipe a consultar publicamente sua loja para análise?",
+          kind: "select",
+          options: [
+            { value: "sim", label: "Sim, autorizo" },
+            { value: "nao", label: "Não, prefiro que não" },
+          ],
+        },
+        {
+          id: "observacoes",
+          label: "Alguma informação adicional relevante?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Restrições, expectativas ou contexto que ainda não foi perguntado",
+        },
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // Registry + resolver
 // ---------------------------------------------------------------------------
 export const BRIEFING_TEMPLATES = {
   loja: templateLoja,
   projeto: templateProjeto,
+  consultoria: templateConsultoria,
+  diagnostico: templateDiagnostico,
 } as const;
 
 export type TemplateKey = keyof typeof BRIEFING_TEMPLATES;
 
 /**
- * Mapeia `template_type` (armazenado no token) → chave do Template.
- * Nesta Sprint só existem dois: `loja` e `projeto`.
- * Novos serviços só precisam adicionar um novo template e mapear aqui.
+ * Resolve o Template pela `service_type` — fonte da verdade imutável
+ * definida pelo operador no CRM (Sprint 12.0B).
+ *
+ * Retorna `null` para serviços sem template próprio; nesse caso o
+ * chamador cai no `resolveTemplateKey(template_type)` (compat).
+ */
+function resolveTemplateKeyByService(
+  service: ServiceType | null | undefined,
+): TemplateKey | null {
+  switch (service) {
+    case "desenvolvimento_projeto":
+      return "projeto";
+    case "consultoria":
+      return "consultoria";
+    case "diagnostico":
+      return "diagnostico";
+    case "gestao_shopee":
+    case "gestao_mercadolivre":
+    case "gestao_amazon":
+    case "gestao_multicanal":
+      return "loja";
+    // trafego_pago, outro, nao_definido → sem template específico
+    default:
+      return null;
+  }
+}
+
+/**
+ * Fallback por `template_type` — mantido para compatibilidade com
+ * briefings antigos criados antes da existência de templates
+ * dedicados de Consultoria e Diagnóstico.
  */
 export function resolveTemplateKey(templateType: TemplateType): TemplateKey {
   switch (templateType) {
     case "consultoria":
+      return "consultoria";
+    case "diagnostico":
+      return "diagnostico";
     case "custom":
       return "projeto";
-    case "diagnostico":
     case "padrao":
     case "shopee":
     case "mercadolivre":
@@ -651,9 +1087,21 @@ export function templateTypeForService(service: ServiceType): TemplateType {
   }
 }
 
-export function getTemplate(templateType: TemplateType): BriefingTemplate {
-  return BRIEFING_TEMPLATES[resolveTemplateKey(templateType)];
+/**
+ * Resolve o Template para um token.
+ *
+ * Prioridade: `service_type` (imutável, escolhido pelo operador no CRM) →
+ * `template_type` (compat com briefings antigos).
+ */
+export function getTemplate(
+  templateType: TemplateType,
+  serviceType?: ServiceType | null,
+): BriefingTemplate {
+  const byService = resolveTemplateKeyByService(serviceType);
+  const key = byService ?? resolveTemplateKey(templateType);
+  return BRIEFING_TEMPLATES[key];
 }
+
 
 /**
  * Valida uma etapa contra os dados do cliente. Retorna null se OK,
