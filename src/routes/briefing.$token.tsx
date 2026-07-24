@@ -282,16 +282,21 @@ function PortalRunner({
 
 function WelcomeScreen({
   template,
+  briefingLabel,
   onStart,
 }: {
   template: BriefingTemplate;
+  briefingLabel: string;
   onStart: () => void;
 }) {
   return (
     <div className="text-center py-8">
-      <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs text-muted-foreground mb-8">
-        <Sparkles className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
-        <span>{template.intro.eyebrow}</span>
+      <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
+        <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
+        <span>Briefing · {briefingLabel}</span>
+      </div>
+      <div className="text-xs text-muted-foreground mb-8">
+        {template.intro.eyebrow}
       </div>
       <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground leading-[1.1] mb-6">
         {template.intro.title}
