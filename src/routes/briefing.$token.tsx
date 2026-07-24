@@ -74,6 +74,12 @@ export const Route = createFileRoute("/briefing/$token")({
 
 type Screen = "welcome" | "how" | "step" | "success";
 
+function maskRouteToken(value: string): string {
+  return value.length > 8
+    ? `${value.slice(0, 4)}…${value.slice(-4)}`
+    : "****";
+}
+
 function BriefingPortalPage() {
   const { token } = Route.useParams();
   const validateFn = useServerFn(validateBriefingToken);
