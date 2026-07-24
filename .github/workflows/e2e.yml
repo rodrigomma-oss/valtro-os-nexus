@@ -1,9 +1,10 @@
 name: E2E Tests
 
+# Executa apenas em push para main enquanto o Lovable não oferecer
+# preview isolado por branch/commit. PRs não disparam o workflow para
+# evitar rodar contra uma URL de preview que não reflete o código do PR.
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -14,25 +15,26 @@ jobs:
     timeout-minutes: 20
 
     env:
-      # Supabase (públicos — seguros como Variables)
-      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ezngjargedpcvxnyrgyq.supabase.co' }}
-      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID || 'ezngjargedpcvxnyrgyq' }}
-      SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ezngjargedpcvxnyrgyq.supabase.co' }}
-      SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      # Necessária para Server Functions anônimas do Portal validarem tokens e
-      # materializarem briefing_responses sem sessão do cliente final.
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # ---- Ambiente DEV isolado (valtro-vision-forge-dev) --------------
+      # URL pública do projeto Lovable dev. NUNCA apontar para produção.
+      PLAYWRIGHT_BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
 
-      # Alvo do teste (lead permanente do CRM)
+      # Supabase — credenciais PÚBLICAS do projeto DEV (publishable key).
+      # A service role NÃO é cadastrada no GitHub; permanece exclusiva do
+      # runtime gerenciado pelo Lovable.
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      # Lead permanente do CRM dev (seed idempotente).
       TEST_LEAD_ID: ${{ vars.TEST_LEAD_ID }}
 
-      # Credenciais do usuário E2E dedicado (role operator, sem privilégios admin).
+      # Credenciais do usuário E2E dedicado no ambiente DEV.
       # Login fresco a cada execução — NUNCA impressos em logs.
-      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
-      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
-
-      PLAYWRIGHT_BASE_URL: http://localhost:8080
+      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL_DEV }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD_DEV }}
 
     steps:
       - name: Checkout
@@ -49,23 +51,27 @@ jobs:
       - name: Install Playwright Chromium
         run: bunx playwright install --with-deps chromium
 
-      - name: Build app
-        run: bun run build
-
-      - name: Start dev server
-        run: bun run dev &
-        env:
-          PORT: "8080"
-
-      - name: Wait for dev server
+      # Guard de versão: garante que o preview dev alvo já publicou o
+      # commit que estamos testando. Se `commit` retornado por
+      # /api/public/version divergir de $GITHUB_SHA, aborta.
+      - name: Verify preview matches commit
         run: |
-          for i in {1..60}; do
-            if curl -sSf http://localhost:8080 >/dev/null; then
-              echo "Dev server ready"; exit 0
+          set -euo pipefail
+          if [ -z "${PLAYWRIGHT_BASE_URL:-}" ]; then
+            echo "PLAYWRIGHT_BASE_URL não configurado (variable do GitHub)." >&2
+            exit 1
+          fi
+          for i in {1..30}; do
+            resp=$(curl -sS "${PLAYWRIGHT_BASE_URL%/}/api/public/version" || echo "")
+            preview_commit=$(echo "$resp" | jq -r '.commit // empty' 2>/dev/null || echo "")
+            if [ -n "$preview_commit" ] && [ "$preview_commit" = "$GITHUB_SHA" ]; then
+              echo "Preview alinhado com commit $GITHUB_SHA"
+              exit 0
             fi
-            sleep 2
+            echo "Aguardando preview publicar $GITHUB_SHA (atual: '$preview_commit')..."
+            sleep 10
           done
-          echo "Dev server did not start" >&2
+          echo "Preview não publicou o commit $GITHUB_SHA a tempo." >&2
           exit 1
 
       - name: Run E2E tests
