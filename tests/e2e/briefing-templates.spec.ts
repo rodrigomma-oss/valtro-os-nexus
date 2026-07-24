@@ -187,7 +187,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
 
     // ---- 1) Consultoria -------------------------------------------------
     await createBriefingForService(page, "Consultoria");
-    const consultoriaUrl = await copyPortalLink(page, "Consultoria");
+    const consultoriaUrl = await getPortalUrl(page, "Consultoria");
 
     const anonCtx = await browser.newContext({
       storageState: { cookies: [], origins: [] },
@@ -203,7 +203,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
 
     // ---- 2) Desenvolvimento de Projeto ----------------------------------
     await createBriefingForService(page, "Desenvolvimento de Projeto");
-    const projetoUrl = await copyPortalLink(page, "Desenvolvimento de Projeto");
+    const projetoUrl = await getPortalUrl(page, "Desenvolvimento de Projeto");
 
     const anonCtx2 = await browser.newContext({
       storageState: { cookies: [], origins: [] },
