@@ -55,6 +55,8 @@ import {
   type TemplateQuestion,
   type TemplateStep,
 } from "@/config/briefing-templates";
+import { SERVICE_TYPE_LABEL } from "@/types/briefing";
+import type { ServiceType } from "@/types/briefing";
 
 export const Route = createFileRoute("/briefing/$token")({
   component: BriefingPortalPage,
@@ -93,12 +95,17 @@ function BriefingPortalPage() {
     return <PortalNonValid state={state} />;
   }
 
+  // Fonte da verdade: template e serviço fixados no token pelo operador.
+  // Nenhuma resposta do cliente altera esses valores — o Portal apenas
+  // renderiza o template vinculado ao `template_type` do token.
   const template = getTemplate(t.template_type);
+  const briefingLabel = SERVICE_TYPE_LABEL[t.service_type as ServiceType];
 
   return (
     <PortalRunner
       token={token}
       template={template}
+      briefingLabel={briefingLabel}
       initialData={response?.data ?? {}}
       initialStep={response?.current_step ?? 0}
     />
@@ -111,6 +118,7 @@ function BriefingPortalPage() {
 interface PortalRunnerProps {
   token: string;
   template: BriefingTemplate;
+  briefingLabel: string;
   initialData: Record<string, any>;
   initialStep: number;
 }
@@ -118,6 +126,7 @@ interface PortalRunnerProps {
 function PortalRunner({
   token,
   template,
+  briefingLabel,
   initialData,
   initialStep,
 }: PortalRunnerProps) {
@@ -207,6 +216,7 @@ function PortalRunner({
         screen === "step" ? (
           <PortalProgress
             template={template}
+            briefingLabel={briefingLabel}
             stepIndex={stepIndex}
             isReview={isReview}
           />
@@ -218,6 +228,7 @@ function PortalRunner({
           <ScreenWrap key="welcome">
             <WelcomeScreen
               template={template}
+              briefingLabel={briefingLabel}
               onStart={() => setScreen("how")}
             />
           </ScreenWrap>
@@ -257,7 +268,7 @@ function PortalRunner({
         )}
         {screen === "success" && (
           <ScreenWrap key="success">
-            <SuccessScreen template={template} />
+            <SuccessScreen template={template} briefingLabel={briefingLabel} />
           </ScreenWrap>
         )}
       </AnimatePresence>
@@ -271,16 +282,21 @@ function PortalRunner({
 
 function WelcomeScreen({
   template,
+  briefingLabel,
   onStart,
 }: {
   template: BriefingTemplate;
+  briefingLabel: string;
   onStart: () => void;
 }) {
   return (
     <div className="text-center py-8">
-      <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs text-muted-foreground mb-8">
-        <Sparkles className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
-        <span>{template.intro.eyebrow}</span>
+      <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
+        <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
+        <span>Briefing · {briefingLabel}</span>
+      </div>
+      <div className="text-xs text-muted-foreground mb-8">
+        {template.intro.eyebrow}
       </div>
       <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground leading-[1.1] mb-6">
         {template.intro.title}
@@ -511,7 +527,14 @@ function ReviewScreen({
   );
 }
 
-function SuccessScreen({ template }: { template: BriefingTemplate }) {
+function SuccessScreen({
+  template,
+  briefingLabel,
+}: {
+  template: BriefingTemplate;
+  briefingLabel: string;
+}) {
+  void template;
   return (
     <div className="text-center py-16">
       <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-full bg-emerald-50 text-emerald-600">
@@ -522,7 +545,7 @@ function SuccessScreen({ template }: { template: BriefingTemplate }) {
       </h1>
       <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
         Recebemos suas respostas e nossa equipe entrará em contato em até dois
-        dias úteis com o retorno consultivo do seu {template.name.toLowerCase()}.
+        dias úteis com o retorno consultivo do seu briefing de {briefingLabel}.
       </p>
     </div>
   );
@@ -629,10 +652,12 @@ function formatAnswer(q: TemplateQuestion, value: any): string {
 // ---------------------------------------------------------------------------
 function PortalProgress({
   template,
+  briefingLabel,
   stepIndex,
   isReview,
 }: {
   template: BriefingTemplate;
+  briefingLabel: string;
   stepIndex: number;
   isReview: boolean;
 }) {
@@ -643,6 +668,12 @@ function PortalProgress({
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-6 pb-4">
+      <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+        <span className="inline-flex items-center gap-1.5 font-semibold text-primary">
+          <Sparkles className="h-3 w-3" strokeWidth={2} />
+          Briefing · {briefingLabel}
+        </span>
+      </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
         <span className="font-medium tracking-wide">
           Etapa {current} de {total} · {label}

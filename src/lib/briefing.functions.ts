@@ -402,7 +402,7 @@ export const saveBriefingProgress = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const patch: { data: any; current_step: number; started_at?: string } = {
-      data: data.data,
+      data: sanitizeResponseData(data.data),
       current_step: data.current_step,
     };
     if (existing && !existing.started_at) patch.started_at = now;
@@ -454,7 +454,7 @@ export const completeBriefing = createServerFn({ method: "POST" })
 
     const { error: respErr } = await supabaseAdmin
       .from("briefing_responses")
-      .update({ data: data.data, completed_at: now })
+      .update({ data: sanitizeResponseData(data.data), completed_at: now })
       .eq("token_id", data.token);
     if (respErr) throw new Error(respErr.message);
 
@@ -486,6 +486,32 @@ function publicToken(t: BriefingToken): PortalPayload["token"] {
     expires_at: t.expires_at,
     completed_at: t.completed_at,
   };
+}
+
+/**
+ * Defesa em profundidade: o Portal Público é anônimo e recebe `data` como
+ * um blob JSON livre. O `template_type` e o `service_type` são fixados
+ * pelo operador na geração do token e NÃO podem ser alterados pelas
+ * respostas do cliente. Qualquer chave reservada que apareça no payload é
+ * descartada antes de persistir em `briefing_responses.data`.
+ */
+const RESERVED_RESPONSE_KEYS = new Set([
+  "template_type",
+  "service_type",
+  "token_id",
+  "lead_id",
+  "status",
+]);
+
+function sanitizeResponseData(
+  data: Record<string, any>,
+): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (RESERVED_RESPONSE_KEYS.has(k)) continue;
+    out[k] = v;
+  }
+  return out;
 }
 
 // =============================================================
