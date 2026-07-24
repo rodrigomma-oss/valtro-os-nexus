@@ -652,10 +652,12 @@ function formatAnswer(q: TemplateQuestion, value: any): string {
 // ---------------------------------------------------------------------------
 function PortalProgress({
   template,
+  briefingLabel,
   stepIndex,
   isReview,
 }: {
   template: BriefingTemplate;
+  briefingLabel: string;
   stepIndex: number;
   isReview: boolean;
 }) {
@@ -666,6 +668,12 @@ function PortalProgress({
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-6 pb-4">
+      <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+        <span className="inline-flex items-center gap-1.5 font-semibold text-primary">
+          <Sparkles className="h-3 w-3" strokeWidth={2} />
+          Briefing · {briefingLabel}
+        </span>
+      </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
         <span className="font-medium tracking-wide">
           Etapa {current} de {total} · {label}
