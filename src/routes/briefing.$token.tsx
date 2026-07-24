@@ -106,6 +106,7 @@ function BriefingPortalPage() {
       token={token}
       template={template}
       briefingLabel={briefingLabel}
+      serviceType={t.service_type as ServiceType}
       initialData={response?.data ?? {}}
       initialStep={response?.current_step ?? 0}
     />
@@ -119,6 +120,7 @@ interface PortalRunnerProps {
   token: string;
   template: BriefingTemplate;
   briefingLabel: string;
+  serviceType: ServiceType;
   initialData: Record<string, any>;
   initialStep: number;
 }
@@ -127,6 +129,7 @@ function PortalRunner({
   token,
   template,
   briefingLabel,
+  serviceType,
   initialData,
   initialStep,
 }: PortalRunnerProps) {
@@ -217,6 +220,7 @@ function PortalRunner({
           <PortalProgress
             template={template}
             briefingLabel={briefingLabel}
+            serviceType={serviceType}
             stepIndex={stepIndex}
             isReview={isReview}
           />
@@ -229,6 +233,7 @@ function PortalRunner({
             <WelcomeScreen
               template={template}
               briefingLabel={briefingLabel}
+              serviceType={serviceType}
               onStart={() => setScreen("how")}
             />
           </ScreenWrap>
@@ -283,18 +288,22 @@ function PortalRunner({
 function WelcomeScreen({
   template,
   briefingLabel,
+  serviceType,
   onStart,
 }: {
   template: BriefingTemplate;
   briefingLabel: string;
+  serviceType: ServiceType;
   onStart: () => void;
 }) {
   return (
-    <div className="text-center py-8">
-      <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-4">
-        <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span>Briefing · {briefingLabel}</span>
-      </div>
+    <div className="text-center py-8" data-testid="portal-welcome">
+      <PortalTemplateBadge
+        briefingLabel={briefingLabel}
+        serviceType={serviceType}
+        templateKey={template.key}
+        className="mb-4"
+      />
       <div className="text-xs text-muted-foreground mb-8">
         {template.intro.eyebrow}
       </div>
@@ -406,7 +415,7 @@ function StepScreen({
   saveState: "idle" | "saving" | "saved";
 }) {
   return (
-    <div className="py-4">
+    <div className="py-4" data-testid="portal-step">
       <header className="mb-8">
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-2">
           {step.title}
@@ -462,7 +471,7 @@ function ReviewScreen({
   onPrev: () => void;
 }) {
   return (
-    <div className="py-4">
+    <div className="py-4" data-testid="portal-step">
       <header className="mb-8">
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-2">
           Revise antes de enviar
@@ -536,7 +545,7 @@ function SuccessScreen({
 }) {
   void template;
   return (
-    <div className="text-center py-16">
+    <div className="text-center py-16" data-testid="portal-success">
       <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-full bg-emerald-50 text-emerald-600">
         <CheckCircle2 className="h-10 w-10" strokeWidth={1.5} />
       </div>
@@ -653,11 +662,13 @@ function formatAnswer(q: TemplateQuestion, value: any): string {
 function PortalProgress({
   template,
   briefingLabel,
+  serviceType,
   stepIndex,
   isReview,
 }: {
   template: BriefingTemplate;
   briefingLabel: string;
+  serviceType: ServiceType;
   stepIndex: number;
   isReview: boolean;
 }) {
@@ -669,10 +680,12 @@ function PortalProgress({
   return (
     <div className="mx-auto w-full max-w-[820px] px-6 pb-4">
       <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
-        <span className="inline-flex items-center gap-1.5 font-semibold text-primary">
-          <Sparkles className="h-3 w-3" strokeWidth={2} />
-          Briefing · {briefingLabel}
-        </span>
+        <PortalTemplateBadge
+          briefingLabel={briefingLabel}
+          serviceType={serviceType}
+          templateKey={template.key}
+          compact
+        />
       </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
         <span className="font-medium tracking-wide">
@@ -689,6 +702,36 @@ function PortalProgress({
         />
       </div>
     </div>
+  );
+}
+
+function PortalTemplateBadge({
+  briefingLabel,
+  serviceType,
+  templateKey,
+  compact = false,
+  className,
+}: {
+  briefingLabel: string;
+  serviceType: ServiceType;
+  templateKey: BriefingTemplate["key"];
+  compact?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      className={
+        compact
+          ? `inline-flex items-center gap-1.5 font-semibold text-primary ${className ?? ""}`
+          : `inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary ${className ?? ""}`
+      }
+      data-testid="portal-template-badge"
+      data-service-type={serviceType}
+      data-template-key={templateKey}
+    >
+      <Sparkles className={compact ? "h-3 w-3" : "h-3.5 w-3.5"} strokeWidth={compact ? 2 : 1.75} />
+      Briefing · {briefingLabel}
+    </span>
   );
 }
 
@@ -730,7 +773,10 @@ function ScreenWrap({ children }: { children: React.ReactNode }) {
 function PortalLoading() {
   return (
     <DiagnosisLayout>
-      <div className="py-24 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+      <div
+        className="py-24 flex flex-col items-center justify-center gap-3 text-muted-foreground"
+        data-testid="portal-validating"
+      >
         <Loader2 className="h-6 w-6 animate-spin" strokeWidth={1.75} />
         <span className="text-sm">Validando seu acesso...</span>
       </div>
@@ -744,6 +790,7 @@ function PortalError({ message }: { message?: string }) {
       <StateMessage
         icon={AlertCircle}
         tone="destructive"
+        testId="portal-error-invalid"
         title="Não foi possível carregar o briefing"
         description={
           message ??
@@ -800,11 +847,19 @@ function PortalNonValid({ state }: { state: PortalTokenState }) {
     },
   };
   const c = config[state];
+  const testIdByState: Record<PortalTokenState, string> = {
+    valido: "portal-welcome",
+    expirado: "portal-error-expired",
+    revogado: "portal-error-revoked",
+    concluido: "portal-error-completed",
+    invalido: "portal-error-invalid",
+  };
   return (
     <DiagnosisLayout>
       <StateMessage
         icon={c.icon}
         tone={c.tone}
+        testId={testIdByState[state]}
         title={c.title}
         description={c.description}
       />
@@ -817,11 +872,13 @@ function StateMessage({
   tone,
   title,
   description,
+  testId,
 }: {
   icon: typeof Ban;
   tone: "muted" | "destructive" | "warning" | "success";
   title: string;
   description: string;
+  testId?: string;
 }) {
   const toneBg = {
     muted: "bg-muted text-muted-foreground",
@@ -830,7 +887,7 @@ function StateMessage({
     success: "bg-emerald-50 text-emerald-600",
   }[tone];
   return (
-    <div className="py-20 text-center">
+    <div className="py-20 text-center" data-testid={testId}>
       <div
         className={`mx-auto mb-6 grid h-16 w-16 place-items-center rounded-full ${toneBg}`}
       >
