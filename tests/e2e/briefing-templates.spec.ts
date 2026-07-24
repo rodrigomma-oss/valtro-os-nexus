@@ -26,10 +26,37 @@ const SERVICE_VALUES = {
   "Desenvolvimento de Projeto": "desenvolvimento_projeto",
 } as const;
 
-type ServiceLabel = keyof typeof SERVICE_VALUES;
+const TEMPLATE_KEYS = {
+  Consultoria: "consultoria",
+  "Desenvolvimento de Projeto": "projeto",
+} as const;
 
-const ACTIVE_STATUS_SELECTOR =
-  '[data-testid="briefing-card"][data-status="pendente"], [data-testid="briefing-card"][data-status="ativo"]';
+type ServiceLabel = keyof typeof SERVICE_VALUES;
+type PortalTerminalState =
+  | "portal-welcome"
+  | "portal-step"
+  | "portal-success"
+  | "portal-error-invalid"
+  | "portal-error-revoked"
+  | "portal-error-expired"
+  | "portal-error-completed";
+
+const PORTAL_TERMINAL_STATES: readonly PortalTerminalState[] = [
+  "portal-welcome",
+  "portal-step",
+  "portal-success",
+  "portal-error-invalid",
+  "portal-error-revoked",
+  "portal-error-expired",
+  "portal-error-completed",
+];
+
+const PORTAL_ERROR_STATES = new Set<PortalTerminalState>([
+  "portal-error-invalid",
+  "portal-error-revoked",
+  "portal-error-expired",
+  "portal-error-completed",
+]);
 
 function activeCardsForService(page: Page, service: ServiceLabel): Locator {
   const value = SERVICE_VALUES[service];
@@ -114,8 +141,13 @@ async function getPortalUrl(
   page: Page,
   service: ServiceLabel,
 ): Promise<string> {
+  const expectedServiceType = SERVICE_VALUES[service];
   const card = activeCardsForService(page, service).first();
   await expect(card).toBeVisible({ timeout: 15_000 });
+
+  await expect(card).toHaveAttribute("data-service-type", expectedServiceType);
+  await expect(card).toHaveAttribute("data-status", /^(pendente|ativo)$/);
+  await expect(card).toHaveAttribute("data-token-id", /^[0-9a-f-]{36}$/i);
 
   // Fonte determinística: atributo estável no card (não depende do clipboard,
   // que é instável em runners headless do GitHub Actions).
@@ -128,12 +160,119 @@ async function getPortalUrl(
     const tokenId = await card.getAttribute("data-token-id");
     throw new Error(
       `Portal URL não encontrada no card do serviço "${service}". ` +
-        `data-token-id=${tokenId ?? "(null)"}.`,
+        `data-token-id=${tokenId ? maskUuid(tokenId) : "(null)"}.`,
     );
   }
   expect(url).toBeTruthy();
   expect(url).toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
   return url;
+}
+
+interface PortalDiagnostics {
+  consoleErrors: string[];
+  pageErrors: string[];
+  failedResponses: string[];
+}
+
+function attachPortalDiagnostics(page: Page): PortalDiagnostics {
+  const diagnostics: PortalDiagnostics = {
+    consoleErrors: [],
+    pageErrors: [],
+    failedResponses: [],
+  };
+
+  page.on("console", (msg) => {
+    if (msg.type() !== "error") return;
+    diagnostics.consoleErrors.push(msg.text());
+  });
+
+  page.on("pageerror", (err) => {
+    diagnostics.pageErrors.push(err.message);
+  });
+
+  page.on("response", (response) => {
+    const status = response.status();
+    if (status < 400) return;
+    diagnostics.failedResponses.push(
+      `${status} ${maskUrl(response.url())}`,
+    );
+  });
+
+  return diagnostics;
+}
+
+function maskUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.pathname = maskToken(u.pathname);
+    return maskUuid(u.toString());
+  } catch {
+    return maskUuid(maskToken(url));
+  }
+}
+
+function maskUuid(value: string): string {
+  return value.replace(
+    /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi,
+    (uuid) => `${uuid.slice(0, 4)}…${uuid.slice(-4)}`,
+  );
+}
+
+async function findPortalState(page: Page): Promise<PortalTerminalState | null> {
+  for (const state of PORTAL_TERMINAL_STATES) {
+    if ((await page.getByTestId(state).count()) > 0) return state;
+  }
+  return null;
+}
+
+async function readPortalDiagnosticSummary(
+  page: Page,
+  state: PortalTerminalState | null,
+  diagnostics: PortalDiagnostics,
+): Promise<string> {
+  const badge = page.getByTestId("portal-template-badge").first();
+  const serviceType =
+    (await badge.getAttribute("data-service-type").catch(() => null)) ??
+    "(ausente)";
+  const templateKey =
+    (await badge.getAttribute("data-template-key").catch(() => null)) ??
+    "(ausente)";
+  const bodyText =
+    (await page.locator("body").innerText().catch(() => ""))
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 1_500) || "(body vazio)";
+  const title = await page.title().catch(() => "(sem título)");
+
+  return [
+    `[portal-diagnostics] url=${maskUrl(page.url())}`,
+    `[portal-diagnostics] title=${JSON.stringify(title)}`,
+    `[portal-diagnostics] state=${state ?? "(nenhum)"}`,
+    `[portal-diagnostics] data-service-type=${serviceType}`,
+    `[portal-diagnostics] data-template-key=${templateKey}`,
+    `[portal-diagnostics] consoleErrors=${maskUuid(JSON.stringify(diagnostics.consoleErrors))}`,
+    `[portal-diagnostics] pageErrors=${maskUuid(JSON.stringify(diagnostics.pageErrors))}`,
+    `[portal-diagnostics] failedResponses=${maskUuid(JSON.stringify(diagnostics.failedResponses))}`,
+    `[portal-diagnostics] body=${maskUuid(JSON.stringify(bodyText))}`,
+  ].join("\n");
+}
+
+async function waitForPortalTerminalState(
+  page: Page,
+  diagnostics: PortalDiagnostics,
+): Promise<PortalTerminalState> {
+  await expect
+    .poll(() => findPortalState(page), { timeout: 20_000 })
+    .not.toBeNull();
+
+  const state = await findPortalState(page);
+  if (!state) {
+    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
+    throw new Error(`Portal não saiu do estado de validação.\n${summary}`);
+  }
+
+  console.log(await readPortalDiagnosticSummary(page, state, diagnostics));
+  return state;
 }
 
 
@@ -147,15 +286,30 @@ async function getPortalUrl(
 async function assertPortalTemplate(
   portal: Page,
   service: ServiceLabel,
+  diagnostics: PortalDiagnostics,
 ): Promise<void> {
+  const expectedServiceType = SERVICE_VALUES[service];
+  const expectedTemplateKey = TEMPLATE_KEYS[service];
   const expected = new RegExp(`Briefing\\s·\\s${service}`, "i");
   const other: ServiceLabel =
     service === "Consultoria" ? "Desenvolvimento de Projeto" : "Consultoria";
   const forbidden = new RegExp(`Briefing\\s·\\s${other}`, "i");
 
-  await expect(portal.getByText(expected).first()).toBeVisible({
-    timeout: 20_000,
-  });
+  const badge = portal.getByTestId("portal-template-badge").first();
+
+  try {
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveAttribute("data-service-type", expectedServiceType);
+    await expect(badge).toHaveAttribute("data-template-key", expectedTemplateKey);
+  } catch (err) {
+    const state = await findPortalState(portal);
+    const summary = await readPortalDiagnosticSummary(portal, state, diagnostics);
+    throw new Error(
+      `Badge do Portal divergente para "${service}".\n${summary}\nOriginal: ${(err as Error).message}`,
+    );
+  }
+
+  await expect(portal.getByText(expected).first()).toBeVisible();
   await expect(portal.getByText(forbidden)).toHaveCount(0);
 }
 
@@ -197,7 +351,8 @@ async function openPortalInCi(
   page: Page,
   sourceAbsoluteUrl: string,
   service: ServiceLabel,
-): Promise<void> {
+  diagnostics: PortalDiagnostics,
+): Promise<PortalTerminalState> {
   const { ciUrl, pathname, sourceOrigin, baseOrigin } =
     buildCiPortalUrl(sourceAbsoluteUrl);
 
@@ -211,24 +366,17 @@ async function openPortalInCi(
 
   expect(new URL(page.url()).origin).toBe(baseOrigin);
 
-  // Aguarda o fim de "Validando seu acesso…" e detecta telas de erro
-  // explicitamente, para não mascarar problemas como "badge não encontrado".
-  const errorScreen = page.getByText(
-    /acesso desativado|concluído|inválido|expirado|revogado/i,
-  );
-  const validating = page.getByText(/Validando seu acesso/i);
+  const state = await waitForPortalTerminalState(page, diagnostics);
 
-  await expect
-    .poll(async () => (await validating.count()) === 0, { timeout: 20_000 })
-    .toBe(true);
-
-  if ((await errorScreen.count()) > 0) {
-    const msg = (await errorScreen.first().textContent())?.trim();
+  if (PORTAL_ERROR_STATES.has(state)) {
+    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
     throw new Error(
-      `Portal abriu em tela de erro para "${service}": "${msg}" ` +
-        `(pathname=${maskToken(pathname)})`,
+      `Portal abriu em tela de erro para "${service}" ` +
+        `(pathname=${maskToken(pathname)}).\n${summary}`,
     );
   }
+
+  return state;
 }
 
 test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
@@ -265,9 +413,15 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
       storageState: { cookies: [], origins: [] },
     });
     const portal = await anonCtx.newPage();
-    await openPortalInCi(portal, consultoriaUrl, "Consultoria");
+    const consultoriaDiagnostics = attachPortalDiagnostics(portal);
+    await openPortalInCi(
+      portal,
+      consultoriaUrl,
+      "Consultoria",
+      consultoriaDiagnostics,
+    );
 
-    await assertPortalTemplate(portal, "Consultoria");
+    await assertPortalTemplate(portal, "Consultoria", consultoriaDiagnostics);
 
     await anonCtx.close();
 
@@ -281,9 +435,19 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
       storageState: { cookies: [], origins: [] },
     });
     const portal2 = await anonCtx2.newPage();
-    await openPortalInCi(portal2, projetoUrl, "Desenvolvimento de Projeto");
+    const projetoDiagnostics = attachPortalDiagnostics(portal2);
+    await openPortalInCi(
+      portal2,
+      projetoUrl,
+      "Desenvolvimento de Projeto",
+      projetoDiagnostics,
+    );
 
-    await assertPortalTemplate(portal2, "Desenvolvimento de Projeto");
+    await assertPortalTemplate(
+      portal2,
+      "Desenvolvimento de Projeto",
+      projetoDiagnostics,
+    );
 
     await anonCtx2.close();
 
