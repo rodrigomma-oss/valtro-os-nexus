@@ -790,7 +790,7 @@ function PortalError({ message }: { message?: string }) {
       <StateMessage
         icon={AlertCircle}
         tone="destructive"
-        testId="portal-error-invalid"
+        testId="portal-error-function"
         title="Não foi possível carregar o briefing"
         description={
           message ??
