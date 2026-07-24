@@ -216,6 +216,7 @@ function PortalRunner({
         screen === "step" ? (
           <PortalProgress
             template={template}
+            briefingLabel={briefingLabel}
             stepIndex={stepIndex}
             isReview={isReview}
           />
@@ -227,6 +228,7 @@ function PortalRunner({
           <ScreenWrap key="welcome">
             <WelcomeScreen
               template={template}
+              briefingLabel={briefingLabel}
               onStart={() => setScreen("how")}
             />
           </ScreenWrap>
@@ -266,7 +268,7 @@ function PortalRunner({
         )}
         {screen === "success" && (
           <ScreenWrap key="success">
-            <SuccessScreen template={template} />
+            <SuccessScreen template={template} briefingLabel={briefingLabel} />
           </ScreenWrap>
         )}
       </AnimatePresence>
