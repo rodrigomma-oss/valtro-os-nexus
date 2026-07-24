@@ -486,17 +486,23 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const anonCtx = await browser.newContext({
       storageState: { cookies: [], origins: [] },
     });
+    await startPortalTracing(anonCtx, "consultoria");
     const portal = await anonCtx.newPage();
     const consultoriaDiagnostics = attachPortalDiagnostics(portal);
-    await openPortalInCi(
-      portal,
-      consultoriaUrl,
-      "Consultoria",
-      consultoriaDiagnostics,
-    );
-
-    await assertPortalTemplate(portal, "Consultoria", consultoriaDiagnostics);
-
+    try {
+      await openPortalInCi(
+        portal,
+        consultoriaUrl,
+        "Consultoria",
+        consultoriaDiagnostics,
+      );
+      await assertPortalTemplate(portal, "Consultoria", consultoriaDiagnostics);
+    } catch (err) {
+      await stopPortalTracing(anonCtx, "consultoria", true);
+      await anonCtx.close();
+      throw err;
+    }
+    await stopPortalTracing(anonCtx, "consultoria", false);
     await anonCtx.close();
 
     await revokeActiveBriefingsForService(page, "Consultoria");
@@ -508,25 +514,84 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const anonCtx2 = await browser.newContext({
       storageState: { cookies: [], origins: [] },
     });
+    await startPortalTracing(anonCtx2, "projeto");
     const portal2 = await anonCtx2.newPage();
     const projetoDiagnostics = attachPortalDiagnostics(portal2);
-    await openPortalInCi(
-      portal2,
-      projetoUrl,
-      "Desenvolvimento de Projeto",
-      projetoDiagnostics,
-    );
-
-    await assertPortalTemplate(
-      portal2,
-      "Desenvolvimento de Projeto",
-      projetoDiagnostics,
-    );
-
+    try {
+      await openPortalInCi(
+        portal2,
+        projetoUrl,
+        "Desenvolvimento de Projeto",
+        projetoDiagnostics,
+      );
+      await assertPortalTemplate(
+        portal2,
+        "Desenvolvimento de Projeto",
+        projetoDiagnostics,
+      );
+    } catch (err) {
+      await stopPortalTracing(anonCtx2, "projeto", true);
+      await anonCtx2.close();
+      throw err;
+    }
+    await stopPortalTracing(anonCtx2, "projeto", false);
     await anonCtx2.close();
 
     // Cleanup final.
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
   });
 });
+
+/**
+ * Playwright tracing por contexto anônimo: gravamos snapshots + screenshots
+ * durante toda a jornada e, em caso de falha, exportamos o zip e anexamos
+ * ao relatório. Em sucesso, o trace é descartado para não inflar artefatos.
+ */
+async function startPortalTracing(
+  context: BrowserContext,
+  label: string,
+): Promise<void> {
+  try {
+    await context.tracing.start({
+      screenshots: true,
+      snapshots: true,
+      sources: false,
+      title: `portal-${label}`,
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
+async function stopPortalTracing(
+  context: BrowserContext,
+  label: string,
+  onFailure: boolean,
+): Promise<void> {
+  const testInfo = (() => {
+    try {
+      return test.info();
+    } catch {
+      return undefined;
+    }
+  })();
+  if (!onFailure || !testInfo) {
+    try {
+      await context.tracing.stop();
+    } catch {
+      /* best-effort */
+    }
+    return;
+  }
+  try {
+    const tracePath = testInfo.outputPath(`portal-trace-${label}.zip`);
+    await context.tracing.stop({ path: tracePath });
+    await testInfo.attach(`portal-trace-${label}.zip`, {
+      path: tracePath,
+      contentType: "application/zip",
+    });
+  } catch {
+    /* best-effort */
+  }
+}
 
