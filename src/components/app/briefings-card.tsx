@@ -325,6 +325,7 @@ function BriefingEnvelope({
                 variant="outline"
                 className="gap-1.5"
                 onClick={copyLink}
+                data-testid="briefing-copy-link-button"
               >
                 {copied ? (
                   <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -354,6 +355,7 @@ function BriefingEnvelope({
                 onClick={() => {
                   if (confirm("Revogar este briefing?")) onRevoke();
                 }}
+                data-testid="briefing-revoke-button"
               >
                 <Ban className="h-3.5 w-3.5" strokeWidth={1.75} />
                 Revogar
