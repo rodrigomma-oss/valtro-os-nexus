@@ -848,7 +848,7 @@ function PortalNonValid({ state }: { state: PortalTokenState }) {
   };
   const c = config[state];
   const testIdByState: Record<PortalTokenState, string> = {
-    valido: "portal-welcome",
+    valido: "portal-error-invalid",
     expirado: "portal-error-expired",
     revogado: "portal-error-revoked",
     concluido: "portal-error-completed",
