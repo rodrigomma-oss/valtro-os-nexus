@@ -216,21 +216,73 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<PortalPayload> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: token, error } = await supabaseAdmin
-      .from("briefing_tokens")
-      .select(TOKEN_SELECT)
-      .eq("id", data.token)
-      .maybeSingle();
+    const tokenMask = `${data.token.slice(0, 4)}…${data.token.slice(-4)}`;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      data.token,
+    );
+    const logBase =
+      `[briefing-validate] identifier=${tokenMask} ` +
+      `length=${data.token.length} uuid=${isUuid} query=briefing_tokens.id`;
 
-    if (error) throw new Error(error.message);
+    console.info(`${logBase} event=start rpc=validateBriefingToken`);
+
+    let token: unknown;
+    let error:
+      | {
+          code?: string;
+          message?: string;
+          details?: string;
+          hint?: string;
+          status?: number;
+        }
+      | null = null;
+
+    try {
+      const result = await supabaseAdmin
+        .from("briefing_tokens")
+        .select(TOKEN_SELECT)
+        .eq("id", data.token)
+        .maybeSingle();
+      token = result.data;
+      error = result.error;
+    } catch (err) {
+      console.error(
+        `${logBase} event=function_error http=n/a code=client_constructor result=thrown message=${(err as Error).message}`,
+      );
+      throw new Error("Erro da função de validação do briefing.");
+    }
+
+    if (error) {
+      const code = error.code ?? "unknown";
+      const message = error.message ?? "unknown";
+      const http = error.status ?? "n/a";
+      const permissionLike =
+        code === "42501" || /permission|row-level|rls/i.test(message);
+      console.error(
+        `${logBase} event=db_error http=${http} code=${code} result=${permissionLike ? "permission_denied" : "database_error"} message=${message}`,
+      );
+      throw new Error(
+        permissionLike
+          ? "Erro de permissão ao validar o briefing."
+          : "Erro de banco ao validar o briefing.",
+      );
+    }
     if (!token) {
+      console.warn(
+        `${logBase} event=result http=200 code=not_found found=false state=invalido`,
+      );
       return { state: "invalido", token: null, response: null };
     }
 
     const t = token as BriefingToken;
 
+    console.info(
+      `${logBase} event=result http=200 code=ok found=true status=${t.status} service_type=${t.service_type} template_type=${t.template_type}`,
+    );
+
     // Estados finais
     if (t.status === "revogado") {
+      console.info(`${logBase} event=state state=revogado status=${t.status}`);
       return {
         state: "revogado",
         token: publicToken(t),
@@ -239,11 +291,18 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     }
     if (t.status === "concluido") {
       // Carrega response para exibir tela de conclusão personalizada
-      const { data: resp } = await supabaseAdmin
+      const { data: resp, error: respErr } = await supabaseAdmin
         .from("briefing_responses")
         .select("data, current_step, completed_at")
         .eq("token_id", t.id)
         .maybeSingle();
+      if (respErr) {
+        console.error(
+          `${logBase} event=db_error http=${(respErr as { status?: number }).status ?? "n/a"} code=${respErr.code ?? "unknown"} result=response_read_failed message=${respErr.message}`,
+        );
+        throw new Error("Erro de banco ao carregar resposta do briefing.");
+      }
+      console.info(`${logBase} event=state state=concluido status=${t.status}`);
       return {
         state: "concluido",
         token: publicToken(t),
@@ -261,16 +320,24 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     if (new Date(t.expires_at).getTime() < Date.now()) {
       // Marca como expirado de forma preguiçosa
       if (t.status !== "expirado") {
-        await supabaseAdmin
+        const { error: expireErr } = await supabaseAdmin
           .from("briefing_tokens")
           .update({ status: "expirado" })
           .eq("id", t.id);
+        if (expireErr) {
+          console.error(
+            `${logBase} event=db_error http=${(expireErr as { status?: number }).status ?? "n/a"} code=${expireErr.code ?? "unknown"} result=expire_update_failed message=${expireErr.message}`,
+          );
+          throw new Error("Erro de banco ao expirar briefing.");
+        }
       }
+      console.info(`${logBase} event=state state=expirado status=${t.status}`);
       return { state: "expirado", token: publicToken(t), response: null };
     }
 
     // Explicit `expirado`
     if (t.status === "expirado") {
+      console.info(`${logBase} event=state state=expirado status=${t.status}`);
       return { state: "expirado", token: publicToken(t), response: null };
     }
 
@@ -283,24 +350,45 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
     };
     if (t.status === "pendente") patch.status = "ativo";
 
-    await supabaseAdmin.from("briefing_tokens").update(patch).eq("id", t.id);
+    const { error: updateErr } = await supabaseAdmin
+      .from("briefing_tokens")
+      .update(patch)
+      .eq("id", t.id);
+    if (updateErr) {
+      console.error(
+        `${logBase} event=db_error http=${(updateErr as { status?: number }).status ?? "n/a"} code=${updateErr.code ?? "unknown"} result=token_update_failed message=${updateErr.message}`,
+      );
+      throw new Error("Erro de banco ao ativar briefing.");
+    }
 
     // Garante briefing_response
-    const { data: existingResp } = await supabaseAdmin
+    const { data: existingResp, error: existingRespErr } = await supabaseAdmin
       .from("briefing_responses")
       .select("data, current_step, completed_at, started_at")
       .eq("token_id", t.id)
       .maybeSingle();
+    if (existingRespErr) {
+      console.error(
+        `${logBase} event=db_error http=${(existingRespErr as { status?: number }).status ?? "n/a"} code=${existingRespErr.code ?? "unknown"} result=response_read_failed message=${existingRespErr.message}`,
+      );
+      throw new Error("Erro de banco ao carregar resposta do briefing.");
+    }
 
     let response = existingResp;
 
     if (!response) {
       // Sprint 2B.3.4 — prefill com dados já coletados no Lead
-      const { data: lead } = await supabaseAdmin
+      const { data: lead, error: leadErr } = await supabaseAdmin
         .from("leads")
         .select("contact_name, company_name, segment, city, state, phone, email")
         .eq("id", t.lead_id)
         .maybeSingle();
+      if (leadErr) {
+        console.error(
+          `${logBase} event=db_error http=${(leadErr as { status?: number }).status ?? "n/a"} code=${leadErr.code ?? "unknown"} result=lead_prefill_failed message=${leadErr.message}`,
+        );
+        throw new Error("Erro de banco ao carregar dados do lead.");
+      }
 
       const prefill: Record<string, string> = {};
       if (lead) {
@@ -324,26 +412,45 @@ export const validateBriefingToken = createServerFn({ method: "POST" })
         })
         .select("data, current_step, completed_at, started_at")
         .single();
-      if (createErr) throw new Error(createErr.message);
+      if (createErr) {
+        console.error(
+          `${logBase} event=db_error http=${(createErr as { status?: number }).status ?? "n/a"} code=${createErr.code ?? "unknown"} result=response_create_failed message=${createErr.message}`,
+        );
+        throw new Error("Erro de banco ao criar resposta do briefing.");
+      }
       response = created;
     }
 
     // Timeline: iniciado (primeiro acesso) OU retomado (acessos subsequentes)
     if (isFirstAccess) {
-      await supabaseAdmin.from("lead_events").insert({
+      const { error: eventErr } = await supabaseAdmin.from("lead_events").insert({
         lead_id: t.lead_id,
         type: "briefing_iniciado",
         description: "Cliente acessou o Briefing pela primeira vez.",
         metadata: { token_id: t.id },
       });
+      if (eventErr) {
+        console.warn(
+          `${logBase} event=timeline_warning code=${eventErr.code ?? "unknown"} result=event_insert_failed message=${eventErr.message}`,
+        );
+      }
     } else {
-      await supabaseAdmin.from("lead_events").insert({
+      const { error: eventErr } = await supabaseAdmin.from("lead_events").insert({
         lead_id: t.lead_id,
         type: "briefing_retomado",
         description: "Cliente retomou o preenchimento do Briefing.",
         metadata: { token_id: t.id },
       });
+      if (eventErr) {
+        console.warn(
+          `${logBase} event=timeline_warning code=${eventErr.code ?? "unknown"} result=event_insert_failed message=${eventErr.message}`,
+        );
+      }
     }
+
+    console.info(
+      `${logBase} event=state state=valido status=${patch.status ? patch.status : t.status}`,
+    );
 
     return {
       state: "valido",
