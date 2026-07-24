@@ -3,41 +3,44 @@ import { createFileRoute } from "@tanstack/react-router";
 /**
  * Endpoint público de versão — usado pelo workflow E2E para garantir que a
  * URL de preview alvo (`PLAYWRIGHT_BASE_URL`) corresponde ao commit que o
- * GitHub Actions acabou de fazer push. Sem essa verificação o CI poderia
+ * GitHub Actions acabou de publicar. Sem essa verificação o CI poderia
  * rodar contra uma build antiga, mascarando regressões.
  *
- * Responde com JSON contendo o commit SHA que a build empacotou. A fonte é
- * `process.env.APP_COMMIT` (definida no build) com fallback para
- * `VERCEL_GIT_COMMIT_SHA` / `GITHUB_SHA` quando aplicável. Nunca expõe
- * segredos — somente metadados de build.
+ * Contrato de resposta (estrito — não adicionar campos):
+ *   { commit: string, environment: string, builtAt: string }
+ *
+ * - `commit` é 40 hex chars (SHA completo do git) ou "unknown".
+ * - `builtAt` é fixado no momento do build (via `vite.config.ts` → define),
+ *   não no momento da requisição.
+ * - `environment` é o rótulo declarado no build.
+ *
+ * NÃO retorna: variáveis de ambiente, URLs internas, chaves, dados do
+ * banco, headers, ou qualquer informação de filesystem/sistema.
  */
+
+const FULL_SHA_PATTERN = /^[0-9a-f]{40}$/i;
+
+function normalizeCommit(raw: string): string {
+  return FULL_SHA_PATTERN.test(raw) ? raw.toLowerCase() : "unknown";
+}
+
 export const Route = createFileRoute("/api/public/version")({
   server: {
     handlers: {
       GET: async () => {
-        const commit =
-          process.env.APP_COMMIT ||
-          process.env.VITE_APP_COMMIT ||
-          process.env.GITHUB_SHA ||
-          "unknown";
+        const body = {
+          commit: normalizeCommit(__APP_COMMIT__),
+          environment: __APP_ENVIRONMENT__,
+          builtAt: __APP_BUILT_AT__,
+        };
 
-        const environment = process.env.APP_ENV || "unknown";
-        const builtAt = process.env.APP_BUILT_AT || null;
-
-        return new Response(
-          JSON.stringify({
-            commit,
-            environment,
-            builtAt,
-          }),
-          {
-            status: 200,
-            headers: {
-              "content-type": "application/json; charset=utf-8",
-              "cache-control": "no-store",
-            },
+        return new Response(JSON.stringify(body), {
+          status: 200,
+          headers: {
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "no-store",
           },
-        );
+        });
       },
     },
   },

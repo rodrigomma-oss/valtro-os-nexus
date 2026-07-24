@@ -61,17 +61,23 @@ jobs:
             echo "PLAYWRIGHT_BASE_URL não configurado (variable do GitHub)." >&2
             exit 1
           fi
+          expected="${GITHUB_SHA,,}"
           for i in {1..30}; do
             resp=$(curl -sS "${PLAYWRIGHT_BASE_URL%/}/api/public/version" || echo "")
             preview_commit=$(echo "$resp" | jq -r '.commit // empty' 2>/dev/null || echo "")
-            if [ -n "$preview_commit" ] && [ "$preview_commit" = "$GITHUB_SHA" ]; then
-              echo "Preview alinhado com commit $GITHUB_SHA"
+            preview_commit="${preview_commit,,}"
+            if [ "$preview_commit" = "unknown" ]; then
+              echo "Preview reportou commit='unknown' — build sem SHA embutido. Abortando." >&2
+              exit 1
+            fi
+            if [ -n "$preview_commit" ] && [ "$preview_commit" = "$expected" ]; then
+              echo "Preview alinhado com commit $expected"
               exit 0
             fi
-            echo "Aguardando preview publicar $GITHUB_SHA (atual: '$preview_commit')..."
+            echo "Aguardando preview publicar $expected (atual: '$preview_commit')..."
             sleep 10
           done
-          echo "Preview não publicou o commit $GITHUB_SHA a tempo." >&2
+          echo "Preview não publicou o commit $expected a tempo." >&2
           exit 1
 
       - name: Run E2E tests
