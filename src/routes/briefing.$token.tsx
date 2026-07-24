@@ -527,7 +527,14 @@ function ReviewScreen({
   );
 }
 
-function SuccessScreen({ template }: { template: BriefingTemplate }) {
+function SuccessScreen({
+  template,
+  briefingLabel,
+}: {
+  template: BriefingTemplate;
+  briefingLabel: string;
+}) {
+  void template;
   return (
     <div className="text-center py-16">
       <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-full bg-emerald-50 text-emerald-600">
@@ -538,7 +545,7 @@ function SuccessScreen({ template }: { template: BriefingTemplate }) {
       </h1>
       <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
         Recebemos suas respostas e nossa equipe entrará em contato em até dois
-        dias úteis com o retorno consultivo do seu {template.name.toLowerCase()}.
+        dias úteis com o retorno consultivo do seu briefing de {briefingLabel}.
       </p>
     </div>
   );
