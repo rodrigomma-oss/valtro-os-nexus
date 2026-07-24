@@ -454,7 +454,7 @@ export const completeBriefing = createServerFn({ method: "POST" })
 
     const { error: respErr } = await supabaseAdmin
       .from("briefing_responses")
-      .update({ data: data.data, completed_at: now })
+      .update({ data: sanitizeResponseData(data.data), completed_at: now })
       .eq("token_id", data.token);
     if (respErr) throw new Error(respErr.message);
 
