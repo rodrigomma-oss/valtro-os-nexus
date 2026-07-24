@@ -25,6 +25,7 @@ import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
+import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
@@ -112,6 +113,11 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedCrmRoute,
 } as any)
+const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
+  id: '/api/public/version',
+  path: '/api/public/version',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/dashboard',
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing/'
     | '/crm/dashboard'
+    | '/api/public/version'
     | '/crm/'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing'
     | '/crm/dashboard'
+    | '/api/public/version'
     | '/crm'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
+    | '/api/public/version'
     | '/_authenticated/crm/'
     | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
@@ -316,6 +328,7 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
+  ApiPublicVersionRoute: typeof ApiPublicVersionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/api/public/version': {
+      id: '/api/public/version'
+      path: '/api/public/version'
+      fullPath: '/api/public/version'
+      preLoaderRoute: typeof ApiPublicVersionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/crm/dashboard': {
       id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
@@ -537,17 +557,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
+  ApiPublicVersionRoute: ApiPublicVersionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
