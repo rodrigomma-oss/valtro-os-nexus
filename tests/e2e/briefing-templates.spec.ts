@@ -159,6 +159,78 @@ async function assertPortalTemplate(
   await expect(portal.getByText(forbidden)).toHaveCount(0);
 }
 
+function maskToken(pathname: string): string {
+  const m = pathname.match(/\/briefing\/([0-9a-f-]+)/i);
+  if (!m) return pathname;
+  const t = m[1];
+  const masked =
+    t.length > 8 ? `${t.slice(0, 4)}…${t.slice(-4)}` : "****";
+  return pathname.replace(t, masked);
+}
+
+/**
+ * Reescreve a URL absoluta armazenada no card para o servidor local usado
+ * pelo Playwright no CI (PLAYWRIGHT_BASE_URL). Sem isso, o teste abriria a
+ * versão publicada em lovable.app em vez do código do commit em execução.
+ */
+function buildCiPortalUrl(sourceAbsoluteUrl: string): {
+  ciUrl: string;
+  pathname: string;
+  sourceOrigin: string;
+  baseOrigin: string;
+} {
+  const baseUrl =
+    process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:8080";
+  const src = new URL(sourceAbsoluteUrl);
+  const pathname = src.pathname;
+  expect(pathname).toMatch(/^\/briefing\/[0-9a-f-]+$/i);
+  const ciUrl = new URL(pathname, baseUrl).toString();
+  return {
+    ciUrl,
+    pathname,
+    sourceOrigin: src.origin,
+    baseOrigin: new URL(baseUrl).origin,
+  };
+}
+
+async function openPortalInCi(
+  page: Page,
+  sourceAbsoluteUrl: string,
+  service: ServiceLabel,
+): Promise<void> {
+  const { ciUrl, pathname, sourceOrigin, baseOrigin } =
+    buildCiPortalUrl(sourceAbsoluteUrl);
+
+  // Log de diagnóstico (token mascarado).
+  console.log(
+    `[portal:${service}] source.origin=${sourceOrigin} ` +
+      `base.origin=${baseOrigin} pathname=${maskToken(pathname)}`,
+  );
+
+  await page.goto(ciUrl, { waitUntil: "domcontentloaded" });
+
+  expect(new URL(page.url()).origin).toBe(baseOrigin);
+
+  // Aguarda o fim de "Validando seu acesso…" e detecta telas de erro
+  // explicitamente, para não mascarar problemas como "badge não encontrado".
+  const errorScreen = page.getByText(
+    /acesso desativado|concluído|inválido|expirado|revogado/i,
+  );
+  const validating = page.getByText(/Validando seu acesso/i);
+
+  await expect
+    .poll(async () => (await validating.count()) === 0, { timeout: 20_000 })
+    .toBe(true);
+
+  if ((await errorScreen.count()) > 0) {
+    const msg = (await errorScreen.first().textContent())?.trim();
+    throw new Error(
+      `Portal abriu em tela de erro para "${service}": "${msg}" ` +
+        `(pathname=${maskToken(pathname)})`,
+    );
+  }
+}
+
 test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
   test.skip(
     !LEAD_ID || !HAS_AUTH,
@@ -193,7 +265,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
       storageState: { cookies: [], origins: [] },
     });
     const portal = await anonCtx.newPage();
-    await portal.goto(consultoriaUrl, { waitUntil: "domcontentloaded" });
+    await openPortalInCi(portal, consultoriaUrl, "Consultoria");
 
     await assertPortalTemplate(portal, "Consultoria");
 
@@ -209,7 +281,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
       storageState: { cookies: [], origins: [] },
     });
     const portal2 = await anonCtx2.newPage();
-    await portal2.goto(projetoUrl, { waitUntil: "domcontentloaded" });
+    await openPortalInCi(portal2, projetoUrl, "Desenvolvimento de Projeto");
 
     await assertPortalTemplate(portal2, "Desenvolvimento de Projeto");
 
@@ -219,3 +291,4 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
   });
 });
+
