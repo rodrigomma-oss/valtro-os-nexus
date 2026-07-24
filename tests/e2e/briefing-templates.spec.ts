@@ -224,12 +224,17 @@ async function createBriefingForService(
     );
   }
 
-  const newTokenId = await expect
+  await expect
     .poll(() => findNewActiveTokenId(page, service, beforeTokenIds), {
       timeout: 15_000,
     })
-    .not.toBeNull()
-    .then(async () => findNewActiveTokenId(page, service, beforeTokenIds));
+    .not.toBeNull();
+
+  const newTokenId = await findNewActiveTokenId(
+    page,
+    service,
+    beforeTokenIds,
+  );
 
   if (!newTokenId) {
     throw new Error(
