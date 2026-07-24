@@ -98,7 +98,7 @@ function BriefingPortalPage() {
   // Fonte da verdade: template e serviço fixados no token pelo operador.
   // Nenhuma resposta do cliente altera esses valores — o Portal apenas
   // renderiza o template vinculado ao `template_type` do token.
-  const template = getTemplate(t.template_type);
+  const template = getTemplate(t.template_type, t.service_type as ServiceType);
   const briefingLabel = SERVICE_TYPE_LABEL[t.service_type as ServiceType];
 
   return (

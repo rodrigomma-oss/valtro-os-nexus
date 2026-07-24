@@ -73,7 +73,7 @@ export function BriefingViewerDrawer({
     enabled: open,
   });
 
-  const template = getTemplate(token.template_type);
+  const template = getTemplate(token.template_type, token.service_type);
   const responseData = query.data?.response?.data ?? {};
 
   return (
