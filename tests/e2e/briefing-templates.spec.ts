@@ -439,9 +439,10 @@ async function openPortalInCi(
 
   expect(new URL(page.url()).origin).toBe(baseOrigin);
 
-  const state = await waitForPortalTerminalState(page, diagnostics);
+  const state = await waitForPortalTerminalState(page, diagnostics, `open-${service}`);
 
   if (PORTAL_ERROR_STATES.has(state)) {
+    await capturePortalFailureArtifacts(page, `error-state-${service}`, diagnostics, state);
     const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
     throw new Error(
       `Portal abriu em tela de erro para "${service}" ` +
