@@ -109,6 +109,7 @@ export function NewBriefingDialog({
             onClick={() => service && onSubmit(service)}
             disabled={!canSubmit}
             className="gap-2"
+            data-testid="generate-briefing-button"
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
