@@ -402,7 +402,7 @@ export const saveBriefingProgress = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const patch: { data: any; current_step: number; started_at?: string } = {
-      data: data.data,
+      data: sanitizeResponseData(data.data),
       current_step: data.current_step,
     };
     if (existing && !existing.started_at) patch.started_at = now;
