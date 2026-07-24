@@ -369,14 +369,21 @@ async function assertPortalTemplate(
     await expect(badge).toHaveAttribute("data-template-key", expectedTemplateKey);
   } catch (err) {
     const state = await findPortalState(portal);
+    await capturePortalFailureArtifacts(portal, `badge-${service}`, diagnostics, state);
     const summary = await readPortalDiagnosticSummary(portal, state, diagnostics);
     throw new Error(
       `Badge do Portal divergente para "${service}".\n${summary}\nOriginal: ${(err as Error).message}`,
     );
   }
 
-  await expect(portal.getByText(expected).first()).toBeVisible();
-  await expect(portal.getByText(forbidden)).toHaveCount(0);
+  try {
+    await expect(portal.getByText(expected).first()).toBeVisible();
+    await expect(portal.getByText(forbidden)).toHaveCount(0);
+  } catch (err) {
+    const state = await findPortalState(portal);
+    await capturePortalFailureArtifacts(portal, `text-${service}`, diagnostics, state);
+    throw err;
+  }
 }
 
 function maskToken(pathname: string): string {
