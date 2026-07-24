@@ -488,6 +488,32 @@ function publicToken(t: BriefingToken): PortalPayload["token"] {
   };
 }
 
+/**
+ * Defesa em profundidade: o Portal Público é anônimo e recebe `data` como
+ * um blob JSON livre. O `template_type` e o `service_type` são fixados
+ * pelo operador na geração do token e NÃO podem ser alterados pelas
+ * respostas do cliente. Qualquer chave reservada que apareça no payload é
+ * descartada antes de persistir em `briefing_responses.data`.
+ */
+const RESERVED_RESPONSE_KEYS = new Set([
+  "template_type",
+  "service_type",
+  "token_id",
+  "lead_id",
+  "status",
+]);
+
+function sanitizeResponseData(
+  data: Record<string, any>,
+): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (RESERVED_RESPONSE_KEYS.has(k)) continue;
+    out[k] = v;
+  }
+  return out;
+}
+
 // =============================================================
 // getBriefingResponseForOperator (autenticada) — Sprint 2B.3.4
 // -------------------------------------------------------------
