@@ -55,6 +55,8 @@ import {
   type TemplateQuestion,
   type TemplateStep,
 } from "@/config/briefing-templates";
+import { SERVICE_TYPE_LABEL } from "@/types/briefing";
+import type { ServiceType } from "@/types/briefing";
 
 export const Route = createFileRoute("/briefing/$token")({
   component: BriefingPortalPage,
