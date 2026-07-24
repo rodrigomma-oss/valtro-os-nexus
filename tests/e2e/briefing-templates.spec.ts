@@ -1,4 +1,12 @@
-import { test, expect, type Page, type Locator, type BrowserContext, type TestInfo, type Response } from "@playwright/test";
+import {
+  test,
+  expect,
+  type Page,
+  type Locator,
+  type BrowserContext,
+  type TestInfo,
+  type Response,
+} from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 
 /**
@@ -312,6 +320,7 @@ interface PortalDiagnostics {
   pageErrors: string[];
   failedResponses: string[];
   validationResponses: CapturedValidationResponse[];
+  pendingValidationCaptures: Promise<void>[];
 }
 
 function attachPortalDiagnostics(page: Page): PortalDiagnostics {
@@ -320,6 +329,7 @@ function attachPortalDiagnostics(page: Page): PortalDiagnostics {
     pageErrors: [],
     failedResponses: [],
     validationResponses: [],
+    pendingValidationCaptures: [],
   };
 
   page.on("console", (msg) => {
@@ -334,7 +344,9 @@ function attachPortalDiagnostics(page: Page): PortalDiagnostics {
   page.on("response", (response) => {
     const status = response.status();
     if (isValidationRelatedResponse(response)) {
-      void captureValidationResponse(response, diagnostics);
+      diagnostics.pendingValidationCaptures.push(
+        captureValidationResponse(response, diagnostics),
+      );
     }
     if (status < 400) return;
     diagnostics.failedResponses.push(
@@ -404,6 +416,8 @@ async function readPortalDiagnosticSummary(
   state: PortalTerminalState | null,
   diagnostics: PortalDiagnostics,
 ): Promise<string> {
+  await Promise.allSettled(diagnostics.pendingValidationCaptures);
+
   const badge = page.getByTestId("portal-template-badge").first();
   const serviceType =
     (await badge.getAttribute("data-service-type").catch(() => null)) ??
@@ -775,8 +789,13 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
 
     // ---- 1) Consultoria -------------------------------------------------
-    await createBriefingForService(page, "Consultoria");
-    const consultoriaUrl = await getPortalUrl(page, "Consultoria");
+    const consultoriaCard = await createBriefingForService(page, "Consultoria");
+    const consultoriaUrl = await getPortalUrl(
+      page,
+      "Consultoria",
+      consultoriaCard.tokenId,
+    );
+    await assertBriefingDatabaseState(consultoriaCard.tokenId, "Consultoria");
 
     const anonCtx = await browser.newContext({
       storageState: { cookies: [], origins: [] },
@@ -803,8 +822,19 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     await revokeActiveBriefingsForService(page, "Consultoria");
 
     // ---- 2) Desenvolvimento de Projeto ----------------------------------
-    await createBriefingForService(page, "Desenvolvimento de Projeto");
-    const projetoUrl = await getPortalUrl(page, "Desenvolvimento de Projeto");
+    const projetoCard = await createBriefingForService(
+      page,
+      "Desenvolvimento de Projeto",
+    );
+    const projetoUrl = await getPortalUrl(
+      page,
+      "Desenvolvimento de Projeto",
+      projetoCard.tokenId,
+    );
+    await assertBriefingDatabaseState(
+      projetoCard.tokenId,
+      "Desenvolvimento de Projeto",
+    );
 
     const anonCtx2 = await browser.newContext({
       storageState: { cookies: [], origins: [] },
