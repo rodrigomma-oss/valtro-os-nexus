@@ -401,20 +401,42 @@ function maskToken(pathname: string): string {
  * versão publicada em lovable.app em vez do código do commit em execução.
  */
 function buildCiPortalUrl(sourceAbsoluteUrl: string): {
-  ciUrl: string;
-  pathname: string;
+  targetUrl: string;
+  realPathname: string;
+  maskedPathname: string;
   sourceOrigin: string;
   baseOrigin: string;
 } {
   const baseUrl =
     process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:8080";
   const src = new URL(sourceAbsoluteUrl);
-  const pathname = src.pathname;
-  expect(pathname).toMatch(/^\/briefing\/[0-9a-f-]+$/i);
-  const ciUrl = new URL(pathname, baseUrl).toString();
+
+  // realPathname carrega o token UUID completo e é usado APENAS para navegação.
+  const realPathname = src.pathname;
+
+  // Guardrails anti-regressão: garantir que a máscara de log jamais vaze
+  // para a URL de navegação (o caractere "…" é U+2026 / %E2%80%A6).
+  expect(realPathname).toMatch(
+    /^\/briefing\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+  );
+  expect(realPathname).not.toContain("\u2026");
+  expect(realPathname).not.toContain("%E2%80%A6");
+
+  const targetUrl = new URL(realPathname, baseUrl).toString();
+
+  // Confirma que a URL final também está limpa (mesmo após URL parsing).
+  expect(decodeURIComponent(new URL(targetUrl).pathname)).not.toContain(
+    "\u2026",
+  );
+
+  // maskedPathname é usado EXCLUSIVAMENTE em logs, mensagens de erro
+  // e anexos de diagnóstico — nunca em page.goto.
+  const maskedPathname = maskToken(realPathname);
+
   return {
-    ciUrl,
-    pathname,
+    targetUrl,
+    realPathname,
+    maskedPathname,
     sourceOrigin: src.origin,
     baseOrigin: new URL(baseUrl).origin,
   };
@@ -426,16 +448,17 @@ async function openPortalInCi(
   service: ServiceLabel,
   diagnostics: PortalDiagnostics,
 ): Promise<PortalTerminalState> {
-  const { ciUrl, pathname, sourceOrigin, baseOrigin } =
+  const { targetUrl, maskedPathname, sourceOrigin, baseOrigin } =
     buildCiPortalUrl(sourceAbsoluteUrl);
 
-  // Log de diagnóstico (token mascarado).
+  // Log de diagnóstico — SEMPRE mascarado. Nunca imprimir o token real.
   console.log(
     `[portal:${service}] source.origin=${sourceOrigin} ` +
-      `base.origin=${baseOrigin} pathname=${maskToken(pathname)}`,
+      `base.origin=${baseOrigin} pathname=${maskedPathname}`,
   );
 
-  await page.goto(ciUrl, { waitUntil: "domcontentloaded" });
+  // Navegação usa o pathname REAL (token completo) via targetUrl.
+  await page.goto(targetUrl, { waitUntil: "domcontentloaded" });
 
   expect(new URL(page.url()).origin).toBe(baseOrigin);
 
@@ -446,7 +469,7 @@ async function openPortalInCi(
     const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
     throw new Error(
       `Portal abriu em tela de erro para "${service}" ` +
-        `(pathname=${maskToken(pathname)}).\n${summary}`,
+        `(pathname=${maskedPathname}).\n${summary}`,
     );
   }
 
