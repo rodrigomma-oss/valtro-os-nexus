@@ -80,7 +80,15 @@ function BriefingPortalPage() {
 
   const query = useQuery<PortalPayload>({
     queryKey: ["briefing", "portal", token],
-    queryFn: () => validateFn({ data: { token } }),
+    queryFn: () => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        token,
+      );
+      console.info(
+        `[portal-route] identifier=${maskRouteToken(token)} length=${token.length} uuid=${isUuid} fn=validateBriefingToken`,
+      );
+      return validateFn({ data: { token } });
+    },
     retry: false,
     refetchOnWindowFocus: false,
   });
