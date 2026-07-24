@@ -40,7 +40,7 @@ export interface TemplateStep {
 }
 
 export interface BriefingTemplate {
-  key: "loja" | "projeto";
+  key: "loja" | "projeto" | "consultoria" | "diagnostico";
   name: string;
   intro: {
     eyebrow: string;
