@@ -119,7 +119,28 @@ async function copyPortalLink(
   await card.getByTestId("briefing-copy-link-button").click();
   const url = await page.evaluate(() => navigator.clipboard.readText());
   expect(url).toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
-  return url;
+}
+
+/**
+ * Fonte da verdade da seleção de template no Portal: o badge
+ * "Briefing · <serviço>" renderizado tanto na Welcome screen quanto na
+ * PortalProgress (quando `validateBriefingToken` pré-preenche `response.data`
+ * a partir do Lead e o runner pula direto para a etapa 0). Verificar o badge
+ * cobre ambos os caminhos sem depender de qual tela o Portal abriu.
+ */
+async function assertPortalTemplate(
+  portal: Page,
+  service: ServiceLabel,
+): Promise<void> {
+  const expected = new RegExp(`Briefing\\s·\\s${service}`, "i");
+  const other: ServiceLabel =
+    service === "Consultoria" ? "Desenvolvimento de Projeto" : "Consultoria";
+  const forbidden = new RegExp(`Briefing\\s·\\s${other}`, "i");
+
+  await expect(portal.getByText(expected).first()).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(portal.getByText(forbidden)).toHaveCount(0);
 }
 
 test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
