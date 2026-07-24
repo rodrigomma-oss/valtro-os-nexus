@@ -20,6 +20,9 @@ jobs:
       VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID || 'ezngjargedpcvxnyrgyq' }}
       SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ezngjargedpcvxnyrgyq.supabase.co' }}
       SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      # Necessária para Server Functions anônimas do Portal validarem tokens e
+      # materializarem briefing_responses sem sessão do cliente final.
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
       # Alvo do teste (lead permanente do CRM)
       TEST_LEAD_ID: ${{ vars.TEST_LEAD_ID }}

@@ -1,4 +1,13 @@
-import { test, expect, type Page, type Locator, type BrowserContext, type TestInfo } from "@playwright/test";
+import {
+  test,
+  expect,
+  type Page,
+  type Locator,
+  type BrowserContext,
+  type TestInfo,
+  type Response,
+} from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 
 /**
  * Sprint 12.0B / HOTFIX E2E — Templates especializados de Briefing.
@@ -36,6 +45,7 @@ type PortalTerminalState =
   | "portal-welcome"
   | "portal-step"
   | "portal-success"
+  | "portal-error-function"
   | "portal-error-invalid"
   | "portal-error-revoked"
   | "portal-error-expired"
@@ -45,6 +55,7 @@ const PORTAL_TERMINAL_STATES: readonly PortalTerminalState[] = [
   "portal-welcome",
   "portal-step",
   "portal-success",
+  "portal-error-function",
   "portal-error-invalid",
   "portal-error-revoked",
   "portal-error-expired",
@@ -52,17 +63,97 @@ const PORTAL_TERMINAL_STATES: readonly PortalTerminalState[] = [
 ];
 
 const PORTAL_ERROR_STATES = new Set<PortalTerminalState>([
+  "portal-error-function",
   "portal-error-invalid",
   "portal-error-revoked",
   "portal-error-expired",
   "portal-error-completed",
 ]);
 
+interface GeneratedBriefingCard {
+  tokenId: string;
+  portalUrl: string;
+  serviceType: string;
+  status: string;
+  card: Locator;
+}
+
+interface BriefingDatabaseState {
+  exists: boolean;
+  id: string | null;
+  service_type: string | null;
+  status: string | null;
+  expires_at: string | null;
+  revoked_at: string | null;
+  completed_at: string | null;
+  is_accessible: boolean;
+  is_unexpired: boolean;
+}
+
+interface CapturedValidationResponse {
+  method: string;
+  url: string;
+  status: number;
+  body: string;
+}
+
 function activeCardsForService(page: Page, service: ServiceLabel): Locator {
   const value = SERVICE_VALUES[service];
   return page.locator(
     `[data-testid="briefing-card"][data-service-type="${value}"]:is([data-status="pendente"], [data-status="ativo"])`,
   );
+}
+
+function cardsForService(page: Page, service: ServiceLabel): Locator {
+  const value = SERVICE_VALUES[service];
+  return page.locator(
+    `[data-testid="briefing-card"][data-service-type="${value}"]`,
+  );
+}
+
+function cardForServiceAndToken(
+  page: Page,
+  service: ServiceLabel,
+  tokenId: string,
+): Locator {
+  const value = SERVICE_VALUES[service];
+  return page.locator(
+    `[data-testid="briefing-card"][data-service-type="${value}"][data-token-id="${tokenId}"]`,
+  );
+}
+
+async function readTokenIds(locator: Locator): Promise<Set<string>> {
+  const values = await locator.evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.getAttribute("data-token-id"))
+      .filter((value): value is string => Boolean(value)),
+  );
+  return new Set(values);
+}
+
+async function findNewActiveTokenId(
+  page: Page,
+  service: ServiceLabel,
+  beforeTokenIds: Set<string>,
+): Promise<string | null> {
+  const cards = await activeCardsForService(page, service).evaluateAll(
+    (nodes) =>
+      nodes.map((node) => ({
+        id: node.getAttribute("data-token-id"),
+        status: node.getAttribute("data-status"),
+      })),
+  );
+
+  const newIds = cards
+    .filter(
+      (card) =>
+        card.id &&
+        !beforeTokenIds.has(card.id) &&
+        (card.status === "pendente" || card.status === "ativo"),
+    )
+    .map((card) => card.id as string);
+
+  return newIds.length === 1 ? newIds[0] : null;
 }
 
 /**
@@ -106,7 +197,9 @@ async function revokeActiveBriefingsForService(
 async function createBriefingForService(
   page: Page,
   service: ServiceLabel,
-): Promise<void> {
+): Promise<GeneratedBriefingCard> {
+  const beforeTokenIds = await readTokenIds(cardsForService(page, service));
+
   await page
     .getByRole("button", { name: /^(Novo briefing|Gerar Briefing)$/ })
     .first()
@@ -131,18 +224,53 @@ async function createBriefingForService(
     );
   }
 
-  // Confirma que um novo card ativo do serviço apareceu.
-  await expect(activeCardsForService(page, service).first()).toBeVisible({
-    timeout: 15_000,
-  });
+  await expect
+    .poll(() => findNewActiveTokenId(page, service, beforeTokenIds), {
+      timeout: 15_000,
+    })
+    .not.toBeNull();
+
+  const newTokenId = await findNewActiveTokenId(
+    page,
+    service,
+    beforeTokenIds,
+  );
+
+  if (!newTokenId) {
+    throw new Error(
+      `Novo card ativo não identificado para "${service}". ` +
+        `before=${maskUuid(JSON.stringify([...beforeTokenIds]))}`,
+    );
+  }
+
+  const card = cardForServiceAndToken(page, service, newTokenId);
+  await expect(card).toHaveCount(1);
+  await expect(card).toBeVisible({ timeout: 15_000 });
+
+  const generated = await readGeneratedBriefingCard(card, service);
+  console.log(
+    `[card:${service}] token=${maskUuid(generated.tokenId)} ` +
+      `portal=${maskUrl(generated.portalUrl)} ` +
+      `service_type=${generated.serviceType} status=${generated.status}`,
+  );
+  return generated;
 }
 
 async function getPortalUrl(
   page: Page,
   service: ServiceLabel,
+  tokenId: string,
 ): Promise<string> {
+  const card = cardForServiceAndToken(page, service, tokenId);
+  const generated = await readGeneratedBriefingCard(card, service);
+  return generated.portalUrl;
+}
+
+async function readGeneratedBriefingCard(
+  card: Locator,
+  service: ServiceLabel,
+): Promise<GeneratedBriefingCard> {
   const expectedServiceType = SERVICE_VALUES[service];
-  const card = activeCardsForService(page, service).first();
   await expect(card).toBeVisible({ timeout: 15_000 });
 
   await expect(card).toHaveAttribute("data-service-type", expectedServiceType);
@@ -165,13 +293,39 @@ async function getPortalUrl(
   }
   expect(url).toBeTruthy();
   expect(url).toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
-  return url;
+
+  const tokenId = await card.getAttribute("data-token-id");
+  const serviceType = await card.getAttribute("data-service-type");
+  const status = await card.getAttribute("data-status");
+  if (!tokenId || !serviceType || !status) {
+    throw new Error(
+      `Card de briefing incompleto para "${service}". ` +
+        `token=${tokenId ? maskUuid(tokenId) : "(null)"} ` +
+        `service_type=${serviceType ?? "(null)"} status=${status ?? "(null)"}`,
+    );
+  }
+
+  const routeToken = new URL(url).pathname.split("/").pop();
+  console.log(
+    `[card-compare:${service}] cardToken=${maskUuid(tokenId)} routeToken=${routeToken ? maskUuid(routeToken) : "(null)"}`,
+  );
+  expect(routeToken).toBe(tokenId);
+
+  return {
+    tokenId,
+    portalUrl: url,
+    serviceType,
+    status,
+    card,
+  };
 }
 
 interface PortalDiagnostics {
   consoleErrors: string[];
   pageErrors: string[];
   failedResponses: string[];
+  validationResponses: CapturedValidationResponse[];
+  pendingValidationCaptures: Promise<void>[];
 }
 
 function attachPortalDiagnostics(page: Page): PortalDiagnostics {
@@ -179,6 +333,8 @@ function attachPortalDiagnostics(page: Page): PortalDiagnostics {
     consoleErrors: [],
     pageErrors: [],
     failedResponses: [],
+    validationResponses: [],
+    pendingValidationCaptures: [],
   };
 
   page.on("console", (msg) => {
@@ -192,6 +348,11 @@ function attachPortalDiagnostics(page: Page): PortalDiagnostics {
 
   page.on("response", (response) => {
     const status = response.status();
+    if (isValidationRelatedResponse(response)) {
+      diagnostics.pendingValidationCaptures.push(
+        captureValidationResponse(response, diagnostics),
+      );
+    }
     if (status < 400) return;
     diagnostics.failedResponses.push(
       `${status} ${maskUrl(response.url())}`,
@@ -199,6 +360,36 @@ function attachPortalDiagnostics(page: Page): PortalDiagnostics {
   });
 
   return diagnostics;
+}
+
+function isValidationRelatedResponse(response: Response): boolean {
+  const url = response.url();
+  return (
+    url.includes("validateBriefingToken") ||
+    url.includes("briefing_tokens") ||
+    url.includes("functions/v1") ||
+    url.includes("rest/v1") ||
+    url.includes("/rpc") ||
+    url.includes("/_server")
+  );
+}
+
+async function captureValidationResponse(
+  response: Response,
+  diagnostics: PortalDiagnostics,
+): Promise<void> {
+  try {
+    const request = response.request();
+    const body = await response.text().catch(() => "(body indisponível)");
+    diagnostics.validationResponses.push({
+      method: request.method(),
+      url: maskUrl(response.url()),
+      status: response.status(),
+      body: maskUuid(maskToken(body)).replace(/\s+/g, " ").slice(0, 1_200),
+    });
+  } catch {
+    /* best-effort */
+  }
 }
 
 function maskUrl(url: string): string {
@@ -230,6 +421,8 @@ async function readPortalDiagnosticSummary(
   state: PortalTerminalState | null,
   diagnostics: PortalDiagnostics,
 ): Promise<string> {
+  await Promise.allSettled(diagnostics.pendingValidationCaptures);
+
   const badge = page.getByTestId("portal-template-badge").first();
   const serviceType =
     (await badge.getAttribute("data-service-type").catch(() => null)) ??
@@ -253,8 +446,106 @@ async function readPortalDiagnosticSummary(
     `[portal-diagnostics] consoleErrors=${maskUuid(JSON.stringify(diagnostics.consoleErrors))}`,
     `[portal-diagnostics] pageErrors=${maskUuid(JSON.stringify(diagnostics.pageErrors))}`,
     `[portal-diagnostics] failedResponses=${maskUuid(JSON.stringify(diagnostics.failedResponses))}`,
+    `[portal-diagnostics] validationResponses=${JSON.stringify(diagnostics.validationResponses)}`,
     `[portal-diagnostics] body=${maskUuid(JSON.stringify(bodyText))}`,
   ].join("\n");
+}
+
+async function readBriefingDatabaseState(
+  tokenId: string,
+): Promise<BriefingDatabaseState> {
+  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+  const publishableKey =
+    process.env.SUPABASE_PUBLISHABLE_KEY ??
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const email = process.env.E2E_TEST_EMAIL;
+  const password = process.env.E2E_TEST_PASSWORD;
+
+  if (!supabaseUrl || !publishableKey || !email || !password) {
+    throw new Error("[db-check] Ambiente E2E autenticado indisponível.");
+  }
+
+  const supabase = createClient(supabaseUrl, publishableKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  });
+
+  const { error: authError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (authError) throw new Error("[db-check] Falha ao autenticar consulta E2E.");
+
+  const { data, error } = await supabase
+    .from("briefing_tokens")
+    .select("id, service_type, status, expires_at, revoked_at, completed_at")
+    .eq("id", tokenId)
+    .maybeSingle();
+
+  await supabase.auth.signOut().catch(() => undefined);
+
+  if (error) {
+    throw new Error(
+      `[db-check] Erro ao consultar briefing_tokens.id=${maskUuid(tokenId)}: ${error.code ?? "unknown"}`,
+    );
+  }
+
+  if (!data) {
+    return {
+      exists: false,
+      id: null,
+      service_type: null,
+      status: null,
+      expires_at: null,
+      revoked_at: null,
+      completed_at: null,
+      is_accessible: false,
+      is_unexpired: false,
+    };
+  }
+
+  const expiresAt = new Date(data.expires_at).getTime();
+  return {
+    exists: true,
+    id: data.id,
+    service_type: data.service_type,
+    status: data.status,
+    expires_at: data.expires_at,
+    revoked_at: data.revoked_at,
+    completed_at: data.completed_at,
+    is_accessible:
+      (data.status === "pendente" || data.status === "ativo") &&
+      !data.revoked_at &&
+      !data.completed_at,
+    is_unexpired: Number.isFinite(expiresAt) && expiresAt > Date.now(),
+  };
+}
+
+async function assertBriefingDatabaseState(
+  tokenId: string,
+  service: ServiceLabel,
+): Promise<BriefingDatabaseState> {
+  const expectedServiceType = SERVICE_VALUES[service];
+  const dbState = await readBriefingDatabaseState(tokenId);
+  console.log(
+    `[db-check:${service}] token=${maskUuid(tokenId)} exists=${dbState.exists} ` +
+      `service_type=${dbState.service_type ?? "(null)"} status=${dbState.status ?? "(null)"} ` +
+      `accessible=${dbState.is_accessible} unexpired=${dbState.is_unexpired} ` +
+      `revoked=${dbState.revoked_at ? "true" : "false"} completed=${dbState.completed_at ? "true" : "false"}`,
+  );
+
+  expect(dbState.exists).toBe(true);
+  expect(dbState.id).toBe(tokenId);
+  expect(dbState.service_type).toBe(expectedServiceType);
+  expect(dbState.status).toMatch(/^(pendente|ativo)$/);
+  expect(dbState.is_accessible).toBe(true);
+  expect(dbState.is_unexpired).toBe(true);
+  expect(dbState.revoked_at).toBeNull();
+  expect(dbState.completed_at).toBeNull();
+  return dbState;
 }
 
 /**
@@ -503,8 +794,13 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
 
     // ---- 1) Consultoria -------------------------------------------------
-    await createBriefingForService(page, "Consultoria");
-    const consultoriaUrl = await getPortalUrl(page, "Consultoria");
+    const consultoriaCard = await createBriefingForService(page, "Consultoria");
+    const consultoriaUrl = await getPortalUrl(
+      page,
+      "Consultoria",
+      consultoriaCard.tokenId,
+    );
+    await assertBriefingDatabaseState(consultoriaCard.tokenId, "Consultoria");
 
     const anonCtx = await browser.newContext({
       storageState: { cookies: [], origins: [] },
@@ -531,8 +827,19 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     await revokeActiveBriefingsForService(page, "Consultoria");
 
     // ---- 2) Desenvolvimento de Projeto ----------------------------------
-    await createBriefingForService(page, "Desenvolvimento de Projeto");
-    const projetoUrl = await getPortalUrl(page, "Desenvolvimento de Projeto");
+    const projetoCard = await createBriefingForService(
+      page,
+      "Desenvolvimento de Projeto",
+    );
+    const projetoUrl = await getPortalUrl(
+      page,
+      "Desenvolvimento de Projeto",
+      projetoCard.tokenId,
+    );
+    await assertBriefingDatabaseState(
+      projetoCard.tokenId,
+      "Desenvolvimento de Projeto",
+    );
 
     const anonCtx2 = await browser.newContext({
       storageState: { cookies: [], origins: [] },

@@ -74,13 +74,27 @@ export const Route = createFileRoute("/briefing/$token")({
 
 type Screen = "welcome" | "how" | "step" | "success";
 
+function maskRouteToken(value: string): string {
+  return value.length > 8
+    ? `${value.slice(0, 4)}…${value.slice(-4)}`
+    : "****";
+}
+
 function BriefingPortalPage() {
   const { token } = Route.useParams();
   const validateFn = useServerFn(validateBriefingToken);
 
   const query = useQuery<PortalPayload>({
     queryKey: ["briefing", "portal", token],
-    queryFn: () => validateFn({ data: { token } }),
+    queryFn: () => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        token,
+      );
+      console.info(
+        `[portal-route] identifier=${maskRouteToken(token)} length=${token.length} uuid=${isUuid} fn=validateBriefingToken`,
+      );
+      return validateFn({ data: { token } });
+    },
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -790,7 +804,7 @@ function PortalError({ message }: { message?: string }) {
       <StateMessage
         icon={AlertCircle}
         tone="destructive"
-        testId="portal-error-invalid"
+        testId="portal-error-function"
         title="Não foi possível carregar o briefing"
         description={
           message ??
