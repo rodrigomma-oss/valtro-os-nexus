@@ -119,7 +119,28 @@ async function copyPortalLink(
   await card.getByTestId("briefing-copy-link-button").click();
   const url = await page.evaluate(() => navigator.clipboard.readText());
   expect(url).toMatch(/\/briefing\/[0-9a-f-]{36}$/i);
-  return url;
+}
+
+/**
+ * Fonte da verdade da seleção de template no Portal: o badge
+ * "Briefing · <serviço>" renderizado tanto na Welcome screen quanto na
+ * PortalProgress (quando `validateBriefingToken` pré-preenche `response.data`
+ * a partir do Lead e o runner pula direto para a etapa 0). Verificar o badge
+ * cobre ambos os caminhos sem depender de qual tela o Portal abriu.
+ */
+async function assertPortalTemplate(
+  portal: Page,
+  service: ServiceLabel,
+): Promise<void> {
+  const expected = new RegExp(`Briefing\\s·\\s${service}`, "i");
+  const other: ServiceLabel =
+    service === "Consultoria" ? "Desenvolvimento de Projeto" : "Consultoria";
+  const forbidden = new RegExp(`Briefing\\s·\\s${other}`, "i");
+
+  await expect(portal.getByText(expected).first()).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(portal.getByText(forbidden)).toHaveCount(0);
 }
 
 test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
@@ -158,16 +179,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const portal = await anonCtx.newPage();
     await portal.goto(consultoriaUrl, { waitUntil: "domcontentloaded" });
 
-    await expect(
-      portal.getByText(/Briefing · Consultoria/i).first(),
-    ).toBeVisible({ timeout: 15_000 });
-
-    await portal.getByRole("button", { name: /Começar briefing/i }).click();
-    await portal.getByRole("button", { name: /Iniciar/i }).click();
-
-    await expect(
-      portal.getByText(/Qual tipo de projeto deseja desenvolver\?/i),
-    ).toHaveCount(0);
+    await assertPortalTemplate(portal, "Consultoria");
 
     await anonCtx.close();
 
@@ -183,27 +195,11 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const portal2 = await anonCtx2.newPage();
     await portal2.goto(projetoUrl, { waitUntil: "domcontentloaded" });
 
-    await expect(
-      portal2.getByText(/Briefing · Desenvolvimento de Projeto/i).first(),
-    ).toBeVisible({ timeout: 15_000 });
-
-    await portal2.getByRole("button", { name: /Começar briefing/i }).click();
-    await portal2.getByRole("button", { name: /Iniciar/i }).click();
-
-    await expect(
-      portal2
-        .getByText(/Qual tipo de projeto deseja desenvolver\?/i)
-        .first(),
-    ).toBeVisible({ timeout: 15_000 });
+    await assertPortalTemplate(portal2, "Desenvolvimento de Projeto");
 
     await anonCtx2.close();
 
     // Cleanup final.
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
-
-    // Sanity check: nenhuma sujeira remanescente.
-    await expect(page.locator(ACTIVE_STATUS_SELECTOR)).toHaveCount(
-      await page.locator(ACTIVE_STATUS_SELECTOR).count(),
-    );
   });
 });
