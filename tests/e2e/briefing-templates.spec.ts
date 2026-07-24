@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Locator } from "@playwright/test";
+import { test, expect, type Page, type Locator, type BrowserContext, type TestInfo } from "@playwright/test";
 
 /**
  * Sprint 12.0B / HOTFIX E2E — Templates especializados de Briefing.
@@ -257,17 +257,83 @@ async function readPortalDiagnosticSummary(
   ].join("\n");
 }
 
+/**
+ * Captura artefatos de falha do Portal (screenshot + trace snippet).
+ * Nomeados por teste via `testInfo.outputPath`, anexados ao HTML report.
+ * Nunca lança — captura é best-effort e não deve mascarar a falha original.
+ */
+async function capturePortalFailureArtifacts(
+  page: Page,
+  label: string,
+  diagnostics: PortalDiagnostics,
+  state: PortalTerminalState | null,
+): Promise<void> {
+  const testInfo: TestInfo | undefined = (() => {
+    try {
+      return test.info();
+    } catch {
+      return undefined;
+    }
+  })();
+  if (!testInfo) return;
+
+  const safe = label.replace(/[^a-z0-9_-]+/gi, "_").toLowerCase();
+  const shotPath = testInfo.outputPath(`portal-failure-${safe}.png`);
+  const snippetPath = testInfo.outputPath(`portal-failure-${safe}.txt`);
+
+  try {
+    await page.screenshot({ path: shotPath, fullPage: false });
+    await testInfo.attach(`portal-failure-${safe}.png`, {
+      path: shotPath,
+      contentType: "image/png",
+    });
+  } catch {
+    /* best-effort */
+  }
+
+  try {
+    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
+    const domSnippet = maskUuid(
+      (await page.content().catch(() => "(sem DOM)")).slice(0, 4_000),
+    );
+    const snippet = [
+      `[capture] label=${label}`,
+      `[capture] timestamp=${new Date().toISOString()}`,
+      summary,
+      `[capture] dom-snippet=${domSnippet}`,
+    ].join("\n");
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(snippetPath, snippet, "utf8");
+    await testInfo.attach(`portal-failure-${safe}.txt`, {
+      path: snippetPath,
+      contentType: "text/plain",
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
 async function waitForPortalTerminalState(
   page: Page,
   diagnostics: PortalDiagnostics,
+  label = "terminal-state",
 ): Promise<PortalTerminalState> {
-  await expect
-    .poll(() => findPortalState(page), { timeout: 20_000 })
-    .not.toBeNull();
+  try {
+    await expect
+      .poll(() => findPortalState(page), { timeout: 20_000 })
+      .not.toBeNull();
+  } catch (err) {
+    await capturePortalFailureArtifacts(page, label, diagnostics, null);
+    const summary = await readPortalDiagnosticSummary(page, null, diagnostics);
+    throw new Error(
+      `Portal não saiu do estado de validação.\n${summary}\nOriginal: ${(err as Error).message}`,
+    );
+  }
 
   const state = await findPortalState(page);
   if (!state) {
-    const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
+    await capturePortalFailureArtifacts(page, label, diagnostics, null);
+    const summary = await readPortalDiagnosticSummary(page, null, diagnostics);
     throw new Error(`Portal não saiu do estado de validação.\n${summary}`);
   }
 
@@ -303,14 +369,21 @@ async function assertPortalTemplate(
     await expect(badge).toHaveAttribute("data-template-key", expectedTemplateKey);
   } catch (err) {
     const state = await findPortalState(portal);
+    await capturePortalFailureArtifacts(portal, `badge-${service}`, diagnostics, state);
     const summary = await readPortalDiagnosticSummary(portal, state, diagnostics);
     throw new Error(
       `Badge do Portal divergente para "${service}".\n${summary}\nOriginal: ${(err as Error).message}`,
     );
   }
 
-  await expect(portal.getByText(expected).first()).toBeVisible();
-  await expect(portal.getByText(forbidden)).toHaveCount(0);
+  try {
+    await expect(portal.getByText(expected).first()).toBeVisible();
+    await expect(portal.getByText(forbidden)).toHaveCount(0);
+  } catch (err) {
+    const state = await findPortalState(portal);
+    await capturePortalFailureArtifacts(portal, `text-${service}`, diagnostics, state);
+    throw err;
+  }
 }
 
 function maskToken(pathname: string): string {
@@ -366,9 +439,10 @@ async function openPortalInCi(
 
   expect(new URL(page.url()).origin).toBe(baseOrigin);
 
-  const state = await waitForPortalTerminalState(page, diagnostics);
+  const state = await waitForPortalTerminalState(page, diagnostics, `open-${service}`);
 
   if (PORTAL_ERROR_STATES.has(state)) {
+    await capturePortalFailureArtifacts(page, `error-state-${service}`, diagnostics, state);
     const summary = await readPortalDiagnosticSummary(page, state, diagnostics);
     throw new Error(
       `Portal abriu em tela de erro para "${service}" ` +
@@ -412,17 +486,23 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const anonCtx = await browser.newContext({
       storageState: { cookies: [], origins: [] },
     });
+    await startPortalTracing(anonCtx, "consultoria");
     const portal = await anonCtx.newPage();
     const consultoriaDiagnostics = attachPortalDiagnostics(portal);
-    await openPortalInCi(
-      portal,
-      consultoriaUrl,
-      "Consultoria",
-      consultoriaDiagnostics,
-    );
-
-    await assertPortalTemplate(portal, "Consultoria", consultoriaDiagnostics);
-
+    try {
+      await openPortalInCi(
+        portal,
+        consultoriaUrl,
+        "Consultoria",
+        consultoriaDiagnostics,
+      );
+      await assertPortalTemplate(portal, "Consultoria", consultoriaDiagnostics);
+    } catch (err) {
+      await stopPortalTracing(anonCtx, "consultoria", true);
+      await anonCtx.close();
+      throw err;
+    }
+    await stopPortalTracing(anonCtx, "consultoria", false);
     await anonCtx.close();
 
     await revokeActiveBriefingsForService(page, "Consultoria");
@@ -434,25 +514,84 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
     const anonCtx2 = await browser.newContext({
       storageState: { cookies: [], origins: [] },
     });
+    await startPortalTracing(anonCtx2, "projeto");
     const portal2 = await anonCtx2.newPage();
     const projetoDiagnostics = attachPortalDiagnostics(portal2);
-    await openPortalInCi(
-      portal2,
-      projetoUrl,
-      "Desenvolvimento de Projeto",
-      projetoDiagnostics,
-    );
-
-    await assertPortalTemplate(
-      portal2,
-      "Desenvolvimento de Projeto",
-      projetoDiagnostics,
-    );
-
+    try {
+      await openPortalInCi(
+        portal2,
+        projetoUrl,
+        "Desenvolvimento de Projeto",
+        projetoDiagnostics,
+      );
+      await assertPortalTemplate(
+        portal2,
+        "Desenvolvimento de Projeto",
+        projetoDiagnostics,
+      );
+    } catch (err) {
+      await stopPortalTracing(anonCtx2, "projeto", true);
+      await anonCtx2.close();
+      throw err;
+    }
+    await stopPortalTracing(anonCtx2, "projeto", false);
     await anonCtx2.close();
 
     // Cleanup final.
     await revokeActiveBriefingsForService(page, "Desenvolvimento de Projeto");
   });
 });
+
+/**
+ * Playwright tracing por contexto anônimo: gravamos snapshots + screenshots
+ * durante toda a jornada e, em caso de falha, exportamos o zip e anexamos
+ * ao relatório. Em sucesso, o trace é descartado para não inflar artefatos.
+ */
+async function startPortalTracing(
+  context: BrowserContext,
+  label: string,
+): Promise<void> {
+  try {
+    await context.tracing.start({
+      screenshots: true,
+      snapshots: true,
+      sources: false,
+      title: `portal-${label}`,
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
+async function stopPortalTracing(
+  context: BrowserContext,
+  label: string,
+  onFailure: boolean,
+): Promise<void> {
+  const testInfo = (() => {
+    try {
+      return test.info();
+    } catch {
+      return undefined;
+    }
+  })();
+  if (!onFailure || !testInfo) {
+    try {
+      await context.tracing.stop();
+    } catch {
+      /* best-effort */
+    }
+    return;
+  }
+  try {
+    const tracePath = testInfo.outputPath(`portal-trace-${label}.zip`);
+    await context.tracing.stop({ path: tracePath });
+    await testInfo.attach(`portal-trace-${label}.zip`, {
+      path: tracePath,
+      contentType: "application/zip",
+    });
+  } catch {
+    /* best-effort */
+  }
+}
 
