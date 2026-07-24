@@ -95,12 +95,17 @@ function BriefingPortalPage() {
     return <PortalNonValid state={state} />;
   }
 
+  // Fonte da verdade: template e serviço fixados no token pelo operador.
+  // Nenhuma resposta do cliente altera esses valores — o Portal apenas
+  // renderiza o template vinculado ao `template_type` do token.
   const template = getTemplate(t.template_type);
+  const briefingLabel = SERVICE_TYPE_LABEL[t.service_type as ServiceType];
 
   return (
     <PortalRunner
       token={token}
       template={template}
+      briefingLabel={briefingLabel}
       initialData={response?.data ?? {}}
       initialStep={response?.current_step ?? 0}
     />
@@ -113,6 +118,7 @@ function BriefingPortalPage() {
 interface PortalRunnerProps {
   token: string;
   template: BriefingTemplate;
+  briefingLabel: string;
   initialData: Record<string, any>;
   initialStep: number;
 }
@@ -120,6 +126,7 @@ interface PortalRunnerProps {
 function PortalRunner({
   token,
   template,
+  briefingLabel,
   initialData,
   initialStep,
 }: PortalRunnerProps) {
