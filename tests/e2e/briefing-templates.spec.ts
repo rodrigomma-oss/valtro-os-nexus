@@ -160,7 +160,7 @@ async function getPortalUrl(
     const tokenId = await card.getAttribute("data-token-id");
     throw new Error(
       `Portal URL não encontrada no card do serviço "${service}". ` +
-        `data-token-id=${tokenId ?? "(null)"}.`,
+        `data-token-id=${tokenId ? maskUuid(tokenId) : "(null)"}.`,
     );
   }
   expect(url).toBeTruthy();
@@ -205,10 +205,17 @@ function maskUrl(url: string): string {
   try {
     const u = new URL(url);
     u.pathname = maskToken(u.pathname);
-    return u.toString();
+    return maskUuid(u.toString());
   } catch {
-    return maskToken(url);
+    return maskUuid(maskToken(url));
   }
+}
+
+function maskUuid(value: string): string {
+  return value.replace(
+    /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi,
+    (uuid) => `${uuid.slice(0, 4)}…${uuid.slice(-4)}`,
+  );
 }
 
 async function findPortalState(page: Page): Promise<PortalTerminalState | null> {
@@ -243,10 +250,10 @@ async function readPortalDiagnosticSummary(
     `[portal-diagnostics] state=${state ?? "(nenhum)"}`,
     `[portal-diagnostics] data-service-type=${serviceType}`,
     `[portal-diagnostics] data-template-key=${templateKey}`,
-    `[portal-diagnostics] consoleErrors=${JSON.stringify(diagnostics.consoleErrors)}`,
-    `[portal-diagnostics] pageErrors=${JSON.stringify(diagnostics.pageErrors)}`,
-    `[portal-diagnostics] failedResponses=${JSON.stringify(diagnostics.failedResponses)}`,
-    `[portal-diagnostics] body=${JSON.stringify(bodyText)}`,
+    `[portal-diagnostics] consoleErrors=${maskUuid(JSON.stringify(diagnostics.consoleErrors))}`,
+    `[portal-diagnostics] pageErrors=${maskUuid(JSON.stringify(diagnostics.pageErrors))}`,
+    `[portal-diagnostics] failedResponses=${maskUuid(JSON.stringify(diagnostics.failedResponses))}`,
+    `[portal-diagnostics] body=${maskUuid(JSON.stringify(bodyText))}`,
   ].join("\n");
 }
 
