@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Locator } from "@playwright/test";
+import { test, expect, type Page, type Locator, type BrowserContext, type TestInfo } from "@playwright/test";
 
 /**
  * Sprint 12.0B / HOTFIX E2E — Templates especializados de Briefing.
