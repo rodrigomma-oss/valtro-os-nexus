@@ -57,7 +57,7 @@ export function NewBriefingDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" data-testid="new-briefing-dialog">
         <DialogHeader>
           <DialogTitle>Gerar Novo Briefing</DialogTitle>
           <DialogDescription>
