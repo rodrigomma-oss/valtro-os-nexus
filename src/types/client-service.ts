@@ -150,4 +150,50 @@ export const CLIENT_SERVICE_EVENT_LABEL: Record<ClientServiceEventType, string> 
   onboarding_started: "Onboarding iniciado",
   onboarding_completed: "Onboarding concluído",
   onboarding_revoked: "Onboarding revogado",
+  cycle_created: "Ciclo criado",
+  cycle_started: "Ciclo iniciado",
+  cycle_completed: "Ciclo concluído",
+  cycle_cancelled: "Ciclo cancelado",
+};
+
+// ============================================================
+// Sprint 13.6 — Ciclos e recorrência (sem cobrança)
+// ============================================================
+
+export type ClientServiceCycleStatus =
+  Database["public"]["Enums"]["client_service_cycle_status"];
+
+/**
+ * Período mensal de uma contratação recorrente. `amount_cents` é snapshot
+ * do ciclo: nem o catálogo nem a contratação alteram ciclos existentes.
+ */
+export interface ClientServiceCycle {
+  id: string;
+  client_service_id: string;
+  sequence: number;
+  period_start: string; // YYYY-MM-DD
+  period_end: string; // YYYY-MM-DD
+  due_date: string | null;
+  amount_cents: number;
+  status: ClientServiceCycleStatus;
+  started_at: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const CYCLE_STATUS_LABEL: Record<ClientServiceCycleStatus, string> = {
+  previsto: "Previsto",
+  ativo: "Ativo",
+  concluido: "Concluído",
+  cancelado: "Cancelado",
+};
+
+export const CYCLE_STATUS_TONE: Record<ClientServiceCycleStatus, string> = {
+  previsto: "bg-slate-50 text-slate-700 border-slate-200",
+  ativo: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  concluido: "bg-blue-50 text-blue-700 border-blue-200",
+  cancelado: "bg-rose-50 text-rose-700 border-rose-200",
 };
