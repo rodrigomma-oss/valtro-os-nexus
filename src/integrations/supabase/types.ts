@@ -162,6 +162,56 @@ export type Database = {
           },
         ]
       }
+      client_service_onboardings: {
+        Row: {
+          client_service_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          due_at: string | null
+          id: string
+          owner_id: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["onboarding_status"]
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          client_service_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          owner_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          client_service_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          owner_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_service_onboardings_client_service_id_fkey"
+            columns: ["client_service_id"]
+            isOneToOne: false
+            referencedRelation: "client_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_services: {
         Row: {
           billing_interval_snapshot:
@@ -574,6 +624,107 @@ export type Database = {
           },
         ]
       }
+      onboarding_responses: {
+        Row: {
+          client_service_onboarding_id: string
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          data: Json
+          id: string
+          started_at: string | null
+          template_key: string
+          token_id: string
+          updated_at: string
+        }
+        Insert: {
+          client_service_onboarding_id: string
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json
+          id?: string
+          started_at?: string | null
+          template_key: string
+          token_id: string
+          updated_at?: string
+        }
+        Update: {
+          client_service_onboarding_id?: string
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json
+          id?: string
+          started_at?: string | null
+          template_key?: string
+          token_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_responses_client_service_onboarding_id_fkey"
+            columns: ["client_service_onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "client_service_onboardings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboarding_responses_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "onboarding_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_tokens: {
+        Row: {
+          client_service_onboarding_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          last_access_at: string | null
+          revoked_at: string | null
+          status: Database["public"]["Enums"]["token_status"]
+          updated_at: string
+        }
+        Insert: {
+          client_service_onboarding_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          last_access_at?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["token_status"]
+          updated_at?: string
+        }
+        Update: {
+          client_service_onboarding_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          last_access_at?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["token_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_tokens_client_service_onboarding_id_fkey"
+            columns: ["client_service_onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "client_service_onboardings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -972,6 +1123,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      hydrate_onboarding_defaults: {
+        Args: { _client_service_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
@@ -985,6 +1140,11 @@ export type Database = {
         | "cancelled"
         | "status_changed"
         | "note_added"
+        | "onboarding_created"
+        | "onboarding_sent"
+        | "onboarding_started"
+        | "onboarding_completed"
+        | "onboarding_revoked"
       client_service_status:
         | "pendente"
         | "ativo"
@@ -1063,6 +1223,12 @@ export type Database = {
         | "briefing_enviado"
         | "em_analise"
         | "descartado"
+      onboarding_status:
+        | "pendente"
+        | "enviado"
+        | "em_preenchimento"
+        | "concluido"
+        | "cancelado"
       project_event_type:
         | "projeto_criado"
         | "status_alterado"
@@ -1255,6 +1421,11 @@ export const Constants = {
         "cancelled",
         "status_changed",
         "note_added",
+        "onboarding_created",
+        "onboarding_sent",
+        "onboarding_started",
+        "onboarding_completed",
+        "onboarding_revoked",
       ],
       client_service_status: [
         "pendente",
@@ -1340,6 +1511,13 @@ export const Constants = {
         "briefing_enviado",
         "em_analise",
         "descartado",
+      ],
+      onboarding_status: [
+        "pendente",
+        "enviado",
+        "em_preenchimento",
+        "concluido",
+        "cancelado",
       ],
       project_event_type: [
         "projeto_criado",
