@@ -46,6 +46,10 @@ interface ProposalsCardProps {
   lead: Lead;
   canWrite: boolean;
   isAdmin: boolean;
+  /** Sprint 13.10 (P1-5) — proposta a abrir automaticamente (deep-link). */
+  focusProposalId?: string;
+  /** Ação em contexto solicitada pelo deep-link. */
+  focusAction?: "contratacoes";
 }
 
 function fmtBRL(v: number) {
