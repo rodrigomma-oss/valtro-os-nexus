@@ -79,11 +79,13 @@ function fmtDateTime(iso: string) {
 export function ContractedServicesCard({
   clientId,
   canWrite = false,
+  highlightServiceId,
 }: ContractedServicesCardProps) {
   const listFn = useServerFn(listClientServices);
   const query = useQuery({
     queryKey: ["client-services", clientId],
     queryFn: () => listFn({ data: { client_id: clientId } }),
+    staleTime: 30_000,
   });
 
   const services = query.data ?? [];
@@ -112,7 +114,7 @@ export function ContractedServicesCard({
           <div className="grid grid-cols-3 gap-3 rounded-lg border border-border bg-muted/30 p-3 text-xs">
             <Stat label="Contratações" value={String(summary.count)} />
             <Stat label="Ativas" value={String(summary.active)} />
-            <Stat label="Recorrente mensal" value={fmtCents(summary.mrr)} />
+            <Stat label="Recorrência contratada" value={fmtCents(summary.mrr)} />
           </div>
         )}
 
@@ -129,7 +131,13 @@ export function ContractedServicesCard({
         ) : (
           <ul className="space-y-2">
             {services.map((s) => (
-              <ContractRow key={s.id} service={s} clientId={clientId} canWrite={canWrite} />
+              <ContractRow
+                key={s.id}
+                service={s}
+                clientId={clientId}
+                canWrite={canWrite}
+                highlighted={highlightServiceId === s.id}
+              />
             ))}
           </ul>
         )}
@@ -137,6 +145,7 @@ export function ContractedServicesCard({
     </Card>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
