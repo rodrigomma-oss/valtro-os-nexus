@@ -76,7 +76,7 @@ export interface OnboardingPortalPayload {
     completed_at: string | null;
   } | null;
   response: {
-    data: Record<string, unknown>;
+    data: Record<string, any>;
     current_step: number;
     completed_at: string | null;
   } | null;

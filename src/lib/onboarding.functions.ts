@@ -322,7 +322,7 @@ export const getOnboardingResponseForOperator = createServerFn({ method: "GET" }
 
     return {
       template_key: response.template_key as string,
-      data: (response.data as Record<string, unknown>) ?? {},
+      data: (response.data as Record<string, any>) ?? {},
       current_step: response.current_step ?? 0,
       started_at: response.started_at as string | null,
       completed_at: response.completed_at as string | null,
@@ -337,10 +337,10 @@ export const getOnboardingResponseForOperator = createServerFn({ method: "GET" }
 /** Whitelist explícita por template — nada fora dela é persistido. */
 function sanitizeOnboardingData(
   templateKey: string,
-  data: Record<string, unknown>,
-): Record<string, unknown> {
+  data: Record<string, any>,
+): Record<string, any> {
   const allowed = new Set(onboardingAllowedKeys(templateKey));
-  const out: Record<string, unknown> = {};
+  const out: Record<string, any> = {};
   for (const [k, v] of Object.entries(data)) {
     if (!allowed.has(k)) continue;
     out[k] = v;
@@ -416,7 +416,7 @@ export const validateOnboardingToken = createServerFn({ method: "POST" })
         onboarding: publicOnboarding("concluido"),
         response: resp
           ? {
-              data: (resp.data as Record<string, unknown>) ?? {},
+              data: (resp.data as Record<string, any>) ?? {},
               current_step: resp.current_step ?? 0,
               completed_at: resp.completed_at,
             }
@@ -475,7 +475,7 @@ export const validateOnboardingToken = createServerFn({ method: "POST" })
       });
       const prefill = sanitizeOnboardingData(
         o.template_key,
-        (defaults as Record<string, unknown>) ?? {},
+        (defaults as Record<string, any>) ?? {},
       );
 
       const { data: createdResp, error: createErr } = await supabaseAdmin
@@ -498,7 +498,7 @@ export const validateOnboardingToken = createServerFn({ method: "POST" })
       state: "valido",
       onboarding: publicOnboarding(onboardingStatus),
       response: {
-        data: (response.data as Record<string, unknown>) ?? {},
+        data: (response.data as Record<string, any>) ?? {},
         current_step: response.current_step ?? 0,
         completed_at: response.completed_at,
       },
