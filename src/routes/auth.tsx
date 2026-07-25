@@ -50,14 +50,18 @@ function AuthPage() {
   const safeRedirect = isSafeRedirect(redirect) ? redirect : "/crm/dashboard";
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    // Usa getUser() (revalida com o Auth server) em vez de getSession() (só lê localStorage).
+    // Sessão stale + gate autenticado usando getUser() causava loop de redirect entre
+    // /auth e /_authenticated, resultando em tela em branco com spinner infinito.
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!error && data.user) {
         navigate({ to: safeRedirect, replace: true });
       } else {
         setChecking(false);
       }
     });
   }, [navigate, safeRedirect]);
+
 
   const handleGoogle = async () => {
     setLoading(true);
