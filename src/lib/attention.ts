@@ -301,24 +301,44 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
   for (const cs of source.clientServices) {
     const subject = clientName.get(cs.client_id) ?? "Cliente";
     const days = daysSince(cs.updated_at, now);
+    const serviceOnboardings = onboardingsByService.get(cs.id) ?? [];
     const cta: AttentionCta = {
       label: "Ver contratação",
       to: "/crm/clientes/$id",
       params: { id: cs.client_id },
+      search: { cs: cs.id },
     };
 
     if (cs.status === "pendente") {
-      push({
-        id: `contratacao_pendente:${cs.id}`,
-        kind: "contratacao_pendente",
-        category: "contratacoes",
-        label: "Contratação pendente de ativação",
-        subject,
-        detail: cs.name_snapshot,
-        since: cs.updated_at,
-        priority: days >= 3 ? "critica" : "atencao",
-        cta,
-      });
+      // P1-7: quando o cliente já concluiu o onboarding, a pendência deixa de
+      // ser "aguardando informações" e passa a ser uma ação do operador.
+      const onboardingDone = serviceOnboardings.find((o) => o.status === "concluido");
+      if (onboardingDone) {
+        const dDays = daysSince(onboardingDone.updated_at, now);
+        push({
+          id: `onboarding_concluido_ativar_contratacao:${cs.id}`,
+          kind: "onboarding_concluido_ativar_contratacao",
+          category: "contratacoes",
+          label: "Onboarding concluído — ativar contratação",
+          subject,
+          detail: cs.name_snapshot,
+          since: onboardingDone.updated_at,
+          priority: dDays >= 1 ? "critica" : "atencao",
+          cta,
+        });
+      } else {
+        push({
+          id: `contratacao_pendente:${cs.id}`,
+          kind: "contratacao_pendente",
+          category: "contratacoes",
+          label: "Contratação pendente de ativação",
+          subject,
+          detail: cs.name_snapshot,
+          since: cs.updated_at,
+          priority: days >= 3 ? "critica" : "atencao",
+          cta,
+        });
+      }
     }
 
     if (cs.status === "pausado") {
@@ -336,13 +356,15 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     }
 
     // ---------- Onboarding (derivado da contratação) ----------
-    for (const o of onboardingsByService.get(cs.id) ?? []) {
+    for (const o of serviceOnboardings) {
       const oDays = daysSince(o.updated_at, now);
       const onboardingCta: AttentionCta = {
         label: "Ver onboarding",
         to: "/crm/clientes/$id",
         params: { id: cs.client_id },
+        search: { cs: cs.id },
       };
+
       if (o.status === "pendente" || o.status === "enviado") {
         push({
           id: `onboarding_pendente:${o.id}`,
