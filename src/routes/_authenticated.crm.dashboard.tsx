@@ -250,6 +250,13 @@ function CrmDashboard() {
     staleTime: 30_000,
   });
 
+  const getAttentionFn = useServerFn(getAttentionOverview);
+  const attention = useQuery({
+    queryKey: ["attention-overview"],
+    queryFn: () => getAttentionFn(),
+    staleTime: 30_000,
+  });
+
 
   const heroParts: string[] = [];
   if (data) {
