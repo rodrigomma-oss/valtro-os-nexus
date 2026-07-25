@@ -38,7 +38,7 @@ function normalize(row: any): CatalogService {
     ...row,
     default_limits:
       row.default_limits && typeof row.default_limits === "object"
-        ? (row.default_limits as Record<string, unknown>)
+        ? (row.default_limits as Record<string, string | number | boolean | null>)
         : {},
   };
 }
