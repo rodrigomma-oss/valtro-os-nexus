@@ -277,8 +277,23 @@ export function ProposalDrawer({
                     {canEdit && (
                       <ServiceLibraryPopover
                         groups={groups}
+                        skus={activeServices}
+                        onPickSku={(sku) =>
+                          addItem.mutate({
+                            service_id: sku.id,
+                            service_key: sku.code,
+                            service_label: sku.name,
+                            description: sku.description,
+                            quantity: 1,
+                            unit_price:
+                              sku.default_price_cents != null
+                                ? sku.default_price_cents / 100
+                                : 0,
+                          })
+                        }
                         onPick={(item) =>
                           addItem.mutate({
+                            service_id: null,
                             service_key: item.key,
                             service_label: item.label,
                             description: item.defaultDescription ?? null,
@@ -288,6 +303,7 @@ export function ProposalDrawer({
                         }
                         onCustom={() =>
                           addItem.mutate({
+                            service_id: null,
                             service_key: null,
                             service_label: "Novo item",
                             description: null,
