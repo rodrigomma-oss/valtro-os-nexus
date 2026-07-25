@@ -281,9 +281,16 @@ export function ProposalsCard({
         <ProposalDrawer
           proposalId={openId}
           open={!!openId}
-          onOpenChange={(o) => !o && setOpenId(null)}
+          onOpenChange={(o) => {
+            if (!o) {
+              setOpenId(null);
+              setAutoContracts(false);
+            }
+          }}
           canWrite={canWrite}
           isAdmin={isAdmin}
+          autoOpenContracts={autoContracts && openId === focusProposalId}
+          onContractsAutoOpened={() => setAutoContracts(false)}
         />
       )}
     </>
