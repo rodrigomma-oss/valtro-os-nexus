@@ -169,6 +169,7 @@ function formatDate(iso: string) {
 
 function CrmLeadDetail() {
   const { id } = Route.useParams();
+  const { proposta, acao } = Route.useSearch();
   const qc = useQueryClient();
 
   const getLeadFn = useServerFn(getLead);
