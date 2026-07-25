@@ -562,6 +562,7 @@ export type Database = {
           position: number
           proposal_id: string
           quantity: number
+          service_id: string | null
           service_key: string | null
           service_label: string
           subtotal: number
@@ -575,6 +576,7 @@ export type Database = {
           position?: number
           proposal_id: string
           quantity?: number
+          service_id?: string | null
           service_key?: string | null
           service_label: string
           subtotal?: number
@@ -588,6 +590,7 @@ export type Database = {
           position?: number
           proposal_id?: string
           quantity?: number
+          service_id?: string | null
           service_key?: string | null
           service_label?: string
           subtotal?: number
@@ -600,6 +603,13 @@ export type Database = {
             columns: ["proposal_id"]
             isOneToOne: false
             referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_items_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
         ]
@@ -706,6 +716,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      services: {
+        Row: {
+          active: boolean
+          billing_type: Database["public"]["Enums"]["service_billing_type"]
+          briefing_template_key: string | null
+          category: Database["public"]["Enums"]["service_type"]
+          code: string
+          created_at: string
+          default_limits: Json
+          default_price_cents: number | null
+          description: string | null
+          id: string
+          name: string
+          onboarding_template_key: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          billing_type?: Database["public"]["Enums"]["service_billing_type"]
+          briefing_template_key?: string | null
+          category?: Database["public"]["Enums"]["service_type"]
+          code: string
+          created_at?: string
+          default_limits?: Json
+          default_price_cents?: number | null
+          description?: string | null
+          id?: string
+          name: string
+          onboarding_template_key?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          billing_type?: Database["public"]["Enums"]["service_billing_type"]
+          briefing_template_key?: string | null
+          category?: Database["public"]["Enums"]["service_type"]
+          code?: string
+          created_at?: string
+          default_limits?: Json
+          default_price_cents?: number | null
+          description?: string | null
+          id?: string
+          name?: string
+          onboarding_template_key?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -848,6 +909,7 @@ export type Database = {
         | "rejeitada"
         | "expirada"
         | "cancelada"
+      service_billing_type: "pontual" | "recorrente"
       service_type:
         | "nao_definido"
         | "gestao_shopee"
@@ -1111,6 +1173,7 @@ export const Constants = {
         "expirada",
         "cancelada",
       ],
+      service_billing_type: ["pontual", "recorrente"],
       service_type: [
         "nao_definido",
         "gestao_shopee",
