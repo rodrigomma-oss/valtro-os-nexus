@@ -26,6 +26,7 @@ import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.cr
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
+import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
@@ -118,6 +119,12 @@ const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   path: '/api/public/version',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCrmServicosRoute =
+  AuthenticatedCrmServicosRouteImport.update({
+    id: '/servicos',
+    path: '/servicos',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/dashboard',
@@ -176,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
@@ -200,6 +208,7 @@ export interface FileRoutesByTo {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
@@ -227,6 +236,7 @@ export interface FileRoutesById {
   '/briefing/$token': typeof BriefingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
+  '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing/'
     | '/crm/dashboard'
+    | '/crm/servicos'
     | '/api/public/version'
     | '/crm/'
     | '/crm/clientes/$id'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing'
     | '/crm/dashboard'
+    | '/crm/servicos'
     | '/api/public/version'
     | '/crm'
     | '/crm/clientes/$id'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
+    | '/_authenticated/crm/servicos'
     | '/api/public/version'
     | '/_authenticated/crm/'
     | '/_authenticated/crm/clientes/$id'
@@ -452,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicVersionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/crm/servicos': {
+      id: '/_authenticated/crm/servicos'
+      path: '/servicos'
+      fullPath: '/crm/servicos'
+      preLoaderRoute: typeof AuthenticatedCrmServicosRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/dashboard': {
       id: '/_authenticated/crm/dashboard'
       path: '/dashboard'
@@ -506,6 +526,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
+  AuthenticatedCrmServicosRoute: typeof AuthenticatedCrmServicosRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
@@ -517,6 +538,7 @@ interface AuthenticatedCrmRouteChildren {
 
 const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
+  AuthenticatedCrmServicosRoute: AuthenticatedCrmServicosRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
