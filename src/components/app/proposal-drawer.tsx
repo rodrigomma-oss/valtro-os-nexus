@@ -170,6 +170,7 @@ export function ProposalDrawer({
 
   const addItem = useMutation({
     mutationFn: (payload: {
+      service_id?: string | null;
       service_key: string | null;
       service_label: string;
       description: string | null;
