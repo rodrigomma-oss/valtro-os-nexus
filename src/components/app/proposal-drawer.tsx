@@ -73,6 +73,13 @@ interface ProposalDrawerProps {
   onOpenChange: (open: boolean) => void;
   canWrite: boolean;
   isAdmin: boolean;
+  /**
+   * Sprint 13.10 (P1-5) — quando o operador chega pela fila "Atenção
+   * necessária", o fluxo de contratações é apresentado em contexto. Nada é
+   * gerado automaticamente: o diálogo apenas abre com a pré-visualização.
+   */
+  autoOpenContracts?: boolean;
+  onContractsAutoOpened?: () => void;
 }
 
 function fmtBRL(v: number) {
@@ -84,6 +91,8 @@ export function ProposalDrawer({
   open,
   onOpenChange,
   canWrite,
+  autoOpenContracts = false,
+  onContractsAutoOpened,
 }: ProposalDrawerProps) {
   const qc = useQueryClient();
   const getFn = useServerFn(getProposal);
