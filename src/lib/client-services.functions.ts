@@ -52,7 +52,11 @@ function normalizeScope(v: unknown): Record<string, string | number | boolean | 
     : {};
 }
 
-function normalizeRow(row: any, proposalNumber: string | null = null): ClientService {
+function normalizeRow(
+  row: any,
+  proposalNumber: string | null = null,
+  onboardingTemplateKey: string | null = null,
+): ClientService {
   return {
     ...row,
     quantity: num(row.quantity),
@@ -60,8 +64,10 @@ function normalizeRow(row: any, proposalNumber: string | null = null): ClientSer
     contracted_amount_cents: Number(row.contracted_amount_cents ?? 0),
     scope_snapshot: normalizeScope(row.scope_snapshot),
     proposal_number: proposalNumber,
+    onboarding_template_key: onboardingTemplateKey,
   };
 }
+
 
 // ============================================================
 // listClientServices — contratações de um cliente
