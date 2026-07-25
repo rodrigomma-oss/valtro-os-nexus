@@ -247,7 +247,7 @@ function ServicesCatalog() {
           description="Ajuste os termos de busca ou aguarde o cadastro de novos SKUs."
         />
       ) : (
-        <DataTable columns={columns} data={filtered} rowKey={(s) => s.id} />
+        <DataTable columns={columns} data={filtered} getRowId={(s) => s.id} />
       )}
     </div>
   );
