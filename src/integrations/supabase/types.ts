@@ -121,6 +121,47 @@ export type Database = {
           },
         ]
       }
+      client_service_events: {
+        Row: {
+          actor_id: string | null
+          client_service_id: string
+          created_at: string
+          description: string | null
+          event_type: Database["public"]["Enums"]["client_service_event_type"]
+          id: string
+          metadata: Json
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          client_service_id: string
+          created_at?: string
+          description?: string | null
+          event_type: Database["public"]["Enums"]["client_service_event_type"]
+          id?: string
+          metadata?: Json
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          client_service_id?: string
+          created_at?: string
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["client_service_event_type"]
+          id?: string
+          metadata?: Json
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_service_events_client_service_id_fkey"
+            columns: ["client_service_id"]
+            isOneToOne: false
+            referencedRelation: "client_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_services: {
         Row: {
           billing_interval_snapshot:
@@ -916,6 +957,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      client_service_transition_allowed: {
+        Args: {
+          _from: Database["public"]["Enums"]["client_service_status"]
+          _to: Database["public"]["Enums"]["client_service_status"]
+        }
+        Returns: boolean
+      }
       convert_lead_to_client: { Args: { _lead_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -928,6 +976,15 @@ export type Database = {
     Enums: {
       app_role: "admin" | "operator" | "viewer"
       billing_interval: "monthly"
+      client_service_event_type:
+        | "created"
+        | "activated"
+        | "paused"
+        | "resumed"
+        | "completed"
+        | "cancelled"
+        | "status_changed"
+        | "note_added"
       client_service_status:
         | "pendente"
         | "ativo"
@@ -1189,6 +1246,16 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
       billing_interval: ["monthly"],
+      client_service_event_type: [
+        "created",
+        "activated",
+        "paused",
+        "resumed",
+        "completed",
+        "cancelled",
+        "status_changed",
+        "note_added",
+      ],
       client_service_status: [
         "pendente",
         "ativo",
