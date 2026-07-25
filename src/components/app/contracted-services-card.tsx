@@ -162,14 +162,23 @@ function ContractRow({
   service: s,
   clientId,
   canWrite,
+  highlighted = false,
 }: {
   service: ClientService;
   clientId: string;
   canWrite: boolean;
+  highlighted?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const rowRef = useRef<HTMLLIElement | null>(null);
   const scopeEntries = Object.entries(s.scope_snapshot);
   const transitions = allowedTransitions(s.status);
+
+  // P1-3: o deep-link só é útil se a linha ficar visível sem busca manual.
+  useEffect(() => {
+    if (!highlighted || !rowRef.current) return;
+    rowRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlighted]);
 
   const qc = useQueryClient();
   const updateFn = useServerFn(updateClientServiceStatus);
@@ -187,7 +196,18 @@ function ContractRow({
   });
 
   return (
-    <li className="rounded-xl border border-border bg-card p-3" data-testid="contracted-service-row">
+    <li
+      ref={rowRef}
+      className={cn(
+        "rounded-xl border bg-card p-3 transition-shadow",
+        highlighted
+          ? "border-primary ring-2 ring-primary/30 shadow-soft"
+          : "border-border",
+      )}
+      data-testid="contracted-service-row"
+      data-highlighted={highlighted ? "true" : undefined}
+    >
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
