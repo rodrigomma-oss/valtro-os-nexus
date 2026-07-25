@@ -206,7 +206,6 @@ function ServicesCatalog() {
       <PageHeader
         title="Catálogo de Serviços"
         description="Fonte única do portfólio comercial (SKUs). A categoria continua governada pela taxonomia service_type."
-        icon={Layers}
       />
 
       {!isAdmin && (
