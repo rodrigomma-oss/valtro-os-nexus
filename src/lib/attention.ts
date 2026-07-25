@@ -351,7 +351,13 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${p.number} · ${p.title}`,
         since: p.updated_at,
         priority: expired ? "critica" : byAge(days, 14, 7),
-        cta: { label: "Ver proposta", to: "/crm/leads/$id", params: { id: p.lead_id } },
+        // Deep-link: abre a proposta correta já no drawer (sem procurar na lista).
+        cta: {
+          label: "Ver proposta",
+          to: "/crm/leads/$id",
+          params: { id: p.lead_id },
+          search: { proposta: p.id },
+        },
       });
       continue;
     }
@@ -366,7 +372,15 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${p.number} · ${p.title}`,
         since: p.updated_at,
         priority: days >= 2 ? "critica" : "atencao",
-        cta: { label: "Ver proposta", to: "/crm/leads/$id", params: { id: p.lead_id } },
+        // Sprint 13.10 (P1-5): o CTA leva à proposta correta com o drawer aberto
+        // e o fluxo "Gerar contratações" em contexto. Nada é gerado
+        // automaticamente — a confirmação segue manual e explícita.
+        cta: {
+          label: "Gerar contratações",
+          to: "/crm/leads/$id",
+          params: { id: p.lead_id },
+          search: { proposta: p.id, acao: "contratacoes" },
+        },
       });
     }
   }
