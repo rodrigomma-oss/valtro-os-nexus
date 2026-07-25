@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/app/page-header";
 import { Button } from "@/components/ui/button";
 import { ClientInfoCard } from "@/components/app/client-info-card";
 import { ProjectsCard } from "@/components/app/projects-card";
+import { ContractedServicesCard } from "@/components/app/contracted-services-card";
 import { getClient } from "@/lib/clients.functions";
 import { getMyRoles } from "@/lib/leads.functions";
 
@@ -80,6 +81,7 @@ function ClientDetail() {
           <ClientInfoCard client={client} />
         </div>
         <div className="lg:col-span-2 space-y-6">
+          <ContractedServicesCard clientId={client.id} />
           <ProjectsCard clientId={client.id} canWrite={canWrite} />
         </div>
       </div>

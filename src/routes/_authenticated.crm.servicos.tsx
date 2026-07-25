@@ -126,6 +126,7 @@ function ServicesCatalog() {
           )}
         >
           {s.billing_type}
+          {s.billing_interval === "monthly" ? " · mensal" : ""}
         </Badge>
       ),
     },

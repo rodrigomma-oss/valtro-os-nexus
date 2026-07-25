@@ -21,6 +21,7 @@ export interface CatalogService {
   description: string | null;
   default_price_cents: number | null;
   billing_type: ServiceBillingType;
+  billing_interval: Database["public"]["Enums"]["billing_interval"] | null;
   active: boolean;
   default_limits: Record<string, string | number | boolean | null>;
   briefing_template_key: string | null;
@@ -31,7 +32,7 @@ export interface CatalogService {
 }
 
 const SERVICE_SELECT =
-  "id, code, name, category, description, default_price_cents, billing_type, active, default_limits, briefing_template_key, onboarding_template_key, sort_order, created_at, updated_at";
+  "id, code, name, category, description, default_price_cents, billing_type, billing_interval, active, default_limits, briefing_template_key, onboarding_template_key, sort_order, created_at, updated_at";
 
 function normalize(row: any): CatalogService {
   return {
