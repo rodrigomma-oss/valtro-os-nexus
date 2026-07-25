@@ -47,7 +47,13 @@ interface ContractedServicesCardProps {
   clientId: string;
   /** admin/operator podem executar ações e adicionar notas. */
   canWrite?: boolean;
+  /**
+   * Sprint 13.9 (P1-3) — contratação vinda do Centro de Operações
+   * (`/crm/clientes/$id?cs=<id>`): a linha é destacada e recebe scroll.
+   */
+  highlightServiceId?: string;
 }
+
 
 function fmtCents(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
