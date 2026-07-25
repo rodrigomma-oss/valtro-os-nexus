@@ -63,6 +63,7 @@ import {
   groupServiceLibrary,
   type ServiceCategory,
 } from "@/config/service-library";
+import { listServices, type CatalogService } from "@/lib/services.functions";
 
 interface ProposalDrawerProps {
   proposalId: string;
