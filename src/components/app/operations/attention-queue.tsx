@@ -140,8 +140,10 @@ export function AttentionQueue({ items, counts, isLoading }: AttentionQueueProps
               <Link
                 to={it.cta.to}
                 params={it.cta.params as never}
+                search={(it.cta.search ?? {}) as never}
                 className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:bg-muted/40"
               >
+
                 <span
                   className={cn(
                     "shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
