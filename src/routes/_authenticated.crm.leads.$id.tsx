@@ -461,7 +461,10 @@ function CrmLeadDetail() {
             lead={lead}
             canWrite={canWrite}
             isAdmin={rolesQuery.data?.isAdmin ?? false}
+            focusProposalId={proposta}
+            focusAction={acao}
           />
+
 
 
           <ContactHistoryCard leadId={lead.id} canWrite={canWrite} />
