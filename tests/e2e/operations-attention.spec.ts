@@ -66,3 +66,58 @@ test.describe("Centro de Operações — Atenção necessária", () => {
     );
   });
 });
+
+/**
+ * Sprint 13.10 — fechamento da UX operacional.
+ * Spec versionada para a infraestrutura dev/E2E (execução ainda adiada).
+ */
+test.describe("Sprint 13.10 — leads iniciais e CTA de contratação", () => {
+  test("cards legados atuam como atalhos, não como segunda fila", async ({ page }) => {
+    await page.goto("/crm/dashboard");
+    await page.getByTestId("attention-queue").waitFor();
+    // Se houver indicadores, eles são links de navegação (sem lista concorrente).
+    const shortcuts = page.getByTestId("dashboard-shortcuts");
+    if ((await shortcuts.count()) > 0) {
+      await expect(shortcuts.getByRole("link").first()).toBeVisible();
+    }
+  });
+
+  test("categoria leads mostra apenas pendências de lead", async ({ page }) => {
+    await page.goto("/crm/dashboard");
+    await page.getByTestId("attention-queue").waitFor();
+    await page.getByTestId("attn-filter-leads").click();
+
+    const items = page.getByTestId("attention-item");
+    const count = await items.count();
+    for (let i = 0; i < count; i += 1) {
+      const kind = await items.nth(i).getAttribute("data-kind");
+      expect([
+        "lead_novo_sem_triagem",
+        "lead_em_triagem",
+        "lead_aguardando_briefing",
+        "lead_briefing_enviado",
+        "briefing_aguardando_analise",
+      ]).toContain(kind);
+      await expect(items.nth(i).getByRole("link")).toHaveAttribute(
+        "href",
+        /\/crm\/leads\//,
+      );
+    }
+  });
+
+  test("proposta aprovada abre o lead com a proposta e a ação em contexto", async ({ page }) => {
+    await page.goto("/crm/dashboard");
+    await page.getByTestId("attention-queue").waitFor();
+    await page.getByTestId("attn-filter-propostas").click();
+
+    const approved = page.locator(
+      '[data-testid="attention-item"][data-kind="proposta_aprovada_sem_contratacao"]',
+    );
+    if ((await approved.count()) === 0) test.skip(true, "Sem proposta aprovada pendente na base.");
+
+    await approved.first().getByRole("link").click();
+    await expect(page).toHaveURL(/\/crm\/leads\/.*proposta=.*acao=contratacoes/);
+    // Drawer aberto e fluxo de contratação acessível sem navegação extra.
+    await expect(page.getByTestId("generate-contracts-dialog")).toBeVisible();
+  });
+});
