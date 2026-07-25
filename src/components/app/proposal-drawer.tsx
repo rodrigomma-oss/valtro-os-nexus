@@ -128,6 +128,15 @@ export function ProposalDrawer({
   // Contratações (Sprint 13.3) — action manual sobre proposta aprovada.
   const [contractsOpen, setContractsOpen] = useState(false);
 
+  // Sprint 13.10 (P1-5): abre o fluxo em contexto apenas quando a proposta
+  // realmente está aprovada e o operador tem permissão de escrita.
+  useEffect(() => {
+    if (!autoOpenContracts || !open) return;
+    if (!canWrite || proposal?.status !== "aprovada") return;
+    setContractsOpen(true);
+    onContractsAutoOpened?.();
+  }, [autoOpenContracts, open, canWrite, proposal?.status, onContractsAutoOpened]);
+
   // Detalhes editáveis (form state)
   const [title, setTitle] = useState("");
   const [validUntil, setValidUntil] = useState("");
