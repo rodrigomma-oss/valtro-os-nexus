@@ -400,7 +400,7 @@ export const listClientServiceEvents = createServerFn({ method: "GET" })
       ...r,
       metadata:
         r.metadata && typeof r.metadata === "object" && !Array.isArray(r.metadata)
-          ? (r.metadata as Record<string, unknown>)
+          ? (r.metadata as Record<string, string | number | boolean | null>)
           : {},
       actor_name: r.actor_id ? (names.get(r.actor_id) ?? null) : null,
     })) as ClientServiceEvent[];
