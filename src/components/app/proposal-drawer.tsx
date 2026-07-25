@@ -63,6 +63,7 @@ import {
   groupServiceLibrary,
   type ServiceCategory,
 } from "@/config/service-library";
+import { listServices, type CatalogService } from "@/lib/services.functions";
 
 interface ProposalDrawerProps {
   proposalId: string;
@@ -90,6 +91,18 @@ export function ProposalDrawer({
   const updItemFn = useServerFn(updateProposalItem);
   const rmItemFn = useServerFn(removeProposalItem);
   const addNegFn = useServerFn(addNegotiationEntry);
+  const listServicesFn = useServerFn(listServices);
+
+  const servicesQuery = useQuery({
+    queryKey: ["services-catalog", "active"],
+    queryFn: () => listServicesFn(),
+    enabled: open,
+    staleTime: 60_000,
+  });
+  const activeServices = useMemo(
+    () => (servicesQuery.data ?? []).filter((s) => s.active),
+    [servicesQuery.data],
+  );
 
   const query = useQuery({
     queryKey: ["proposal", proposalId],
@@ -157,6 +170,7 @@ export function ProposalDrawer({
 
   const addItem = useMutation({
     mutationFn: (payload: {
+      service_id?: string | null;
       service_key: string | null;
       service_label: string;
       description: string | null;
@@ -263,8 +277,23 @@ export function ProposalDrawer({
                     {canEdit && (
                       <ServiceLibraryPopover
                         groups={groups}
+                        skus={activeServices}
+                        onPickSku={(sku) =>
+                          addItem.mutate({
+                            service_id: sku.id,
+                            service_key: sku.code,
+                            service_label: sku.name,
+                            description: sku.description,
+                            quantity: 1,
+                            unit_price:
+                              sku.default_price_cents != null
+                                ? sku.default_price_cents / 100
+                                : 0,
+                          })
+                        }
                         onPick={(item) =>
                           addItem.mutate({
+                            service_id: null,
                             service_key: item.key,
                             service_label: item.label,
                             description: item.defaultDescription ?? null,
@@ -274,6 +303,7 @@ export function ProposalDrawer({
                         }
                         onCustom={() =>
                           addItem.mutate({
+                            service_id: null,
                             service_key: null,
                             service_label: "Novo item",
                             description: null,
@@ -561,23 +591,80 @@ function TotalsRow({
 
 interface ServiceLibraryPopoverProps {
   groups: Record<ServiceCategory, typeof SERVICE_LIBRARY>;
+  skus: CatalogService[];
+  onPickSku: (sku: CatalogService) => void;
   onPick: (item: (typeof SERVICE_LIBRARY)[number]) => void;
   onCustom: () => void;
 }
 
-function ServiceLibraryPopover({ groups, onPick, onCustom }: ServiceLibraryPopoverProps) {
+function ServiceLibraryPopover({
+  groups,
+  skus,
+  onPickSku,
+  onPick,
+  onCustom,
+}: ServiceLibraryPopoverProps) {
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-2">
+        <Button size="sm" variant="outline" className="gap-2" data-testid="add-proposal-item-trigger">
           <Plus className="h-4 w-4" />
-          Adicionar da biblioteca
+          Adicionar item
           <ChevronDown className="h-3 w-3 opacity-60" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-96 p-2">
-        <div className="max-h-80 overflow-y-auto space-y-3">
+      <PopoverContent align="end" className="w-[26rem] p-2">
+        <div className="max-h-96 overflow-y-auto space-y-3">
+          {skus.length > 0 && (
+            <div>
+              <div className="px-2 pb-1 text-[10px] uppercase tracking-wider text-primary font-semibold">
+                Catálogo de serviços (SKUs)
+              </div>
+              <ul className="space-y-1">
+                {skus.map((sku) => {
+                  const hasPrice = sku.default_price_cents != null;
+                  return (
+                    <li key={sku.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onPickSku(sku);
+                          setOpen(false);
+                        }}
+                        className="w-full text-left rounded-md px-2 py-1.5 hover:bg-muted transition-colors"
+                        data-testid={`sku-pick-${sku.code}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm text-foreground font-medium truncate">
+                            {sku.name}
+                          </span>
+                          <span className="text-xs font-mono text-muted-foreground shrink-0">
+                            {hasPrice
+                              ? (sku.default_price_cents! / 100).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })
+                              : "—"}
+                          </span>
+                        </div>
+                        {!hasPrice && (
+                          <div className="text-[10px] text-amber-600 mt-0.5">
+                            Preço padrão não definido
+                          </div>
+                        )}
+                        {sku.description && (
+                          <div className="text-xs text-muted-foreground line-clamp-1">
+                            {sku.description}
+                          </div>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           {(Object.keys(groups) as ServiceCategory[]).map((cat) => (
             <div key={cat}>
               <div className="px-2 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
