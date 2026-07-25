@@ -19,7 +19,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 import { OperationHero } from "@/components/app/operations/operation-hero";
-import { QueueCard } from "@/components/app/operations/queue-card";
 import { PipelineBoard } from "@/components/app/operations/pipeline-board";
 import { MetricCard } from "@/components/app/operations/metric-card";
 import { cn } from "@/lib/utils";
