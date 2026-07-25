@@ -91,6 +91,18 @@ export function ProposalDrawer({
   const updItemFn = useServerFn(updateProposalItem);
   const rmItemFn = useServerFn(removeProposalItem);
   const addNegFn = useServerFn(addNegotiationEntry);
+  const listServicesFn = useServerFn(listServices);
+
+  const servicesQuery = useQuery({
+    queryKey: ["services-catalog", "active"],
+    queryFn: () => listServicesFn(),
+    enabled: open,
+    staleTime: 60_000,
+  });
+  const activeServices = useMemo(
+    () => (servicesQuery.data ?? []).filter((s) => s.active),
+    [servicesQuery.data],
+  );
 
   const query = useQuery({
     queryKey: ["proposal", proposalId],
