@@ -37,7 +37,7 @@ const PROPOSAL_SELECT =
   "id, lead_id, number, title, status, total_amount, discount_amount, final_amount, issued_at, valid_until, owner_id, internal_notes, created_by, created_at, updated_at";
 
 const ITEM_SELECT =
-  "id, proposal_id, position, service_key, service_label, description, quantity, unit_price, subtotal, created_at, updated_at";
+  "id, proposal_id, position, service_id, service_key, service_label, description, quantity, unit_price, subtotal, created_at, updated_at";
 
 const NEGOTIATION_SELECT =
   "id, proposal_id, type, content, metadata, created_by, created_at";
@@ -283,7 +283,7 @@ export const duplicateProposal = createServerFn({ method: "POST" })
 
     const { data: items, error: itErr } = await context.supabase
       .from("proposal_items")
-      .select("position, service_key, service_label, description, quantity, unit_price")
+      .select("position, service_id, service_key, service_label, description, quantity, unit_price")
       .eq("proposal_id", data.id);
     if (itErr) throw new Error(itErr.message);
 
@@ -294,6 +294,7 @@ export const duplicateProposal = createServerFn({ method: "POST" })
           items.map((it: any) => ({
             proposal_id: newId,
             position: it.position,
+            service_id: it.service_id,
             service_key: it.service_key,
             service_label: it.service_label,
             description: it.description,
@@ -331,6 +332,7 @@ export const addProposalItem = createServerFn({ method: "POST" })
     z
       .object({
         proposal_id: z.string().uuid(),
+        service_id: z.string().uuid().nullable().optional(),
         service_key: z.string().nullable().optional(),
         service_label: z.string().trim().min(1).max(200),
         description: z.string().nullable().optional(),
@@ -351,6 +353,7 @@ export const addProposalItem = createServerFn({ method: "POST" })
 
     const { error } = await context.supabase.from("proposal_items").insert({
       proposal_id: data.proposal_id,
+      service_id: data.service_id ?? null,
       service_key: data.service_key ?? null,
       service_label: data.service_label,
       description: data.description ?? null,

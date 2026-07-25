@@ -30,6 +30,7 @@ export interface ProposalItem {
   id: string;
   proposal_id: string;
   position: number;
+  service_id: string | null;
   service_key: string | null;
   service_label: string;
   description: string | null;
