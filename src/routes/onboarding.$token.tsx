@@ -44,6 +44,7 @@ import {
   validateOnboardingToken,
 } from "@/lib/onboarding.functions";
 import {
+  formatOnboardingAnswer as formatAnswer,
   getOnboardingTemplate,
   validateOnboardingStep,
   type OnboardingTemplate,
@@ -443,18 +444,6 @@ function QuestionField({
   );
 }
 
-export function formatAnswer(q: TemplateQuestion, value: any): string {
-  if (value === undefined || value === null || value === "") return "—";
-  if (q.kind === "multiselect") {
-    const arr: string[] = Array.isArray(value) ? value : [];
-    if (arr.length === 0) return "—";
-    return arr.map((v) => q.options?.find((o) => o.value === v)?.label ?? v).join(", ");
-  }
-  if (q.kind === "select") {
-    return q.options?.find((o) => o.value === value)?.label ?? String(value);
-  }
-  return String(value);
-}
 
 // ---------------------------------------------------------------------------
 // Suporte

@@ -198,3 +198,17 @@ export function validateOnboardingStep(
   }
   return null;
 }
+
+/** Formata a resposta de uma pergunta para leitura humana (UI interna e revisão). */
+export function formatOnboardingAnswer(q: TemplateQuestion, value: unknown): string {
+  if (value === undefined || value === null || value === "") return "—";
+  if (q.kind === "multiselect") {
+    const arr: string[] = Array.isArray(value) ? (value as string[]) : [];
+    if (arr.length === 0) return "—";
+    return arr.map((v) => q.options?.find((o) => o.value === v)?.label ?? v).join(", ");
+  }
+  if (q.kind === "select") {
+    return q.options?.find((o) => o.value === value)?.label ?? String(value);
+  }
+  return String(value);
+}

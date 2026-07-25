@@ -31,8 +31,10 @@ import {
   ONBOARDING_STATUS_TONE,
   type ClientServiceOnboarding,
 } from "@/types/onboarding";
-import { getOnboardingTemplate } from "@/config/onboarding-templates";
-import { formatAnswer } from "@/routes/onboarding.$token";
+import {
+  formatOnboardingAnswer as formatAnswer,
+  getOnboardingTemplate,
+} from "@/config/onboarding-templates";
 
 interface OnboardingCardProps {
   clientServiceId: string;
