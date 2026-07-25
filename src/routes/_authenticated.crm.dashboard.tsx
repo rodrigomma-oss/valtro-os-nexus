@@ -27,7 +27,9 @@ import { getOperationsOverview, type EventKind, type InboxItemDTO, type Activity
 import { getFollowUpsOverview } from "@/lib/leads.functions";
 import { getProposalsOverview } from "@/lib/proposals.functions";
 import { getProjectsOverview, getClientsOverview } from "@/lib/projects.functions";
-import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon } from "lucide-react";
+import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon, Layers, Repeat } from "lucide-react";
+import { AttentionQueue } from "@/components/app/operations/attention-queue";
+import { getAttentionOverview } from "@/lib/attention.functions";
 
 export const Route = createFileRoute("/_authenticated/crm/dashboard")({
   component: CrmDashboard,
