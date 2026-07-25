@@ -401,19 +401,24 @@ function CrmDashboard() {
 
 
 
-      {queueItems.length > 0 && (
-        <Section title="Minha fila" description="Prioridades operacionais do momento.">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            {queueItems.map((c, i) => (
-              <QueueCard
+      {shortcutTiles.length > 0 && (
+        <Section
+          title="Atalhos de navegação"
+          description="Indicadores da base — as pendências ficam em “Atenção necessária”."
+        >
+          <div
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3"
+            data-testid="dashboard-shortcuts"
+          >
+            {shortcutTiles.map((c) => (
+              <FollowUpTile
                 key={c.id}
-                title={c.title}
+                label={c.label}
                 value={c.value}
-                description={c.description}
-                icon={c.icon}
                 tone={c.tone}
-                index={i}
-                onClick={c.onClick}
+                icon={c.icon}
+                to="/crm/leads"
+                search={c.search}
               />
             ))}
           </div>
