@@ -145,4 +145,9 @@ export const CLIENT_SERVICE_EVENT_LABEL: Record<ClientServiceEventType, string> 
   cancelled: "Cancelada",
   status_changed: "Status alterado",
   note_added: "Nota",
+  onboarding_created: "Onboarding criado",
+  onboarding_sent: "Onboarding enviado",
+  onboarding_started: "Onboarding iniciado",
+  onboarding_completed: "Onboarding concluído",
+  onboarding_revoked: "Onboarding revogado",
 };

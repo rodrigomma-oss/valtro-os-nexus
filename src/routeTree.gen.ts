@@ -21,6 +21,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
+import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
@@ -92,6 +93,11 @@ const IndexRoute = IndexRouteImport.update({
 const BriefingIndexRoute = BriefingIndexRouteImport.update({
   id: '/briefing/',
   path: '/briefing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
+  id: '/onboarding/$token',
+  path: '/onboarding/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BriefingTokenRoute = BriefingTokenRouteImport.update({
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
+  '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/briefing/$token': typeof BriefingTokenRoute
+  '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
+  '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/crm'
     | '/briefing/$token'
+    | '/onboarding/$token'
     | '/briefing/'
     | '/crm/dashboard'
     | '/crm/servicos'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin'
     | '/briefing/$token'
+    | '/onboarding/$token'
     | '/briefing'
     | '/crm/dashboard'
     | '/crm/servicos'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/crm'
     | '/briefing/$token'
+    | '/onboarding/$token'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/servicos'
@@ -340,6 +352,7 @@ export interface RootRouteChildren {
   SolucoesRoute: typeof SolucoesRoute
   TermosRoute: typeof TermosRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
+  OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
 }
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       path: '/briefing'
       fullPath: '/briefing/'
       preLoaderRoute: typeof BriefingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/$token': {
+      id: '/onboarding/$token'
+      path: '/onboarding/$token'
+      fullPath: '/onboarding/$token'
+      preLoaderRoute: typeof OnboardingTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/briefing/$token': {
@@ -578,6 +598,7 @@ const rootRouteChildren: RootRouteChildren = {
   SolucoesRoute: SolucoesRoute,
   TermosRoute: TermosRoute,
   BriefingTokenRoute: BriefingTokenRoute,
+  OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
 }
