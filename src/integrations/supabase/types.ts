@@ -121,6 +121,65 @@ export type Database = {
           },
         ]
       }
+      client_service_cycles: {
+        Row: {
+          amount_cents: number
+          cancelled_at: string | null
+          client_service_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          due_date: string | null
+          id: string
+          period_end: string
+          period_start: string
+          sequence: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["client_service_cycle_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          cancelled_at?: string | null
+          client_service_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          sequence: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["client_service_cycle_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          client_service_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          sequence?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["client_service_cycle_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_service_cycles_client_service_id_fkey"
+            columns: ["client_service_id"]
+            isOneToOne: false
+            referencedRelation: "client_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_service_events: {
         Row: {
           actor_id: string | null
@@ -1131,6 +1190,11 @@ export type Database = {
     Enums: {
       app_role: "admin" | "operator" | "viewer"
       billing_interval: "monthly"
+      client_service_cycle_status:
+        | "previsto"
+        | "ativo"
+        | "concluido"
+        | "cancelado"
       client_service_event_type:
         | "created"
         | "activated"
@@ -1145,6 +1209,10 @@ export type Database = {
         | "onboarding_started"
         | "onboarding_completed"
         | "onboarding_revoked"
+        | "cycle_created"
+        | "cycle_started"
+        | "cycle_completed"
+        | "cycle_cancelled"
       client_service_status:
         | "pendente"
         | "ativo"
@@ -1412,6 +1480,12 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
       billing_interval: ["monthly"],
+      client_service_cycle_status: [
+        "previsto",
+        "ativo",
+        "concluido",
+        "cancelado",
+      ],
       client_service_event_type: [
         "created",
         "activated",
@@ -1426,6 +1500,10 @@ export const Constants = {
         "onboarding_started",
         "onboarding_completed",
         "onboarding_revoked",
+        "cycle_created",
+        "cycle_started",
+        "cycle_completed",
+        "cycle_cancelled",
       ],
       client_service_status: [
         "pendente",

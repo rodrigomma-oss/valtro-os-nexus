@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState } from "@/components/shared/empty-state";
 import { OnboardingCard } from "@/components/app/onboarding-card";
+import { CyclesCard } from "@/components/app/cycles-card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -164,6 +165,8 @@ function ContractRow({
       toast.success(`Contratação: ${CLIENT_SERVICE_STATUS_LABEL[status].toLowerCase()}.`);
       qc.invalidateQueries({ queryKey: ["client-services", clientId] });
       qc.invalidateQueries({ queryKey: ["client-service-events", s.id] });
+      // Elegibilidade de novo ciclo depende do status da contratação.
+      qc.invalidateQueries({ queryKey: ["client-service-cycle-preview", s.id] });
     },
     onError: (err: Error) => toast.error(err.message || "Não foi possível alterar o status."),
   });
@@ -260,6 +263,8 @@ function ContractRow({
           />
         </Button>
       </div>
+
+      <CyclesCard clientServiceId={s.id} canWrite={canWrite} />
 
       <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
 
