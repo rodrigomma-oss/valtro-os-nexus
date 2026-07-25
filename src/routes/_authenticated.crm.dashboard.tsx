@@ -268,51 +268,50 @@ function CrmDashboard() {
       heroParts.push(`${data.hero.briefingsConcluidos} briefing(s) concluído(s)`);
   }
 
-  const queueItems = data
+  /**
+   * Sprint 13.10 (item 2) — os antigos "queue cards" listavam as mesmas
+   * pendências hoje derivadas em "Atenção necessária" (leads sem contato,
+   * briefings enviados/concluídos). Manter duas listas concorrendo pela
+   * atenção do operador é ruído: aqui eles passam a ser apenas
+   * indicadores/atalhos de navegação. Nenhuma informação foi removida — todos
+   * os números continuam visíveis e clicáveis, apenas deixam de competir com
+   * a fila operacional.
+   */
+  const shortcutTiles = data
     ? [
         {
           id: "leads",
-          title: "Leads aguardando contato",
+          label: "Leads aguardando contato",
           value: data.queue.leadsAguardandoContato,
-          description: "Leads novos que precisam de primeiro contato.",
           icon: UserPlus,
           tone: "info" as const,
-          onClick: () => navigate({ to: "/crm/leads", search: { view: "novos-do-site" } }),
-          show: true,
+          search: { view: "novos-do-site" as const },
         },
         {
           id: "briefings-enviados",
-          title: "Briefings enviados",
+          label: "Briefings enviados",
           value: data.queue.briefingsEnviados,
-          description: "Aguardando preenchimento pelo cliente.",
           icon: Send,
           tone: "primary" as const,
-          onClick: () =>
-            navigate({ to: "/crm/leads", search: { view: "briefings-aguardando" } }),
-          show: data.queue.briefingsEnviados > 0,
+          search: { view: "briefings-aguardando" as const },
         },
         {
           id: "briefings-concluidos",
-          title: "Briefings concluídos",
+          label: "Briefings concluídos",
           value: data.queue.briefingsConcluidos,
-          description: "Prontos para análise da equipe.",
           icon: CheckCircle2,
           tone: "success" as const,
-          onClick: () =>
-            navigate({ to: "/crm/leads", search: { view: "briefings-concluidos" } }),
-          show: data.queue.briefingsConcluidos > 0,
+          search: { view: "briefings-concluidos" as const },
         },
         {
           id: "clientes",
-          title: "Clientes ativos",
+          label: "Clientes ativos",
           value: data.queue.clientesAtivos,
-          description: "Leads convertidos em cliente.",
           icon: Users,
           tone: "success" as const,
-          onClick: () => navigate({ to: "/crm/leads" }),
-          show: data.queue.clientesAtivos > 0,
+          search: undefined,
         },
-      ].filter((c) => c.show)
+      ]
     : [];
 
   return (
