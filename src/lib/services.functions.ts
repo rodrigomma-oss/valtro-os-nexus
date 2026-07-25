@@ -22,7 +22,7 @@ export interface CatalogService {
   default_price_cents: number | null;
   billing_type: ServiceBillingType;
   active: boolean;
-  default_limits: Record<string, unknown>;
+  default_limits: Record<string, string | number | boolean | null>;
   briefing_template_key: string | null;
   onboarding_template_key: string | null;
   sort_order: number;
