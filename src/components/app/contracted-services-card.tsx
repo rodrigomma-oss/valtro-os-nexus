@@ -4,7 +4,7 @@
  * snapshots persistidos e expõe o ciclo operacional (ações válidas,
  * timeline e notas), separado da timeline comercial do Lead.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -32,6 +32,8 @@ import {
   allowedTransitions,
   transitionLabel,
 } from "@/lib/client-service-transitions";
+import { supportsCycles } from "@/lib/client-service-cycles";
+
 import {
   BILLING_INTERVAL_LABEL,
   BILLING_TYPE_LABEL,
@@ -47,7 +49,13 @@ interface ContractedServicesCardProps {
   clientId: string;
   /** admin/operator podem executar ações e adicionar notas. */
   canWrite?: boolean;
+  /**
+   * Sprint 13.9 (P1-3) — contratação vinda do Centro de Operações
+   * (`/crm/clientes/$id?cs=<id>`): a linha é destacada e recebe scroll.
+   */
+  highlightServiceId?: string;
 }
+
 
 function fmtCents(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -73,11 +81,13 @@ function fmtDateTime(iso: string) {
 export function ContractedServicesCard({
   clientId,
   canWrite = false,
+  highlightServiceId,
 }: ContractedServicesCardProps) {
   const listFn = useServerFn(listClientServices);
   const query = useQuery({
     queryKey: ["client-services", clientId],
     queryFn: () => listFn({ data: { client_id: clientId } }),
+    staleTime: 30_000,
   });
 
   const services = query.data ?? [];
@@ -106,7 +116,7 @@ export function ContractedServicesCard({
           <div className="grid grid-cols-3 gap-3 rounded-lg border border-border bg-muted/30 p-3 text-xs">
             <Stat label="Contratações" value={String(summary.count)} />
             <Stat label="Ativas" value={String(summary.active)} />
-            <Stat label="Recorrente mensal" value={fmtCents(summary.mrr)} />
+            <Stat label="Recorrência contratada" value={fmtCents(summary.mrr)} />
           </div>
         )}
 
@@ -123,7 +133,13 @@ export function ContractedServicesCard({
         ) : (
           <ul className="space-y-2">
             {services.map((s) => (
-              <ContractRow key={s.id} service={s} clientId={clientId} canWrite={canWrite} />
+              <ContractRow
+                key={s.id}
+                service={s}
+                clientId={clientId}
+                canWrite={canWrite}
+                highlighted={highlightServiceId === s.id}
+              />
             ))}
           </ul>
         )}
@@ -131,6 +147,7 @@ export function ContractedServicesCard({
     </Card>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -147,14 +164,23 @@ function ContractRow({
   service: s,
   clientId,
   canWrite,
+  highlighted = false,
 }: {
   service: ClientService;
   clientId: string;
   canWrite: boolean;
+  highlighted?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const rowRef = useRef<HTMLLIElement | null>(null);
   const scopeEntries = Object.entries(s.scope_snapshot);
   const transitions = allowedTransitions(s.status);
+
+  // P1-3: o deep-link só é útil se a linha ficar visível sem busca manual.
+  useEffect(() => {
+    if (!highlighted || !rowRef.current) return;
+    rowRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlighted]);
 
   const qc = useQueryClient();
   const updateFn = useServerFn(updateClientServiceStatus);
@@ -172,7 +198,18 @@ function ContractRow({
   });
 
   return (
-    <li className="rounded-xl border border-border bg-card p-3" data-testid="contracted-service-row">
+    <li
+      ref={rowRef}
+      className={cn(
+        "rounded-xl border bg-card p-3 transition-shadow",
+        highlighted
+          ? "border-primary ring-2 ring-primary/30 shadow-soft"
+          : "border-border",
+      )}
+      data-testid="contracted-service-row"
+      data-highlighted={highlighted ? "true" : undefined}
+    >
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -264,9 +301,24 @@ function ContractRow({
         </Button>
       </div>
 
-      <CyclesCard clientServiceId={s.id} canWrite={canWrite} />
+      {/*
+        P1-4: as seções abaixo só montam quando a contratação realmente as
+        possui. Antes, cada linha disparava 4 chamadas de servidor mesmo para
+        serviços pontuais sem onboarding (1 + 4N por cliente).
+      */}
+      {supportsCycles(s) && <CyclesCard clientServiceId={s.id} canWrite={canWrite} />}
 
-      <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
+      {s.onboarding_template_key ? (
+        <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
+      ) : (
+        <p
+          className="mt-3 text-xs text-muted-foreground"
+          data-testid="onboarding-no-template"
+        >
+          Este serviço não exige onboarding.
+        </p>
+      )}
+
 
       {open && <ContractTimeline serviceId={s.id} canWrite={canWrite} />}
     </li>

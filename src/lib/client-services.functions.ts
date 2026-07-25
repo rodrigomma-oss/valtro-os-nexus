@@ -52,7 +52,11 @@ function normalizeScope(v: unknown): Record<string, string | number | boolean | 
     : {};
 }
 
-function normalizeRow(row: any, proposalNumber: string | null = null): ClientService {
+function normalizeRow(
+  row: any,
+  proposalNumber: string | null = null,
+  onboardingTemplateKey: string | null = null,
+): ClientService {
   return {
     ...row,
     quantity: num(row.quantity),
@@ -60,8 +64,10 @@ function normalizeRow(row: any, proposalNumber: string | null = null): ClientSer
     contracted_amount_cents: Number(row.contracted_amount_cents ?? 0),
     scope_snapshot: normalizeScope(row.scope_snapshot),
     proposal_number: proposalNumber,
+    onboarding_template_key: onboardingTemplateKey,
   };
 }
+
 
 // ============================================================
 // listClientServices — contratações de um cliente
@@ -91,8 +97,31 @@ export const listClientServices = createServerFn({ method: "GET" })
       for (const p of (props ?? []) as any[]) numbers.set(p.id, p.number);
     }
 
-    return list.map((r) => normalizeRow(r, r.proposal_id ? numbers.get(r.proposal_id) ?? null : null));
+    // P1-4: uma única consulta ao catálogo hidrata a elegibilidade a
+    // onboarding de todas as linhas — a UI deixa de perguntar por contratação.
+    const serviceIds = Array.from(
+      new Set(list.map((r) => r.service_id).filter((v): v is string => !!v)),
+    );
+    const templates = new Map<string, string | null>();
+    if (serviceIds.length > 0) {
+      const { data: svcs } = await context.supabase
+        .from("services")
+        .select("id, onboarding_template_key")
+        .in("id", serviceIds);
+      for (const s of (svcs ?? []) as any[]) {
+        templates.set(s.id, (s.onboarding_template_key as string | null) ?? null);
+      }
+    }
+
+    return list.map((r) =>
+      normalizeRow(
+        r,
+        r.proposal_id ? (numbers.get(r.proposal_id) ?? null) : null,
+        r.service_id ? (templates.get(r.service_id) ?? null) : null,
+      ),
+    );
   });
+
 
 // ============================================================
 // previewProposalContracts — o que será criado (visibilidade obrigatória)

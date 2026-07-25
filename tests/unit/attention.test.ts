@@ -335,3 +335,89 @@ describe("fila de atenção — invariantes", () => {
     ).toBe(items.length);
   });
 });
+
+// ============================================================
+// Sprint 13.9 — hardening operacional
+// ============================================================
+
+describe("Sprint 13.9 — novas regras", () => {
+  it("P1-1: ciclo previsto e nunca iniciado aparece na fila", () => {
+    const items = buildAttentionQueue(
+      source({
+        clientServices: [recurring],
+        cycles: [
+          {
+            id: "cy1",
+            client_service_id: "cs1",
+            sequence: 1,
+            period_start: "2026-08-01",
+            period_end: "2026-08-31",
+            status: "previsto",
+            updated_at: ago(3),
+          },
+        ],
+      }),
+    );
+    const previsto = items.find((i) => i.kind === "ciclo_previsto_nao_iniciado");
+    expect(previsto).toBeDefined();
+    expect(previsto!.category).toBe("ciclos");
+    expect(previsto!.priority).toBe("atencao");
+    // Ciclo em aberto: não há "sem próximo ciclo" concorrente.
+    expect(items.some((i) => i.kind === "recorrente_sem_proximo_ciclo")).toBe(false);
+  });
+
+  it("P1-1: período já iniciado sem start eleva para crítica", () => {
+    const items = buildAttentionQueue(
+      source({
+        clientServices: [recurring],
+        cycles: [
+          {
+            id: "cy1",
+            client_service_id: "cs1",
+            sequence: 1,
+            period_start: "2026-07-01",
+            period_end: "2026-07-31",
+            status: "previsto",
+            updated_at: ago(1),
+          },
+        ],
+      }),
+    );
+    expect(items.find((i) => i.kind === "ciclo_previsto_nao_iniciado")!.priority).toBe(
+      "critica",
+    );
+  });
+
+  it("P1-7: onboarding concluído troca a pendência por 'ativar contratação'", () => {
+    const items = buildAttentionQueue(
+      source({
+        clientServices: [{ ...recurring, status: "pendente", updated_at: ago(10) }],
+        onboardings: [
+          {
+            id: "ob1",
+            client_service_id: "cs1",
+            status: "concluido",
+            updated_at: ago(2),
+            created_at: ago(9),
+          },
+        ],
+      }),
+    );
+    const item = items.find(
+      (i) => i.kind === "onboarding_concluido_ativar_contratacao",
+    );
+    expect(item).toBeDefined();
+    expect(item!.priority).toBe("critica");
+    expect(items.some((i) => i.kind === "contratacao_pendente")).toBe(false);
+    // Onboarding concluído não gera pendência de onboarding.
+    expect(items.some((i) => i.category === "onboarding")).toBe(false);
+  });
+
+  it("P1-3: CTAs de contratação/ciclo levam o deep-link da contratação", () => {
+    const items = buildAttentionQueue(
+      source({ clientServices: [{ ...recurring, status: "pausado", updated_at: ago(20) }] }),
+    );
+    const item = items.find((i) => i.kind === "contratacao_pausada")!;
+    expect(item.cta.search).toEqual({ cs: "cs1" });
+  });
+});

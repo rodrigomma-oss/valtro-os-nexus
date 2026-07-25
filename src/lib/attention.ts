@@ -33,12 +33,14 @@ export type AttentionKind =
   | "proposta_em_negociacao"
   | "proposta_aprovada_sem_contratacao"
   | "contratacao_pendente"
+  | "onboarding_concluido_ativar_contratacao"
   | "contratacao_pausada"
   | "onboarding_pendente"
   | "onboarding_em_preenchimento"
   | "projeto_aguardando_cliente"
   | "projeto_atrasado"
   | "ciclo_ativo"
+  | "ciclo_previsto_nao_iniciado"
   | "recorrente_sem_proximo_ciclo";
 
 export interface AttentionCta {
@@ -46,7 +48,13 @@ export interface AttentionCta {
   /** Rota TanStack de destino (entidade original). */
   to: string;
   params?: Record<string, string>;
+  /**
+   * Sprint 13.9 (P1-3) — deep-link para a contratação exata dentro da página
+   * do cliente (`?cs=<client_service_id>`), preservando o contexto do item.
+   */
+  search?: Record<string, string>;
 }
+
 
 export interface AttentionItem {
   /** `kind:entity_id` — garante unicidade por regra + entidade. */
@@ -293,24 +301,44 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
   for (const cs of source.clientServices) {
     const subject = clientName.get(cs.client_id) ?? "Cliente";
     const days = daysSince(cs.updated_at, now);
+    const serviceOnboardings = onboardingsByService.get(cs.id) ?? [];
     const cta: AttentionCta = {
       label: "Ver contratação",
       to: "/crm/clientes/$id",
       params: { id: cs.client_id },
+      search: { cs: cs.id },
     };
 
     if (cs.status === "pendente") {
-      push({
-        id: `contratacao_pendente:${cs.id}`,
-        kind: "contratacao_pendente",
-        category: "contratacoes",
-        label: "Contratação pendente de ativação",
-        subject,
-        detail: cs.name_snapshot,
-        since: cs.updated_at,
-        priority: days >= 3 ? "critica" : "atencao",
-        cta,
-      });
+      // P1-7: quando o cliente já concluiu o onboarding, a pendência deixa de
+      // ser "aguardando informações" e passa a ser uma ação do operador.
+      const onboardingDone = serviceOnboardings.find((o) => o.status === "concluido");
+      if (onboardingDone) {
+        const dDays = daysSince(onboardingDone.updated_at, now);
+        push({
+          id: `onboarding_concluido_ativar_contratacao:${cs.id}`,
+          kind: "onboarding_concluido_ativar_contratacao",
+          category: "contratacoes",
+          label: "Onboarding concluído — ativar contratação",
+          subject,
+          detail: cs.name_snapshot,
+          since: onboardingDone.updated_at,
+          priority: dDays >= 1 ? "critica" : "atencao",
+          cta,
+        });
+      } else {
+        push({
+          id: `contratacao_pendente:${cs.id}`,
+          kind: "contratacao_pendente",
+          category: "contratacoes",
+          label: "Contratação pendente de ativação",
+          subject,
+          detail: cs.name_snapshot,
+          since: cs.updated_at,
+          priority: days >= 3 ? "critica" : "atencao",
+          cta,
+        });
+      }
     }
 
     if (cs.status === "pausado") {
@@ -328,13 +356,15 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     }
 
     // ---------- Onboarding (derivado da contratação) ----------
-    for (const o of onboardingsByService.get(cs.id) ?? []) {
+    for (const o of serviceOnboardings) {
       const oDays = daysSince(o.updated_at, now);
       const onboardingCta: AttentionCta = {
         label: "Ver onboarding",
         to: "/crm/clientes/$id",
         params: { id: cs.client_id },
+        search: { cs: cs.id },
       };
+
       if (o.status === "pendente" || o.status === "enviado") {
         push({
           id: `onboarding_pendente:${o.id}`,
@@ -373,6 +403,12 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     const cycles = cyclesByService.get(cs.id) ?? [];
     const open = cycles.filter((c) => c.status === "previsto" || c.status === "ativo");
     const active = cycles.find((c) => c.status === "ativo");
+    const cycleCta: AttentionCta = {
+      label: "Ver ciclo",
+      to: "/crm/clientes/$id",
+      params: { id: cs.client_id },
+      search: { cs: cs.id },
+    };
 
     if (active) {
       push({
@@ -386,7 +422,26 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${cs.name_snapshot} · ciclo #${active.sequence}`,
         since: active.updated_at,
         priority: isPast(active.period_end, now) ? "atencao" : "normal",
-        cta: { label: "Ver ciclo", to: "/crm/clientes/$id", params: { id: cs.client_id } },
+        cta: cycleCta,
+      });
+    }
+
+    // P1-1: ciclo criado e nunca iniciado. Sem esta regra o período fica
+    // invisível no Centro de Operações até alguém abrir o cliente.
+    for (const previsto of cycles.filter((c) => c.status === "previsto")) {
+      const pDays = daysSince(previsto.updated_at, now);
+      push({
+        id: `ciclo_previsto_nao_iniciado:${previsto.id}`,
+        kind: "ciclo_previsto_nao_iniciado",
+        category: "ciclos",
+        label: isPast(previsto.period_start, now)
+          ? "Ciclo previsto com período já iniciado"
+          : "Ciclo previsto aguardando início",
+        subject,
+        detail: `${cs.name_snapshot} · ciclo #${previsto.sequence}`,
+        since: previsto.updated_at,
+        priority: isPast(previsto.period_start, now) ? "critica" : byAge(pDays, 5, 2),
+        cta: cycleCta,
       });
     }
 
@@ -407,9 +462,10 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: cs.name_snapshot,
         since: anchor,
         priority: aDays >= 5 ? "critica" : "atencao",
-        cta: { label: "Ver ciclo", to: "/crm/clientes/$id", params: { id: cs.client_id } },
+        cta: cycleCta,
       });
     }
+
   }
 
   // ---------- Projetos ----------

@@ -12,6 +12,13 @@ import { getMyRoles } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/_authenticated/crm/clientes/$id")({
   component: ClientDetail,
+  /**
+   * Sprint 13.9 (P1-3) — `?cs=<client_service_id>` chega do Centro de
+   * Operações e destaca a contratação exata que originou a pendência.
+   */
+  validateSearch: (search: Record<string, unknown>): { cs?: string } => ({
+    cs: typeof search.cs === "string" && search.cs.length > 0 ? search.cs : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Cliente — CRM Valtro Labs" },
@@ -22,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/crm/clientes/$id")({
 
 function ClientDetail() {
   const { id } = Route.useParams();
+  const { cs } = Route.useSearch();
   const getClientFn = useServerFn(getClient);
   const getRolesFn = useServerFn(getMyRoles);
 
@@ -34,6 +42,7 @@ function ClientDetail() {
     queryFn: () => getRolesFn(),
     staleTime: 60_000,
   });
+
 
   if (clientQuery.isLoading) {
     return (
@@ -81,7 +90,12 @@ function ClientDetail() {
           <ClientInfoCard client={client} />
         </div>
         <div className="lg:col-span-2 space-y-6">
-          <ContractedServicesCard clientId={client.id} canWrite={canWrite} />
+          <ContractedServicesCard
+            clientId={client.id}
+            canWrite={canWrite}
+            highlightServiceId={cs}
+          />
+
           <ProjectsCard clientId={client.id} canWrite={canWrite} />
         </div>
       </div>

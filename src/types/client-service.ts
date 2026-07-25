@@ -44,7 +44,15 @@ export interface ClientService {
 
   /** Hidratado a partir de `proposals.number` (não persistido). */
   proposal_number: string | null;
+
+  /**
+   * Sprint 13.9 (P1-4) — hidratado a partir de `services.onboarding_template_key`.
+   * Permite decidir na UI, sem consultas por linha, se a contratação possui
+   * fluxo de onboarding. `null` = serviço sem onboarding.
+   */
+  onboarding_template_key: string | null;
 }
+
 
 export const CLIENT_SERVICE_STATUS_LABEL: Record<ClientServiceStatus, string> = {
   pendente: "Pendente",

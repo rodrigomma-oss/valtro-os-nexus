@@ -44,11 +44,13 @@ export interface AttentionOverview {
 }
 
 const ACTIVE_PROJECT_STATUSES = [
+  "nao_iniciado",
   "planejamento",
   "em_desenvolvimento",
   "em_revisao",
   "aguardando_cliente",
 ];
+
 
 export const getAttentionOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -91,9 +93,11 @@ export const getAttentionOverview = createServerFn({ method: "GET" })
         .returns<RawClientService[]>(),
       supabase
         .from("client_service_onboardings")
+        // `concluido` entra porque sinaliza a ação "ativar contratação" (P1-7).
         .select("id, client_service_id, status, updated_at, created_at")
-        .in("status", ["pendente", "enviado", "em_preenchimento"])
+        .in("status", ["pendente", "enviado", "em_preenchimento", "concluido"])
         .returns<RawOnboarding[]>(),
+
       supabase
         .from("client_service_cycles")
         .select("id, client_service_id, sequence, period_start, period_end, status, updated_at")
