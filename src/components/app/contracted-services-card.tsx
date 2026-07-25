@@ -299,9 +299,24 @@ function ContractRow({
         </Button>
       </div>
 
-      <CyclesCard clientServiceId={s.id} canWrite={canWrite} />
+      {/*
+        P1-4: as seções abaixo só montam quando a contratação realmente as
+        possui. Antes, cada linha disparava 4 chamadas de servidor mesmo para
+        serviços pontuais sem onboarding (1 + 4N por cliente).
+      */}
+      {supportsCycles(s) && <CyclesCard clientServiceId={s.id} canWrite={canWrite} />}
 
-      <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
+      {s.onboarding_template_key ? (
+        <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
+      ) : (
+        <p
+          className="mt-3 text-xs text-muted-foreground"
+          data-testid="onboarding-no-template"
+        >
+          Este serviço não exige onboarding.
+        </p>
+      )}
+
 
       {open && <ContractTimeline serviceId={s.id} canWrite={canWrite} />}
     </li>
