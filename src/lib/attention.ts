@@ -33,12 +33,14 @@ export type AttentionKind =
   | "proposta_em_negociacao"
   | "proposta_aprovada_sem_contratacao"
   | "contratacao_pendente"
+  | "onboarding_concluido_ativar_contratacao"
   | "contratacao_pausada"
   | "onboarding_pendente"
   | "onboarding_em_preenchimento"
   | "projeto_aguardando_cliente"
   | "projeto_atrasado"
   | "ciclo_ativo"
+  | "ciclo_previsto_nao_iniciado"
   | "recorrente_sem_proximo_ciclo";
 
 export interface AttentionCta {
@@ -46,7 +48,13 @@ export interface AttentionCta {
   /** Rota TanStack de destino (entidade original). */
   to: string;
   params?: Record<string, string>;
+  /**
+   * Sprint 13.9 (P1-3) — deep-link para a contratação exata dentro da página
+   * do cliente (`?cs=<client_service_id>`), preservando o contexto do item.
+   */
+  search?: Record<string, string>;
 }
+
 
 export interface AttentionItem {
   /** `kind:entity_id` — garante unicidade por regra + entidade. */
