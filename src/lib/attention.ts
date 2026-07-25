@@ -29,6 +29,10 @@ export type AttentionCategory =
 export type AttentionPriority = "critica" | "atencao" | "normal";
 
 export type AttentionKind =
+  | "lead_novo_sem_triagem"
+  | "lead_em_triagem"
+  | "lead_aguardando_briefing"
+  | "lead_briefing_enviado"
   | "briefing_aguardando_analise"
   | "proposta_em_negociacao"
   | "proposta_aprovada_sem_contratacao"
