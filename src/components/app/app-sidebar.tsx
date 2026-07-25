@@ -35,6 +35,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Leads", to: "/crm/leads", icon: Users },
       { label: "Clientes", to: "/crm/clientes", icon: Building2 },
       { label: "Projetos", to: "/crm/projetos", icon: FolderKanban },
+      { label: "Catálogo de Serviços", to: "/crm/servicos", icon: Layers },
     ],
   },
   {
