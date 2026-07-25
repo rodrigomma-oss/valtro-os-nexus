@@ -334,6 +334,74 @@ function CrmDashboard() {
 
       <OperationHero parts={heroParts} />
 
+      <Section
+        title="Resumo operacional"
+        description="Indicadores derivados do estado real das entidades."
+      >
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <FollowUpTile
+            label="Atenção necessária"
+            value={attention.data?.summary.atencaoNecessaria ?? 0}
+            tone="danger"
+            icon={AlertTriangleIcon}
+          />
+          <FollowUpTile
+            label="Onboardings pendentes"
+            value={attention.data?.summary.onboardingsPendentes ?? 0}
+            tone="warning"
+            icon={Send}
+          />
+          <FollowUpTile
+            label="Projetos ativos"
+            value={attention.data?.summary.projetosAtivos ?? 0}
+            tone="primary"
+            icon={FolderKanban}
+            to="/crm/projetos"
+          />
+          <FollowUpTile
+            label="Serviços ativos"
+            value={attention.data?.summary.servicosAtivos ?? 0}
+            tone="success"
+            icon={Layers}
+            to="/crm/clientes"
+          />
+          <FollowUpTile
+            label="Ciclos ativos"
+            value={attention.data?.summary.ciclosAtivos ?? 0}
+            tone="info"
+            icon={Repeat}
+          />
+        </div>
+      </Section>
+
+      <Section
+        title="Atenção necessária"
+        description="Pendências derivadas em tempo real — cada item leva à entidade de origem."
+      >
+        <AttentionQueue
+          items={attention.data?.items ?? []}
+          counts={
+            attention.data?.counts ?? {
+              total: 0,
+              critica: 0,
+              atencao: 0,
+              normal: 0,
+              byCategory: {
+                leads: 0,
+                propostas: 0,
+                onboarding: 0,
+                projetos: 0,
+                contratacoes: 0,
+                ciclos: 0,
+              },
+            }
+          }
+          isLoading={attention.isLoading}
+        />
+      </Section>
+
+
+
       {queueItems.length > 0 && (
         <Section title="Minha fila" description="Prioridades operacionais do momento.">
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
