@@ -61,11 +61,14 @@ export function OnboardingCard({ clientServiceId, canWrite }: OnboardingCardProp
   const contextQuery = useQuery({
     queryKey: ["onboarding-context", clientServiceId],
     queryFn: () => contextFn({ data: { client_service_id: clientServiceId } }),
+    staleTime: 30_000,
   });
   const listQuery = useQuery({
     queryKey: ["onboardings", clientServiceId],
     queryFn: () => listFn({ data: { client_service_id: clientServiceId } }),
+    staleTime: 30_000,
   });
+
 
   const startMutation = useMutation({
     mutationFn: () => startFn({ data: { client_service_id: clientServiceId } }),

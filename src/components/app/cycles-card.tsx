@@ -58,12 +58,15 @@ export function CyclesCard({ clientServiceId, canWrite = false }: CyclesCardProp
   const cyclesQuery = useQuery({
     queryKey: ["client-service-cycles", clientServiceId],
     queryFn: () => listFn({ data: { client_service_id: clientServiceId } }),
+    staleTime: 30_000,
   });
 
   const previewQuery = useQuery({
     queryKey: ["client-service-cycle-preview", clientServiceId],
     queryFn: () => previewFn({ data: { client_service_id: clientServiceId } }),
+    staleTime: 30_000,
   });
+
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["client-service-cycles", clientServiceId] });
