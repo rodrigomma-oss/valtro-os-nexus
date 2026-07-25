@@ -81,7 +81,7 @@ function ClientDetail() {
           <ClientInfoCard client={client} />
         </div>
         <div className="lg:col-span-2 space-y-6">
-          <ContractedServicesCard clientId={client.id} />
+          <ContractedServicesCard clientId={client.id} canWrite={canWrite} />
           <ProjectsCard clientId={client.id} canWrite={canWrite} />
         </div>
       </div>

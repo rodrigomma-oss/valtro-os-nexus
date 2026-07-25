@@ -12,9 +12,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isTransitionAllowed } from "@/lib/client-service-transitions";
+import { CLIENT_SERVICE_STATUS_LABEL } from "@/types/client-service";
 import type {
   BillingInterval,
   ClientService,
+  ClientServiceEvent,
   ClientServiceStatus,
   ContractCandidate,
   ContractPreview,
@@ -340,10 +343,93 @@ export const updateClientServiceStatus = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const { supabase } = context;
+
+    const { data: current, error: readErr } = await supabase
+      .from("client_services")
+      .select("id, status")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!current) throw new Error("Contratação não encontrada.");
+
+    const from = (current as any).status as ClientServiceStatus;
+    // Validação central — mesma regra aplicada na UI e no banco.
+    if (!isTransitionAllowed(from, data.status)) {
+      throw new Error(
+        `Transição inválida: ${CLIENT_SERVICE_STATUS_LABEL[from]} → ${CLIENT_SERVICE_STATUS_LABEL[data.status]}.`,
+      );
+    }
+
+    const { error } = await supabase
       .from("client_services")
       .update({ status: data.status })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    return { ok: true, from, to: data.status };
+  });
+
+// ============================================================
+// listClientServiceEvents — timeline operacional (somente leitura)
+// ============================================================
+export const listClientServiceEvents = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ client_service_id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }): Promise<ClientServiceEvent[]> => {
+    const { data: rows, error } = await context.supabase
+      .from("client_service_events")
+      .select("id, client_service_id, event_type, title, description, metadata, actor_id, created_at")
+      .eq("client_service_id", data.client_service_id)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+
+    const list = (rows ?? []) as any[];
+    const actorIds = Array.from(
+      new Set(list.map((r) => r.actor_id).filter((v): v is string => !!v)),
+    );
+    const names = new Map<string, string>();
+    if (actorIds.length > 0) {
+      const { data: profiles } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", actorIds);
+      for (const p of (profiles ?? []) as any[]) names.set(p.id, p.full_name);
+    }
+
+    return list.map((r) => ({
+      ...r,
+      metadata:
+        r.metadata && typeof r.metadata === "object" && !Array.isArray(r.metadata)
+          ? (r.metadata as Record<string, string | number | boolean | null>)
+          : {},
+      actor_name: r.actor_id ? (names.get(r.actor_id) ?? null) : null,
+    })) as ClientServiceEvent[];
+  });
+
+// ============================================================
+// addClientServiceNote — nota operacional manual
+// ============================================================
+export const addClientServiceNote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        client_service_id: z.string().uuid(),
+        note: z.string().trim().min(3).max(2000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("client_service_events").insert({
+      client_service_id: data.client_service_id,
+      event_type: "note_added",
+      title: "Nota operacional",
+      description: data.note,
+      actor_id: context.userId,
+      // metadata intencionalmente vazio: nada sensível é persistido aqui.
+      metadata: {},
+    } as any);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
+

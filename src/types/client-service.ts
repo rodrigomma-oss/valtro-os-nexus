@@ -115,3 +115,34 @@ export interface GenerateContractsResult {
   created: { proposal_item_id: string; client_service_id: string; name: string }[];
   skipped: { proposal_item_id: string; name: string; reason: string }[];
 }
+
+// ============================================================
+// Sprint 13.4 — Ciclo operacional / timeline
+// ============================================================
+
+export type ClientServiceEventType =
+  Database["public"]["Enums"]["client_service_event_type"];
+
+export interface ClientServiceEvent {
+  id: string;
+  client_service_id: string;
+  event_type: ClientServiceEventType;
+  title: string;
+  description: string | null;
+  metadata: Record<string, string | number | boolean | null>;
+  actor_id: string | null;
+  created_at: string;
+  /** Hidratado a partir de `profiles.full_name` (não persistido). */
+  actor_name: string | null;
+}
+
+export const CLIENT_SERVICE_EVENT_LABEL: Record<ClientServiceEventType, string> = {
+  created: "Criada",
+  activated: "Ativada",
+  paused: "Pausada",
+  resumed: "Retomada",
+  completed: "Concluída",
+  cancelled: "Cancelada",
+  status_changed: "Status alterado",
+  note_added: "Nota",
+};
