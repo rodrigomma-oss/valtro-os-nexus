@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState } from "@/components/shared/empty-state";
+import { OnboardingCard } from "@/components/app/onboarding-card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -259,6 +260,8 @@ function ContractRow({
           />
         </Button>
       </div>
+
+      <OnboardingCard clientServiceId={s.id} canWrite={canWrite} />
 
       {open && <ContractTimeline serviceId={s.id} canWrite={canWrite} />}
     </li>
