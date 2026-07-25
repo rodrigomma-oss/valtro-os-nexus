@@ -4,7 +4,7 @@
  * snapshots persistidos e expõe o ciclo operacional (ações válidas,
  * timeline e notas), separado da timeline comercial do Lead.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
