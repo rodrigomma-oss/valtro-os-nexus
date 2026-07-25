@@ -12,9 +12,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isTransitionAllowed } from "@/lib/client-service-transitions";
+import { CLIENT_SERVICE_STATUS_LABEL } from "@/types/client-service";
 import type {
   BillingInterval,
   ClientService,
+  ClientServiceEvent,
   ClientServiceStatus,
   ContractCandidate,
   ContractPreview,
