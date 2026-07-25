@@ -8,6 +8,7 @@ import {
   Settings,
   ClipboardList,
   FolderKanban,
+  Layers,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
