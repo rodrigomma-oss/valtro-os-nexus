@@ -121,6 +121,119 @@ export type Database = {
           },
         ]
       }
+      client_services: {
+        Row: {
+          billing_interval_snapshot:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
+          billing_type_snapshot: Database["public"]["Enums"]["service_billing_type"]
+          cancelled_at: string | null
+          client_id: string
+          completed_at: string | null
+          contracted_amount_cents: number
+          contracted_at: string
+          created_at: string
+          created_by: string | null
+          description_snapshot: string | null
+          id: string
+          name_snapshot: string
+          owner_id: string | null
+          proposal_id: string | null
+          proposal_item_id: string | null
+          quantity: number
+          scope_snapshot: Json
+          service_code_snapshot: string | null
+          service_id: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["client_service_status"]
+          unit_price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          billing_interval_snapshot?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
+          billing_type_snapshot?: Database["public"]["Enums"]["service_billing_type"]
+          cancelled_at?: string | null
+          client_id: string
+          completed_at?: string | null
+          contracted_amount_cents?: number
+          contracted_at?: string
+          created_at?: string
+          created_by?: string | null
+          description_snapshot?: string | null
+          id?: string
+          name_snapshot: string
+          owner_id?: string | null
+          proposal_id?: string | null
+          proposal_item_id?: string | null
+          quantity?: number
+          scope_snapshot?: Json
+          service_code_snapshot?: string | null
+          service_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["client_service_status"]
+          unit_price_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_interval_snapshot?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
+          billing_type_snapshot?: Database["public"]["Enums"]["service_billing_type"]
+          cancelled_at?: string | null
+          client_id?: string
+          completed_at?: string | null
+          contracted_amount_cents?: number
+          contracted_at?: string
+          created_at?: string
+          created_by?: string | null
+          description_snapshot?: string | null
+          id?: string
+          name_snapshot?: string
+          owner_id?: string | null
+          proposal_id?: string | null
+          proposal_item_id?: string | null
+          quantity?: number
+          scope_snapshot?: Json
+          service_code_snapshot?: string | null
+          service_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["client_service_status"]
+          unit_price_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_services_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_proposal_item_id_fkey"
+            columns: ["proposal_item_id"]
+            isOneToOne: false
+            referencedRelation: "proposal_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           archived_at: string | null
@@ -720,6 +833,9 @@ export type Database = {
       services: {
         Row: {
           active: boolean
+          billing_interval:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           billing_type: Database["public"]["Enums"]["service_billing_type"]
           briefing_template_key: string | null
           category: Database["public"]["Enums"]["service_type"]
@@ -736,6 +852,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          billing_interval?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           billing_type?: Database["public"]["Enums"]["service_billing_type"]
           briefing_template_key?: string | null
           category?: Database["public"]["Enums"]["service_type"]
@@ -752,6 +871,9 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          billing_interval?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           billing_type?: Database["public"]["Enums"]["service_billing_type"]
           briefing_template_key?: string | null
           category?: Database["public"]["Enums"]["service_type"]
@@ -805,6 +927,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      billing_interval: "monthly"
+      client_service_status:
+        | "pendente"
+        | "ativo"
+        | "pausado"
+        | "concluido"
+        | "cancelado"
       client_status: "ativo" | "inativo" | "arquivado"
       lead_contact_channel:
         | "whatsapp"
@@ -1059,6 +1188,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      billing_interval: ["monthly"],
+      client_service_status: [
+        "pendente",
+        "ativo",
+        "pausado",
+        "concluido",
+        "cancelado",
+      ],
       client_status: ["ativo", "inativo", "arquivado"],
       lead_contact_channel: [
         "whatsapp",

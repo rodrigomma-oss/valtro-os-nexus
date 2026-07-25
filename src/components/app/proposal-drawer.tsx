@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Loader2,
   MessageSquarePlus,
+  PackageCheck,
   Plus,
   Save,
   Trash2,
@@ -64,6 +65,7 @@ import {
   type ServiceCategory,
 } from "@/config/service-library";
 import { listServices, type CatalogService } from "@/lib/services.functions";
+import { GenerateContractsDialog } from "./generate-contracts-dialog";
 
 interface ProposalDrawerProps {
   proposalId: string;
@@ -113,6 +115,9 @@ export function ProposalDrawer({
   const proposal = query.data?.proposal;
   const items = query.data?.items ?? [];
   const negotiations = query.data?.negotiations ?? [];
+
+  // Contratações (Sprint 13.3) — action manual sobre proposta aprovada.
+  const [contractsOpen, setContractsOpen] = useState(false);
 
   // Detalhes editáveis (form state)
   const [title, setTitle] = useState("");
@@ -255,6 +260,18 @@ export function ProposalDrawer({
                         ))}
                       </SelectContent>
                     </Select>
+                  )}
+                  {canWrite && proposal.status === "aprovada" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => setContractsOpen(true)}
+                      data-testid="generate-contracts-cta"
+                    >
+                      <PackageCheck className="h-4 w-4" strokeWidth={1.75} />
+                      Gerar contratações
+                    </Button>
                   )}
                 </div>
               </div>
@@ -559,6 +576,14 @@ export function ProposalDrawer({
           </>
         )}
       </DialogContent>
+
+      {contractsOpen && (
+        <GenerateContractsDialog
+          proposalId={proposalId}
+          open={contractsOpen}
+          onOpenChange={setContractsOpen}
+        />
+      )}
     </Dialog>
   );
 }
