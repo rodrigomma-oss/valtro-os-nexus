@@ -403,6 +403,12 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     const cycles = cyclesByService.get(cs.id) ?? [];
     const open = cycles.filter((c) => c.status === "previsto" || c.status === "ativo");
     const active = cycles.find((c) => c.status === "ativo");
+    const cycleCta: AttentionCta = {
+      label: "Ver ciclo",
+      to: "/crm/clientes/$id",
+      params: { id: cs.client_id },
+      search: { cs: cs.id },
+    };
 
     if (active) {
       push({
@@ -416,7 +422,26 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${cs.name_snapshot} · ciclo #${active.sequence}`,
         since: active.updated_at,
         priority: isPast(active.period_end, now) ? "atencao" : "normal",
-        cta: { label: "Ver ciclo", to: "/crm/clientes/$id", params: { id: cs.client_id } },
+        cta: cycleCta,
+      });
+    }
+
+    // P1-1: ciclo criado e nunca iniciado. Sem esta regra o período fica
+    // invisível no Centro de Operações até alguém abrir o cliente.
+    for (const previsto of cycles.filter((c) => c.status === "previsto")) {
+      const pDays = daysSince(previsto.updated_at, now);
+      push({
+        id: `ciclo_previsto_nao_iniciado:${previsto.id}`,
+        kind: "ciclo_previsto_nao_iniciado",
+        category: "ciclos",
+        label: isPast(previsto.period_start, now)
+          ? "Ciclo previsto com período já iniciado"
+          : "Ciclo previsto aguardando início",
+        subject,
+        detail: `${cs.name_snapshot} · ciclo #${previsto.sequence}`,
+        since: previsto.updated_at,
+        priority: isPast(previsto.period_start, now) ? "critica" : byAge(pDays, 5, 2),
+        cta: cycleCta,
       });
     }
 
@@ -437,9 +462,10 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: cs.name_snapshot,
         since: anchor,
         priority: aDays >= 5 ? "critica" : "atencao",
-        cta: { label: "Ver ciclo", to: "/crm/clientes/$id", params: { id: cs.client_id } },
+        cta: cycleCta,
       });
     }
+
   }
 
   // ---------- Projetos ----------
