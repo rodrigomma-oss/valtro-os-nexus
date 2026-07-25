@@ -29,6 +29,10 @@ export type AttentionCategory =
 export type AttentionPriority = "critica" | "atencao" | "normal";
 
 export type AttentionKind =
+  | "lead_novo_sem_triagem"
+  | "lead_em_triagem"
+  | "lead_aguardando_briefing"
+  | "lead_briefing_enviado"
   | "briefing_aguardando_analise"
   | "proposta_em_negociacao"
   | "proposta_aprovada_sem_contratacao"
@@ -231,21 +235,104 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
 
   const push = (item: AttentionItem) => items.push(item);
 
-  // ---------- Leads: briefing recebido aguardando análise ----------
+  // ---------- Leads ----------
+  // Sprint 13.10 (P1-2): estágios iniciais do lead entram na fila operacional
+  // para que não dependam exclusivamente dos cards legados do dashboard.
+  //
+  // Invariantes desta seção:
+  // - O `switch` sobre `status` garante NO MÁXIMO uma regra por lead (sem
+  //   duplicidade e sem concorrência entre regras).
+  // - Nenhum SLA é inventado: a prioridade é derivada apenas do tempo em
+  //   situação (`byAge`), que já é o critério central desta camada.
+  // - Ao avançar de estado (ex.: `novo` → `contato`), o `status` deixa de casar
+  //   com a regra anterior e a pendência desaparece automaticamente.
   for (const lead of source.leads) {
-    if (lead.status !== "em_analise") continue;
-    const days = daysSince(lead.updated_at, now);
-    push({
-      id: `briefing_aguardando_analise:${lead.id}`,
-      kind: "briefing_aguardando_analise",
-      category: "leads",
-      label: "Briefing recebido aguardando análise",
-      subject: lead.company_name,
-      detail: lead.contact_name,
-      since: lead.updated_at,
-      priority: byAge(days, 3, 1),
-      cta: { label: "Ver briefing", to: "/crm/leads/$id", params: { id: lead.id } },
+    const leadCta = (label: string): AttentionCta => ({
+      label,
+      to: "/crm/leads/$id",
+      params: { id: lead.id },
     });
+
+    switch (lead.status) {
+      case "novo": {
+        // Referência = criação: o que importa é o tempo sem triagem.
+        const days = daysSince(lead.created_at, now);
+        push({
+          id: `lead_novo_sem_triagem:${lead.id}`,
+          kind: "lead_novo_sem_triagem",
+          category: "leads",
+          label: "Lead novo aguardando triagem",
+          subject: lead.company_name,
+          detail: lead.contact_name,
+          since: lead.created_at,
+          priority: byAge(days, 2, 1),
+          cta: leadCta("Triar lead"),
+        });
+        break;
+      }
+      case "em_triagem": {
+        const days = daysSince(lead.updated_at, now);
+        push({
+          id: `lead_em_triagem:${lead.id}`,
+          kind: "lead_em_triagem",
+          category: "leads",
+          label: "Triagem em aberto",
+          subject: lead.company_name,
+          detail: lead.contact_name,
+          since: lead.updated_at,
+          priority: byAge(days, 5, 2),
+          cta: leadCta("Concluir triagem"),
+        });
+        break;
+      }
+      case "aguardando_briefing": {
+        const days = daysSince(lead.updated_at, now);
+        push({
+          id: `lead_aguardando_briefing:${lead.id}`,
+          kind: "lead_aguardando_briefing",
+          category: "leads",
+          label: "Aguardando envio do briefing",
+          subject: lead.company_name,
+          detail: lead.contact_name,
+          since: lead.updated_at,
+          priority: byAge(days, 3, 1),
+          cta: leadCta("Enviar briefing"),
+        });
+        break;
+      }
+      case "briefing_enviado": {
+        const days = daysSince(lead.updated_at, now);
+        push({
+          id: `lead_briefing_enviado:${lead.id}`,
+          kind: "lead_briefing_enviado",
+          category: "leads",
+          label: "Briefing enviado aguardando cliente",
+          subject: lead.company_name,
+          detail: lead.contact_name,
+          since: lead.updated_at,
+          priority: byAge(days, 7, 3),
+          cta: leadCta("Acompanhar briefing"),
+        });
+        break;
+      }
+      case "em_analise": {
+        const days = daysSince(lead.updated_at, now);
+        push({
+          id: `briefing_aguardando_analise:${lead.id}`,
+          kind: "briefing_aguardando_analise",
+          category: "leads",
+          label: "Briefing recebido aguardando análise",
+          subject: lead.company_name,
+          detail: lead.contact_name,
+          since: lead.updated_at,
+          priority: byAge(days, 3, 1),
+          cta: leadCta("Ver briefing"),
+        });
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   // ---------- Propostas ----------
@@ -264,7 +351,13 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${p.number} · ${p.title}`,
         since: p.updated_at,
         priority: expired ? "critica" : byAge(days, 14, 7),
-        cta: { label: "Ver proposta", to: "/crm/leads/$id", params: { id: p.lead_id } },
+        // Deep-link: abre a proposta correta já no drawer (sem procurar na lista).
+        cta: {
+          label: "Ver proposta",
+          to: "/crm/leads/$id",
+          params: { id: p.lead_id },
+          search: { proposta: p.id },
+        },
       });
       continue;
     }
@@ -279,7 +372,15 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         detail: `${p.number} · ${p.title}`,
         since: p.updated_at,
         priority: days >= 2 ? "critica" : "atencao",
-        cta: { label: "Ver proposta", to: "/crm/leads/$id", params: { id: p.lead_id } },
+        // Sprint 13.10 (P1-5): o CTA leva à proposta correta com o drawer aberto
+        // e o fluxo "Gerar contratações" em contexto. Nada é gerado
+        // automaticamente — a confirmação segue manual e explícita.
+        cta: {
+          label: "Gerar contratações",
+          to: "/crm/leads/$id",
+          params: { id: p.lead_id },
+          search: { proposta: p.id, acao: "contratacoes" },
+        },
       });
     }
   }

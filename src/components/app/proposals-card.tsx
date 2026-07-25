@@ -46,6 +46,10 @@ interface ProposalsCardProps {
   lead: Lead;
   canWrite: boolean;
   isAdmin: boolean;
+  /** Sprint 13.10 (P1-5) — proposta a abrir automaticamente (deep-link). */
+  focusProposalId?: string;
+  /** Ação em contexto solicitada pelo deep-link. */
+  focusAction?: "contratacoes";
 }
 
 function fmtBRL(v: number) {
@@ -60,14 +64,23 @@ function fmtDate(iso: string | null | undefined) {
   });
 }
 
-export function ProposalsCard({ lead, canWrite, isAdmin }: ProposalsCardProps) {
+export function ProposalsCard({
+  lead,
+  canWrite,
+  isAdmin,
+  focusProposalId,
+  focusAction,
+}: ProposalsCardProps) {
   const qc = useQueryClient();
   const listFn = useServerFn(listProposalsByLead);
   const createFn = useServerFn(createProposal);
   const dupFn = useServerFn(duplicateProposal);
   const delFn = useServerFn(deleteProposal);
 
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(focusProposalId ?? null);
+  const [autoContracts, setAutoContracts] = useState(
+    Boolean(focusProposalId && focusAction === "contratacoes"),
+  );
   const [createOpen, setCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newValidUntil, setNewValidUntil] = useState("");
@@ -268,9 +281,16 @@ export function ProposalsCard({ lead, canWrite, isAdmin }: ProposalsCardProps) {
         <ProposalDrawer
           proposalId={openId}
           open={!!openId}
-          onOpenChange={(o) => !o && setOpenId(null)}
+          onOpenChange={(o) => {
+            if (!o) {
+              setOpenId(null);
+              setAutoContracts(false);
+            }
+          }}
           canWrite={canWrite}
           isAdmin={isAdmin}
+          autoOpenContracts={autoContracts && openId === focusProposalId}
+          onContractsAutoOpened={() => setAutoContracts(false)}
         />
       )}
     </>

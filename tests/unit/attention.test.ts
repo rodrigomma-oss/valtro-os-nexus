@@ -421,3 +421,119 @@ describe("Sprint 13.9 — novas regras", () => {
     expect(item.cta.search).toEqual({ cs: "cs1" });
   });
 });
+
+// ============================================================
+// Sprint 13.10 — P1-2 (leads iniciais) e P1-5 (CTA de contratação)
+// ============================================================
+
+const lead = (status: string, overrides: Record<string, unknown> = {}) => ({
+  id: "l1",
+  company_name: "Loja X",
+  contact_name: "Ana",
+  status,
+  updated_at: ago(1),
+  created_at: ago(1),
+  ...overrides,
+});
+
+describe("Sprint 13.10 — P1-2 leads em estágio inicial", () => {
+  it("lead novo aparece na fila", () => {
+    const items = buildAttentionQueue(source({ leads: [lead("novo")] }));
+    expect(items).toHaveLength(1);
+    expect(items[0].kind).toBe("lead_novo_sem_triagem");
+    expect(items[0].category).toBe("leads");
+    expect(items[0].cta.to).toBe("/crm/leads/$id");
+    expect(items[0].cta.params).toEqual({ id: "l1" });
+  });
+
+  it("lead em triagem aparece na fila", () => {
+    const items = buildAttentionQueue(source({ leads: [lead("em_triagem")] }));
+    expect(items.map((i) => i.kind)).toEqual(["lead_em_triagem"]);
+  });
+
+  it("lead aguardando briefing aparece na fila", () => {
+    const items = buildAttentionQueue(source({ leads: [lead("aguardando_briefing")] }));
+    expect(items.map((i) => i.kind)).toEqual(["lead_aguardando_briefing"]);
+  });
+
+  it("lead com briefing enviado aparece na fila", () => {
+    const items = buildAttentionQueue(source({ leads: [lead("briefing_enviado")] }));
+    expect(items.map((i) => i.kind)).toEqual(["lead_briefing_enviado"]);
+  });
+
+  it("prioridade é derivada do tempo em situação (sem SLA fixo)", () => {
+    const novoRecente = buildAttentionQueue(
+      source({ leads: [lead("novo", { created_at: ago(0) })] }),
+    );
+    const novoAntigo = buildAttentionQueue(
+      source({ leads: [lead("novo", { created_at: ago(5) })] }),
+    );
+    expect(novoRecente[0].priority).toBe("normal");
+    expect(novoAntigo[0].priority).toBe("critica");
+  });
+
+  it("ao avançar de estado, a pendência anterior desaparece", () => {
+    const antes = buildAttentionQueue(source({ leads: [lead("novo")] }));
+    expect(antes.map((i) => i.kind)).toEqual(["lead_novo_sem_triagem"]);
+
+    const depois = buildAttentionQueue(source({ leads: [lead("em_triagem")] }));
+    expect(depois.map((i) => i.kind)).toEqual(["lead_em_triagem"]);
+    expect(depois.some((i) => i.kind === "lead_novo_sem_triagem")).toBe(false);
+
+    const avancado = buildAttentionQueue(source({ leads: [lead("contato")] }));
+    expect(avancado).toHaveLength(0);
+  });
+
+  it("nunca gera duas linhas para o mesmo lead", () => {
+    for (const status of [
+      "novo",
+      "em_triagem",
+      "aguardando_briefing",
+      "briefing_enviado",
+      "em_analise",
+    ]) {
+      const items = buildAttentionQueue(source({ leads: [lead(status)] }));
+      expect(items).toHaveLength(1);
+      expect(new Set(items.map((i) => i.id)).size).toBe(1);
+    }
+  });
+});
+
+describe("Sprint 13.10 — P1-5 CTA direto para contratação", () => {
+  const approved = {
+    id: "p1",
+    lead_id: "l1",
+    number: "PROP-0001",
+    title: "Gestão Shopee",
+    status: "aprovada",
+    valid_until: null,
+    updated_at: ago(3),
+    created_at: ago(10),
+  };
+
+  it("proposta aprovada sem contratação abre a proposta no contexto correto", () => {
+    const items = buildAttentionQueue(source({ proposals: [approved] }));
+    expect(items).toHaveLength(1);
+    expect(items[0].kind).toBe("proposta_aprovada_sem_contratacao");
+    expect(items[0].cta).toEqual({
+      label: "Gerar contratações",
+      to: "/crm/leads/$id",
+      params: { id: "l1" },
+      search: { proposta: "p1", acao: "contratacoes" },
+    });
+  });
+
+  it("proposta já contratada desaparece da fila", () => {
+    const items = buildAttentionQueue(
+      source({ proposals: [approved], contractedProposalIds: ["p1"] }),
+    );
+    expect(items).toHaveLength(0);
+  });
+
+  it("proposta em negociação leva ao drawer da proposta, sem ação de contratação", () => {
+    const items = buildAttentionQueue(
+      source({ proposals: [{ ...approved, status: "em_negociacao" }] }),
+    );
+    expect(items[0].cta.search).toEqual({ proposta: "p1" });
+  });
+});

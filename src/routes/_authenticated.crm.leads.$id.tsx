@@ -66,6 +66,17 @@ import type { LeadEvent, LeadEventType, LeadNote, LeadStatus } from "@/types/lea
 import { STATUS_LABEL } from "@/types/lead";
 
 export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
+  /**
+   * Sprint 13.10 (P1-5) — deep-link vindo da fila "Atenção necessária":
+   * `?proposta=<id>` abre a proposta correta no drawer e
+   * `?acao=contratacoes` já apresenta o fluxo de geração de contratações.
+   * Validação defensiva: qualquer valor fora do contrato é descartado.
+   */
+  validateSearch: (search: Record<string, unknown>) => {
+    const proposta = typeof search.proposta === "string" ? search.proposta : undefined;
+    const acao = search.acao === "contratacoes" ? ("contratacoes" as const) : undefined;
+    return { proposta, acao };
+  },
   component: CrmLeadDetail,
   head: () => ({
     meta: [
@@ -158,6 +169,7 @@ function formatDate(iso: string) {
 
 function CrmLeadDetail() {
   const { id } = Route.useParams();
+  const { proposta, acao } = Route.useSearch();
   const qc = useQueryClient();
 
   const getLeadFn = useServerFn(getLead);
@@ -449,7 +461,10 @@ function CrmLeadDetail() {
             lead={lead}
             canWrite={canWrite}
             isAdmin={rolesQuery.data?.isAdmin ?? false}
+            focusProposalId={proposta}
+            focusAction={acao}
           />
+
 
 
           <ContactHistoryCard leadId={lead.id} canWrite={canWrite} />

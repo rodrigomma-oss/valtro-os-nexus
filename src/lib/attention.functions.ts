@@ -71,7 +71,14 @@ export const getAttentionOverview = createServerFn({ method: "GET" })
         .from("leads")
         .select("id, company_name, contact_name, status, updated_at, created_at")
         .is("archived_at", null)
-        .in("status", ["em_analise"])
+        // Sprint 13.10 (P1-2): estágios iniciais também alimentam a fila.
+        .in("status", [
+          "novo",
+          "em_triagem",
+          "aguardando_briefing",
+          "briefing_enviado",
+          "em_analise",
+        ])
         .returns<RawLead[]>(),
       supabase
         .from("proposals")
