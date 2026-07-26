@@ -837,6 +837,63 @@ export type Database = {
           },
         ]
       }
+      lead_field_conflicts: {
+        Row: {
+          briefing_token_id: string | null
+          briefing_value: string
+          created_at: string
+          current_value: string | null
+          field: string
+          id: string
+          lead_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: Database["public"]["Enums"]["lead_field_conflict_status"]
+          updated_at: string
+        }
+        Insert: {
+          briefing_token_id?: string | null
+          briefing_value: string
+          created_at?: string
+          current_value?: string | null
+          field: string
+          id?: string
+          lead_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["lead_field_conflict_status"]
+          updated_at?: string
+        }
+        Update: {
+          briefing_token_id?: string | null
+          briefing_value?: string
+          created_at?: string
+          current_value?: string | null
+          field?: string
+          id?: string
+          lead_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["lead_field_conflict_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_field_conflicts_briefing_token_id_fkey"
+            columns: ["briefing_token_id"]
+            isOneToOne: false
+            referencedRelation: "briefing_tokens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_field_conflicts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_notes: {
         Row: {
           content: string
@@ -1569,6 +1626,9 @@ export type Database = {
         | "proposta_rejeitada"
         | "follow_up_reagendado"
         | "follow_up_cancelado"
+        | "cadastro_atualizado_por_briefing"
+        | "cadastro_conflito_por_briefing"
+      lead_field_conflict_status: "pendente" | "aceito" | "descartado"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -1871,7 +1931,10 @@ export const Constants = {
         "proposta_rejeitada",
         "follow_up_reagendado",
         "follow_up_cancelado",
+        "cadastro_atualizado_por_briefing",
+        "cadastro_conflito_por_briefing",
       ],
+      lead_field_conflict_status: ["pendente", "aceito", "descartado"],
       lead_source: [
         "instagram",
         "indicacao",
