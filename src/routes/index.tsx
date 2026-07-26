@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
           "@type": "Organization",
           name: "Valtro Labs",
           url: "https://valtrolabs.pro",
-          logo: "https://valtrolabs.pro/favicon.ico",
+          logo: "https://valtrolabs.pro/favicon.png",
           sameAs: ["https://instagram.com/valtro.labs"],
           description:
             "Valtro Labs desenvolve soluções SaaS proprietárias para simplificar decisões, automatizar processos e impulsionar negócios digitais.",
