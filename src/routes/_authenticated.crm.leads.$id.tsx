@@ -38,6 +38,8 @@ import { ActionCard } from "@/components/app/action-card";
 import { TriageCard } from "@/components/app/triage-card";
 import { BriefingsCard } from "@/components/app/briefings-card";
 import { ProposalsCard } from "@/components/app/proposals-card";
+import { LeadConflictsBanner } from "@/components/app/lead-conflicts-banner";
+
 import { ConvertToClientDialog } from "@/components/app/convert-to-client-dialog";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { Button } from "@/components/ui/button";
@@ -158,7 +160,18 @@ const EVENT_META: Record<
   proposta_status_alterado: { icon: RefreshCw, tone: "default", title: "Proposta — status alterado" },
   proposta_aprovada: { icon: CheckSquare, tone: "success", title: "Proposta aprovada" },
   proposta_rejeitada: { icon: XSquare, tone: "muted", title: "Proposta rejeitada" },
+  cadastro_atualizado_por_briefing: {
+    icon: UserCog,
+    tone: "success",
+    title: "Cadastro atualizado pelo briefing",
+  },
+  cadastro_conflito_por_briefing: {
+    icon: Ban,
+    tone: "warning",
+    title: "Cadastro divergente no briefing",
+  },
 };
+
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", {
@@ -376,7 +389,10 @@ function CrmLeadDetail() {
         }
       />
 
+      <LeadConflictsBanner leadId={lead.id} canWrite={canWrite} />
+
       <div className="grid gap-6 lg:grid-cols-3">
+
         <div className="lg:col-span-1 space-y-6">
           <LeadInfoCard lead={lead} />
           <FollowUpCard lead={lead} canWrite={canWrite} onChanged={invalidate} />
