@@ -152,6 +152,8 @@ const EVENT_META: Record<
   contato_registrado: { icon: Phone, tone: "default", title: "Contato registrado" },
   follow_up_agendado: { icon: CalendarClock, tone: "default", title: "Follow-up agendado" },
   follow_up_concluido: { icon: CalendarCheck, tone: "success", title: "Follow-up concluído" },
+  follow_up_reagendado: { icon: RefreshCcw, tone: "warning", title: "Follow-up reagendado" },
+  follow_up_cancelado: { icon: Ban, tone: "muted", title: "Follow-up cancelado" },
   proposta_criada: { icon: Receipt, tone: "default", title: "Proposta criada" },
   proposta_status_alterado: { icon: RefreshCw, tone: "default", title: "Proposta — status alterado" },
   proposta_aprovada: { icon: CheckSquare, tone: "success", title: "Proposta aprovada" },
