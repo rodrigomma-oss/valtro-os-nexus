@@ -7,7 +7,9 @@
  *
  * Mapeamento de estados:
  *   agendado   → evento criado/atualizado (confirmado)
- *   concluido  → MESMO evento atualizado (título marcado como concluído)
+ *   concluido  → MESMO evento permanece no Google (nunca excluído) e é
+ *                atualizado via PATCH: título "✓ Follow-up · {lead}" e
+ *                descrição com "Status no CRM: Concluído"
  *   cancelado  → evento removido do Google
  *   reagendado → o evento é herdado pelo follow-up sucessor (mesmo evento
  *                é atualizado); o link antigo apenas encerra como 'removido'
