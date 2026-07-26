@@ -160,7 +160,18 @@ const EVENT_META: Record<
   proposta_status_alterado: { icon: RefreshCw, tone: "default", title: "Proposta — status alterado" },
   proposta_aprovada: { icon: CheckSquare, tone: "success", title: "Proposta aprovada" },
   proposta_rejeitada: { icon: XSquare, tone: "muted", title: "Proposta rejeitada" },
+  cadastro_atualizado_por_briefing: {
+    icon: UserCog,
+    tone: "success",
+    title: "Cadastro atualizado pelo briefing",
+  },
+  cadastro_conflito_por_briefing: {
+    icon: Ban,
+    tone: "warning",
+    title: "Cadastro divergente no briefing",
+  },
 };
+
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", {
