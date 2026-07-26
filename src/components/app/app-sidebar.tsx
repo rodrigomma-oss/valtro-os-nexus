@@ -9,6 +9,8 @@ import {
   ClipboardList,
   FolderKanban,
   Layers,
+  Plug,
+
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
@@ -42,8 +44,10 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Ferramentas",
     items: [
       { label: "Portal de Diagnóstico", to: "/diagnostico", icon: ClipboardList, external: true },
+      { label: "Integrações", to: "/crm/admin/integracoes", icon: Plug },
     ],
   },
+
   {
     label: "Em breve",
     items: [
