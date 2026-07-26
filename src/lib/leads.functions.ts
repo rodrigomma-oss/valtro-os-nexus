@@ -629,37 +629,64 @@ const setFollowUpSchema = z.object({
   owner_id: z.string().uuid().nullable().optional(),
 });
 
+/**
+ * @deprecated Sprint 14.0 — use `createFollowUp`/`rescheduleFollowUp` de
+ * `@/lib/follow-ups.functions`. Mantido por compatibilidade: escreve na
+ * entidade `follow_ups` (fonte de verdade) e o gatilho espelha em `leads`.
+ */
 export const setLeadFollowUp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => setFollowUpSchema.parse(data))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("leads")
-      .update({
-        next_follow_up_at: data.at,
-        next_follow_up_reason: data.reason ?? null,
-        next_follow_up_owner_id: data.owner_id ?? null,
-      })
-      .eq("id", data.id);
+    const { data: open, error: openError } = await context.supabase
+      .from("follow_ups")
+      .select("id")
+      .eq("lead_id", data.id)
+      .eq("status", "agendado")
+      .limit(1);
+    if (openError) throw new Error(openError.message);
+
+    const openId = (open ?? [])[0]?.id as string | undefined;
+    if (openId) {
+      const { error } = await context.supabase
+        .from("follow_ups")
+        .update({
+          scheduled_at: data.at,
+          reason: data.reason ?? null,
+          owner_id: data.owner_id ?? null,
+        })
+        .eq("id", openId);
+      if (error) throw new Error(error.message);
+      return { ok: true };
+    }
+
+    const { error } = await context.supabase.from("follow_ups").insert({
+      lead_id: data.id,
+      scheduled_at: data.at,
+      reason: data.reason ?? null,
+      owner_id: data.owner_id ?? null,
+      created_by: context.userId,
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
+/**
+ * @deprecated Sprint 14.0 — use `completeFollowUp` de `@/lib/follow-ups.functions`.
+ */
 export const completeLeadFollowUp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
-      .from("leads")
-      .update({
-        next_follow_up_at: null,
-        next_follow_up_reason: null,
-        next_follow_up_owner_id: null,
-      })
-      .eq("id", data.id);
+      .from("follow_ups")
+      .update({ status: "concluido", completed_at: new Date().toISOString() })
+      .eq("lead_id", data.id)
+      .eq("status", "agendado");
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 // =============================================================
 // Overview de follow-ups + contatos (para o Dashboard)
