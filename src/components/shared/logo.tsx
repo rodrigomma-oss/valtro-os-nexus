@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/valtro-labs-logo.png.asset.json";
+import logoAsset from "@/assets/valtro-labs-logo-transparent.png.asset.json";
 
 interface LogoProps {
   className?: string;
