@@ -7,7 +7,9 @@
  *
  * Mapeamento de estados:
  *   agendado   → evento criado/atualizado (confirmado)
- *   concluido  → MESMO evento atualizado (título marcado como concluído)
+ *   concluido  → MESMO evento permanece no Google (nunca excluído) e é
+ *                atualizado via PATCH: título "✓ Follow-up · {lead}" e
+ *                descrição com "Status no CRM: Concluído"
  *   cancelado  → evento removido do Google
  *   reagendado → o evento é herdado pelo follow-up sucessor (mesmo evento
  *                é atualizado); o link antigo apenas encerra como 'removido'
@@ -76,12 +78,14 @@ function buildEvent(fu: FollowUpRow, crmOrigin: string) {
   const done = fu.status === "concluido";
 
   const lines = [
+    `Status no CRM: ${done ? "Concluído" : "Agendado"}`,
     fu.reason ? `Motivo: ${fu.reason}` : null,
     done && fu.outcome_notes ? `Resultado: ${fu.outcome_notes}` : null,
     `Lead no CRM: ${crmOrigin}/crm/leads/${fu.lead_id}`,
     "",
     "Evento gerado pelo CRM Valtro Labs. O CRM é a fonte de verdade — edite o follow-up no CRM.",
   ].filter(Boolean) as string[];
+
 
   return {
     summary: `${done ? "✓ " : ""}Follow-up · ${who}`,
