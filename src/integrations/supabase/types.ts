@@ -121,6 +121,71 @@ export type Database = {
           },
         ]
       }
+      calendar_sync_links: {
+        Row: {
+          calendar_id: string | null
+          calendar_owner_id: string | null
+          calendar_scope: Database["public"]["Enums"]["calendar_scope"]
+          created_at: string
+          entity_id: string
+          entity_type: string
+          external_event_id: string | null
+          external_html_link: string | null
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          payload_hash: string | null
+          provider: string
+          sync_attempts: number
+          sync_status: Database["public"]["Enums"]["calendar_sync_status"]
+          updated_at: string
+        }
+        Insert: {
+          calendar_id?: string | null
+          calendar_owner_id?: string | null
+          calendar_scope?: Database["public"]["Enums"]["calendar_scope"]
+          created_at?: string
+          entity_id: string
+          entity_type?: string
+          external_event_id?: string | null
+          external_html_link?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          payload_hash?: string | null
+          provider?: string
+          sync_attempts?: number
+          sync_status?: Database["public"]["Enums"]["calendar_sync_status"]
+          updated_at?: string
+        }
+        Update: {
+          calendar_id?: string | null
+          calendar_owner_id?: string | null
+          calendar_scope?: Database["public"]["Enums"]["calendar_scope"]
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          external_event_id?: string | null
+          external_html_link?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          payload_hash?: string | null
+          provider?: string
+          sync_attempts?: number
+          sync_status?: Database["public"]["Enums"]["calendar_sync_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_sync_links_calendar_owner_id_fkey"
+            columns: ["calendar_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_service_cycles: {
         Row: {
           amount_cents: number
@@ -445,6 +510,102 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: true
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      follow_ups: {
+        Row: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          duration_minutes: number
+          id: string
+          lead_id: string
+          outcome_notes: string | null
+          owner_id: string | null
+          reason: string | null
+          rescheduled_from: string | null
+          rescheduled_to: string | null
+          scheduled_at: string
+          status: Database["public"]["Enums"]["follow_up_status"]
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id: string
+          outcome_notes?: string | null
+          owner_id?: string | null
+          reason?: string | null
+          rescheduled_from?: string | null
+          rescheduled_to?: string | null
+          scheduled_at: string
+          status?: Database["public"]["Enums"]["follow_up_status"]
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          duration_minutes?: number
+          id?: string
+          lead_id?: string
+          outcome_notes?: string | null
+          owner_id?: string | null
+          reason?: string | null
+          rescheduled_from?: string | null
+          rescheduled_to?: string | null
+          scheduled_at?: string
+          status?: Database["public"]["Enums"]["follow_up_status"]
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_ups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_ups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_ups_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_ups_rescheduled_from_fkey"
+            columns: ["rescheduled_from"]
+            isOneToOne: false
+            referencedRelation: "follow_ups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_ups_rescheduled_to_fkey"
+            columns: ["rescheduled_to"]
+            isOneToOne: false
+            referencedRelation: "follow_ups"
             referencedColumns: ["id"]
           },
         ]
@@ -1190,6 +1351,8 @@ export type Database = {
     Enums: {
       app_role: "admin" | "operator" | "viewer"
       billing_interval: "monthly"
+      calendar_scope: "empresa" | "usuario"
+      calendar_sync_status: "pendente" | "sincronizado" | "falha" | "removido"
       client_service_cycle_status:
         | "previsto"
         | "ativo"
@@ -1220,6 +1383,7 @@ export type Database = {
         | "concluido"
         | "cancelado"
       client_status: "ativo" | "inativo" | "arquivado"
+      follow_up_status: "agendado" | "concluido" | "cancelado" | "reagendado"
       lead_contact_channel:
         | "whatsapp"
         | "email"
@@ -1270,6 +1434,8 @@ export type Database = {
         | "proposta_status_alterado"
         | "proposta_aprovada"
         | "proposta_rejeitada"
+        | "follow_up_reagendado"
+        | "follow_up_cancelado"
       lead_source:
         | "instagram"
         | "indicacao"
@@ -1480,6 +1646,8 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
       billing_interval: ["monthly"],
+      calendar_scope: ["empresa", "usuario"],
+      calendar_sync_status: ["pendente", "sincronizado", "falha", "removido"],
       client_service_cycle_status: [
         "previsto",
         "ativo",
@@ -1513,6 +1681,7 @@ export const Constants = {
         "cancelado",
       ],
       client_status: ["ativo", "inativo", "arquivado"],
+      follow_up_status: ["agendado", "concluido", "cancelado", "reagendado"],
       lead_contact_channel: [
         "whatsapp",
         "email",
@@ -1566,6 +1735,8 @@ export const Constants = {
         "proposta_status_alterado",
         "proposta_aprovada",
         "proposta_rejeitada",
+        "follow_up_reagendado",
+        "follow_up_cancelado",
       ],
       lead_source: [
         "instagram",
