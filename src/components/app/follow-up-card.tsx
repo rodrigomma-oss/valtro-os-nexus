@@ -42,6 +42,8 @@ import {
   type FollowUp,
   type FollowUpStatus,
 } from "@/lib/follow-ups.functions";
+import { runCalendarSync } from "@/lib/calendar-integration.functions";
+
 import type { Lead } from "@/types/lead";
 
 interface Props {
@@ -97,6 +99,8 @@ export function FollowUpCard({ lead, canWrite, onChanged }: Props) {
   const rescheduleFn = useServerFn(rescheduleFollowUp);
   const completeFn = useServerFn(completeFollowUp);
   const cancelFn = useServerFn(cancelFollowUp);
+  const syncFn = useServerFn(runCalendarSync);
+
   const listUsersFn = useServerFn(listAssignableUsers);
 
   const followUpsQuery = useQuery({
@@ -138,8 +142,12 @@ export function FollowUpCard({ lead, canWrite, onChanged }: Props) {
     qc.invalidateQueries({ queryKey: ["leads"] });
     qc.invalidateQueries({ queryKey: ["follow-ups-overview"] });
     qc.invalidateQueries({ queryKey: ["operations-overview"] });
+    // Projeção no Google Calendar: best-effort e fora do caminho crítico.
+    // O follow-up já está salvo no CRM; uma falha aqui só deixa o item na fila.
+    void syncFn().catch((error) => console.error("[google-calendar] sync adiada", error));
     onChanged?.();
   };
+
 
   const saveMut = useMutation({
     mutationFn: () => {
