@@ -50,66 +50,7 @@ export const resolveLeadFieldConflict = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => resolveSchema.parse(data))
   .handler(async ({ data, context }) => {
-    const { data: roles, error: rolesErr } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
-    if (rolesErr) throw new Error(rolesErr.message);
-    const canResolve = (roles ?? []).some(
-      (r) => r.role === "admin" || r.role === "operator",
-    );
-    if (!canResolve) {
-      throw new Error("Você não tem permissão para resolver divergências.");
-    }
-
-    const { data: conflict, error: readErr } = await context.supabase
-      .from("lead_field_conflicts")
-      .select(CONFLICT_SELECT)
-      .eq("id", data.id)
-      .maybeSingle();
-    if (readErr) throw new Error(readErr.message);
-    if (!conflict) throw new Error("Divergência não encontrada.");
-    if (conflict.status !== "pendente") {
-      throw new Error("Esta divergência já foi resolvida.");
-    }
-
-    const field = conflict.field as SyncableLeadField;
-    if (!SYNCABLE_LEAD_FIELDS.includes(field)) {
-      throw new Error("Campo não permitido para atualização.");
-    }
-
-    if (data.action === "aceitar") {
-      const patch: Partial<Record<SyncableLeadField, string>> = {
-        [field]: conflict.briefing_value,
-      };
-      const { error: updErr } = await context.supabase
-        .from("leads")
-        .update(patch)
-        .eq("id", conflict.lead_id);
-      if (updErr) throw new Error(updErr.message);
-
-
-      await context.supabase.from("lead_events").insert({
-        lead_id: conflict.lead_id,
-        type: "cadastro_atualizado_por_briefing",
-        description: "Divergência do briefing aplicada ao cadastro do Lead.",
-        created_by: context.userId,
-        metadata: {
-          campos_atualizados: [field],
-          briefing_token_id: conflict.briefing_token_id,
-        },
-      });
-    }
-
-    const { error: resErr } = await context.supabase
-      .from("lead_field_conflicts")
-      .update({
-        status: data.action === "aceitar" ? "aceito" : "descartado",
-        resolved_by: context.userId,
-        resolved_at: new Date().toISOString(),
-      })
-      .eq("id", data.id);
-    if (resErr) throw new Error(resErr.message);
-
-    return { ok: true, status: data.action === "aceitar" ? "aceito" : "descartado" };
+    const { resolveConflictCore } = await import("@/lib/lead-conflicts.core");
+    return resolveConflictCore(context.supabase as never, context.userId, data);
   });
+
