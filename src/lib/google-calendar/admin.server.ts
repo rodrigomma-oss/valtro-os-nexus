@@ -74,6 +74,8 @@ export async function readStatus(supabase: UserClient): Promise<IntegrationStatu
     if (key in queue) queue[key] += 1;
   }
 
+  const cron = (integration?.last_cron_result ?? null) as CronRunSummary | null;
+
   return {
     connected: integration?.status === "conectado",
     status: integration ? integration.status : "nunca_conectado",
@@ -83,6 +85,12 @@ export async function readStatus(supabase: UserClient): Promise<IntegrationStatu
     connected_at: integration?.connected_at ?? null,
     last_error: integration?.last_error ?? null,
     target_calendar: TARGET_CALENDAR_SUMMARY,
+    last_cron_run_at: integration?.last_cron_run_at ?? null,
+    last_cron_result: cron,
+    worker_running: Boolean(
+      integration?.worker_running_until &&
+        new Date(integration.worker_running_until).getTime() > Date.now(),
+    ),
     queue,
     failures: rows
       .filter((r) => r.sync_status === "falha")
