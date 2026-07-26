@@ -79,11 +79,15 @@ export const resolveLeadFieldConflict = createServerFn({ method: "POST" })
     }
 
     if (data.action === "aceitar") {
+      const patch: Partial<Record<SyncableLeadField, string>> = {
+        [field]: conflict.briefing_value,
+      };
       const { error: updErr } = await context.supabase
         .from("leads")
-        .update({ [field]: conflict.briefing_value })
+        .update(patch)
         .eq("id", conflict.lead_id);
       if (updErr) throw new Error(updErr.message);
+
 
       await context.supabase.from("lead_events").insert({
         lead_id: conflict.lead_id,
