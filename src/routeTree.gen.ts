@@ -32,9 +32,11 @@ import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authent
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
 import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
+import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
 import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
+import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_authenticated.crm.admin.integracoes'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -155,6 +157,12 @@ const AuthenticatedCrmClientesIndexRoute =
     path: '/clientes/',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const ApiPublicGoogleCalendarCallbackRoute =
+  ApiPublicGoogleCalendarCallbackRouteImport.update({
+    id: '/api/public/google-calendar/callback',
+    path: '/api/public/google-calendar/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedCrmProjetosIdRoute =
   AuthenticatedCrmProjetosIdRouteImport.update({
     id: '/projetos/$id',
@@ -170,6 +178,12 @@ const AuthenticatedCrmClientesIdRoute =
   AuthenticatedCrmClientesIdRouteImport.update({
     id: '/clientes/$id',
     path: '/clientes/$id',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
+const AuthenticatedCrmAdminIntegracoesRoute =
+  AuthenticatedCrmAdminIntegracoesRouteImport.update({
+    id: '/admin/integracoes',
+    path: '/admin/integracoes',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
 
@@ -193,9 +207,11 @@ export interface FileRoutesByFullPath {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
+  '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
@@ -219,9 +235,11 @@ export interface FileRoutesByTo {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
+  '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
@@ -248,9 +266,11 @@ export interface FileRoutesById {
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
+  '/_authenticated/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
@@ -277,9 +297,11 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/api/public/version'
     | '/crm/'
+    | '/crm/admin/integracoes'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
     | '/crm/projetos/$id'
+    | '/api/public/google-calendar/callback'
     | '/crm/clientes/'
     | '/crm/leads/'
     | '/crm/projetos/'
@@ -303,9 +325,11 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/api/public/version'
     | '/crm'
+    | '/crm/admin/integracoes'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
     | '/crm/projetos/$id'
+    | '/api/public/google-calendar/callback'
     | '/crm/clientes'
     | '/crm/leads'
     | '/crm/projetos'
@@ -331,9 +355,11 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/servicos'
     | '/api/public/version'
     | '/_authenticated/crm/'
+    | '/_authenticated/crm/admin/integracoes'
     | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
     | '/_authenticated/crm/projetos/$id'
+    | '/api/public/google-calendar/callback'
     | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
     | '/_authenticated/crm/projetos/'
@@ -355,6 +381,7 @@ export interface RootRouteChildren {
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
+  ApiPublicGoogleCalendarCallbackRoute: typeof ApiPublicGoogleCalendarCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -520,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmClientesIndexRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/api/public/google-calendar/callback': {
+      id: '/api/public/google-calendar/callback'
+      path: '/api/public/google-calendar/callback'
+      fullPath: '/api/public/google-calendar/callback'
+      preLoaderRoute: typeof ApiPublicGoogleCalendarCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/crm/projetos/$id': {
       id: '/_authenticated/crm/projetos/$id'
       path: '/projetos/$id'
@@ -541,6 +575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/admin/integracoes': {
+      id: '/_authenticated/crm/admin/integracoes'
+      path: '/admin/integracoes'
+      fullPath: '/crm/admin/integracoes'
+      preLoaderRoute: typeof AuthenticatedCrmAdminIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
   }
 }
 
@@ -548,6 +589,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmServicosRoute: typeof AuthenticatedCrmServicosRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
+  AuthenticatedCrmAdminIntegracoesRoute: typeof AuthenticatedCrmAdminIntegracoesRoute
   AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
   AuthenticatedCrmProjetosIdRoute: typeof AuthenticatedCrmProjetosIdRoute
@@ -560,6 +602,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmServicosRoute: AuthenticatedCrmServicosRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
+  AuthenticatedCrmAdminIntegracoesRoute: AuthenticatedCrmAdminIntegracoesRoute,
   AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
   AuthenticatedCrmProjetosIdRoute: AuthenticatedCrmProjetosIdRoute,
@@ -601,6 +644,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
+  ApiPublicGoogleCalendarCallbackRoute: ApiPublicGoogleCalendarCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

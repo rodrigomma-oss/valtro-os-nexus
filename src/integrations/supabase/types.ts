@@ -121,6 +121,122 @@ export type Database = {
           },
         ]
       }
+      calendar_integrations: {
+        Row: {
+          access_token_ciphertext: string | null
+          access_token_expires_at: string | null
+          calendar_id: string | null
+          calendar_owner_id: string | null
+          calendar_scope: Database["public"]["Enums"]["calendar_scope"]
+          calendar_summary: string | null
+          connected_at: string | null
+          connected_by: string | null
+          created_at: string
+          disconnected_at: string | null
+          google_account_email: string | null
+          granted_scopes: string | null
+          id: string
+          last_error: string | null
+          provider: string
+          refresh_token_ciphertext: string | null
+          status: Database["public"]["Enums"]["calendar_integration_status"]
+          updated_at: string
+        }
+        Insert: {
+          access_token_ciphertext?: string | null
+          access_token_expires_at?: string | null
+          calendar_id?: string | null
+          calendar_owner_id?: string | null
+          calendar_scope?: Database["public"]["Enums"]["calendar_scope"]
+          calendar_summary?: string | null
+          connected_at?: string | null
+          connected_by?: string | null
+          created_at?: string
+          disconnected_at?: string | null
+          google_account_email?: string | null
+          granted_scopes?: string | null
+          id?: string
+          last_error?: string | null
+          provider?: string
+          refresh_token_ciphertext?: string | null
+          status?: Database["public"]["Enums"]["calendar_integration_status"]
+          updated_at?: string
+        }
+        Update: {
+          access_token_ciphertext?: string | null
+          access_token_expires_at?: string | null
+          calendar_id?: string | null
+          calendar_owner_id?: string | null
+          calendar_scope?: Database["public"]["Enums"]["calendar_scope"]
+          calendar_summary?: string | null
+          connected_at?: string | null
+          connected_by?: string | null
+          created_at?: string
+          disconnected_at?: string | null
+          google_account_email?: string | null
+          granted_scopes?: string | null
+          id?: string
+          last_error?: string | null
+          provider?: string
+          refresh_token_ciphertext?: string | null
+          status?: Database["public"]["Enums"]["calendar_integration_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_integrations_calendar_owner_id_fkey"
+            columns: ["calendar_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_oauth_states: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          nonce: string
+          redirect_uri: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          nonce: string
+          redirect_uri: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          nonce?: string
+          redirect_uri?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_oauth_states_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_sync_links: {
         Row: {
           calendar_id: string | null
@@ -132,8 +248,10 @@ export type Database = {
           external_event_id: string | null
           external_html_link: string | null
           id: string
+          last_attempt_at: string | null
           last_error: string | null
           last_synced_at: string | null
+          next_attempt_at: string
           payload_hash: string | null
           provider: string
           sync_attempts: number
@@ -150,8 +268,10 @@ export type Database = {
           external_event_id?: string | null
           external_html_link?: string | null
           id?: string
+          last_attempt_at?: string | null
           last_error?: string | null
           last_synced_at?: string | null
+          next_attempt_at?: string
           payload_hash?: string | null
           provider?: string
           sync_attempts?: number
@@ -168,8 +288,10 @@ export type Database = {
           external_event_id?: string | null
           external_html_link?: string | null
           id?: string
+          last_attempt_at?: string | null
           last_error?: string | null
           last_synced_at?: string | null
+          next_attempt_at?: string
           payload_hash?: string | null
           provider?: string
           sync_attempts?: number
@@ -1351,6 +1473,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "operator" | "viewer"
       billing_interval: "monthly"
+      calendar_integration_status: "conectado" | "desconectado" | "erro"
       calendar_scope: "empresa" | "usuario"
       calendar_sync_status: "pendente" | "sincronizado" | "falha" | "removido"
       client_service_cycle_status:
@@ -1646,6 +1769,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
       billing_interval: ["monthly"],
+      calendar_integration_status: ["conectado", "desconectado", "erro"],
       calendar_scope: ["empresa", "usuario"],
       calendar_sync_status: ["pendente", "sincronizado", "falha", "removido"],
       client_service_cycle_status: [
