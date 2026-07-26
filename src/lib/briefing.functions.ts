@@ -558,10 +558,11 @@ export const completeBriefing = createServerFn({ method: "POST" })
     }
 
     const now = new Date().toISOString();
+    const sanitized = sanitizeResponseData(data.data);
 
     const { error: respErr } = await supabaseAdmin
       .from("briefing_responses")
-      .update({ data: sanitizeResponseData(data.data), completed_at: now })
+      .update({ data: sanitized, completed_at: now })
       .eq("token_id", data.token);
     if (respErr) throw new Error(respErr.message);
 
@@ -578,8 +579,24 @@ export const completeBriefing = createServerFn({ method: "POST" })
       metadata: { token_id: token.id },
     });
 
+    // Sincronização cadastral (best-effort): uma falha aqui NUNCA pode
+    // impedir a conclusão do briefing pelo cliente.
+    try {
+      const { syncLeadCadastroFromBriefing } = await import(
+        "@/lib/briefing-lead-sync.server"
+      );
+      await syncLeadCadastroFromBriefing({
+        leadId: token.lead_id,
+        briefingTokenId: token.id,
+        briefingData: sanitized,
+      });
+    } catch (err) {
+      console.error("[briefing] falha na sincronização cadastral:", err);
+    }
+
     return { ok: true, already: false };
   });
+
 
 // ---------------------------------------------------------------------------
 // Helpers
