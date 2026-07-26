@@ -22,6 +22,14 @@ import { decryptToken } from "./crypto.server";
 
 type UserClient = SupabaseClient<Database>;
 
+export interface CronRunSummary {
+  processed: number;
+  synced: number;
+  removed: number;
+  failed: number;
+  skipped: string | null;
+}
+
 export interface IntegrationStatus {
   connected: boolean;
   status: "conectado" | "desconectado" | "erro" | "nunca_conectado";
@@ -31,6 +39,10 @@ export interface IntegrationStatus {
   connected_at: string | null;
   last_error: string | null;
   target_calendar: string;
+  /** Telemetria do agendamento automático (a cada 2 minutos). */
+  last_cron_run_at: string | null;
+  last_cron_result: CronRunSummary | null;
+  worker_running: boolean;
   queue: { pendente: number; sincronizado: number; falha: number; removido: number };
   failures: Array<{
     id: string;
