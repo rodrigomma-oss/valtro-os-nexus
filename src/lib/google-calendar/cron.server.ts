@@ -95,7 +95,7 @@ export async function runScheduledSync(origin: string): Promise<ScheduledSyncRes
       .update({
         worker_running_until: null,
         last_cron_run_at: new Date().toISOString(),
-        last_cron_result: (result! ?? empty) as unknown as Record<string, unknown>,
+        last_cron_result: JSON.parse(JSON.stringify(result! ?? empty)),
       })
       .eq("id", integrationId);
   }
