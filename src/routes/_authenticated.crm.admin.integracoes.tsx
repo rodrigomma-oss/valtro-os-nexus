@@ -338,7 +338,12 @@ function IntegracoesPage() {
 
               <Separator />
 
+              <CalendarAutoSyncPanel status={data} />
+
+              <Separator />
+
               <div>
+
                 <h3 className="text-sm font-semibold text-foreground">Fila de sincronização</h3>
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {queueEntries.map(([label, value]) => (
