@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/valtro-labs-logo.png.asset.json";
+import logoAsset from "@/assets/valtro-labs-logo-transparent.png.asset.json";
 
 interface LogoProps {
   className?: string;
@@ -18,7 +18,6 @@ export function Logo({ className, variant = "default" }: LogoProps) {
       alt="Valtro Labs"
       className={`${height} w-auto object-contain select-none ${className ?? ""}`}
       draggable={false}
-      style={{ mixBlendMode: "multiply" }}
     />
   );
 }
