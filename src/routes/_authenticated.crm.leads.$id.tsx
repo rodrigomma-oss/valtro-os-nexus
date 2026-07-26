@@ -376,7 +376,10 @@ function CrmLeadDetail() {
         }
       />
 
+      <LeadConflictsBanner leadId={lead.id} canWrite={canWrite} />
+
       <div className="grid gap-6 lg:grid-cols-3">
+
         <div className="lg:col-span-1 space-y-6">
           <LeadInfoCard lead={lead} />
           <FollowUpCard lead={lead} canWrite={canWrite} onChanged={invalidate} />
