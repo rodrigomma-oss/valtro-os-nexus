@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
+import { CalendarAutoSyncPanel } from "@/components/app/calendar-auto-sync-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
