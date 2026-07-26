@@ -136,11 +136,14 @@ export type Database = {
           google_account_email: string | null
           granted_scopes: string | null
           id: string
+          last_cron_result: Json | null
+          last_cron_run_at: string | null
           last_error: string | null
           provider: string
           refresh_token_ciphertext: string | null
           status: Database["public"]["Enums"]["calendar_integration_status"]
           updated_at: string
+          worker_running_until: string | null
         }
         Insert: {
           access_token_ciphertext?: string | null
@@ -156,11 +159,14 @@ export type Database = {
           google_account_email?: string | null
           granted_scopes?: string | null
           id?: string
+          last_cron_result?: Json | null
+          last_cron_run_at?: string | null
           last_error?: string | null
           provider?: string
           refresh_token_ciphertext?: string | null
           status?: Database["public"]["Enums"]["calendar_integration_status"]
           updated_at?: string
+          worker_running_until?: string | null
         }
         Update: {
           access_token_ciphertext?: string | null
@@ -176,11 +182,14 @@ export type Database = {
           google_account_email?: string | null
           granted_scopes?: string | null
           id?: string
+          last_cron_result?: Json | null
+          last_cron_run_at?: string | null
           last_error?: string | null
           provider?: string
           refresh_token_ciphertext?: string | null
           status?: Database["public"]["Enums"]["calendar_integration_status"]
           updated_at?: string
+          worker_running_until?: string | null
         }
         Relationships: [
           {
@@ -1469,6 +1478,7 @@ export type Database = {
         Args: { _client_service_id: string }
         Returns: Json
       }
+      set_calendar_cron_secret: { Args: { _value: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
