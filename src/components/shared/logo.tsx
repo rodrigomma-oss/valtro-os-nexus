@@ -18,7 +18,6 @@ export function Logo({ className, variant = "default" }: LogoProps) {
       alt="Valtro Labs"
       className={`${height} w-auto object-contain select-none ${className ?? ""}`}
       draggable={false}
-      style={{ mixBlendMode: "multiply" }}
     />
   );
 }
