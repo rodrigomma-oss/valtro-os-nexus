@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
+import { CalendarAutoSyncPanel } from "@/components/app/calendar-auto-sync-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -338,7 +339,12 @@ function IntegracoesPage() {
 
               <Separator />
 
+              <CalendarAutoSyncPanel status={data} />
+
+              <Separator />
+
               <div>
+
                 <h3 className="text-sm font-semibold text-foreground">Fila de sincronização</h3>
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {queueEntries.map(([label, value]) => (

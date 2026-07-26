@@ -25,10 +25,14 @@ export interface IntegrationRow {
   last_error: string | null;
   connected_at: string | null;
   updated_at: string;
+  /** Telemetria/lease do agendamento automático. */
+  worker_running_until: string | null;
+  last_cron_run_at: string | null;
+  last_cron_result: unknown;
 }
 
 export const INTEGRATION_SELECT =
-  "id, calendar_id, calendar_summary, google_account_email, granted_scopes, access_token_ciphertext, refresh_token_ciphertext, access_token_expires_at, status, last_error, connected_at, updated_at";
+  "id, calendar_id, calendar_summary, google_account_email, granted_scopes, access_token_ciphertext, refresh_token_ciphertext, access_token_expires_at, status, last_error, connected_at, updated_at, worker_running_until, last_cron_run_at, last_cron_result";
 
 type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
 

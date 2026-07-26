@@ -75,6 +75,20 @@ export const retryCalendarSyncFailures = createServerFn({ method: "POST" })
   });
 
 /**
+ * Copia o segredo do cron do runtime do servidor para o cofre do banco.
+ * Admin-only e idempotente. Nunca devolve o valor.
+ */
+export const provisionCalendarCronSecret = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ ok: true }> => {
+    const { assertAdmin } = await import("@/lib/google-calendar/admin.server");
+    await assertAdmin(context.supabase, context.userId);
+    const { provisionCronSecret } = await import("@/lib/google-calendar/cron.server");
+    await provisionCronSecret();
+    return { ok: true };
+  });
+
+/**
  * Executa a fila. Autenticado (qualquer papel), porque é disparado logo após
  * as ações de follow-up. Nunca lança: uma falha do Google jamais pode
  * quebrar a tela do lead.
