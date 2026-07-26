@@ -8,10 +8,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  SYNCABLE_LEAD_FIELDS,
-  type SyncableLeadField,
-} from "@/lib/briefing-lead-sync";
+import type { SyncableLeadField } from "@/lib/briefing-lead-sync";
+
 
 export interface LeadFieldConflict {
   id: string;
