@@ -73,6 +73,7 @@ export function ProjectOperationsDialog({
   const [adsBudget, setAdsBudget] = useState("");
   const [adsLimit, setAdsLimit] = useState("");
   const [weekday, setWeekday] = useState<string>("none");
+  const [preferredTime, setPreferredTime] = useState("");
   const [nextMeeting, setNextMeeting] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -88,6 +89,7 @@ export function ProjectOperationsDialog({
         ? "none"
         : String(operations.meeting_weekday),
     );
+    setPreferredTime(operations?.meeting_preferred_time ?? "");
     setNextMeeting(toLocalInput(operations?.next_meeting_at));
     setNotes(operations?.notes ?? "");
   }, [open, operations]);
@@ -103,6 +105,10 @@ export function ProjectOperationsDialog({
           ads_monthly_budget_cents: toCents(adsBudget),
           ads_autonomy_limit_cents: toCents(adsLimit),
           meeting_weekday: weekday === "none" ? null : Number(weekday),
+          meeting_preferred_time: preferredTime.trim() || null,
+          meeting_preference_declared:
+            operations?.meeting_preference_declared ??
+            (weekday !== "none" || preferredTime.trim().length > 0),
           next_meeting_at: nextMeeting ? new Date(nextMeeting).toISOString() : null,
           notes: notes.trim() || null,
         },
@@ -195,7 +201,7 @@ export function ProjectOperationsDialog({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <Label>Dia da reunião semanal</Label>
+              <Label>Dia preferencial de reunião</Label>
               <Select value={weekday} onValueChange={setWeekday}>
                 <SelectTrigger>
                   <SelectValue placeholder="Não definido" />
@@ -211,7 +217,16 @@ export function ProjectOperationsDialog({
               </Select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="ops-next-meeting">Próxima reunião</Label>
+              <Label htmlFor="ops-preferred-time">Horário preferencial do cliente</Label>
+              <Input
+                id="ops-preferred-time"
+                value={preferredTime}
+                onChange={(e) => setPreferredTime(e.target.value)}
+                placeholder="Ex.: 14h, manhã, após 18h"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="ops-next-meeting">Próxima reunião agendada</Label>
               <Input
                 id="ops-next-meeting"
                 type="datetime-local"
