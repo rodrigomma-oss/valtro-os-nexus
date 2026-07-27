@@ -111,3 +111,27 @@ export function contractedProductsLimit(
   const n = Number(raw);
   return Number.isFinite(n) ? n : null;
 }
+
+/**
+ * Preferência de reunião declarada pelo cliente — conceito distinto do
+ * agendamento (`next_meeting_at`). Retorna `null` apenas quando nada foi
+ * informado pelo cliente nem definido pelo operador.
+ */
+export function formatMeetingPreference(
+  ops: Pick<
+    ProjectOperations,
+    "meeting_weekday" | "meeting_preferred_time" | "meeting_preference_declared"
+  > | null | undefined,
+): string | null {
+  if (!ops) return null;
+  const day =
+    ops.meeting_weekday === null || ops.meeting_weekday === undefined
+      ? null
+      : (WEEKDAY_LABEL[ops.meeting_weekday] ?? null);
+  const time = ops.meeting_preferred_time?.trim() || null;
+
+  if (!day && !time) return ops.meeting_preference_declared ? "Sem preferência" : null;
+  if (day && time) return `${day} · ${time}`;
+  if (day) return day;
+  return ops.meeting_preference_declared ? `Sem preferência · ${time}` : (time as string);
+}
