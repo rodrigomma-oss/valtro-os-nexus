@@ -327,6 +327,12 @@ export type Database = {
           created_by: string | null
           due_date: string | null
           id: string
+          paid_amount_cents: number | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_registered_by: string | null
+          payment_status: Database["public"]["Enums"]["cycle_payment_status"]
           period_end: string
           period_start: string
           sequence: number
@@ -343,6 +349,12 @@ export type Database = {
           created_by?: string | null
           due_date?: string | null
           id?: string
+          paid_amount_cents?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_registered_by?: string | null
+          payment_status?: Database["public"]["Enums"]["cycle_payment_status"]
           period_end: string
           period_start: string
           sequence: number
@@ -359,6 +371,12 @@ export type Database = {
           created_by?: string | null
           due_date?: string | null
           id?: string
+          paid_amount_cents?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_registered_by?: string | null
+          payment_status?: Database["public"]["Enums"]["cycle_payment_status"]
           period_end?: string
           period_start?: string
           sequence?: number
@@ -1566,6 +1584,7 @@ export type Database = {
         | "cycle_started"
         | "cycle_completed"
         | "cycle_cancelled"
+        | "cycle_payment_registered"
       client_service_status:
         | "pendente"
         | "ativo"
@@ -1573,6 +1592,7 @@ export type Database = {
         | "concluido"
         | "cancelado"
       client_status: "ativo" | "inativo" | "arquivado"
+      cycle_payment_status: "pendente" | "pago" | "vencido" | "dispensado"
       follow_up_status: "agendado" | "concluido" | "cancelado" | "reagendado"
       lead_contact_channel:
         | "whatsapp"
@@ -1866,6 +1886,7 @@ export const Constants = {
         "cycle_started",
         "cycle_completed",
         "cycle_cancelled",
+        "cycle_payment_registered",
       ],
       client_service_status: [
         "pendente",
@@ -1875,6 +1896,7 @@ export const Constants = {
         "cancelado",
       ],
       client_status: ["ativo", "inativo", "arquivado"],
+      cycle_payment_status: ["pendente", "pago", "vencido", "dispensado"],
       follow_up_status: ["agendado", "concluido", "cancelado", "reagendado"],
       lead_contact_channel: [
         "whatsapp",

@@ -19,19 +19,30 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   computeNextCyclePeriod,
   cycleBlockedReason,
+  defaultDueDate,
   isCycleTransitionAllowed,
+  validatePaymentPayload,
   supportsCycles,
   toISODate,
   todayISO,
 } from "@/lib/client-service-cycles";
 import {
+  CYCLE_PAYMENT_METHODS,
   CYCLE_STATUS_LABEL,
   type ClientServiceCycle,
   type ClientServiceCycleStatus,
+  type CyclePaymentStatus,
 } from "@/types/client-service";
 
+const CYCLE_PAYMENT_STATUS_VALUES = [
+  "pendente",
+  "pago",
+  "vencido",
+  "dispensado",
+] as const satisfies readonly CyclePaymentStatus[];
+
 const CYCLE_SELECT =
-  "id, client_service_id, sequence, period_start, period_end, due_date, amount_cents, status, started_at, completed_at, cancelled_at, created_by, created_at, updated_at";
+  "id, client_service_id, sequence, period_start, period_end, due_date, amount_cents, status, started_at, completed_at, cancelled_at, created_by, created_at, updated_at, payment_status, paid_amount_cents, paid_at, payment_method, payment_notes, payment_registered_by";
 
 const CYCLE_STATUS_VALUES = [
   "previsto",
@@ -45,6 +56,10 @@ function normalizeCycle(row: any): ClientServiceCycle {
     ...row,
     sequence: Number(row.sequence),
     amount_cents: Number(row.amount_cents ?? 0),
+    paid_amount_cents:
+      row.paid_amount_cents === null || row.paid_amount_cents === undefined
+        ? null
+        : Number(row.paid_amount_cents),
   };
 }
 
@@ -180,6 +195,8 @@ export const createNextCycle = createServerFn({ method: "POST" })
         sequence: period.sequence,
         period_start: period.period_start,
         period_end: period.period_end,
+        // Vencimento padrão: pagamento antes do início da execução do ciclo.
+        due_date: defaultDueDate(period.period_start),
         // Snapshot: valor da contratação no momento da criação do ciclo.
         amount_cents: Number(cs.contracted_amount_cents ?? 0),
         status: "previsto",
@@ -243,4 +260,75 @@ export const updateCycleStatus = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true, from, to: data.status };
+  });
+
+// ============================================================
+// registerCyclePayment — controle financeiro mínimo do ciclo
+// ============================================================
+/**
+ * Registra/atualiza o pagamento de um ciclo.
+ *
+ * Não é módulo financeiro: nenhum recálculo, nenhuma cobrança, nenhum
+ * lançamento contábil. `amount_cents` (previsto) permanece imutável;
+ * `paid_amount_cents` guarda somente o valor efetivamente recebido.
+ */
+export const registerCyclePayment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        payment_status: z.enum(CYCLE_PAYMENT_STATUS_VALUES),
+        paid_amount_cents: z.number().int().min(0).nullable().optional(),
+        paid_at: z.string().min(1).nullable().optional(),
+        payment_method: z.enum(CYCLE_PAYMENT_METHODS).nullable().optional(),
+        payment_notes: z.string().max(500).nullable().optional(),
+        due_date: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida.")
+          .nullable()
+          .optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }): Promise<ClientServiceCycle> => {
+    const { supabase, userId } = context;
+
+    const invalid = validatePaymentPayload({
+      payment_status: data.payment_status,
+      paid_amount_cents: data.paid_amount_cents ?? null,
+    });
+    if (invalid) throw new Error(invalid);
+
+    const { data: current, error: readErr } = await supabase
+      .from("client_service_cycles")
+      .select("id, status, period_start")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!current) throw new Error("Ciclo não encontrado.");
+
+    const isPaid = data.payment_status === "pago";
+    const patch: Record<string, unknown> = {
+      payment_status: data.payment_status,
+      // O trigger de coerência limpa estes campos quando não é "pago".
+      paid_amount_cents: isPaid ? (data.paid_amount_cents ?? null) : null,
+      paid_at: isPaid ? (data.paid_at ?? new Date().toISOString()) : null,
+      payment_method: isPaid ? (data.payment_method ?? null) : null,
+      payment_notes: data.payment_notes ?? null,
+      payment_registered_by: userId,
+    };
+    if (data.due_date !== undefined) {
+      patch.due_date = data.due_date ?? (current as any).period_start;
+    }
+
+    const { data: updated, error } = await supabase
+      .from("client_service_cycles")
+      .update(patch as any)
+      .eq("id", data.id)
+      .select(CYCLE_SELECT)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!updated) throw new Error("Não foi possível registrar o pagamento.");
+    return normalizeCycle(updated);
   });
