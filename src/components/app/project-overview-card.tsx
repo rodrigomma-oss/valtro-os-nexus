@@ -22,8 +22,8 @@ import { ONBOARDING_STATUS_LABEL, ONBOARDING_STATUS_TONE } from "@/types/onboard
 import {
   ACCESS_STATUS_LABEL,
   ACCESS_STATUS_TONE,
-  WEEKDAY_LABEL,
   contractedProductsLimit,
+  formatMeetingPreference,
 } from "@/types/project-operations";
 import { ProjectOperationsDialog } from "./project-operations-dialog";
 
@@ -80,6 +80,7 @@ export function ProjectOverviewCard({
 
   const productsLimit = contractedProductsLimit(contract?.scope_snapshot);
   const payStatus = cycle ? displayPaymentStatus(cycle) : null;
+  const meetingPreference = formatMeetingPreference(ops);
 
   const alerts = useMemo(() => {
     const list: string[] = [];
