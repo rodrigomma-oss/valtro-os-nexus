@@ -1,14 +1,45 @@
 /**
- * Templates de Onboarding pós-venda — Sprint 13.5.
+ * Templates de Onboarding pós-venda — Sprint 13.5, simplificado na 15.1.1.
  *
- * Reaproveitamos os TIPOS de pergunta/etapa do VBE (renderer compartilhado),
- * mas o catálogo é separado: briefing (pré-venda) e onboarding (pós-venda)
- * não se acoplam conceitualmente.
+ * PRINCÍPIO (decisão de produto): "informação conhecida não deve ser
+ * solicitada novamente ao cliente". O onboarding é COMPLEMENTAR — só pergunta
+ * o que depende do cliente e é necessário para iniciar a operação.
  *
- * Regra de segurança: nenhuma pergunta solicita senha ou credencial. Acesso
- * é tratado sempre como STATUS, nunca como credencial.
+ * Portanto NÃO perguntamos: identidade/contato (já está no Lead e no CRM),
+ * dados públicos da loja, categorias, ticket médio, faturamento, situação de
+ * Ads, campanhas, investimento histórico, impressões, cliques, CTR, CPC,
+ * ROAS, ACOS, vendas ou pedidos. Tudo isso a Valtro Labs levanta direto na
+ * Shopee.
+ *
+ * Regra de segurança (inalterada e reforçada): nenhuma pergunta solicita
+ * senha, token, cookie ou código de acesso. O status do acesso pertence a
+ * `project_operations.operational_access_status` e é controlado internamente.
  */
-import type { TemplateQuestion, TemplateStep } from "@/config/briefing-templates";
+import type { QuestionKind, TemplateOption } from "@/config/briefing-templates";
+import { formatProductItems, validateProductItems } from "@/lib/onboarding-products";
+
+/** O onboarding estende o renderer do VBE com a lista estruturada de produtos. */
+export type OnboardingQuestionKind = QuestionKind | "product_list";
+
+export interface OnboardingQuestion {
+  id: string;
+  label: string;
+  kind: OnboardingQuestionKind;
+  placeholder?: string;
+  hint?: string;
+  optional?: boolean;
+  options?: TemplateOption[];
+}
+
+export interface OnboardingStep {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  /** Etapa apenas de revisão: não coleta respostas novas. */
+  reviewOnly?: boolean;
+  questions: OnboardingQuestion[];
+}
 
 export interface OnboardingTemplate {
   key: string;
@@ -18,8 +49,18 @@ export interface OnboardingTemplate {
     title: string;
     description: string;
   };
-  steps: TemplateStep[];
+  steps: OnboardingStep[];
 }
+
+/** Opções de dia da reunião — mapeáveis 1:1 para `meeting_weekday`. */
+export const MEETING_DAY_OPTIONS: TemplateOption[] = [
+  { value: "1", label: "Segunda-feira" },
+  { value: "2", label: "Terça-feira" },
+  { value: "3", label: "Quarta-feira" },
+  { value: "4", label: "Quinta-feira" },
+  { value: "5", label: "Sexta-feira" },
+  { value: "sem_preferencia", label: "Sem preferência — a Valtro Labs sugere" },
+];
 
 // ---------------------------------------------------------------------------
 // Template piloto: acompanhamento_shopee
@@ -28,139 +69,119 @@ const acompanhamentoShopee: OnboardingTemplate = {
   key: "acompanhamento_shopee",
   name: "Onboarding · Acompanhamento e Gestão Shopee",
   intro: {
-    eyebrow: "Onboarding operacional · 8 a 12 minutos",
-    title: "Vamos preparar a execução da sua conta",
+    eyebrow: "Onboarding operacional · 5 minutos",
+    title: "Só o que depende de você para começarmos",
     description:
-      "Este formulário coleta apenas as informações operacionais necessárias para iniciarmos a gestão da sua loja. Nunca pedimos senhas — acessos são tratados como status.",
+      "Já temos os dados da sua empresa e conseguimos levantar as informações da loja direto na Shopee. Aqui pedimos apenas o que não conseguimos ver de fora: custos, capacidade de reposição e as regras do investimento em Ads. Nunca solicitamos senha ou código de acesso.",
   },
   steps: [
     {
-      id: "loja",
-      label: "Loja",
-      title: "Identificação da loja",
-      description: "Confirme os dados da operação que vamos acompanhar.",
-      questions: [
-        { id: "empresa", label: "Empresa", kind: "text", placeholder: "Razão social ou nome fantasia" },
-        { id: "loja_nome", label: "Nome da loja na Shopee", kind: "text", placeholder: "Como a loja aparece no marketplace" },
-        {
-          id: "link_loja",
-          label: "Link da loja",
-          kind: "text",
-          placeholder: "https://shopee.com.br/sua-loja",
-          hint: "Cole o endereço público da loja.",
-        },
-        { id: "nome", label: "Responsável pela operação", kind: "text", placeholder: "Quem acompanha o dia a dia" },
-        { id: "whatsapp", label: "WhatsApp do responsável", kind: "text", placeholder: "(00) 00000-0000" },
-        { id: "email", label: "E-mail do responsável", kind: "text", placeholder: "nome@empresa.com" },
-      ],
-    },
-    {
-      id: "catalogo",
-      label: "Catálogo",
-      title: "Produtos e capacidade",
-      description: "Precisamos entender o que priorizar e o que a operação sustenta.",
-      questions: [
-        {
-          id: "produtos_prioritarios",
-          label: "Produtos / SKUs prioritários",
-          kind: "textarea",
-          placeholder: "Liste os produtos que devem receber foco imediato",
-        },
-        { id: "categorias", label: "Categorias principais", kind: "text", placeholder: "Ex.: casa, eletrônicos, moda" },
-        { id: "ticket_medio", label: "Ticket médio atual", kind: "text", optional: true, placeholder: "Ex.: R$ 89" },
-        {
-          id: "estoque_capacidade",
-          label: "Capacidade de estoque / reposição",
-          kind: "select",
-          options: [
-            { value: "estoque_amplo", label: "Estoque amplo — suporta crescimento" },
-            { value: "estoque_moderado", label: "Estoque moderado — crescimento gradual" },
-            { value: "estoque_limitado", label: "Estoque limitado — risco de ruptura" },
-            { value: "sob_demanda", label: "Produção / reposição sob demanda" },
-          ],
-        },
-        {
-          id: "reposicao_prazo",
-          label: "Prazo médio de reposição",
-          kind: "text",
-          optional: true,
-          placeholder: "Ex.: 7 dias",
-        },
-      ],
-    },
-    {
-      id: "ads",
-      label: "Ads",
-      title: "Situação atual de Ads",
-      description: "Mapear o histórico evita recomeçar o que já funciona.",
-      questions: [
-        {
-          id: "situacao_ads",
-          label: "Situação atual de Shopee Ads",
-          kind: "select",
-          options: [
-            { value: "nunca_usou", label: "Nunca utilizamos" },
-            { value: "ativo", label: "Campanhas ativas hoje" },
-            { value: "pausado", label: "Já usamos, hoje está pausado" },
-            { value: "nao_sei", label: "Não sei informar" },
-          ],
-        },
-        {
-          id: "campanhas_existentes",
-          label: "Campanhas existentes",
-          kind: "textarea",
-          optional: true,
-          placeholder: "Descreva as campanhas ativas ou pausadas e resultados percebidos",
-        },
-        {
-          id: "investimento_mensal",
-          label: "Investimento mensal previsto em Ads",
-          kind: "text",
-          optional: true,
-          placeholder: "Ex.: R$ 1.500",
-        },
-        {
-          id: "objetivo_principal",
-          label: "Objetivos imediatos (próximos 30 a 60 dias)",
-          kind: "textarea",
-          placeholder: "Ex.: aumentar faturamento mantendo margem, girar estoque parado…",
-        },
-      ],
-    },
-    {
-      id: "acessos",
-      label: "Acessos",
-      title: "Responsáveis e status de acessos",
+      id: "produtos",
+      label: "Produtos",
+      title: "Produtos e custos",
       description:
-        "Marque apenas o STATUS de cada acesso. Não envie senhas por este formulário — a liberação é feita pelos painéis oficiais.",
+        "Liste os produtos que entram no acompanhamento inicial. O custo de aquisição é o dado que não conseguimos obter pela Shopee e é o que permite avaliar margem real.",
       questions: [
         {
-          id: "acessos_status",
-          label: "Status dos acessos",
-          kind: "multiselect",
-          hint: "Nunca solicitamos senha. Se algo ainda não estiver liberado, deixe desmarcado.",
-          options: [
-            { value: "painel_shopee_liberado", label: "Painel Shopee — acesso liberado" },
-            { value: "shopee_ads_liberado", label: "Shopee Ads — acesso liberado" },
-            { value: "relatorios_liberados", label: "Relatórios / exportações liberados" },
-            { value: "planilha_produtos", label: "Planilha de produtos compartilhada" },
-            { value: "acesso_pendente", label: "Ainda há acessos pendentes" },
-          ],
+          id: "produtos",
+          label: "Produtos considerados no acompanhamento",
+          kind: "product_list",
+          hint: "Informe pelo menos o nome e o custo unitário de cada produto.",
         },
         {
-          id: "responsaveis_internos",
-          label: "Responsáveis internos envolvidos",
+          id: "produtos_liquidar",
+          label: "Existem produtos que você deseja apenas liquidar?",
           kind: "textarea",
-          placeholder: "Quem responde por estoque, atendimento e financeiro",
+          optional: true,
+          placeholder: "Produtos para girar estoque, mesmo com margem menor",
         },
         {
-          id: "observacoes_acesso",
-          label: "Observações operacionais",
+          id: "produtos_novos",
+          label: "Existem produtos novos que gostaria de priorizar ou testar?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Lançamentos ou itens que ainda não foram trabalhados",
+        },
+        {
+          id: "produtos_sem_reposicao",
+          label: "Existem produtos que não pretende repor?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Itens em descontinuação",
+        },
+        {
+          id: "kits_combinacoes",
+          label: "Existem kits ou combinações de produtos que gostaria que avaliássemos?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Combos, múltiplos, brindes",
+        },
+        {
+          id: "custo_por_pedido",
+          label: "Existe custo de embalagem ou outro custo por pedido que devemos considerar?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Ex.: R$ 1,80 de embalagem por pedido",
+        },
+        {
+          id: "custos_nao_visiveis",
+          label:
+            "Existem impostos ou outros custos relevantes que não conseguimos visualizar pela Shopee?",
+          kind: "textarea",
+          optional: true,
+          placeholder: "Regime tributário, comissões de terceiros, frete próprio",
+        },
+      ],
+    },
+    {
+      id: "ads_rotina",
+      label: "Ads e rotina",
+      title: "Ads e rotina de trabalho",
+      description:
+        "Define o quanto podemos investir e com que autonomia, além do ritmo do acompanhamento.",
+      questions: [
+        {
+          id: "ads_orcamento_mensal",
+          label: "Orçamento mensal disponível para Shopee Ads",
+          kind: "text",
+          placeholder: "Ex.: R$ 1.500,00",
+        },
+        {
+          id: "ads_limite_autonomia",
+          label: "Limite de investimento que podemos usar sem solicitar nova autorização",
+          kind: "text",
+          placeholder: "Ex.: R$ 500,00",
+          hint: "Acima desse valor, pedimos sua aprovação antes de investir.",
+        },
+        {
+          id: "reuniao_dia",
+          label: "Melhor dia para a reunião semanal",
+          kind: "select",
+          options: MEETING_DAY_OPTIONS,
+        },
+        {
+          id: "reuniao_horario",
+          label: "Melhor horário",
+          kind: "text",
+          optional: true,
+          placeholder: "Ex.: 14h às 16h",
+        },
+        {
+          id: "observacoes_operacionais",
+          label: "Observações operacionais adicionais",
           kind: "textarea",
           optional: true,
           placeholder: "Restrições, prazos, particularidades da operação",
         },
       ],
+    },
+    {
+      id: "revisao",
+      label: "Revisão",
+      title: "Revise antes de enviar",
+      description: "Confira as informações. Nenhuma pergunta nova nesta etapa.",
+      reviewOnly: true,
+      questions: [],
     },
   ],
 };
@@ -177,18 +198,37 @@ export function getOnboardingTemplate(key: string): OnboardingTemplate | null {
 export function onboardingAllowedKeys(key: string): string[] {
   const template = getOnboardingTemplate(key);
   if (!template) return [];
-  return template.steps.flatMap((s: TemplateStep) =>
-    s.questions.map((q: TemplateQuestion) => q.id),
+  return template.steps.flatMap((s) => s.questions.map((q) => q.id));
+}
+
+/** Perguntas do tipo lista de produtos (tratamento estruturado na sanitização). */
+export function onboardingProductKeys(key: string): string[] {
+  const template = getOnboardingTemplate(key);
+  if (!template) return [];
+  return template.steps.flatMap((s) =>
+    s.questions.filter((q) => q.kind === "product_list").map((q) => q.id),
   );
 }
 
 export function validateOnboardingStep(
-  step: TemplateStep,
+  step: OnboardingStep,
   data: Record<string, unknown>,
+  options?: { productsLimit?: number | null },
 ): string | null {
   for (const q of step.questions) {
-    if (q.optional) continue;
     const value = data[q.id];
+
+    if (q.kind === "product_list") {
+      const error = validateProductItems(value, {
+        required: !q.optional,
+        limit: options?.productsLimit ?? null,
+      });
+      if (error) return error;
+      continue;
+    }
+
+    if (q.optional) continue;
+
     if (q.kind === "multiselect") {
       const arr = Array.isArray(value) ? value : [];
       if (arr.length === 0) return `Selecione ao menos uma opção em "${q.label}".`;
@@ -200,7 +240,8 @@ export function validateOnboardingStep(
 }
 
 /** Formata a resposta de uma pergunta para leitura humana (UI interna e revisão). */
-export function formatOnboardingAnswer(q: TemplateQuestion, value: unknown): string {
+export function formatOnboardingAnswer(q: OnboardingQuestion, value: unknown): string {
+  if (q.kind === "product_list") return formatProductItems(value);
   if (value === undefined || value === null || value === "") return "—";
   if (q.kind === "multiselect") {
     const arr: string[] = Array.isArray(value) ? (value as string[]) : [];

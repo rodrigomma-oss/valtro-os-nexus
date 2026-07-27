@@ -301,7 +301,7 @@ function OnboardingAnswers({ onboardingId }: { onboardingId: string }) {
         <ClipboardCheck className="h-3.5 w-3.5" strokeWidth={1.75} />
         Atualizado em {fmtDateTime(response.updated_at)}
       </p>
-      {template.steps.map((s) => (
+      {template.steps.filter((s) => !s.reviewOnly).map((s) => (
         <div key={s.id} className="rounded-md border border-border bg-muted/30 p-2.5">
           <h4 className="text-xs font-semibold text-foreground">{s.title}</h4>
           <dl className="mt-2 space-y-1.5">

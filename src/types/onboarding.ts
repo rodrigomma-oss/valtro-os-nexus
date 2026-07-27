@@ -71,6 +71,8 @@ export interface OnboardingPortalPayload {
     template_key: string;
     /** Nome comercial do serviço contratado (snapshot). */
     service_name: string;
+    /** Limite contratual de produtos (`scope_snapshot.max_products`). Ausente = sem limite. */
+    products_limit: number | null;
     status: OnboardingStatus;
     expires_at: string;
     completed_at: string | null;
