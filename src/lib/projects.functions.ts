@@ -18,11 +18,12 @@ const PROJECT_STATUS_VALUES = [
 ] as const satisfies readonly ProjectStatus[];
 
 const PROJECT_SELECT =
-  "id, client_id, proposal_id, code, name, description, status, owner_id, start_date, due_date, completed_at, created_by, created_at, updated_at";
+  "id, client_id, client_service_id, proposal_id, code, name, description, status, owner_id, start_date, due_date, completed_at, created_by, created_at, updated_at";
 
 interface RawProject {
   id: string;
   client_id: string;
+  client_service_id: string | null;
   proposal_id: string | null;
   code: string;
   name: string;

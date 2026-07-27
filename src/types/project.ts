@@ -10,6 +10,8 @@ export interface Project {
   id: string;
   client_id: string;
   client_name: string | null;
+  /** Vínculo explícito com a contratação (Sprint 15.1). */
+  client_service_id: string | null;
   proposal_id: string | null;
   proposal_number: string | null;
   code: string;

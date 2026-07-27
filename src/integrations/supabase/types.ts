@@ -1219,9 +1219,69 @@ export type Database = {
           },
         ]
       }
+      project_operations: {
+        Row: {
+          ads_autonomy_limit_cents: number | null
+          ads_monthly_budget_cents: number | null
+          created_at: string
+          created_by: string | null
+          current_objective: string | null
+          id: string
+          meeting_weekday: number | null
+          next_meeting_at: string | null
+          notes: string | null
+          operational_access_notes: string | null
+          operational_access_status: Database["public"]["Enums"]["shopee_access_status"]
+          project_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          ads_autonomy_limit_cents?: number | null
+          ads_monthly_budget_cents?: number | null
+          created_at?: string
+          created_by?: string | null
+          current_objective?: string | null
+          id?: string
+          meeting_weekday?: number | null
+          next_meeting_at?: string | null
+          notes?: string | null
+          operational_access_notes?: string | null
+          operational_access_status?: Database["public"]["Enums"]["shopee_access_status"]
+          project_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          ads_autonomy_limit_cents?: number | null
+          ads_monthly_budget_cents?: number | null
+          created_at?: string
+          created_by?: string | null
+          current_objective?: string | null
+          id?: string
+          meeting_weekday?: number | null
+          next_meeting_at?: string | null
+          notes?: string | null
+          operational_access_notes?: string | null
+          operational_access_status?: Database["public"]["Enums"]["shopee_access_status"]
+          project_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_operations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client_id: string
+          client_service_id: string | null
           code: string | null
           completed_at: string | null
           created_at: string
@@ -1238,6 +1298,7 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          client_service_id?: string | null
           code?: string | null
           completed_at?: string | null
           created_at?: string
@@ -1254,6 +1315,7 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          client_service_id?: string | null
           code?: string | null
           completed_at?: string | null
           created_at?: string
@@ -1274,6 +1336,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_client_service_id_fkey"
+            columns: ["client_service_id"]
+            isOneToOne: false
+            referencedRelation: "client_services"
             referencedColumns: ["id"]
           },
           {
@@ -1720,6 +1789,7 @@ export type Database = {
         | "trafego_pago"
         | "outro"
         | "desenvolvimento_projeto"
+      shopee_access_status: "nao_solicitado" | "pendente" | "ativo" | "revogado"
       template_type:
         | "padrao"
         | "shopee"
@@ -2036,6 +2106,7 @@ export const Constants = {
         "outro",
         "desenvolvimento_projeto",
       ],
+      shopee_access_status: ["nao_solicitado", "pendente", "ativo", "revogado"],
       template_type: [
         "padrao",
         "shopee",
