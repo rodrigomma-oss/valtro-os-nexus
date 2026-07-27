@@ -18,7 +18,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { onboardingAllowedKeys, getOnboardingTemplate } from "@/config/onboarding-templates";
+import {
+  onboardingAllowedKeys,
+  onboardingProductKeys,
+  getOnboardingTemplate,
+} from "@/config/onboarding-templates";
+import { normalizeProductItems } from "@/lib/onboarding-products";
+import { operationsPatchFromOnboarding } from "@/lib/onboarding-operations-sync";
+import { contractedProductsLimit } from "@/types/project-operations";
 import type {
   ClientServiceOnboarding,
   OnboardingPortalPayload,
@@ -338,12 +345,16 @@ export const getOnboardingResponseForOperator = createServerFn({ method: "GET" }
 function sanitizeOnboardingData(
   templateKey: string,
   data: Record<string, any>,
+  productsLimit?: number | null,
 ): Record<string, any> {
   const allowed = new Set(onboardingAllowedKeys(templateKey));
+  const productKeys = new Set(onboardingProductKeys(templateKey));
   const out: Record<string, any> = {};
   for (const [k, v] of Object.entries(data)) {
     if (!allowed.has(k)) continue;
-    out[k] = v;
+    // Listas de produtos são normalizadas campo a campo (whitelist interna,
+    // limite de itens e corte de tamanho) — nada arbitrário entra no JSONB.
+    out[k] = productKeys.has(k) ? normalizeProductItems(v, productsLimit ?? null) : v;
   }
   return out;
 }
@@ -368,7 +379,7 @@ async function loadTokenChain(token: string) {
 
   const { data: cs, error: csErr } = await supabaseAdmin
     .from("client_services")
-    .select("id, name_snapshot")
+    .select("id, name_snapshot, scope_snapshot")
     .eq("id", (onb as any).client_service_id)
     .maybeSingle();
   if (csErr) throw new Error("Erro ao carregar a contratação.");
@@ -378,6 +389,8 @@ async function loadTokenChain(token: string) {
     token: tok as any,
     onboarding: onb as any,
     serviceName: ((cs as any)?.name_snapshot as string) ?? "Serviço contratado",
+    // Limite comercial de produtos — sem fallback fixo: ausente = sem limite.
+    productsLimit: contractedProductsLimit((cs as any)?.scope_snapshot ?? null),
   };
 }
 
@@ -390,12 +403,13 @@ export const validateOnboardingToken = createServerFn({ method: "POST" })
     const chain = await loadTokenChain(data.token);
     if (!chain) return { state: "invalido", onboarding: null, response: null };
 
-    const { supabaseAdmin, token: t, onboarding: o, serviceName } = chain;
+    const { supabaseAdmin, token: t, onboarding: o, serviceName, productsLimit } = chain;
 
     const publicOnboarding = (status: OnboardingStatus) => ({
       token_id: t.id as string,
       template_key: o.template_key as string,
       service_name: serviceName,
+      products_limit: productsLimit,
       status,
       expires_at: t.expires_at as string,
       completed_at: t.completed_at as string | null,
@@ -476,6 +490,7 @@ export const validateOnboardingToken = createServerFn({ method: "POST" })
       const prefill = sanitizeOnboardingData(
         o.template_key,
         (defaults as Record<string, any>) ?? {},
+        productsLimit,
       );
 
       const { data: createdResp, error: createErr } = await supabaseAdmin
@@ -521,7 +536,7 @@ export const saveOnboardingProgress = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const chain = await loadTokenChain(data.token);
     if (!chain) throw new Error("Token inválido.");
-    const { supabaseAdmin, token: t, onboarding: o } = chain;
+    const { supabaseAdmin, token: t, onboarding: o, productsLimit } = chain;
 
     if (t.status === "revogado" || o.status === "cancelado") {
       throw new Error("Acesso desativado.");
@@ -535,7 +550,7 @@ export const saveOnboardingProgress = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin
       .from("onboarding_responses")
       .update({
-        data: sanitizeOnboardingData(o.template_key, data.data) as any,
+        data: sanitizeOnboardingData(o.template_key, data.data, productsLimit) as any,
         current_step: data.current_step,
       })
       .eq("token_id", t.id);
@@ -564,7 +579,7 @@ export const completeOnboarding = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const chain = await loadTokenChain(data.token);
     if (!chain) throw new Error("Token inválido.");
-    const { supabaseAdmin, token: t, onboarding: o } = chain;
+    const { supabaseAdmin, token: t, onboarding: o, productsLimit } = chain;
 
     if (t.status === "revogado" || o.status === "cancelado") {
       throw new Error("Acesso desativado.");
@@ -576,10 +591,12 @@ export const completeOnboarding = createServerFn({ method: "POST" })
 
     const now = new Date().toISOString();
 
+    const answers = sanitizeOnboardingData(o.template_key, data.data, productsLimit);
+
     const { error: respErr } = await supabaseAdmin
       .from("onboarding_responses")
       .update({
-        data: sanitizeOnboardingData(o.template_key, data.data) as any,
+        data: answers as any,
         completed_at: now,
       })
       .eq("token_id", t.id);
@@ -598,5 +615,51 @@ export const completeOnboarding = createServerFn({ method: "POST" })
       .eq("id", o.id);
     if (onbErr) throw new Error("Erro ao concluir o onboarding.");
 
+    // Preenchimento complementar da operação (nunca destrutivo).
+    await applyOnboardingToOperations(supabaseAdmin, o.client_service_id, answers);
+
     return { ok: true, already: false };
   });
+
+/**
+ * Espelha, na operação do Projeto, apenas os campos gerais compatíveis
+ * (orçamento de Ads, limite de autonomia, dia da reunião e observações).
+ *
+ * Invariantes:
+ * - Só grava em campos ainda vazios: decisão do operador nunca é sobrescrita.
+ * - Nunca migra produtos (isso é escopo da Sprint 15.2).
+ * - Falha aqui não invalida a conclusão do onboarding do cliente.
+ */
+async function applyOnboardingToOperations(
+  supabaseAdmin: any,
+  clientServiceId: string,
+  answers: Record<string, any>,
+): Promise<void> {
+  try {
+    const { data: project } = await supabaseAdmin
+      .from("projects")
+      .select("id")
+      .eq("client_service_id", clientServiceId)
+      .maybeSingle();
+    if (!project) return;
+
+    const { data: ops } = await supabaseAdmin
+      .from("project_operations")
+      .select("id, ads_monthly_budget_cents, ads_autonomy_limit_cents, meeting_weekday, notes")
+      .eq("project_id", project.id)
+      .maybeSingle();
+
+    const patch = operationsPatchFromOnboarding(answers, ops ?? null);
+    if (Object.keys(patch).length === 0) return;
+
+    if (ops) {
+      await supabaseAdmin.from("project_operations").update(patch).eq("id", ops.id);
+    } else {
+      await supabaseAdmin
+        .from("project_operations")
+        .insert({ project_id: project.id, ...patch });
+    }
+  } catch {
+    // Silencioso por decisão: o cliente já concluiu; o operador completa manualmente.
+  }
+}
