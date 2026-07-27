@@ -645,7 +645,7 @@ async function applyOnboardingToOperations(
 
     const { data: ops } = await supabaseAdmin
       .from("project_operations")
-      .select("id, ads_monthly_budget_cents, ads_autonomy_limit_cents, meeting_weekday, notes")
+      .select("id, ads_monthly_budget_cents, ads_autonomy_limit_cents, meeting_weekday, meeting_preferred_time, meeting_preference_declared, notes")
       .eq("project_id", project.id)
       .maybeSingle();
 
