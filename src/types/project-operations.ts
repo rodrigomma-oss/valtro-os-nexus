@@ -27,7 +27,13 @@ export interface ProjectOperations {
   ads_monthly_budget_cents: number | null;
   /** Rótulo na UI: "Limite de investimento sem autorização". */
   ads_autonomy_limit_cents: number | null;
+  /** Dia preferencial de reunião informado pelo cliente (0=domingo). */
   meeting_weekday: number | null;
+  /** Faixa/horário preferencial informado pelo cliente ("14h", "manhã"). */
+  meeting_preferred_time: string | null;
+  /** True quando o cliente respondeu à preferência, mesmo sem dia definido. */
+  meeting_preference_declared: boolean;
+  /** Reunião efetivamente agendada — nunca preferência. */
   next_meeting_at: string | null;
   notes: string | null;
   created_by: string | null;
