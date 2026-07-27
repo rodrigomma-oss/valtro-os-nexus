@@ -47,9 +47,17 @@ import {
   formatOnboardingAnswer as formatAnswer,
   getOnboardingTemplate,
   validateOnboardingStep,
+  type OnboardingQuestion,
+  type OnboardingStep,
   type OnboardingTemplate,
 } from "@/config/onboarding-templates";
-import type { TemplateQuestion, TemplateStep } from "@/config/briefing-templates";
+import {
+  emptyProductItem,
+  isEmptyProductItem,
+  normalizeProductItems,
+  resolveProductCap,
+  type OnboardingProductItem,
+} from "@/lib/onboarding-products";
 import type { OnboardingPortalPayload, OnboardingPortalState } from "@/types/onboarding";
 
 export const Route = createFileRoute("/onboarding/$token")({
@@ -95,6 +103,7 @@ function OnboardingPortalPage() {
       serviceName={onboarding.service_name}
       initialData={response?.data ?? {}}
       initialStep={response?.current_step ?? 0}
+      productsLimit={onboarding.products_limit ?? null}
     />
   );
 }
@@ -108,14 +117,22 @@ function OnboardingRunner({
   serviceName,
   initialData,
   initialStep,
+  productsLimit,
 }: {
   token: string;
   template: OnboardingTemplate;
   serviceName: string;
   initialData: Record<string, any>;
   initialStep: number;
+  productsLimit: number | null;
 }) {
-  const total = template.steps.length;
+  // A etapa de revisão é declarada no template mas não coleta respostas.
+  const inputSteps = useMemo(
+    () => template.steps.filter((s) => !s.reviewOnly),
+    [template],
+  );
+  const reviewStep = template.steps.find((s) => s.reviewOnly) ?? null;
+  const total = inputSteps.length;
   const [screen, setScreen] = useState<"welcome" | "step" | "success">("welcome");
   const [stepIndex, setStepIndex] = useState(Math.min(initialStep, total - 1));
   const [isReview, setIsReview] = useState(false);
@@ -142,7 +159,13 @@ function OnboardingRunner({
   });
 
   const completeMutation = useMutation({
-    mutationFn: () => completeFn({ data: { token, data } }),
+    mutationFn: () =>
+      completeFn({
+        data: {
+          token,
+          data: { ...data, produtos: normalizeProductItems(data.produtos, productsLimit) },
+        },
+      }),
     onSuccess: () => setScreen("success"),
     onError: (err: Error) =>
       toast.error(err.message || "Não foi possível concluir o onboarding."),
@@ -166,7 +189,7 @@ function OnboardingRunner({
     setData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const step: TemplateStep | undefined = template.steps[stepIndex];
+  const step: OnboardingStep | undefined = inputSteps[stepIndex];
 
   const progress = useMemo(() => {
     const steps = total + 1;
@@ -175,14 +198,14 @@ function OnboardingRunner({
       current,
       steps,
       pct: Math.round((current / steps) * 100),
-      label: isReview ? "Revisão" : (step?.label ?? ""),
+      label: isReview ? (reviewStep?.label ?? "Revisão") : (step?.label ?? ""),
     };
-  }, [isReview, stepIndex, step, total]);
+  }, [isReview, stepIndex, step, total, reviewStep]);
 
   function goNext() {
     if (isReview) return;
     if (step) {
-      const error = validateOnboardingStep(step, data);
+      const error = validateOnboardingStep(step, data, { productsLimit });
       if (error) {
         toast.error(error);
         return;
@@ -288,13 +311,14 @@ function OnboardingRunner({
             {isReview ? (
               <div data-testid="onboarding-review">
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Revise antes de enviar
+                  {reviewStep?.title ?? "Revise antes de enviar"}
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Confira as informações operacionais do serviço contratado.
+                  {reviewStep?.description ??
+                    "Confira as informações operacionais do serviço contratado."}
                 </p>
                 <div className="mt-6 space-y-6">
-                  {template.steps.map((s) => (
+                  {inputSteps.map((s) => (
                     <div key={s.id} className="rounded-xl border border-border bg-card p-4">
                       <h3 className="text-sm font-semibold text-foreground">{s.title}</h3>
                       <dl className="mt-3 space-y-2">
@@ -325,6 +349,7 @@ function OnboardingRunner({
                         question={q}
                         value={data[q.id]}
                         onChange={(v) => setValue(q.id, v)}
+                        productsLimit={productsLimit}
                       />
                     ))}
                   </div>
@@ -374,10 +399,12 @@ function QuestionField({
   question,
   value,
   onChange,
+  productsLimit,
 }: {
-  question: TemplateQuestion;
+  question: OnboardingQuestion;
   value: any;
   onChange: (value: unknown) => void;
+  productsLimit?: number | null;
 }) {
   return (
     <div className="space-y-2">
@@ -417,6 +444,9 @@ function QuestionField({
           </SelectContent>
         </Select>
       )}
+      {question.kind === "product_list" && (
+        <ProductListField value={value} onChange={onChange} limit={productsLimit ?? null} />
+      )}
       {question.kind === "multiselect" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {question.options?.map((o) => {
@@ -444,6 +474,131 @@ function QuestionField({
   );
 }
 
+
+/**
+ * Lista estruturada de produtos. O limite contratual vem de
+ * `scope_snapshot.max_products` — quando ausente, não há limite artificial
+ * (nenhum fallback fixo), apenas o teto defensivo do domínio.
+ */
+function ProductListField({
+  value,
+  onChange,
+  limit,
+}: {
+  value: unknown;
+  onChange: (value: unknown) => void;
+  limit: number | null;
+}) {
+  const items: OnboardingProductItem[] = Array.isArray(value)
+    ? (value as OnboardingProductItem[]).map((it) => ({ ...emptyProductItem(), ...it }))
+    : [];
+  const rows = items.length > 0 ? items : [emptyProductItem()];
+  const cap = resolveProductCap(limit);
+  const canAdd = rows.filter((r) => !isEmptyProductItem(r)).length < cap;
+
+  const update = (index: number, field: keyof OnboardingProductItem, v: string) => {
+    const next = rows.map((r, i) => (i === index ? { ...r, [field]: v } : r));
+    onChange(next);
+  };
+
+  return (
+    <div className="space-y-3" data-testid="onboarding-products">
+      {limit !== null && (
+        <p className="text-xs text-muted-foreground">
+          Seu plano contempla até {cap} produto(s) no acompanhamento.
+        </p>
+      )}
+      {rows.map((item, index) => (
+        <div
+          key={index}
+          className="rounded-xl border border-border bg-card p-4 space-y-3"
+          data-testid="onboarding-product-row"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-muted-foreground">
+              Produto {index + 1}
+            </span>
+            {rows.length > 1 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onChange(rows.filter((_, i) => i !== index))}
+              >
+                Remover
+              </Button>
+            )}
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-1 md:col-span-2">
+              <Label className="text-xs">Nome do produto</Label>
+              <Input
+                value={item.nome}
+                onChange={(e) => update(index, "nome", e.target.value)}
+                placeholder="Como você identifica o produto"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Custo unitário de aquisição</Label>
+              <Input
+                value={item.custo_unitario}
+                onChange={(e) => update(index, "custo_unitario", e.target.value)}
+                placeholder="Ex.: R$ 18,90"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Estoque aproximado</Label>
+              <Input
+                value={item.estoque}
+                onChange={(e) => update(index, "estoque", e.target.value)}
+                placeholder="Ex.: 120 unidades"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Prazo médio de reposição</Label>
+              <Input
+                value={item.prazo_reposicao}
+                onChange={(e) => update(index, "prazo_reposicao", e.target.value)}
+                placeholder="Ex.: 15 dias"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Limitação de fornecimento (se houver)</Label>
+              <Input
+                value={item.limitacao_fornecimento}
+                onChange={(e) => update(index, "limitacao_fornecimento", e.target.value)}
+                placeholder="Ex.: lote mínimo de 100 un."
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <Label className="text-xs">Observação (opcional)</Label>
+              <Input
+                value={item.observacao}
+                onChange={(e) => update(index, "observacao", e.target.value)}
+                placeholder="Algo relevante sobre este produto"
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        disabled={!canAdd}
+        onClick={() => onChange([...rows, emptyProductItem()])}
+        data-testid="onboarding-product-add"
+      >
+        Adicionar produto
+      </Button>
+      {!canAdd && (
+        <p className="text-xs text-muted-foreground">
+          Limite do plano atingido. Fale com a Valtro Labs para ampliar o acompanhamento.
+        </p>
+      )}
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Suporte
