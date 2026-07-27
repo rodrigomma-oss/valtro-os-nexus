@@ -218,12 +218,16 @@ export function ProjectOverviewCard({
                   <span className="text-muted-foreground">—</span>
                 )}
               </Field>
-              <Field label="Reunião semanal">
-                {ops?.meeting_weekday === null || ops?.meeting_weekday === undefined
-                  ? "—"
-                  : WEEKDAY_LABEL[ops.meeting_weekday]}
+              <Field label="Preferência de reunião">
+                {meetingPreference ?? <span className="text-muted-foreground">Não informada</span>}
               </Field>
-              <Field label="Próxima reunião">{dateTime(ops?.next_meeting_at)}</Field>
+              <Field label="Próxima reunião">
+                {ops?.next_meeting_at ? (
+                  dateTime(ops.next_meeting_at)
+                ) : (
+                  <span className="text-muted-foreground">Não agendada</span>
+                )}
+              </Field>
               <div className="sm:col-span-2">
                 <Field label="Objetivo atual">
                   {ops?.current_objective ? (
