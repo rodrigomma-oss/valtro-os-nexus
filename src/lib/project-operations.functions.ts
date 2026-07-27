@@ -112,6 +112,8 @@ const opsPayload = z.object({
   ads_monthly_budget_cents: z.number().int().min(0).nullable().optional(),
   ads_autonomy_limit_cents: z.number().int().min(0).nullable().optional(),
   meeting_weekday: z.number().int().min(0).max(6).nullable().optional(),
+  meeting_preferred_time: z.string().trim().max(60).nullable().optional(),
+  meeting_preference_declared: z.boolean().optional(),
   next_meeting_at: z.string().datetime({ offset: true }).nullable().optional(),
   notes: z.string().trim().max(4000).nullable().optional(),
 });
