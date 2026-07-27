@@ -1227,6 +1227,8 @@ export type Database = {
           created_by: string | null
           current_objective: string | null
           id: string
+          meeting_preference_declared: boolean
+          meeting_preferred_time: string | null
           meeting_weekday: number | null
           next_meeting_at: string | null
           notes: string | null
@@ -1243,6 +1245,8 @@ export type Database = {
           created_by?: string | null
           current_objective?: string | null
           id?: string
+          meeting_preference_declared?: boolean
+          meeting_preferred_time?: string | null
           meeting_weekday?: number | null
           next_meeting_at?: string | null
           notes?: string | null
@@ -1259,6 +1263,8 @@ export type Database = {
           created_by?: string | null
           current_objective?: string | null
           id?: string
+          meeting_preference_declared?: boolean
+          meeting_preferred_time?: string | null
           meeting_weekday?: number | null
           next_meeting_at?: string | null
           notes?: string | null

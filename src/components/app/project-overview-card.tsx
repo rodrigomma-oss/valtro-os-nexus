@@ -22,8 +22,8 @@ import { ONBOARDING_STATUS_LABEL, ONBOARDING_STATUS_TONE } from "@/types/onboard
 import {
   ACCESS_STATUS_LABEL,
   ACCESS_STATUS_TONE,
-  WEEKDAY_LABEL,
   contractedProductsLimit,
+  formatMeetingPreference,
 } from "@/types/project-operations";
 import { ProjectOperationsDialog } from "./project-operations-dialog";
 
@@ -80,6 +80,7 @@ export function ProjectOverviewCard({
 
   const productsLimit = contractedProductsLimit(contract?.scope_snapshot);
   const payStatus = cycle ? displayPaymentStatus(cycle) : null;
+  const meetingPreference = formatMeetingPreference(ops);
 
   const alerts = useMemo(() => {
     const list: string[] = [];
@@ -218,12 +219,16 @@ export function ProjectOverviewCard({
                   <span className="text-muted-foreground">—</span>
                 )}
               </Field>
-              <Field label="Reunião semanal">
-                {ops?.meeting_weekday === null || ops?.meeting_weekday === undefined
-                  ? "—"
-                  : WEEKDAY_LABEL[ops.meeting_weekday]}
+              <Field label="Preferência de reunião">
+                {meetingPreference ?? <span className="text-muted-foreground">Não informada</span>}
               </Field>
-              <Field label="Próxima reunião">{dateTime(ops?.next_meeting_at)}</Field>
+              <Field label="Próxima reunião">
+                {ops?.next_meeting_at ? (
+                  dateTime(ops.next_meeting_at)
+                ) : (
+                  <span className="text-muted-foreground">Não agendada</span>
+                )}
+              </Field>
               <div className="sm:col-span-2">
                 <Field label="Objetivo atual">
                   {ops?.current_objective ? (

@@ -53,19 +53,31 @@ export interface OperationsPatch {
   ads_monthly_budget_cents?: number;
   ads_autonomy_limit_cents?: number;
   meeting_weekday?: number;
+  meeting_preferred_time?: string;
+  meeting_preference_declared?: boolean;
   notes?: string;
 }
+
+type OperationsCurrent = Pick<
+  ProjectOperations,
+  | "ads_monthly_budget_cents"
+  | "ads_autonomy_limit_cents"
+  | "meeting_weekday"
+  | "notes"
+> &
+  Partial<Pick<ProjectOperations, "meeting_preferred_time" | "meeting_preference_declared">>;
 
 /**
  * Deriva o patch de `project_operations` a partir das respostas do onboarding.
  * `current` são os valores já existentes: qualquer campo não nulo é mantido.
+ *
+ * A preferência de reunião é estruturada (`meeting_weekday`,
+ * `meeting_preferred_time`, `meeting_preference_declared`) — o horário nunca
+ * é gravado em `notes`.
  */
 export function operationsPatchFromOnboarding(
   answers: Record<string, unknown>,
-  current: Pick<
-    ProjectOperations,
-    "ads_monthly_budget_cents" | "ads_autonomy_limit_cents" | "meeting_weekday" | "notes"
-  > | null,
+  current: OperationsCurrent | null,
 ): OperationsPatch {
   const patch: OperationsPatch = {};
 
@@ -84,19 +96,22 @@ export function operationsPatchFromOnboarding(
     patch.meeting_weekday = weekday;
   }
 
-  const notes = typeof answers.observacoes_operacionais === "string"
-    ? answers.observacoes_operacionais.trim()
-    : "";
+  const dia = typeof answers.reuniao_dia === "string" ? answers.reuniao_dia.trim() : "";
   const horario = typeof answers.reuniao_horario === "string" ? answers.reuniao_horario.trim() : "";
-  const composed = [
-    horario ? `Melhor horário informado no onboarding: ${horario}.` : "",
-    notes,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .slice(0, 1000);
-  if (composed && (current?.notes ?? null) === null) {
-    patch.notes = composed;
+
+  if (horario && (current?.meeting_preferred_time ?? null) === null) {
+    patch.meeting_preferred_time = horario.slice(0, 60);
+  }
+  // O cliente respondeu à preferência mesmo quando escolheu "sem preferência".
+  if ((dia || horario) && current?.meeting_preference_declared !== true) {
+    patch.meeting_preference_declared = true;
+  }
+
+  const notes = typeof answers.observacoes_operacionais === "string"
+    ? answers.observacoes_operacionais.trim().slice(0, 1000)
+    : "";
+  if (notes && (current?.notes ?? null) === null) {
+    patch.notes = notes;
   }
 
   return patch;

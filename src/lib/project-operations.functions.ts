@@ -11,7 +11,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ACCESS_STATUS_ORDER, type ProjectOverview } from "@/types/project-operations";
 
 const OPS_SELECT =
-  "id, project_id, operational_access_status, operational_access_notes, current_objective, ads_monthly_budget_cents, ads_autonomy_limit_cents, meeting_weekday, next_meeting_at, notes, created_by, updated_by, created_at, updated_at";
+  "id, project_id, operational_access_status, operational_access_notes, current_objective, ads_monthly_budget_cents, ads_autonomy_limit_cents, meeting_weekday, meeting_preferred_time, meeting_preference_declared, next_meeting_at, notes, created_by, updated_by, created_at, updated_at";
 
 const CONTRACT_SELECT =
   "id, name_snapshot, description_snapshot, status, billing_type_snapshot, billing_interval_snapshot, contracted_amount_cents, scope_snapshot";
@@ -112,6 +112,8 @@ const opsPayload = z.object({
   ads_monthly_budget_cents: z.number().int().min(0).nullable().optional(),
   ads_autonomy_limit_cents: z.number().int().min(0).nullable().optional(),
   meeting_weekday: z.number().int().min(0).max(6).nullable().optional(),
+  meeting_preferred_time: z.string().trim().max(60).nullable().optional(),
+  meeting_preference_declared: z.boolean().optional(),
   next_meeting_at: z.string().datetime({ offset: true }).nullable().optional(),
   notes: z.string().trim().max(4000).nullable().optional(),
 });

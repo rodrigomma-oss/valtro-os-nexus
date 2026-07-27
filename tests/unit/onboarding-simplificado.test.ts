@@ -160,7 +160,9 @@ describe("espelhamento em project_operations", () => {
       ads_monthly_budget_cents: 150000,
       ads_autonomy_limit_cents: 50000,
       meeting_weekday: 2,
-      notes: "Melhor horário informado no onboarding: 14h. Não anunciar aos domingos.",
+      meeting_preferred_time: "14h",
+      meeting_preference_declared: true,
+      notes: "Não anunciar aos domingos.",
     });
   });
 
@@ -172,9 +174,23 @@ describe("espelhamento em project_operations", () => {
         ads_autonomy_limit_cents: null,
         meeting_weekday: 5,
         notes: "definido pelo operador",
+        meeting_preferred_time: "10h",
+        meeting_preference_declared: true,
       },
     );
     expect(patch).toEqual({ ads_autonomy_limit_cents: 50000 });
+  });
+
+  it("declara preferência mesmo quando o cliente escolhe 'sem preferência'", () => {
+    expect(
+      operationsPatchFromOnboarding({ reuniao_dia: "sem_preferencia", reuniao_horario: "14h" }, null),
+    ).toEqual({ meeting_preferred_time: "14h", meeting_preference_declared: true });
+  });
+
+  it("nunca grava horário preferencial em notes", () => {
+    const patch = operationsPatchFromOnboarding({ reuniao_horario: "14h" }, null);
+    expect(patch.notes).toBeUndefined();
+    expect(patch.meeting_preferred_time).toBe("14h");
   });
 
   it("não produz patch quando não há respostas aproveitáveis", () => {

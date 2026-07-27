@@ -27,7 +27,13 @@ export interface ProjectOperations {
   ads_monthly_budget_cents: number | null;
   /** Rótulo na UI: "Limite de investimento sem autorização". */
   ads_autonomy_limit_cents: number | null;
+  /** Dia preferencial de reunião informado pelo cliente (0=domingo). */
   meeting_weekday: number | null;
+  /** Faixa/horário preferencial informado pelo cliente ("14h", "manhã"). */
+  meeting_preferred_time: string | null;
+  /** True quando o cliente respondeu à preferência, mesmo sem dia definido. */
+  meeting_preference_declared: boolean;
+  /** Reunião efetivamente agendada — nunca preferência. */
   next_meeting_at: string | null;
   notes: string | null;
   created_by: string | null;
@@ -104,4 +110,28 @@ export function contractedProductsLimit(
   if (raw === null || raw === undefined) return null;
   const n = Number(raw);
   return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Preferência de reunião declarada pelo cliente — conceito distinto do
+ * agendamento (`next_meeting_at`). Retorna `null` apenas quando nada foi
+ * informado pelo cliente nem definido pelo operador.
+ */
+export function formatMeetingPreference(
+  ops: Pick<
+    ProjectOperations,
+    "meeting_weekday" | "meeting_preferred_time" | "meeting_preference_declared"
+  > | null | undefined,
+): string | null {
+  if (!ops) return null;
+  const day =
+    ops.meeting_weekday === null || ops.meeting_weekday === undefined
+      ? null
+      : (WEEKDAY_LABEL[ops.meeting_weekday] ?? null);
+  const time = ops.meeting_preferred_time?.trim() || null;
+
+  if (!day && !time) return ops.meeting_preference_declared ? "Sem preferência" : null;
+  if (day && time) return `${day} · ${time}`;
+  if (day) return day;
+  return ops.meeting_preference_declared ? `Sem preferência · ${time}` : (time as string);
 }
