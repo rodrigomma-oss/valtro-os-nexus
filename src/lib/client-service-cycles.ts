@@ -19,6 +19,7 @@ import type {
   ClientService,
   ClientServiceCycle,
   ClientServiceCycleStatus,
+  CyclePaymentStatus,
 } from "@/types/client-service";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -192,4 +193,69 @@ export function periodLabel(period_start: string, period_end: string): string {
 export function shortDate(dateISO: string): string {
   const { y, m, d } = parseISODate(dateISO);
   return `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${y}`;
+}
+
+// ============================================================
+// Sprint 13.7 — Controle financeiro mínimo do ciclo
+// ============================================================
+
+/**
+ * Status financeiro APRESENTADO ao operador.
+ *
+ * Regra desta fase: `vencido` nunca é persistido por passagem de tempo.
+ * Um ciclo `pendente` com `due_date` anterior a hoje é exibido como
+ * `vencido`, mas o estado no banco permanece `pendente` até ação humana
+ * (ou automação futura). Isso evita cron e mutação implícita.
+ */
+export function displayPaymentStatus(
+  cycle: Pick<ClientServiceCycle, "payment_status" | "due_date">,
+  today: string = todayISO(),
+): CyclePaymentStatus {
+  if (cycle.payment_status === "pendente" && cycle.due_date && cycle.due_date < today) {
+    return "vencido";
+  }
+  return cycle.payment_status;
+}
+
+/** Vencimento padrão do ciclo: pagamento antes do início da execução. */
+export function defaultDueDate(period_start: string): string {
+  return toISODate(period_start);
+}
+
+/** Diferença entre recebido e previsto (positivo = recebido a mais). */
+export function paymentDelta(
+  cycle: Pick<ClientServiceCycle, "amount_cents" | "paid_amount_cents" | "payment_status">,
+): number | null {
+  if (cycle.payment_status !== "pago" || cycle.paid_amount_cents === null) return null;
+  return cycle.paid_amount_cents - cycle.amount_cents;
+}
+
+/**
+ * Coerência dos campos financeiros — espelha o trigger do banco.
+ * Retorna a mensagem de erro ou `null` quando o payload é válido.
+ */
+export function validatePaymentPayload(input: {
+  payment_status: CyclePaymentStatus;
+  paid_amount_cents?: number | null;
+}): string | null {
+  if (input.payment_status === "pago") {
+    if (input.paid_amount_cents === null || input.paid_amount_cents === undefined) {
+      return "Informe o valor recebido para marcar o ciclo como pago.";
+    }
+    if (!Number.isInteger(input.paid_amount_cents) || input.paid_amount_cents < 0) {
+      return "Valor recebido inválido.";
+    }
+  }
+  return null;
+}
+
+/**
+ * Alerta (não bloqueante) ao iniciar um ciclo cujo pagamento não está
+ * resolvido. Exceções comerciais são permitidas — por isso é confirmação,
+ * nunca impedimento.
+ */
+export function shouldWarnStartWithoutPayment(
+  cycle: Pick<ClientServiceCycle, "payment_status" | "due_date">,
+): boolean {
+  return cycle.payment_status !== "pago" && cycle.payment_status !== "dispensado";
 }

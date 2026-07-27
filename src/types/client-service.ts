@@ -162,6 +162,7 @@ export const CLIENT_SERVICE_EVENT_LABEL: Record<ClientServiceEventType, string> 
   cycle_started: "Ciclo iniciado",
   cycle_completed: "Ciclo concluído",
   cycle_cancelled: "Ciclo cancelado",
+  cycle_payment_registered: "Pagamento do ciclo",
 };
 
 // ============================================================
@@ -172,8 +173,18 @@ export type ClientServiceCycleStatus =
   Database["public"]["Enums"]["client_service_cycle_status"];
 
 /**
+ * Sprint 13.7 — controle financeiro mínimo do ciclo.
+ *
+ * `vencido` existe no enum para evolução futura, mas nesta fase NÃO é
+ * persistido automaticamente: o atraso é derivado na apresentação
+ * (`pendente` + `due_date` < hoje).
+ */
+export type CyclePaymentStatus = Database["public"]["Enums"]["cycle_payment_status"];
+
+/**
  * Período mensal de uma contratação recorrente. `amount_cents` é snapshot
  * do ciclo: nem o catálogo nem a contratação alteram ciclos existentes.
+ * `paid_amount_cents` é exclusivamente o valor efetivamente recebido.
  */
 export interface ClientServiceCycle {
   id: string;
@@ -190,6 +201,14 @@ export interface ClientServiceCycle {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+
+  // Financeiro (snapshot de recebimento — nunca altera `amount_cents`).
+  payment_status: CyclePaymentStatus;
+  paid_amount_cents: number | null;
+  paid_at: string | null;
+  payment_method: string | null;
+  payment_notes: string | null;
+  payment_registered_by: string | null;
 }
 
 export const CYCLE_STATUS_LABEL: Record<ClientServiceCycleStatus, string> = {
@@ -205,3 +224,39 @@ export const CYCLE_STATUS_TONE: Record<ClientServiceCycleStatus, string> = {
   concluido: "bg-blue-50 text-blue-700 border-blue-200",
   cancelado: "bg-rose-50 text-rose-700 border-rose-200",
 };
+
+export const CYCLE_PAYMENT_STATUS_LABEL: Record<CyclePaymentStatus, string> = {
+  pendente: "Pendente",
+  pago: "Pago",
+  vencido: "Vencido",
+  dispensado: "Dispensado",
+};
+
+export const CYCLE_PAYMENT_STATUS_TONE: Record<CyclePaymentStatus, string> = {
+  pendente: "bg-amber-50 text-amber-700 border-amber-200",
+  pago: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  vencido: "bg-rose-50 text-rose-700 border-rose-200",
+  dispensado: "bg-slate-50 text-slate-700 border-slate-200",
+};
+
+/** Formas de pagamento aceitas (lista fechada, sem módulo financeiro). */
+export const CYCLE_PAYMENT_METHODS = [
+  "pix",
+  "boleto",
+  "transferencia",
+  "cartao",
+  "dinheiro",
+  "outro",
+] as const;
+
+export type CyclePaymentMethod = (typeof CYCLE_PAYMENT_METHODS)[number];
+
+export const CYCLE_PAYMENT_METHOD_LABEL: Record<string, string> = {
+  pix: "PIX",
+  boleto: "Boleto",
+  transferencia: "Transferência",
+  cartao: "Cartão",
+  dinheiro: "Dinheiro",
+  outro: "Outro",
+};
+

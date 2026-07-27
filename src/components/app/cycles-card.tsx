@@ -21,15 +21,33 @@ import {
 import {
   allowedCycleTransitions,
   cycleTransitionLabel,
+  displayPaymentStatus,
+  paymentDelta,
   periodLabel,
   shortDate,
+  shouldWarnStartWithoutPayment,
 } from "@/lib/client-service-cycles";
 import {
+  CYCLE_PAYMENT_METHOD_LABEL,
+  CYCLE_PAYMENT_STATUS_LABEL,
+  CYCLE_PAYMENT_STATUS_TONE,
   CYCLE_STATUS_LABEL,
   CYCLE_STATUS_TONE,
   type ClientServiceCycle,
   type ClientServiceCycleStatus,
 } from "@/types/client-service";
+import { CyclePaymentDialog } from "@/components/app/cycle-payment-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface CyclesCardProps {
   clientServiceId: string;
@@ -181,6 +199,10 @@ function CycleRow({
 }) {
   const updateFn = useServerFn(updateCycleStatus);
   const transitions = allowedCycleTransitions(cycle.status);
+  // `vencido` é derivado na apresentação; o banco mantém `pendente`.
+  const payment = displayPaymentStatus(cycle);
+  const delta = paymentDelta(cycle);
+  const [confirmStart, setConfirmStart] = useState(false);
 
   const statusMutation = useMutation({
     mutationFn: (status: ClientServiceCycleStatus) =>
@@ -214,6 +236,16 @@ function CycleRow({
             >
               {CYCLE_STATUS_LABEL[cycle.status]}
             </span>
+            <span
+              data-testid="cycle-payment-status"
+              data-payment-status={payment}
+              className={cn(
+                "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                CYCLE_PAYMENT_STATUS_TONE[payment],
+              )}
+            >
+              {CYCLE_PAYMENT_STATUS_LABEL[payment]}
+            </span>
           </div>
           <p className="mt-1 text-[11px] text-muted-foreground" data-testid="cycle-period">
             {periodLabel(cycle.period_start, cycle.period_end)}
@@ -224,13 +256,30 @@ function CycleRow({
             <span>· Cancelamento: {fmtStamp(cycle.cancelled_at)}</span>
             {cycle.due_date && <span>· Vencimento: {shortDate(cycle.due_date)}</span>}
           </div>
+          {cycle.payment_status === "pago" && cycle.paid_amount_cents !== null && (
+            <p className="mt-0.5 text-[11px] text-muted-foreground" data-testid="cycle-paid-info">
+              Recebido {fmtCents(cycle.paid_amount_cents)}
+              {cycle.paid_at ? ` em ${fmtStamp(cycle.paid_at)}` : ""}
+              {cycle.payment_method
+                ? ` · ${CYCLE_PAYMENT_METHOD_LABEL[cycle.payment_method] ?? cycle.payment_method}`
+                : ""}
+              {delta !== null && delta !== 0
+                ? ` · ${delta > 0 ? "+" : "−"}${fmtCents(Math.abs(delta))} vs. previsto`
+                : ""}
+            </p>
+          )}
+          {cycle.payment_notes && (
+            <p className="mt-0.5 text-[11px] text-muted-foreground" data-testid="cycle-payment-notes">
+              {cycle.payment_notes}
+            </p>
+          )}
         </div>
         <div className="text-right text-xs font-semibold text-foreground" data-testid="cycle-amount">
           {fmtCents(cycle.amount_cents)}
         </div>
       </div>
 
-      {canWrite && transitions.length > 0 && (
+      {canWrite && (transitions.length > 0 || cycle.status !== "cancelado") && (
         <div className="mt-2 flex flex-wrap gap-2 border-t border-border pt-2">
           {transitions.map((to) => (
             <Button
@@ -239,7 +288,14 @@ function CycleRow({
               variant={to === "cancelado" ? "outline" : "default"}
               data-testid={`cycle-action-${to}`}
               disabled={statusMutation.isPending}
-              onClick={() => statusMutation.mutate(to)}
+              onClick={() => {
+                // Exceções comerciais existem: alerta, nunca bloqueio.
+                if (to === "ativo" && shouldWarnStartWithoutPayment(cycle)) {
+                  setConfirmStart(true);
+                  return;
+                }
+                statusMutation.mutate(to);
+              }}
             >
               {statusMutation.isPending && (
                 <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
@@ -247,8 +303,33 @@ function CycleRow({
               {cycleTransitionLabel(cycle.status, to)}
             </Button>
           ))}
+          {cycle.status !== "cancelado" && (
+            <CyclePaymentDialog cycle={cycle} onSaved={onChanged} />
+          )}
         </div>
       )}
+
+      <AlertDialog open={confirmStart} onOpenChange={setConfirmStart}>
+        <AlertDialogContent data-testid="cycle-start-payment-alert">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Iniciar ciclo com pagamento pendente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              O ciclo #{cycle.sequence} está com pagamento{" "}
+              {CYCLE_PAYMENT_STATUS_LABEL[payment].toLowerCase()}. A operação é permitida,
+              mas ficará registrada na timeline.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="cycle-start-confirm"
+              onClick={() => statusMutation.mutate("ativo")}
+            >
+              Iniciar mesmo assim
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </li>
   );
 }
