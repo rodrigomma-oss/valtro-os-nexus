@@ -15,6 +15,18 @@ export type TrackedProductStatus = "ativo" | "arquivado";
 export type TrackedProductPriority = "baixa" | "media" | "alta";
 
 /**
+ * Unidade em que o estoque é contado. Segue o mesmo padrão evolutivo da
+ * classificação: `text + CHECK` no banco, rótulos aqui, fallback seguro.
+ */
+export type TrackedProductStockUnit =
+  | "unidade"
+  | "peca"
+  | "kit"
+  | "conjunto"
+  | "outro";
+
+
+/**
  * Conjunto atual da metodologia operacional da Valtro Labs.
  * Ao expandir: adicionar aqui + ampliar o CHECK no banco. Nenhum consumidor
  * deve assumir exaustividade fora dos mapas abaixo.
