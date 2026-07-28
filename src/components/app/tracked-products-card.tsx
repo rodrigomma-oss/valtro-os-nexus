@@ -35,6 +35,7 @@ import {
   classificationTone,
   PRIORITY_LABEL,
   PRIORITY_TONE,
+  stockUnitLabel,
   totalCostCents,
   type TrackedProduct,
 } from "@/types/tracked-product";
