@@ -136,15 +136,20 @@ export function TrackedProductDialog({
         ? {
             name: product.name,
             external_reference: product.external_reference ?? "",
+            sku: product.sku ?? "",
+            listing_url: product.listing_url ?? "",
             classification: product.classification,
             priority: product.priority,
             objective: product.objective ?? "",
             product_cost: fromCents(product.product_cost_cents),
             packaging_cost: fromCents(product.packaging_cost_cents),
             taxes: fromCents(product.taxes_cents),
+            tax_rate: bpsToPercentInput(product.tax_rate_bps),
             other_costs: fromCents(product.other_costs_cents),
+            current_sale_price: fromCents(product.current_sale_price_cents),
             stock_quantity:
               product.stock_quantity === null ? "" : String(product.stock_quantity),
+            stock_unit: product.stock_unit ?? "unidade",
             restock_lead_time_days:
               product.restock_lead_time_days === null
                 ? ""
@@ -171,14 +176,19 @@ export function TrackedProductDialog({
       const payload = {
         name: form.name.trim(),
         external_reference: form.external_reference.trim() || null,
+        sku: form.sku.trim() || null,
+        listing_url: form.listing_url.trim() || null,
         classification: form.classification,
         priority: form.priority,
         objective: form.objective.trim() || null,
         product_cost_cents: toCents(form.product_cost),
         packaging_cost_cents: toCents(form.packaging_cost),
         taxes_cents: toCents(form.taxes),
+        tax_rate_bps: percentToBps(form.tax_rate),
         other_costs_cents: toCents(form.other_costs),
+        current_sale_price_cents: toCents(form.current_sale_price),
         stock_quantity: toInt(form.stock_quantity),
+        stock_unit: form.stock_unit,
         restock_lead_time_days: toInt(form.restock_lead_time_days),
         operational_limitations: form.operational_limitations.trim() || null,
         notes: form.notes.trim() || null,
