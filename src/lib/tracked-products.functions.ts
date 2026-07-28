@@ -177,7 +177,7 @@ export const createTrackedProduct = createServerFn({ method: "POST" })
       } as never)
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw translateDbError(error.message, error.code);
     return { id: (row as { id: string }).id };
   });
 
