@@ -92,4 +92,53 @@ describe("Sprint 15.2 — Produtos Acompanhados", () => {
       expect(effectiveOwner(null, null, null)).toEqual({ name: "—", inherited: true });
     });
   });
+
+  describe("alíquota em basis points (percentual nunca vira dinheiro)", () => {
+    it("converte percentuais válidos, inclusive os extremos", () => {
+      expect(percentToBps("7")).toBe(700);
+      expect(percentToBps("7,5")).toBe(750);
+      expect(percentToBps("0")).toBe(0);
+      expect(percentToBps("100")).toBe(10000);
+    });
+
+    it("rejeita entrada vazia ou fora do intervalo", () => {
+      expect(percentToBps("")).toBeNull();
+      expect(percentToBps("abc")).toBeNull();
+      expect(percentToBps("-1")).toBeNull();
+      expect(percentToBps("100.1")).toBeNull();
+    });
+
+    it("faz o caminho de volta para exibição e edição", () => {
+      expect(bpsToPercentLabel(700)).toBe("7%");
+      expect(bpsToPercentLabel(0)).toBe("0%");
+      expect(bpsToPercentLabel(null)).toBe("—");
+      expect(bpsToPercentInput(750)).toBe("7,5");
+      expect(bpsToPercentInput(null)).toBe("");
+    });
+  });
+
+  describe("unidade de estoque", () => {
+    it("rotula as unidades conhecidas", () => {
+      expect(stockUnitLabel("unidade")).toBe("Unidade");
+      expect(stockUnitLabel("kit")).toBe("Kit");
+    });
+
+    it("não quebra com valores futuros ainda não mapeados", () => {
+      expect(stockUnitLabel("caixa")).toBe("caixa");
+    });
+  });
+
+  describe("custo total ignora preço de venda", () => {
+    it("soma apenas as parcelas de custo", () => {
+      expect(
+        totalCostCents({
+          product_cost_cents: 1000,
+          packaging_cost_cents: 30,
+          taxes_cents: 70,
+          other_costs_cents: null,
+          current_sale_price_cents: 9999,
+        } as Parameters<typeof totalCostCents>[0]),
+      ).toBe(1100);
+    });
+  });
 });
