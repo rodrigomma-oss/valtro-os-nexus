@@ -74,7 +74,7 @@ export interface TrackedProductEvent {
   event_type: TrackedProductEventType;
   title: string;
   description: string | null;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, string | number | boolean | null>;
   actor_id: string | null;
   created_at: string;
 }
