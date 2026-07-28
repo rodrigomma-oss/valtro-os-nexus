@@ -132,6 +132,8 @@ const createSchema = z.object({
   project_id: z.string().uuid(),
   name: z.string().trim().min(2).max(200),
   external_reference: optionalText(120),
+  sku: optionalText(64),
+  listing_url: httpsUrl,
   classification: classificationSchema,
   priority: prioritySchema.default("media"),
   objective: optionalText(2000),
@@ -139,12 +141,16 @@ const createSchema = z.object({
   product_cost_cents: optionalInt,
   packaging_cost_cents: optionalInt,
   taxes_cents: optionalInt,
+  tax_rate_bps: optionalBps,
   other_costs_cents: optionalInt,
+  current_sale_price_cents: optionalInt,
   stock_quantity: optionalInt,
+  stock_unit: stockUnitSchema.default("unidade"),
   restock_lead_time_days: optionalInt,
   operational_limitations: optionalText(2000),
   notes: optionalText(4000),
 });
+
 
 export const createTrackedProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
