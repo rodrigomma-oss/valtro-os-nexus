@@ -10,7 +10,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { TrackedProduct, TrackedProductEvent } from "@/types/tracked-product";
-import { CLASSIFICATION_ORDER, PRIORITY_ORDER } from "@/types/tracked-product";
+import { CLASSIFICATION_ORDER, PRIORITY_ORDER, STOCK_UNIT_ORDER } from "@/types/tracked-product";
 
 const PRODUCT_SELECT =
   "id, project_id, name, external_reference, sku, listing_url, classification, priority, objective, status, position, owner_id, product_cost_cents, packaging_cost_cents, taxes_cents, tax_rate_bps, other_costs_cents, current_sale_price_cents, stock_quantity, stock_unit, restock_lead_time_days, operational_limitations, notes, archived_at, archived_by, created_by, created_at, updated_at";
