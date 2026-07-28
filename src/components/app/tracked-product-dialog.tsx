@@ -309,8 +309,8 @@ export function TrackedProductDialog({
             </div>
           </Section>
 
-          <Section title="Custos (por unidade)">
-            <div className="grid gap-4 md:grid-cols-4">
+          <Section title="Custos e preço (por unidade)">
+            <div className="grid gap-4 md:grid-cols-3">
               <Field label="Produto (R$)" htmlFor="tp-cost">
                 <Input
                   id="tp-cost"
@@ -329,15 +329,6 @@ export function TrackedProductDialog({
                   placeholder="0,00"
                 />
               </Field>
-              <Field label="Impostos (R$)" htmlFor="tp-tax">
-                <Input
-                  id="tp-tax"
-                  inputMode="decimal"
-                  value={form.taxes}
-                  onChange={(e) => set("taxes", e.target.value)}
-                  placeholder="0,00"
-                />
-              </Field>
               <Field label="Outros (R$)" htmlFor="tp-other">
                 <Input
                   id="tp-other"
@@ -347,11 +338,43 @@ export function TrackedProductDialog({
                   placeholder="0,00"
                 />
               </Field>
+              <Field label="Imposto fixo (R$)" htmlFor="tp-tax" hint="Valor fixo por unidade.">
+                <Input
+                  id="tp-tax"
+                  inputMode="decimal"
+                  value={form.taxes}
+                  onChange={(e) => set("taxes", e.target.value)}
+                  placeholder="0,00"
+                />
+              </Field>
+              <Field
+                label="Imposto (%)"
+                htmlFor="tp-tax-rate"
+                hint={taxRateInvalid ? "Informe um percentual entre 0 e 100." : "Ex.: 7"}
+              >
+                <Input
+                  id="tp-tax-rate"
+                  inputMode="decimal"
+                  value={form.tax_rate}
+                  onChange={(e) => set("tax_rate", e.target.value)}
+                  placeholder="0"
+                  aria-invalid={taxRateInvalid}
+                />
+              </Field>
+              <Field label="Preço de venda atual (R$)" htmlFor="tp-price">
+                <Input
+                  id="tp-price"
+                  inputMode="decimal"
+                  value={form.current_sale_price}
+                  onChange={(e) => set("current_sale_price", e.target.value)}
+                  placeholder="0,00"
+                />
+              </Field>
             </div>
           </Section>
 
           <Section title="Estoque">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <Field label="Quantidade atual" htmlFor="tp-stock">
                 <Input
                   id="tp-stock"
@@ -360,6 +383,23 @@ export function TrackedProductDialog({
                   onChange={(e) => set("stock_quantity", e.target.value)}
                   placeholder="0"
                 />
+              </Field>
+              <Field label="Unidade" htmlFor="tp-stock-unit">
+                <Select
+                  value={form.stock_unit}
+                  onValueChange={(v) => set("stock_unit", v as TrackedProductStockUnit)}
+                >
+                  <SelectTrigger id="tp-stock-unit">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STOCK_UNIT_ORDER.map((u) => (
+                      <SelectItem key={u} value={u}>
+                        {STOCK_UNIT_LABEL[u]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
               <Field label="Prazo de reposição (dias)" htmlFor="tp-lead">
                 <Input
@@ -372,6 +412,7 @@ export function TrackedProductDialog({
               </Field>
             </div>
           </Section>
+
 
           <Section title="Contexto operacional">
             <div className="space-y-4">
