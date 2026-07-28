@@ -450,7 +450,10 @@ export function TrackedProductDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={() => mutation.mutate()} disabled={nameInvalid || mutation.isPending}>
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={nameInvalid || urlInvalid || taxRateInvalid || mutation.isPending}
+          >
             {mutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {product ? "Salvar alterações" : "Adicionar produto"}
           </Button>
