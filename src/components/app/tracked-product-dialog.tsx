@@ -36,9 +36,14 @@ import {
   CLASSIFICATION_ORDER,
   PRIORITY_LABEL,
   PRIORITY_ORDER,
+  STOCK_UNIT_LABEL,
+  STOCK_UNIT_ORDER,
+  bpsToPercentInput,
+  percentToBps,
   type TrackedProduct,
   type TrackedProductClassification,
   type TrackedProductPriority,
+  type TrackedProductStockUnit,
 } from "@/types/tracked-product";
 
 interface TrackedProductDialogProps {
@@ -51,14 +56,19 @@ interface TrackedProductDialogProps {
 interface FormState {
   name: string;
   external_reference: string;
+  sku: string;
+  listing_url: string;
   classification: TrackedProductClassification;
   priority: TrackedProductPriority;
   objective: string;
   product_cost: string;
   packaging_cost: string;
   taxes: string;
+  tax_rate: string;
   other_costs: string;
+  current_sale_price: string;
   stock_quantity: string;
+  stock_unit: TrackedProductStockUnit;
   restock_lead_time_days: string;
   operational_limitations: string;
   notes: string;
@@ -67,18 +77,24 @@ interface FormState {
 const EMPTY: FormState = {
   name: "",
   external_reference: "",
+  sku: "",
+  listing_url: "",
   classification: "validacao",
   priority: "media",
   objective: "",
   product_cost: "",
   packaging_cost: "",
   taxes: "",
+  tax_rate: "",
   other_costs: "",
+  current_sale_price: "",
   stock_quantity: "",
+  stock_unit: "unidade",
   restock_lead_time_days: "",
   operational_limitations: "",
   notes: "",
 };
+
 
 /** Aceita "12,90" e "12.90"; retorna centavos ou null quando vazio. */
 function toCents(value: string): number | null {
