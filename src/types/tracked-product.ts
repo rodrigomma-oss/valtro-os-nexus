@@ -57,6 +57,10 @@ export interface TrackedProduct {
   project_id: string;
   name: string;
   external_reference: string | null;
+  /** Código canônico do produto dentro do Projeto. Único por projeto. */
+  sku: string | null;
+  /** URL HTTPS do anúncio. Nenhuma consulta externa é feita a partir dela. */
+  listing_url: string | null;
   classification: TrackedProductClassification;
   priority: TrackedProductPriority;
   objective: string | null;
@@ -66,10 +70,17 @@ export interface TrackedProduct {
   owner_id: string | null;
   product_cost_cents: number | null;
   packaging_cost_cents: number | null;
+  /** Imposto como CUSTO FIXO em centavos. Percentual vive em tax_rate_bps. */
   taxes_cents: number | null;
+  /** Alíquota em basis points: 700 = 7%. Nunca valor monetário. */
+  tax_rate_bps: number | null;
   other_costs_cents: number | null;
+  /** Preço de venda atual (estado corrente, sem histórico nesta sprint). */
+  current_sale_price_cents: number | null;
   stock_quantity: number | null;
+  stock_unit: TrackedProductStockUnit;
   restock_lead_time_days: number | null;
+
   operational_limitations: string | null;
   notes: string | null;
   archived_at: string | null;
