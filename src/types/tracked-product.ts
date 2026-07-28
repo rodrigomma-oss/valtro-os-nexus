@@ -15,6 +15,18 @@ export type TrackedProductStatus = "ativo" | "arquivado";
 export type TrackedProductPriority = "baixa" | "media" | "alta";
 
 /**
+ * Unidade em que o estoque é contado. Segue o mesmo padrão evolutivo da
+ * classificação: `text + CHECK` no banco, rótulos aqui, fallback seguro.
+ */
+export type TrackedProductStockUnit =
+  | "unidade"
+  | "peca"
+  | "kit"
+  | "conjunto"
+  | "outro";
+
+
+/**
  * Conjunto atual da metodologia operacional da Valtro Labs.
  * Ao expandir: adicionar aqui + ampliar o CHECK no banco. Nenhum consumidor
  * deve assumir exaustividade fora dos mapas abaixo.
@@ -45,6 +57,10 @@ export interface TrackedProduct {
   project_id: string;
   name: string;
   external_reference: string | null;
+  /** Código canônico do produto dentro do Projeto. Único por projeto. */
+  sku: string | null;
+  /** URL HTTPS do anúncio. Nenhuma consulta externa é feita a partir dela. */
+  listing_url: string | null;
   classification: TrackedProductClassification;
   priority: TrackedProductPriority;
   objective: string | null;
@@ -54,10 +70,17 @@ export interface TrackedProduct {
   owner_id: string | null;
   product_cost_cents: number | null;
   packaging_cost_cents: number | null;
+  /** Imposto como CUSTO FIXO em centavos. Percentual vive em tax_rate_bps. */
   taxes_cents: number | null;
+  /** Alíquota em basis points: 700 = 7%. Nunca valor monetário. */
+  tax_rate_bps: number | null;
   other_costs_cents: number | null;
+  /** Preço de venda atual (estado corrente, sem histórico nesta sprint). */
+  current_sale_price_cents: number | null;
   stock_quantity: number | null;
+  stock_unit: TrackedProductStockUnit;
   restock_lead_time_days: number | null;
+
   operational_limitations: string | null;
   notes: string | null;
   archived_at: string | null;
@@ -128,6 +151,53 @@ export const PRIORITY_TONE: Record<TrackedProductPriority, string> = {
   media: "bg-blue-50 text-blue-700 border-blue-200",
   alta: "bg-rose-50 text-rose-700 border-rose-200",
 };
+
+export const STOCK_UNIT_ORDER: TrackedProductStockUnit[] = [
+  "unidade",
+  "peca",
+  "kit",
+  "conjunto",
+  "outro",
+];
+
+export const STOCK_UNIT_LABEL: Record<TrackedProductStockUnit, string> = {
+  unidade: "Unidade",
+  peca: "Peça",
+  kit: "Kit",
+  conjunto: "Conjunto",
+  outro: "Outro",
+};
+
+/** Fallback seguro: unidades futuras aparecem cruas em vez de quebrar a tela. */
+export function stockUnitLabel(value: string): string {
+  return (STOCK_UNIT_LABEL as Record<string, string>)[value] ?? value;
+}
+
+/**
+ * Percentual informado pelo operador → basis points inteiros.
+ * Aceita "7", "7,5" e "7.5". Retorna null quando vazio ou fora de 0–100.
+ */
+export function percentToBps(value: string): number | null {
+  const raw = value.trim().replace(",", ".");
+  if (raw === "") return null;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0 || n > 100) return null;
+  return Math.round(n * 100);
+}
+
+/** 700 → "7%"; 750 → "7,5%"; null → "—". */
+export function bpsToPercentLabel(bps: number | null): string {
+  if (bps === null || bps === undefined) return "—";
+  const pct = bps / 100;
+  return `${pct.toFixed(2).replace(/\.?0+$/, "").replace(".", ",")}%`;
+}
+
+/** Valor de edição do campo percentual (sem sufixo). */
+export function bpsToPercentInput(bps: number | null): string {
+  if (bps === null || bps === undefined) return "";
+  return (bps / 100).toFixed(2).replace(/\.?0+$/, "").replace(".", ",");
+}
+
 
 /** Fallback seguro para valores ainda não mapeados no front. */
 export function classificationLabel(value: string): string {

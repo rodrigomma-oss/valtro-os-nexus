@@ -35,6 +35,7 @@ import {
   classificationTone,
   PRIORITY_LABEL,
   PRIORITY_TONE,
+  stockUnitLabel,
   totalCostCents,
   type TrackedProduct,
 } from "@/types/tracked-product";
@@ -168,10 +169,10 @@ export function TrackedProductsCard({ projectId, canWrite }: TrackedProductsCard
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-foreground">{p.name}</p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {p.external_reference ?? "Sem referência"} ·{" "}
+                          {p.sku ?? p.external_reference ?? "Sem referência"} ·{" "}
                           {p.stock_quantity === null
                             ? "estoque não informado"
-                            : `${p.stock_quantity} em estoque`}{" "}
+                            : `${p.stock_quantity} ${stockUnitLabel(p.stock_unit).toLowerCase()} em estoque`}{" "}
                           · custo {formatCents(totalCostCents(p))}
                         </p>
                       </div>

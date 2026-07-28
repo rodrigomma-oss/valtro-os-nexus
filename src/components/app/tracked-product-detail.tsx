@@ -13,7 +13,12 @@ import {
   addTrackedProductNote,
   getTrackedProductEvents,
 } from "@/lib/tracked-products.functions";
-import { totalCostCents, type TrackedProduct } from "@/types/tracked-product";
+import {
+  bpsToPercentLabel,
+  stockUnitLabel,
+  totalCostCents,
+  type TrackedProduct,
+} from "@/types/tracked-product";
 
 interface TrackedProductDetailProps {
   product: TrackedProduct;
@@ -70,20 +75,47 @@ export function TrackedProductDetail({
 
   return (
     <div className="border-t border-border px-4 py-4 space-y-5">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Block title="Custos por unidade">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Block title="Identificação">
+          <Row label="SKU" value={product.sku ?? "—"} />
+          <Row label="Outra referência" value={product.external_reference ?? "—"} />
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">Anúncio</span>
+            {product.listing_url ? (
+              <a
+                href={product.listing_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-primary underline underline-offset-2"
+              >
+                Abrir anúncio
+              </a>
+            ) : (
+              <span className="text-foreground">—</span>
+            )}
+          </div>
+        </Block>
+
+        <Block title="Custos e preço por unidade">
           <Row label="Produto" value={money(product.product_cost_cents)} />
           <Row label="Embalagem" value={money(product.packaging_cost_cents)} />
-          <Row label="Impostos" value={money(product.taxes_cents)} />
+          <Row label="Imposto fixo" value={money(product.taxes_cents)} />
+          <Row label="Imposto (%)" value={bpsToPercentLabel(product.tax_rate_bps)} />
           <Row label="Outros" value={money(product.other_costs_cents)} />
-          <Row label="Total" value={money(totalCostCents(product))} strong />
+          <Row label="Custo total" value={money(totalCostCents(product))} strong />
+          <Row label="Preço atual" value={money(product.current_sale_price_cents)} strong />
         </Block>
 
         <Block title="Estoque e reposição">
           <Row
             label="Quantidade atual"
-            value={product.stock_quantity === null ? "—" : String(product.stock_quantity)}
+            value={
+              product.stock_quantity === null
+                ? "—"
+                : `${product.stock_quantity} · ${stockUnitLabel(product.stock_unit)}`
+            }
           />
+          <Row label="Unidade" value={stockUnitLabel(product.stock_unit)} />
           <Row
             label="Prazo de reposição"
             value={
@@ -98,6 +130,7 @@ export function TrackedProductDetail({
           />
         </Block>
       </div>
+
 
       {(product.objective || product.operational_limitations || product.notes) && (
         <div className="grid gap-4 md:grid-cols-3">

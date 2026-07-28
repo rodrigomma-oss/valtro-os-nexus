@@ -1342,8 +1342,10 @@ export type Database = {
           classification: string
           created_at: string
           created_by: string | null
+          current_sale_price_cents: number | null
           external_reference: string | null
           id: string
+          listing_url: string | null
           name: string
           notes: string | null
           objective: string | null
@@ -1356,8 +1358,11 @@ export type Database = {
           product_cost_cents: number | null
           project_id: string
           restock_lead_time_days: number | null
+          sku: string | null
           status: string
           stock_quantity: number | null
+          stock_unit: string
+          tax_rate_bps: number | null
           taxes_cents: number | null
           updated_at: string
         }
@@ -1367,8 +1372,10 @@ export type Database = {
           classification: string
           created_at?: string
           created_by?: string | null
+          current_sale_price_cents?: number | null
           external_reference?: string | null
           id?: string
+          listing_url?: string | null
           name: string
           notes?: string | null
           objective?: string | null
@@ -1381,8 +1388,11 @@ export type Database = {
           product_cost_cents?: number | null
           project_id: string
           restock_lead_time_days?: number | null
+          sku?: string | null
           status?: string
           stock_quantity?: number | null
+          stock_unit?: string
+          tax_rate_bps?: number | null
           taxes_cents?: number | null
           updated_at?: string
         }
@@ -1392,8 +1402,10 @@ export type Database = {
           classification?: string
           created_at?: string
           created_by?: string | null
+          current_sale_price_cents?: number | null
           external_reference?: string | null
           id?: string
+          listing_url?: string | null
           name?: string
           notes?: string | null
           objective?: string | null
@@ -1406,8 +1418,11 @@ export type Database = {
           product_cost_cents?: number | null
           project_id?: string
           restock_lead_time_days?: number | null
+          sku?: string | null
           status?: string
           stock_quantity?: number | null
+          stock_unit?: string
+          tax_rate_bps?: number | null
           taxes_cents?: number | null
           updated_at?: string
         }

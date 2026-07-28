@@ -10,10 +10,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { TrackedProduct, TrackedProductEvent } from "@/types/tracked-product";
-import { CLASSIFICATION_ORDER, PRIORITY_ORDER } from "@/types/tracked-product";
+import { CLASSIFICATION_ORDER, PRIORITY_ORDER, STOCK_UNIT_ORDER } from "@/types/tracked-product";
 
 const PRODUCT_SELECT =
-  "id, project_id, name, external_reference, classification, priority, objective, status, position, owner_id, product_cost_cents, packaging_cost_cents, taxes_cents, other_costs_cents, stock_quantity, restock_lead_time_days, operational_limitations, notes, archived_at, archived_by, created_by, created_at, updated_at";
+  "id, project_id, name, external_reference, sku, listing_url, classification, priority, objective, status, position, owner_id, product_cost_cents, packaging_cost_cents, taxes_cents, tax_rate_bps, other_costs_cents, current_sale_price_cents, stock_quantity, stock_unit, restock_lead_time_days, operational_limitations, notes, archived_at, archived_by, created_by, created_at, updated_at";
 
 const EVENT_SELECT =
   "id, tracked_product_id, project_id, event_type, title, description, metadata, actor_id, created_at";
@@ -22,6 +22,7 @@ const classificationSchema = z.enum(
   CLASSIFICATION_ORDER as unknown as [string, ...string[]],
 );
 const prioritySchema = z.enum(PRIORITY_ORDER as unknown as [string, ...string[]]);
+const stockUnitSchema = z.enum(STOCK_UNIT_ORDER as unknown as [string, ...string[]]);
 
 /** Texto opcional: string vazia vira null para não poluir a ficha. */
 const optionalText = (max: number) =>
@@ -33,7 +34,29 @@ const optionalText = (max: number) =>
     .optional()
     .transform((v) => (v === undefined ? undefined : v === "" ? null : v));
 
+/** Apenas HTTPS: nenhuma consulta é feita à URL, mas evitamos esquemas inseguros. */
+const httpsUrl = z
+  .string()
+  .trim()
+  .max(2048)
+  .url()
+  .refine((v) => v.startsWith("https://"), "O link do anúncio deve começar com https://")
+  .nullable()
+  .optional()
+  .transform((v) => (v === undefined ? undefined : v === "" ? null : v));
+
 const optionalInt = z.number().int().min(0).nullable().optional();
+/** Alíquota em basis points: 0–10000 (0% a 100%). */
+const optionalBps = z.number().int().min(0).max(10000).nullable().optional();
+
+/** Violação do índice único parcial de SKU dentro do projeto. */
+function translateDbError(message: string, code?: string): Error {
+  if (code === "23505" && message.includes("idx_ptp_project_sku_unique")) {
+    return new Error("Já existe um produto com este SKU neste projeto.");
+  }
+  return new Error(message);
+}
+
 
 export interface TrackedProductsPayload {
   products: TrackedProduct[];
@@ -109,6 +132,8 @@ const createSchema = z.object({
   project_id: z.string().uuid(),
   name: z.string().trim().min(2).max(200),
   external_reference: optionalText(120),
+  sku: optionalText(64),
+  listing_url: httpsUrl,
   classification: classificationSchema,
   priority: prioritySchema.default("media"),
   objective: optionalText(2000),
@@ -116,12 +141,16 @@ const createSchema = z.object({
   product_cost_cents: optionalInt,
   packaging_cost_cents: optionalInt,
   taxes_cents: optionalInt,
+  tax_rate_bps: optionalBps,
   other_costs_cents: optionalInt,
+  current_sale_price_cents: optionalInt,
   stock_quantity: optionalInt,
+  stock_unit: stockUnitSchema.default("unidade"),
   restock_lead_time_days: optionalInt,
   operational_limitations: optionalText(2000),
   notes: optionalText(4000),
 });
+
 
 export const createTrackedProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -148,7 +177,7 @@ export const createTrackedProduct = createServerFn({ method: "POST" })
       } as never)
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw translateDbError(error.message, error.code);
     return { id: (row as { id: string }).id };
   });
 
@@ -168,7 +197,7 @@ export const updateTrackedProduct = createServerFn({ method: "POST" })
       .from("project_tracked_products")
       .update(patch as never)
       .eq("id", id);
-    if (error) throw new Error(error.message);
+    if (error) throw translateDbError(error.message, error.code);
     return { ok: true };
   });
 

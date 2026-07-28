@@ -36,9 +36,14 @@ import {
   CLASSIFICATION_ORDER,
   PRIORITY_LABEL,
   PRIORITY_ORDER,
+  STOCK_UNIT_LABEL,
+  STOCK_UNIT_ORDER,
+  bpsToPercentInput,
+  percentToBps,
   type TrackedProduct,
   type TrackedProductClassification,
   type TrackedProductPriority,
+  type TrackedProductStockUnit,
 } from "@/types/tracked-product";
 
 interface TrackedProductDialogProps {
@@ -51,14 +56,19 @@ interface TrackedProductDialogProps {
 interface FormState {
   name: string;
   external_reference: string;
+  sku: string;
+  listing_url: string;
   classification: TrackedProductClassification;
   priority: TrackedProductPriority;
   objective: string;
   product_cost: string;
   packaging_cost: string;
   taxes: string;
+  tax_rate: string;
   other_costs: string;
+  current_sale_price: string;
   stock_quantity: string;
+  stock_unit: TrackedProductStockUnit;
   restock_lead_time_days: string;
   operational_limitations: string;
   notes: string;
@@ -67,18 +77,24 @@ interface FormState {
 const EMPTY: FormState = {
   name: "",
   external_reference: "",
+  sku: "",
+  listing_url: "",
   classification: "validacao",
   priority: "media",
   objective: "",
   product_cost: "",
   packaging_cost: "",
   taxes: "",
+  tax_rate: "",
   other_costs: "",
+  current_sale_price: "",
   stock_quantity: "",
+  stock_unit: "unidade",
   restock_lead_time_days: "",
   operational_limitations: "",
   notes: "",
 };
+
 
 /** Aceita "12,90" e "12.90"; retorna centavos ou null quando vazio. */
 function toCents(value: string): number | null {
@@ -120,15 +136,20 @@ export function TrackedProductDialog({
         ? {
             name: product.name,
             external_reference: product.external_reference ?? "",
+            sku: product.sku ?? "",
+            listing_url: product.listing_url ?? "",
             classification: product.classification,
             priority: product.priority,
             objective: product.objective ?? "",
             product_cost: fromCents(product.product_cost_cents),
             packaging_cost: fromCents(product.packaging_cost_cents),
             taxes: fromCents(product.taxes_cents),
+            tax_rate: bpsToPercentInput(product.tax_rate_bps),
             other_costs: fromCents(product.other_costs_cents),
+            current_sale_price: fromCents(product.current_sale_price_cents),
             stock_quantity:
               product.stock_quantity === null ? "" : String(product.stock_quantity),
+            stock_unit: product.stock_unit ?? "unidade",
             restock_lead_time_days:
               product.restock_lead_time_days === null
                 ? ""
@@ -155,14 +176,19 @@ export function TrackedProductDialog({
       const payload = {
         name: form.name.trim(),
         external_reference: form.external_reference.trim() || null,
+        sku: form.sku.trim() || null,
+        listing_url: form.listing_url.trim() || null,
         classification: form.classification,
         priority: form.priority,
         objective: form.objective.trim() || null,
         product_cost_cents: toCents(form.product_cost),
         packaging_cost_cents: toCents(form.packaging_cost),
         taxes_cents: toCents(form.taxes),
+        tax_rate_bps: percentToBps(form.tax_rate),
         other_costs_cents: toCents(form.other_costs),
+        current_sale_price_cents: toCents(form.current_sale_price),
         stock_quantity: toInt(form.stock_quantity),
+        stock_unit: form.stock_unit,
         restock_lead_time_days: toInt(form.restock_lead_time_days),
         operational_limitations: form.operational_limitations.trim() || null,
         notes: form.notes.trim() || null,
@@ -182,6 +208,10 @@ export function TrackedProductDialog({
   });
 
   const nameInvalid = form.name.trim().length < 2;
+  // Validação local espelha o CHECK do banco: apenas HTTPS é aceito.
+  const urlInvalid =
+    form.listing_url.trim() !== "" && !/^https:\/\/\S+$/i.test(form.listing_url.trim());
+  const taxRateInvalid = form.tax_rate.trim() !== "" && percentToBps(form.tax_rate) === null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -205,14 +235,38 @@ export function TrackedProductDialog({
                   placeholder="Ex.: Fone Bluetooth TWS Pro"
                 />
               </Field>
-              <Field label="Referência / SKU" htmlFor="tp-ref">
+              <Field label="SKU" htmlFor="tp-sku" hint="Único dentro deste projeto.">
+                <Input
+                  id="tp-sku"
+                  value={form.sku}
+                  onChange={(e) => set("sku", e.target.value)}
+                  placeholder="Ex.: SV-FONE-001"
+                />
+              </Field>
+              <Field label="Outra referência" htmlFor="tp-ref">
                 <Input
                   id="tp-ref"
                   value={form.external_reference}
                   onChange={(e) => set("external_reference", e.target.value)}
-                  placeholder="Código na Shopee"
+                  placeholder="Código interno ou do marketplace"
                 />
               </Field>
+              <Field
+                label="Link do anúncio"
+                htmlFor="tp-listing"
+                className="md:col-span-2"
+                hint={urlInvalid ? "Informe um endereço iniciado por https://" : undefined}
+              >
+                <Input
+                  id="tp-listing"
+                  inputMode="url"
+                  value={form.listing_url}
+                  onChange={(e) => set("listing_url", e.target.value)}
+                  placeholder="https://…"
+                  aria-invalid={urlInvalid}
+                />
+              </Field>
+
               <Field label="Prioridade" htmlFor="tp-priority">
                 <Select
                   value={form.priority}
@@ -255,8 +309,8 @@ export function TrackedProductDialog({
             </div>
           </Section>
 
-          <Section title="Custos (por unidade)">
-            <div className="grid gap-4 md:grid-cols-4">
+          <Section title="Custos e preço (por unidade)">
+            <div className="grid gap-4 md:grid-cols-3">
               <Field label="Produto (R$)" htmlFor="tp-cost">
                 <Input
                   id="tp-cost"
@@ -275,15 +329,6 @@ export function TrackedProductDialog({
                   placeholder="0,00"
                 />
               </Field>
-              <Field label="Impostos (R$)" htmlFor="tp-tax">
-                <Input
-                  id="tp-tax"
-                  inputMode="decimal"
-                  value={form.taxes}
-                  onChange={(e) => set("taxes", e.target.value)}
-                  placeholder="0,00"
-                />
-              </Field>
               <Field label="Outros (R$)" htmlFor="tp-other">
                 <Input
                   id="tp-other"
@@ -293,11 +338,43 @@ export function TrackedProductDialog({
                   placeholder="0,00"
                 />
               </Field>
+              <Field label="Imposto fixo (R$)" htmlFor="tp-tax" hint="Valor fixo por unidade.">
+                <Input
+                  id="tp-tax"
+                  inputMode="decimal"
+                  value={form.taxes}
+                  onChange={(e) => set("taxes", e.target.value)}
+                  placeholder="0,00"
+                />
+              </Field>
+              <Field
+                label="Imposto (%)"
+                htmlFor="tp-tax-rate"
+                hint={taxRateInvalid ? "Informe um percentual entre 0 e 100." : "Ex.: 7"}
+              >
+                <Input
+                  id="tp-tax-rate"
+                  inputMode="decimal"
+                  value={form.tax_rate}
+                  onChange={(e) => set("tax_rate", e.target.value)}
+                  placeholder="0"
+                  aria-invalid={taxRateInvalid}
+                />
+              </Field>
+              <Field label="Preço de venda atual (R$)" htmlFor="tp-price">
+                <Input
+                  id="tp-price"
+                  inputMode="decimal"
+                  value={form.current_sale_price}
+                  onChange={(e) => set("current_sale_price", e.target.value)}
+                  placeholder="0,00"
+                />
+              </Field>
             </div>
           </Section>
 
           <Section title="Estoque">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <Field label="Quantidade atual" htmlFor="tp-stock">
                 <Input
                   id="tp-stock"
@@ -306,6 +383,23 @@ export function TrackedProductDialog({
                   onChange={(e) => set("stock_quantity", e.target.value)}
                   placeholder="0"
                 />
+              </Field>
+              <Field label="Unidade" htmlFor="tp-stock-unit">
+                <Select
+                  value={form.stock_unit}
+                  onValueChange={(v) => set("stock_unit", v as TrackedProductStockUnit)}
+                >
+                  <SelectTrigger id="tp-stock-unit">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STOCK_UNIT_ORDER.map((u) => (
+                      <SelectItem key={u} value={u}>
+                        {STOCK_UNIT_LABEL[u]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
               <Field label="Prazo de reposição (dias)" htmlFor="tp-lead">
                 <Input
@@ -318,6 +412,7 @@ export function TrackedProductDialog({
               </Field>
             </div>
           </Section>
+
 
           <Section title="Contexto operacional">
             <div className="space-y-4">
@@ -355,7 +450,10 @@ export function TrackedProductDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={() => mutation.mutate()} disabled={nameInvalid || mutation.isPending}>
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={nameInvalid || urlInvalid || taxRateInvalid || mutation.isPending}
+          >
             {mutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {product ? "Salvar alterações" : "Adicionar produto"}
           </Button>
