@@ -197,7 +197,7 @@ export const updateTrackedProduct = createServerFn({ method: "POST" })
       .from("project_tracked_products")
       .update(patch as never)
       .eq("id", id);
-    if (error) throw new Error(error.message);
+    if (error) throw translateDbError(error.message, error.code);
     return { ok: true };
   });
 
