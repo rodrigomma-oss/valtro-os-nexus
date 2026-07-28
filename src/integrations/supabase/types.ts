@@ -1284,6 +1284,143 @@ export type Database = {
           },
         ]
       }
+      project_tracked_product_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json
+          project_id: string
+          title: string
+          tracked_product_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json
+          project_id: string
+          title: string
+          tracked_product_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json
+          project_id?: string
+          title?: string
+          tracked_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_tracked_product_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tracked_product_events_tracked_product_id_fkey"
+            columns: ["tracked_product_id"]
+            isOneToOne: false
+            referencedRelation: "project_tracked_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_tracked_products: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          classification: string
+          created_at: string
+          created_by: string | null
+          external_reference: string | null
+          id: string
+          name: string
+          notes: string | null
+          objective: string | null
+          operational_limitations: string | null
+          other_costs_cents: number | null
+          owner_id: string | null
+          packaging_cost_cents: number | null
+          position: number
+          priority: string
+          product_cost_cents: number | null
+          project_id: string
+          restock_lead_time_days: number | null
+          status: string
+          stock_quantity: number | null
+          taxes_cents: number | null
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          classification: string
+          created_at?: string
+          created_by?: string | null
+          external_reference?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          objective?: string | null
+          operational_limitations?: string | null
+          other_costs_cents?: number | null
+          owner_id?: string | null
+          packaging_cost_cents?: number | null
+          position?: number
+          priority?: string
+          product_cost_cents?: number | null
+          project_id: string
+          restock_lead_time_days?: number | null
+          status?: string
+          stock_quantity?: number | null
+          taxes_cents?: number | null
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          classification?: string
+          created_at?: string
+          created_by?: string | null
+          external_reference?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          objective?: string | null
+          operational_limitations?: string | null
+          other_costs_cents?: number | null
+          owner_id?: string | null
+          packaging_cost_cents?: number | null
+          position?: number
+          priority?: string
+          product_cost_cents?: number | null
+          project_id?: string
+          restock_lead_time_days?: number | null
+          status?: string
+          stock_quantity?: number | null
+          taxes_cents?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_tracked_products_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client_id: string
