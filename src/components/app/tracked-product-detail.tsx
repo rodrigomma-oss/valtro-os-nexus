@@ -13,7 +13,12 @@ import {
   addTrackedProductNote,
   getTrackedProductEvents,
 } from "@/lib/tracked-products.functions";
-import { totalCostCents, type TrackedProduct } from "@/types/tracked-product";
+import {
+  bpsToPercentLabel,
+  stockUnitLabel,
+  totalCostCents,
+  type TrackedProduct,
+} from "@/types/tracked-product";
 
 interface TrackedProductDetailProps {
   product: TrackedProduct;
