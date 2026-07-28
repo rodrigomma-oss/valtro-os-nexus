@@ -235,14 +235,38 @@ export function TrackedProductDialog({
                   placeholder="Ex.: Fone Bluetooth TWS Pro"
                 />
               </Field>
-              <Field label="Referência / SKU" htmlFor="tp-ref">
+              <Field label="SKU" htmlFor="tp-sku" hint="Único dentro deste projeto.">
+                <Input
+                  id="tp-sku"
+                  value={form.sku}
+                  onChange={(e) => set("sku", e.target.value)}
+                  placeholder="Ex.: SV-FONE-001"
+                />
+              </Field>
+              <Field label="Outra referência" htmlFor="tp-ref">
                 <Input
                   id="tp-ref"
                   value={form.external_reference}
                   onChange={(e) => set("external_reference", e.target.value)}
-                  placeholder="Código na Shopee"
+                  placeholder="Código interno ou do marketplace"
                 />
               </Field>
+              <Field
+                label="Link do anúncio"
+                htmlFor="tp-listing"
+                className="md:col-span-2"
+                hint={urlInvalid ? "Informe um endereço iniciado por https://" : undefined}
+              >
+                <Input
+                  id="tp-listing"
+                  inputMode="url"
+                  value={form.listing_url}
+                  onChange={(e) => set("listing_url", e.target.value)}
+                  placeholder="https://…"
+                  aria-invalid={urlInvalid}
+                />
+              </Field>
+
               <Field label="Prioridade" htmlFor="tp-priority">
                 <Select
                   value={form.priority}
