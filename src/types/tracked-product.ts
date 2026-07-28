@@ -152,6 +152,53 @@ export const PRIORITY_TONE: Record<TrackedProductPriority, string> = {
   alta: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
+export const STOCK_UNIT_ORDER: TrackedProductStockUnit[] = [
+  "unidade",
+  "peca",
+  "kit",
+  "conjunto",
+  "outro",
+];
+
+export const STOCK_UNIT_LABEL: Record<TrackedProductStockUnit, string> = {
+  unidade: "Unidade",
+  peca: "Peça",
+  kit: "Kit",
+  conjunto: "Conjunto",
+  outro: "Outro",
+};
+
+/** Fallback seguro: unidades futuras aparecem cruas em vez de quebrar a tela. */
+export function stockUnitLabel(value: string): string {
+  return (STOCK_UNIT_LABEL as Record<string, string>)[value] ?? value;
+}
+
+/**
+ * Percentual informado pelo operador → basis points inteiros.
+ * Aceita "7", "7,5" e "7.5". Retorna null quando vazio ou fora de 0–100.
+ */
+export function percentToBps(value: string): number | null {
+  const raw = value.trim().replace(",", ".");
+  if (raw === "") return null;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0 || n > 100) return null;
+  return Math.round(n * 100);
+}
+
+/** 700 → "7%"; 750 → "7,5%"; null → "—". */
+export function bpsToPercentLabel(bps: number | null): string {
+  if (bps === null || bps === undefined) return "—";
+  const pct = bps / 100;
+  return `${pct.toFixed(2).replace(/\.?0+$/, "").replace(".", ",")}%`;
+}
+
+/** Valor de edição do campo percentual (sem sufixo). */
+export function bpsToPercentInput(bps: number | null): string {
+  if (bps === null || bps === undefined) return "";
+  return (bps / 100).toFixed(2).replace(/\.?0+$/, "").replace(".", ",");
+}
+
+
 /** Fallback seguro para valores ainda não mapeados no front. */
 export function classificationLabel(value: string): string {
   return (CLASSIFICATION_LABEL as Record<string, string>)[value] ?? value;
