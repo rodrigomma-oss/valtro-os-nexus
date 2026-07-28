@@ -22,6 +22,7 @@ const classificationSchema = z.enum(
   CLASSIFICATION_ORDER as unknown as [string, ...string[]],
 );
 const prioritySchema = z.enum(PRIORITY_ORDER as unknown as [string, ...string[]]);
+const stockUnitSchema = z.enum(STOCK_UNIT_ORDER as unknown as [string, ...string[]]);
 
 /** Texto opcional: string vazia vira null para não poluir a ficha. */
 const optionalText = (max: number) =>
@@ -33,7 +34,29 @@ const optionalText = (max: number) =>
     .optional()
     .transform((v) => (v === undefined ? undefined : v === "" ? null : v));
 
+/** Apenas HTTPS: nenhuma consulta é feita à URL, mas evitamos esquemas inseguros. */
+const httpsUrl = z
+  .string()
+  .trim()
+  .max(2048)
+  .url()
+  .refine((v) => v.startsWith("https://"), "O link do anúncio deve começar com https://")
+  .nullable()
+  .optional()
+  .transform((v) => (v === undefined ? undefined : v === "" ? null : v));
+
 const optionalInt = z.number().int().min(0).nullable().optional();
+/** Alíquota em basis points: 0–10000 (0% a 100%). */
+const optionalBps = z.number().int().min(0).max(10000).nullable().optional();
+
+/** Violação do índice único parcial de SKU dentro do projeto. */
+function translateDbError(message: string, code?: string): Error {
+  if (code === "23505" && message.includes("idx_ptp_project_sku_unique")) {
+    return new Error("Já existe um produto com este SKU neste projeto.");
+  }
+  return new Error(message);
+}
+
 
 export interface TrackedProductsPayload {
   products: TrackedProduct[];
