@@ -208,6 +208,10 @@ export function TrackedProductDialog({
   });
 
   const nameInvalid = form.name.trim().length < 2;
+  // Validação local espelha o CHECK do banco: apenas HTTPS é aceito.
+  const urlInvalid =
+    form.listing_url.trim() !== "" && !/^https:\/\/\S+$/i.test(form.listing_url.trim());
+  const taxRateInvalid = form.tax_rate.trim() !== "" && percentToBps(form.tax_rate) === null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
