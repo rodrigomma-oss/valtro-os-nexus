@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectStatusBadge } from "@/components/app/project-status-badge";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { ProjectOverviewCard } from "@/components/app/project-overview-card";
+import { TrackedProductsCard } from "@/components/app/tracked-products-card";
 import {
   Select,
   SelectContent,
@@ -171,6 +172,8 @@ function ProjectDetail() {
       />
 
       <ProjectOverviewCard projectId={id} canWrite={canWrite} />
+
+      <TrackedProductsCard projectId={id} canWrite={canWrite} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-6">
