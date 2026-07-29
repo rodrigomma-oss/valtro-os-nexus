@@ -71,7 +71,10 @@ function assertIsAdmin(isAdmin: boolean | null) {
   }
 }
 
-async function getIsAdmin(context: { supabase: { rpc: Function }; userId: string }) {
+async function getIsAdmin(context: {
+  supabase: SupabaseClient<Database>;
+  userId: string;
+}) {
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin" as AppRole,
@@ -87,7 +90,7 @@ function mapRoleLabel(roles: AppRole[]) {
 }
 
 async function fetchUserProfileNames(
-  supabase: { from: Function },
+  supabase: SupabaseClient<Database>,
   userIds: string[],
 ): Promise<Record<string, { full_name: string | null; email: string | null }>> {
   if (userIds.length === 0) return {};
