@@ -10,6 +10,7 @@ import {
   FolderKanban,
   Layers,
   Plug,
+  Shield,
 
   type LucideIcon,
 } from "lucide-react";
@@ -45,6 +46,12 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Portal de Diagnóstico", to: "/diagnostico", icon: ClipboardList, external: true },
       { label: "Integrações", to: "/crm/admin/integracoes", icon: Plug },
+    ],
+  },
+  {
+    label: "Administração",
+    items: [
+      { label: "Usuários", to: "/crm/admin/usuarios", icon: Shield },
     ],
   },
 
