@@ -290,51 +290,16 @@ export const toggleUserBlock = createServerFn({ method: "POST" })
   });
 
 // =============================================================
-// deleteUser
+// Exclusão de usuários — INTENCIONALMENTE INEXISTENTE
 // =============================================================
-export const deleteUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data) => userIdSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    const isAdmin = await getIsAdmin(context);
-    assertIsAdmin(isAdmin);
-
-    if (data.user_id === context.userId) {
-      throw new Error("Você não pode excluir a si mesmo.");
-    }
-
-    // Garante que não estamos excluindo o último administrador. O trigger de banco também protege,
-    // mas validar aqui evita mensagens de erro genéricas do Postgres.
-    const { data: isTargetAdmin, error: roleErr } = await context.supabase.rpc("has_role", {
-      _user_id: data.user_id,
-      _role: "admin" as AppRole,
-    });
-    if (roleErr) throw new Error(roleErr.message);
-
-    if (isTargetAdmin) {
-      const { count, error: countErr } = await context.supabase
-        .from("user_roles")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "admin");
-      if (countErr) throw new Error(countErr.message);
-      if ((count ?? 0) <= 1) {
-        throw new Error("Não é possível excluir o último administrador do sistema.");
-      }
-    }
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
-    if (error) throw new Error(error.message);
-
-    await context.supabase.rpc("log_user_admin_event", {
-      _actor_id: context.userId,
-      _target_user_id: data.user_id,
-      _action: "delete",
-      _metadata: {},
-    });
-
-    return { ok: true };
-  });
+// Requisito aprovado da Sprint 15.2.2B: usuários NUNCA são excluídos.
+// A remoção de acesso é feita exclusivamente por `toggleUserBlock`, que usa o
+// mecanismo oficial do Supabase Auth (`ban_duration`). Isso preserva perfil,
+// papéis, autoria (`created_by`/`owner_id`) e toda a trilha histórica do CRM.
+//
+// Não adicione `supabaseAdmin.auth.admin.deleteUser()` aqui. Além desta regra,
+// o banco impede a exclusão física: `profiles.id` e `user_roles.user_id`
+// referenciam `auth.users` com ON DELETE RESTRICT.
 
 // =============================================================
 // listAuditEvents
@@ -347,7 +312,9 @@ export const listAuditEvents = createServerFn({ method: "GET" })
 
     const { data: events, error } = await context.supabase
       .from("user_admin_audit_events")
-      .select("id, actor_id, target_user_id, action, metadata, created_at")
+      .select(
+        "id, actor_id, actor_email, actor_name, target_user_id, target_email, target_name, action, metadata, created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);
@@ -359,6 +326,9 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       ]),
     ) as string[];
 
+    // O snapshot gravado no evento é a fonte primária de identidade e sobrevive a
+    // qualquer alteração posterior no cadastro. As buscas abaixo são apenas fallback
+    // para eventos legados, gravados antes da introdução das colunas de snapshot.
     const profileNames = await fetchUserProfileNames(context.supabase, userIds);
     const authMap: Record<string, string | null> = {};
 
@@ -373,9 +343,6 @@ export const listAuditEvents = createServerFn({ method: "GET" })
     }
 
     return (events ?? []).map((e) => {
-      const actorName = profileNames[e.actor_id] ?? null;
-      const targetName = e.target_user_id ? (profileNames[e.target_user_id] ?? null) : null;
-
       const metadata: Record<string, string | number | boolean | null> = {};
       if (e.metadata && typeof e.metadata === "object") {
         for (const [key, value] of Object.entries(e.metadata)) {
@@ -393,11 +360,13 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       return {
         id: e.id,
         actor_id: e.actor_id,
-        actor_email: authMap[e.actor_id] ?? null,
-        actor_name: actorName,
+        actor_email: e.actor_email ?? authMap[e.actor_id] ?? null,
+        actor_name: e.actor_name ?? profileNames[e.actor_id] ?? null,
         target_user_id: e.target_user_id,
-        target_email: e.target_user_id ? (authMap[e.target_user_id] ?? null) : null,
-        target_name: targetName,
+        target_email:
+          e.target_email ?? (e.target_user_id ? (authMap[e.target_user_id] ?? null) : null),
+        target_name:
+          e.target_name ?? (e.target_user_id ? (profileNames[e.target_user_id] ?? null) : null),
         action: e.action,
         metadata: Object.keys(metadata).length > 0 ? metadata : null,
         created_at: e.created_at,
