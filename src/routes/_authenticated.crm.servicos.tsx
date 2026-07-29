@@ -40,12 +40,6 @@ function formatPrice(cents: number | null): string {
   });
 }
 
-function formatLimits(limits: Record<string, string | number | boolean | null>): string {
-  const keys = Object.keys(limits ?? {});
-  if (keys.length === 0) return "—";
-  return keys.map((k) => `${k}: ${String(limits[k])}`).join(" · ");
-}
-
 function ServicesCatalog() {
   const qc = useQueryClient();
   const listFn = useServerFn(listServices);
