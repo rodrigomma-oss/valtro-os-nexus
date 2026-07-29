@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/select";
 import { createLead } from "@/lib/leads.functions";
 import { SOURCE_LABEL, type LeadSource } from "@/types/lead";
-import { SERVICE_CATALOG, dbValueForId } from "@/config/service-catalog";
+import { listServices } from "@/lib/services.functions";
+import { serviceCategoryOptions } from "@/lib/service-catalog";
+import type { ServiceType } from "@/types/briefing";
 import { maskPhoneInput, onlyDigits } from "@/lib/formatters";
 
 interface NewLeadDialogProps {
@@ -51,7 +53,7 @@ const INITIAL = {
   state: "",
   segment: "",
   source: "manual" as LeadSource,
-  service_id: "",
+  service_type: "" as ServiceType | "",
 };
 
 export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
@@ -59,6 +61,20 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
 
   const qc = useQueryClient();
   const createLeadFn = useServerFn(createLead);
+  const listServicesFn = useServerFn(listServices);
+
+  // Sprint 15.2.3A — o tipo de serviço é derivado exclusivamente do catálogo
+  // oficial (`services`). Nenhuma lista fixa local.
+  const servicesQuery = useQuery({
+    queryKey: ["services-catalog", "active"],
+    queryFn: () => listServicesFn(),
+    enabled: open,
+    staleTime: 60_000,
+  });
+  const serviceOptions = useMemo(
+    () => serviceCategoryOptions(servicesQuery.data ?? []),
+    [servicesQuery.data],
+  );
   const mutation = useMutation({
     mutationFn: (payload: typeof form) =>
       createLeadFn({
@@ -72,7 +88,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
           state: payload.state,
           segment: payload.segment,
           source: payload.source,
-          service_type: dbValueForId(payload.service_id),
+          service_type: (payload.service_type || "nao_definido") as ServiceType,
         },
       }),
     onSuccess: () => {
@@ -96,7 +112,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
       toast.error("Empresa e contato são obrigatórios.");
       return;
     }
-    if (!form.service_id) {
+    if (!form.service_type) {
       toast.error("Selecione o tipo de serviço.");
       return;
     }
@@ -190,17 +206,23 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               />
             </div>
             <div className="col-span-2 space-y-1.5">
-              <Label htmlFor="service_id">Tipo de serviço *</Label>
+              <Label htmlFor="service_type">Tipo de serviço *</Label>
               <Select
-                value={form.service_id}
-                onValueChange={(v) => update("service_id", v)}
+                value={form.service_type}
+                onValueChange={(v) => update("service_type", v)}
               >
-                <SelectTrigger id="service_id">
-                  <SelectValue placeholder="Selecione o tipo de serviço" />
+                <SelectTrigger id="service_type">
+                  <SelectValue
+                    placeholder={
+                      servicesQuery.isLoading
+                        ? "Carregando catálogo…"
+                        : "Selecione o tipo de serviço"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {SERVICE_CATALOG.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
+                  {serviceOptions.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>
                       {s.label}
                     </SelectItem>
                   ))}
