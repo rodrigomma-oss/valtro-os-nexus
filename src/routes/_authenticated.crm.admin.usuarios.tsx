@@ -20,7 +20,6 @@ import {
   UserCog,
   Eye,
   Ban,
-  Trash2,
   Mail,
   Plus,
   Search,
@@ -55,7 +54,6 @@ import {
   listUsers,
   changeUserRole,
   toggleUserBlock,
-  deleteUser,
   listAuditEvents,
   type AdminUser,
   type AppRole,
@@ -80,7 +78,6 @@ const ACTION_LABEL: Record<string, string> = {
   role_change: "Papel alterado",
   block: "Usuário bloqueado",
   unblock: "Usuário desbloqueado",
-  delete: "Usuário excluído",
   resend_invite: "Convite reenviado",
   cancel_invite: "Convite cancelado",
 };
@@ -100,7 +97,6 @@ function UsersAdminPage() {
   const listFn = useServerFn(listUsers);
   const changeRoleFn = useServerFn(changeUserRole);
   const toggleBlockFn = useServerFn(toggleUserBlock);
-  const deleteFn = useServerFn(deleteUser);
   const auditFn = useServerFn(listAuditEvents);
   const rolesFn = useServerFn(getMyRoles);
 
@@ -109,7 +105,6 @@ function UsersAdminPage() {
   const [confirmState, setConfirmState] = useState<
     | { type: "role"; user: AdminUser; role: AppRole }
     | { type: "block"; user: AdminUser }
-    | { type: "delete"; user: AdminUser }
     | null
   >(null);
 
@@ -155,17 +150,6 @@ function UsersAdminPage() {
       setConfirmState(null);
     },
     onError: (err: Error) => toast.error(err.message ?? "Não foi possível alterar o bloqueio."),
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (user_id: string) => deleteFn({ data: { user_id } }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-users"] });
-      qc.invalidateQueries({ queryKey: ["admin-audit-events"] });
-      toast.success("Usuário excluído.");
-      setConfirmState(null);
-    },
-    onError: (err: Error) => toast.error(err.message ?? "Não foi possível excluir o usuário."),
   });
 
   const q = term.trim().toLowerCase();
@@ -273,16 +257,6 @@ function UsersAdminPage() {
             >
               <Ban className="h-4 w-4" />
             </Button>
-
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              title="Excluir"
-              onClick={() => setConfirmState({ type: "delete", user: u })}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
           </div>
         );
       },
@@ -373,11 +347,9 @@ function UsersAdminPage() {
             });
           } else if (confirmState.type === "block") {
             toggleBlockMut.mutate(confirmState.user.id);
-          } else if (confirmState.type === "delete") {
-            deleteMut.mutate(confirmState.user.id);
           }
         }}
-        busy={changeRoleMut.isPending || toggleBlockMut.isPending || deleteMut.isPending}
+        busy={changeRoleMut.isPending || toggleBlockMut.isPending}
       />
     </div>
   );
@@ -459,7 +431,6 @@ function ConfirmDialog({
   state:
     | { type: "role"; user: AdminUser; role: AppRole }
     | { type: "block"; user: AdminUser }
-    | { type: "delete"; user: AdminUser }
     | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -470,20 +441,16 @@ function ConfirmDialog({
   const title =
     state.type === "role"
       ? "Alterar papel"
-      : state.type === "block"
-        ? state.user.banned
-          ? "Desbloquear usuário"
-          : "Bloquear usuário"
-        : "Excluir usuário";
+      : state.user.banned
+        ? "Desbloquear usuário"
+        : "Bloquear usuário";
 
   const description =
     state.type === "role"
       ? `Tem certeza que deseja alterar o papel de "${state.user.full_name ?? state.user.email}" para "${ROLE_LABEL[state.role]}"?`
-      : state.type === "block"
-        ? state.user.banned
-          ? `O usuário "${state.user.full_name ?? state.user.email}" poderá fazer login novamente.`
-          : `O usuário "${state.user.full_name ?? state.user.email}" não poderá acessar a plataforma até ser desbloqueado.`
-        : `A exclusão de "${state.user.full_name ?? state.user.email}" é irreversível. Todos os dados vinculados ao usuário permanecerão no CRM, mas a conta será removida.`;
+      : state.user.banned
+        ? `O usuário "${state.user.full_name ?? state.user.email}" poderá fazer login novamente. O histórico e a autoria permanecem preservados.`
+        : `O usuário "${state.user.full_name ?? state.user.email}" não poderá acessar a plataforma até ser desbloqueado. Nenhum dado é excluído: perfil, papel e autoria continuam íntegros.`;
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -496,11 +463,7 @@ function ConfirmDialog({
           <Button variant="outline" onClick={onClose} disabled={busy}>
             Cancelar
           </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={busy}
-            variant={state.type === "delete" ? "destructive" : "default"}
-          >
+          <Button onClick={onConfirm} disabled={busy}>
             {busy ? "Processando…" : "Confirmar"}
           </Button>
         </DialogFooter>
