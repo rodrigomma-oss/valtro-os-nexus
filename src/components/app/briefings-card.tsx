@@ -42,7 +42,7 @@ import {
 import type { BriefingToken, ServiceType, TokenStatus } from "@/types/briefing";
 import { TEMPLATE_TYPE_LABEL, TOKEN_STATUS_LABEL } from "@/types/briefing";
 import type { Lead } from "@/types/lead";
-import { briefingServiceLabel } from "@/config/briefing-service-catalog";
+import { serviceTypeLabel } from "@/lib/service-catalog";
 import { BriefingViewerDrawer } from "./briefing-viewer-drawer";
 import { NewBriefingDialog } from "./new-briefing-dialog";
 
@@ -283,7 +283,7 @@ function BriefingEnvelope({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-foreground">
-              {briefingServiceLabel(token.service_type)}
+              {serviceTypeLabel(token.service_type)}
             </span>
             <span
               className={cn(

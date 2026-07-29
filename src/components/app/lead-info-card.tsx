@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "./status-badge";
 import type { Lead } from "@/types/lead";
 import { SOURCE_LABEL } from "@/types/lead";
-import { labelForDbValue } from "@/config/service-catalog";
+import { serviceTypeLabel } from "@/lib/service-catalog";
 import { formatPhone } from "@/lib/formatters";
 
 interface InfoRowProps {
@@ -63,7 +63,7 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
         <InfoRow
           icon={Briefcase}
           label="Tipo de serviço"
-          value={labelForDbValue(lead.service_type)}
+          value={serviceTypeLabel(lead.service_type)}
         />
         <InfoRow icon={UserCog} label="Responsável" value={lead.owner_name ?? dash} />
         <InfoRow
