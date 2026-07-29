@@ -109,3 +109,95 @@ export function formatServiceLimits(limits: ServiceDefaultLimits | null | undefi
   });
   return parts.length > 0 ? parts.join(" · ") : "—";
 }
+
+// ============================================================
+// Sprint 15.2.3C — Camada de apresentação do catálogo
+// ============================================================
+
+/** Substantivo em linguagem natural para cada limite do contrato. */
+const SERVICE_LIMIT_NOUN: Record<keyof ServiceDefaultLimits, string> = {
+  max_products: "produtos",
+  max_campaigns: "campanhas",
+  max_users: "usuários",
+};
+
+/**
+ * Descreve o escopo do serviço em frases legíveis ("Até 10 produtos").
+ * Nunca expõe JSON: quando não há limite definido, o escopo é ilimitado.
+ */
+export function describeServiceLimits(
+  limits: ServiceDefaultLimits | null | undefined,
+): string[] {
+  if (!limits) return ["Escopo ilimitado"];
+  const parts = SERVICE_LIMIT_KEYS.flatMap((key) => {
+    const value = limits[key];
+    return typeof value === "number"
+      ? [`Até ${value} ${SERVICE_LIMIT_NOUN[key]}`]
+      : [];
+  });
+  return parts.length > 0 ? parts : ["Escopo ilimitado"];
+}
+
+/** Preço em BRL; "Sob consulta" é estado oficial, não ausência de valor. */
+export function formatServicePrice(
+  pricingMode: ServicePricingMode,
+  cents: number | null | undefined,
+): string {
+  if (pricingMode === "sob_consulta" || cents == null) return "Sob consulta";
+  return (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+/** Rótulo comercial da cobrança (sem enum técnico). */
+export function formatServiceBilling(
+  billingType: CatalogService["billing_type"],
+  billingInterval: CatalogService["billing_interval"],
+): string {
+  if (billingType === "recorrente") {
+    return billingInterval === "monthly" ? "Mensal" : "Recorrente";
+  }
+  return "Pontual";
+}
+
+/** Objetivo comercial; nunca retorna vazio. */
+export function formatServiceObjective(objective: string | null | undefined): string {
+  const value = objective?.trim();
+  return value && value.length > 0 ? value : "Objetivo não definido";
+}
+
+/** Onboarding sem expor chave técnica. */
+export function formatOnboardingPresence(key: string | null | undefined): string {
+  return key && key.trim().length > 0 ? "Configurado" : "Não possui";
+}
+
+/** Classe de badge por tipo de oferta — tokens semânticos, sem cor hard-coded. */
+export const SERVICE_OFFER_TYPE_BADGE_CLASS: Record<ServiceOfferType, string> = {
+  principal: "border-success/30 bg-success/10 text-success",
+  complementar: "border-warning/30 bg-warning/10 text-warning",
+  recorrente: "border-info/30 bg-info/10 text-info",
+};
+
+export interface CatalogSummary {
+  total: number;
+  active: number;
+  inactive: number;
+  principal: number;
+  complementar: number;
+  recorrente: number;
+}
+
+/** Indicadores calculados dinamicamente a partir do catálogo. */
+export function summarizeCatalog(services: CatalogService[]): CatalogSummary {
+  return services.reduce<CatalogSummary>(
+    (acc, s) => {
+      acc.total += 1;
+      if (s.active) acc.active += 1;
+      else acc.inactive += 1;
+      acc[s.offer_type] += 1;
+      return acc;
+    },
+    { total: 0, active: 0, inactive: 0, principal: 0, complementar: 0, recorrente: 0 },
+  );
+}
