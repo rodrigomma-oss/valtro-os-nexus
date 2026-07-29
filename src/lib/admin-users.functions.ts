@@ -92,16 +92,16 @@ function mapRoleLabel(roles: AppRole[]) {
 async function fetchUserProfileNames(
   supabase: SupabaseClient<Database>,
   userIds: string[],
-): Promise<Record<string, { full_name: string | null; email: string | null }>> {
+): Promise<Record<string, string | null>> {
   if (userIds.length === 0) return {};
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, email")
+    .select("id, full_name")
     .in("id", userIds);
   if (error) throw new Error(error.message);
-  const map: Record<string, { full_name: string | null; email: string | null }> = {};
+  const map: Record<string, string | null> = {};
   for (const row of data ?? []) {
-    map[row.id] = { full_name: row.full_name, email: row.email ?? null };
+    map[row.id] = row.full_name ?? null;
   }
   return map;
 }
