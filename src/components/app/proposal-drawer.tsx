@@ -59,7 +59,10 @@ import {
   type ProposalStatus,
 } from "@/types/proposal";
 import { listServices, type CatalogService } from "@/lib/services.functions";
-import { groupServicesByCategory } from "@/lib/service-catalog";
+import {
+  groupServicesByCategory,
+  type ServiceCategoryGroup,
+} from "@/lib/service-catalog";
 import { GenerateContractsDialog } from "./generate-contracts-dialog";
 
 interface ProposalDrawerProps {
