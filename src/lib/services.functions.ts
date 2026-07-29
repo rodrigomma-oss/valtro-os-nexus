@@ -53,15 +53,22 @@ const SERVICE_SELECT =
   "id, code, name, category, description, objective, default_price_cents, pricing_mode, offer_type, origin_service_id, billing_type, billing_interval, active, default_limits, onboarding_template_key, sort_order, created_at, updated_at";
 
 
-function normalize(row: any): CatalogService {
-  return {
-    ...row,
-    default_limits:
-      row.default_limits && typeof row.default_limits === "object"
-        ? (row.default_limits as Record<string, string | number | boolean | null>)
-        : {},
-  };
+/** Normaliza os limites para o contrato conhecido, ignorando chaves legadas. */
+function normalizeLimits(raw: unknown): ServiceDefaultLimits {
+  if (!raw || typeof raw !== "object") return {};
+  const src = raw as Record<string, unknown>;
+  const out: ServiceDefaultLimits = {};
+  for (const key of ["max_products", "max_campaigns", "max_users"] as const) {
+    const value = src[key];
+    if (typeof value === "number" && Number.isFinite(value)) out[key] = value;
+  }
+  return out;
 }
+
+function normalize(row: any): CatalogService {
+  return { ...row, default_limits: normalizeLimits(row.default_limits) };
+}
+
 
 export const listServices = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
