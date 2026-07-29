@@ -620,21 +620,21 @@ function TotalsRow({
   );
 }
 
-interface ServiceLibraryPopoverProps {
-  groups: Record<ServiceCategory, typeof SERVICE_LIBRARY>;
-  skus: CatalogService[];
-  onPickSku: (sku: CatalogService) => void;
-  onPick: (item: (typeof SERVICE_LIBRARY)[number]) => void;
+interface ServiceCatalogPopoverProps {
+  groups: ServiceCategoryGroup[];
+  onPickService: (service: CatalogService) => void;
   onCustom: () => void;
 }
 
-function ServiceLibraryPopover({
+/**
+ * Seletor de itens da proposta — alimentado exclusivamente pela tabela
+ * `services` (fonte única do catálogo comercial, Sprint 15.2.3A).
+ */
+function ServiceCatalogPopover({
   groups,
-  skus,
-  onPickSku,
-  onPick,
+  onPickService,
   onCustom,
-}: ServiceLibraryPopoverProps) {
+}: ServiceCatalogPopoverProps) {
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -647,20 +647,25 @@ function ServiceLibraryPopover({
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[26rem] p-2">
         <div className="max-h-96 overflow-y-auto space-y-3">
-          {skus.length > 0 && (
-            <div>
-              <div className="px-2 pb-1 text-[10px] uppercase tracking-wider text-primary font-semibold">
-                Catálogo de serviços (SKUs)
+          {groups.length === 0 && (
+            <p className="px-2 py-3 text-xs text-muted-foreground">
+              Nenhum serviço ativo no catálogo.
+            </p>
+          )}
+          {groups.map((group) => (
+            <div key={group.category}>
+              <div className="px-2 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                {group.label}
               </div>
               <ul className="space-y-1">
-                {skus.map((sku) => {
+                {group.services.map((sku) => {
                   const hasPrice = sku.default_price_cents != null;
                   return (
                     <li key={sku.id}>
                       <button
                         type="button"
                         onClick={() => {
-                          onPickSku(sku);
+                          onPickService(sku);
                           setOpen(false);
                         }}
                         className="w-full text-left rounded-md px-2 py-1.5 hover:bg-muted transition-colors"
@@ -679,11 +684,6 @@ function ServiceLibraryPopover({
                               : "—"}
                           </span>
                         </div>
-                        {!hasPrice && (
-                          <div className="text-[10px] text-amber-600 mt-0.5">
-                            Preço padrão não definido
-                          </div>
-                        )}
                         {sku.description && (
                           <div className="text-xs text-muted-foreground line-clamp-1">
                             {sku.description}
@@ -695,36 +695,9 @@ function ServiceLibraryPopover({
                 })}
               </ul>
             </div>
-          )}
-          {(Object.keys(groups) as ServiceCategory[]).map((cat) => (
-            <div key={cat}>
-              <div className="px-2 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                {CATEGORY_LABEL[cat]}
-              </div>
-              <ul className="space-y-1">
-                {groups[cat].map((item) => (
-                  <li key={item.key}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onPick(item);
-                        setOpen(false);
-                      }}
-                      className="w-full text-left rounded-md px-2 py-1.5 hover:bg-muted transition-colors"
-                    >
-                      <div className="text-sm text-foreground font-medium">{item.label}</div>
-                      {item.defaultDescription && (
-                        <div className="text-xs text-muted-foreground line-clamp-1">
-                          {item.defaultDescription}
-                        </div>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
           ))}
         </div>
+
         <div className="pt-2 mt-2 border-t">
           <Button
             size="sm"
