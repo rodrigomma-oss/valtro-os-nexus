@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { AppSidebar } from "./app-sidebar";
 import { AppTopbar } from "./app-topbar";
 import { AppBreadcrumb } from "./app-breadcrumb";
+import { SessionTimeoutGuard } from "./session-timeout-guard";
+
 
 export interface AppShellProps {
   children: ReactNode;
