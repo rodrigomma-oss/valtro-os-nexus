@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { clearSessionMarkers } from "@/lib/session";
 
 export interface AppTopbarProps {
   breadcrumb?: ReactNode;
@@ -49,6 +50,7 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
+    clearSessionMarkers();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   };
