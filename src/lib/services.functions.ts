@@ -13,18 +13,36 @@ import type { Database } from "@/integrations/supabase/types";
 export type ServiceBillingType = Database["public"]["Enums"]["service_billing_type"];
 export type ServiceCategory = Database["public"]["Enums"]["service_type"];
 
+export type ServicePricingMode = Database["public"]["Enums"]["service_pricing_mode"];
+export type ServiceOfferType = Database["public"]["Enums"]["service_offer_type"];
+
+/**
+ * Contrato fechado dos limites de um serviço (Sprint 15.2.3B).
+ * O banco recusa qualquer chave fora desta lista.
+ */
+export interface ServiceDefaultLimits {
+  max_products?: number | null;
+  max_campaigns?: number | null;
+  max_users?: number | null;
+}
+
 export interface CatalogService {
   id: string;
   code: string;
   name: string;
   category: ServiceCategory;
+  /** Descrição operacional (o que é entregue). */
   description: string | null;
+  /** Objetivo comercial (para que serve) — distinto da descrição. */
+  objective: string | null;
   default_price_cents: number | null;
+  pricing_mode: ServicePricingMode;
+  offer_type: ServiceOfferType;
+  origin_service_id: string | null;
   billing_type: ServiceBillingType;
   billing_interval: Database["public"]["Enums"]["billing_interval"] | null;
   active: boolean;
-  default_limits: Record<string, string | number | boolean | null>;
-  briefing_template_key: string | null;
+  default_limits: ServiceDefaultLimits;
   onboarding_template_key: string | null;
   sort_order: number;
   created_at: string;
@@ -32,7 +50,8 @@ export interface CatalogService {
 }
 
 const SERVICE_SELECT =
-  "id, code, name, category, description, default_price_cents, billing_type, billing_interval, active, default_limits, briefing_template_key, onboarding_template_key, sort_order, created_at, updated_at";
+  "id, code, name, category, description, objective, default_price_cents, pricing_mode, offer_type, origin_service_id, billing_type, billing_interval, active, default_limits, onboarding_template_key, sort_order, created_at, updated_at";
+
 
 function normalize(row: any): CatalogService {
   return {
