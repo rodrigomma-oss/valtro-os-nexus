@@ -71,10 +71,7 @@ function assertIsAdmin(isAdmin: boolean | null) {
   }
 }
 
-async function getIsAdmin(context: {
-  supabase: SupabaseClient<Database>;
-  userId: string;
-}) {
+async function getIsAdmin(context: { supabase: SupabaseClient<Database>; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin" as AppRole,
@@ -94,10 +91,7 @@ async function fetchUserProfileNames(
   userIds: string[],
 ): Promise<Record<string, string | null>> {
   if (userIds.length === 0) return {};
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, full_name")
-    .in("id", userIds);
+  const { data, error } = await supabase.from("profiles").select("id, full_name").in("id", userIds);
   if (error) throw new Error(error.message);
   const map: Record<string, string | null> = {};
   for (const row of data ?? []) {
@@ -385,7 +379,12 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       const metadata: Record<string, string | number | boolean | null> = {};
       if (e.metadata && typeof e.metadata === "object") {
         for (const [key, value] of Object.entries(e.metadata)) {
-          if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+          if (
+            value === null ||
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"
+          ) {
             metadata[key] = value;
           }
         }

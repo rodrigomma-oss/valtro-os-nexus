@@ -45,12 +45,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
   listUsers,
@@ -71,10 +66,8 @@ const ROLE_LABEL: Record<AppRole, string> = {
 };
 
 const ROLE_BADGE_CLASS: Record<AppRole, string> = {
-  admin:
-    "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  operator:
-    "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  admin: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  operator: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
   viewer: "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400",
 };
 
@@ -135,8 +128,7 @@ function UsersAdminPage() {
   });
 
   const changeRoleMut = useMutation({
-    mutationFn: (vars: { user_id: string; role: AppRole }) =>
-      changeRoleFn({ data: vars }),
+    mutationFn: (vars: { user_id: string; role: AppRole }) => changeRoleFn({ data: vars }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-users"] });
       qc.invalidateQueries({ queryKey: ["admin-audit-events"] });
@@ -151,7 +143,11 @@ function UsersAdminPage() {
     onSuccess: (_res, _id, context) => {
       qc.invalidateQueries({ queryKey: ["admin-users"] });
       qc.invalidateQueries({ queryKey: ["admin-audit-events"] });
-      toast.success(confirmState?.type === "block" && (confirmState.user as AdminUser).banned ? "Usuário desbloqueado." : "Usuário bloqueado.");
+      toast.success(
+        confirmState?.type === "block" && (confirmState.user as AdminUser).banned
+          ? "Usuário desbloqueado."
+          : "Usuário bloqueado.",
+      );
       setConfirmState(null);
     },
     onError: (err: Error) => toast.error(err.message ?? "Não foi possível alterar o bloqueio."),
@@ -199,9 +195,7 @@ function UsersAdminPage() {
       className: "min-w-[220px]",
       render: (u) => (
         <div className="min-w-0">
-          <p className="font-semibold text-foreground">
-            {u.full_name ?? "Sem nome"}
-          </p>
+          <p className="font-semibold text-foreground">{u.full_name ?? "Sem nome"}</p>
           <p className="text-xs text-muted-foreground">{u.email}</p>
         </div>
       ),
@@ -243,9 +237,7 @@ function UsersAdminPage() {
       header: "Último acesso",
       render: (u) => (
         <p className="text-sm text-muted-foreground">
-          {u.last_sign_in_at
-            ? new Date(u.last_sign_in_at).toLocaleString("pt-BR")
-            : "Nunca"}
+          {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR") : "Nunca"}
         </p>
       ),
     },
@@ -258,9 +250,7 @@ function UsersAdminPage() {
           <div className="flex items-center justify-end gap-2">
             <Select
               value={u.roles[0] ?? "viewer"}
-              onValueChange={(v) =>
-                setConfirmState({ type: "role", user: u, role: v as AppRole })
-              }
+              onValueChange={(v) => setConfirmState({ type: "role", user: u, role: v as AppRole })}
               disabled={u.banned}
             >
               <SelectTrigger className="h-8 w-[140px] text-xs">
@@ -437,9 +427,7 @@ function AuditTable({ events, loading }: { events: AuditEvent[]; loading: boolea
       header: "Detalhes",
       render: (e) => (
         <p className="text-sm text-muted-foreground">
-          {e.metadata && Object.keys(e.metadata).length > 0
-            ? JSON.stringify(e.metadata)
-            : "—"}
+          {e.metadata && Object.keys(e.metadata).length > 0 ? JSON.stringify(e.metadata) : "—"}
         </p>
       ),
     },
@@ -467,7 +455,11 @@ function ConfirmDialog({
   onConfirm,
   busy,
 }: {
-  state: { type: "role"; user: AdminUser; role: AppRole } | { type: "block"; user: AdminUser } | { type: "delete"; user: AdminUser } | null;
+  state:
+    | { type: "role"; user: AdminUser; role: AppRole }
+    | { type: "block"; user: AdminUser }
+    | { type: "delete"; user: AdminUser }
+    | null;
   onClose: () => void;
   onConfirm: () => void;
   busy: boolean;
@@ -503,7 +495,11 @@ function ConfirmDialog({
           <Button variant="outline" onClick={onClose} disabled={busy}>
             Cancelar
           </Button>
-          <Button onClick={onConfirm} disabled={busy} variant={state.type === "delete" ? "destructive" : "default"}>
+          <Button
+            onClick={onConfirm}
+            disabled={busy}
+            variant={state.type === "delete" ? "destructive" : "default"}
+          >
             {busy ? "Processando…" : "Confirmar"}
           </Button>
         </DialogFooter>

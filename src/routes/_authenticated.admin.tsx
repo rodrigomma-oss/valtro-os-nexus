@@ -7,10 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
   head: () => ({
-    meta: [
-      { title: "Admin — Valtro Labs" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Admin — Valtro Labs" }, { name: "robots", content: "noindex,nofollow" }],
   }),
 });
 
