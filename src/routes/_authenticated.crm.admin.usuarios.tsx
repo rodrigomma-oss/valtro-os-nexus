@@ -164,10 +164,11 @@ function UsersAdminPage() {
     onError: (err: Error) => toast.error(err.message ?? "Não foi possível excluir o usuário."),
   });
 
-  const data = usersQuery.data ?? [];
   const q = term.trim().toLowerCase();
-  const filtered = useMemo(
-    () =>
+
+  const { filtered, summary } = useMemo(() => {
+    const data = usersQuery.data ?? [];
+    const filtered =
       q.length === 0
         ? data
         : data.filter(
@@ -175,18 +176,14 @@ function UsersAdminPage() {
               u.email.toLowerCase().includes(q) ||
               (u.full_name ?? "").toLowerCase().includes(q) ||
               u.role_label.toLowerCase().includes(q),
-          ),
-    [data, q],
-  );
-
-  const summary = useMemo(() => {
+          );
     const total = data.length;
     const admins = data.filter((u) => u.roles.includes("admin")).length;
     const operators = data.filter((u) => u.roles.includes("operator")).length;
     const viewers = data.filter((u) => u.roles.includes("viewer")).length;
     const blocked = data.filter((u) => u.banned).length;
-    return { total, admins, operators, viewers, blocked };
-  }, [data]);
+    return { filtered, summary: { total, admins, operators, viewers, blocked } };
+  }, [usersQuery.data, q]);
 
   const columns: DataTableColumn<AdminUser>[] = [
     {
