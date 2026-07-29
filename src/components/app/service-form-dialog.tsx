@@ -379,7 +379,7 @@ export function ServiceFormDialog({
                 <SelectItem value={NONE}>Não possui</SelectItem>
                 {ONBOARDING_OPTIONS.map((key) => (
                   <SelectItem key={key} value={key}>
-                    {ONBOARDING_TEMPLATES[key]?.title ?? key}
+                    {ONBOARDING_TEMPLATES[key]?.name ?? key}
                   </SelectItem>
                 ))}
               </SelectContent>
