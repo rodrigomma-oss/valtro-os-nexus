@@ -97,10 +97,16 @@ export function NewBriefingDialog({
             }
           >
             <SelectTrigger id="briefing-service">
-              <SelectValue placeholder="Selecione o serviço…" />
+              <SelectValue
+                placeholder={
+                  servicesQuery.isLoading
+                    ? "Carregando catálogo…"
+                    : "Selecione o serviço…"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
-              {BRIEFING_SERVICE_CATALOG.map((opt) => (
+              {options.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
@@ -109,12 +115,13 @@ export function NewBriefingDialog({
           </Select>
           {service && (
             <p className="text-xs text-muted-foreground pt-1">
-              {
-                BRIEFING_SERVICE_CATALOG.find((o) => o.value === service)
-                  ?.description
-              }
+              {options
+                .find((o) => o.value === service)
+                ?.services.map((s) => s.name)
+                .join(" · ")}
             </p>
           )}
+
         </div>
 
         <DialogFooter>
