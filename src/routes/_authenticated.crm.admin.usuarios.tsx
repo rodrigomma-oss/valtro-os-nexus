@@ -1,10 +1,14 @@
 /**
  * Sprint 15.2.2B — Administração de Usuários.
  *
- * Tela de gestão de usuários internos: listagem, convite, alteração de papel,
- * bloqueio/desbloqueio e exclusão. Acesso restrito a administradores (validado
+ * Tela de gestão de usuários internos: listagem, convite, alteração de papel e
+ * bloqueio/desbloqueio de acesso. Acesso restrito a administradores (validado
  * no servidor). Inclui trilha de auditoria das ações administrativas.
+ *
+ * Por requisito da sprint, NÃO existe ação de exclusão de usuários: a remoção de
+ * acesso é sempre feita por bloqueio, preservando perfil, papéis e autoria.
  */
+
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
