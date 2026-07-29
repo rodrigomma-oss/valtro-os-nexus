@@ -25,7 +25,7 @@ export const Route = createFileRoute("/auth")({
   }),
 });
 
-type Mode = "signin" | "signup" | "forgot";
+type Mode = "signin" | "forgot";
 
 function isSafeRedirect(target: string | undefined): target is string {
   if (!target) return false;
@@ -43,7 +43,6 @@ function AuthPage() {
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
 
@@ -87,20 +86,6 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate({ to: safeRedirect, replace: true });
-      } else if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin + "/auth",
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast.success("Conta criada.", {
-          description: "Você já pode acessar a plataforma.",
-        });
-        navigate({ to: safeRedirect, replace: true });
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: window.location.origin + "/reset-password",
@@ -128,8 +113,11 @@ function AuthPage() {
   }
 
   const titles: Record<Mode, { title: string; sub: string; cta: string }> = {
-    signin: { title: "Entrar", sub: "Acesse a plataforma comercial da Valtro Labs.", cta: "Entrar" },
-    signup: { title: "Criar conta", sub: "Cadastre-se para acessar o CRM.", cta: "Criar conta" },
+    signin: {
+      title: "Entrar",
+      sub: "Acesse a plataforma operacional da Valtro Labs. Acesso disponível somente para usuários autorizados.",
+      cta: "Entrar",
+    },
     forgot: { title: "Recuperar acesso", sub: "Enviaremos um link para redefinir sua senha.", cta: "Enviar link" },
   };
   const t = titles[mode];
@@ -190,18 +178,6 @@ function AuthPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Nome completo</Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  autoComplete="name"
-                />
-              </div>
-            )}
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input
@@ -234,7 +210,7 @@ function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                  autoComplete="current-password"
                 />
               </div>
             )}
@@ -246,23 +222,11 @@ function AuthPage() {
           </form>
 
           <div className="text-sm text-center text-muted-foreground">
-            {mode === "signin" && (
-              <>
-                Não tem conta?{" "}
-                <button className="text-primary hover:underline" onClick={() => setMode("signup")}>
-                  Criar agora
-                </button>
-              </>
-            )}
-            {mode === "signup" && (
-              <>
-                Já tem conta?{" "}
-                <button className="text-primary hover:underline" onClick={() => setMode("signin")}>
-                  Entrar
-                </button>
-              </>
-            )}
-            {mode === "forgot" && (
+            {mode === "signin" ? (
+              <p className="text-xs">
+                O acesso é concedido por um administrador da Valtro Labs.
+              </p>
+            ) : (
               <button className="text-primary hover:underline" onClick={() => setMode("signin")}>
                 Voltar para o login
               </button>
