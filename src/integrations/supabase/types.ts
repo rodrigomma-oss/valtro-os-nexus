@@ -1755,26 +1755,38 @@ export type Database = {
       user_admin_audit_events: {
         Row: {
           action: string
+          actor_email: string | null
           actor_id: string
+          actor_name: string | null
           created_at: string
           id: string
           metadata: Json | null
+          target_email: string | null
+          target_name: string | null
           target_user_id: string | null
         }
         Insert: {
           action: string
+          actor_email?: string | null
           actor_id: string
+          actor_name?: string | null
           created_at?: string
           id?: string
           metadata?: Json | null
+          target_email?: string | null
+          target_name?: string | null
           target_user_id?: string | null
         }
         Update: {
           action?: string
+          actor_email?: string | null
           actor_id?: string
+          actor_name?: string | null
           created_at?: string
           id?: string
           metadata?: Json | null
+          target_email?: string | null
+          target_name?: string | null
           target_user_id?: string | null
         }
         Relationships: []
