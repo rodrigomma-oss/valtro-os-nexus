@@ -290,51 +290,17 @@ export const toggleUserBlock = createServerFn({ method: "POST" })
   });
 
 // =============================================================
-// deleteUser
+// Exclusão de usuários — INTENCIONALMENTE INEXISTENTE
 // =============================================================
-export const deleteUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data) => userIdSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    const isAdmin = await getIsAdmin(context);
-    assertIsAdmin(isAdmin);
+// Requisito aprovado da Sprint 15.2.2B: usuários NUNCA são excluídos.
+// A remoção de acesso é feita exclusivamente por `toggleUserBlock`, que usa o
+// mecanismo oficial do Supabase Auth (`ban_duration`). Isso preserva perfil,
+// papéis, autoria (`created_by`/`owner_id`) e toda a trilha histórica do CRM.
+//
+// Não adicione `supabaseAdmin.auth.admin.deleteUser()` aqui. Além desta regra,
+// o banco impede a exclusão física: `profiles.id` e `user_roles.user_id`
+// referenciam `auth.users` com ON DELETE RESTRICT.
 
-    if (data.user_id === context.userId) {
-      throw new Error("Você não pode excluir a si mesmo.");
-    }
-
-    // Garante que não estamos excluindo o último administrador. O trigger de banco também protege,
-    // mas validar aqui evita mensagens de erro genéricas do Postgres.
-    const { data: isTargetAdmin, error: roleErr } = await context.supabase.rpc("has_role", {
-      _user_id: data.user_id,
-      _role: "admin" as AppRole,
-    });
-    if (roleErr) throw new Error(roleErr.message);
-
-    if (isTargetAdmin) {
-      const { count, error: countErr } = await context.supabase
-        .from("user_roles")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "admin");
-      if (countErr) throw new Error(countErr.message);
-      if ((count ?? 0) <= 1) {
-        throw new Error("Não é possível excluir o último administrador do sistema.");
-      }
-    }
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
-    if (error) throw new Error(error.message);
-
-    await context.supabase.rpc("log_user_admin_event", {
-      _actor_id: context.userId,
-      _target_user_id: data.user_id,
-      _action: "delete",
-      _metadata: {},
-    });
-
-    return { ok: true };
-  });
 
 // =============================================================
 // listAuditEvents
