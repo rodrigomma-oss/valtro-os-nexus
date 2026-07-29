@@ -1752,6 +1752,33 @@ export type Database = {
           },
         ]
       }
+      user_admin_audit_events: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1796,6 +1823,15 @@ export type Database = {
       hydrate_onboarding_defaults: {
         Args: { _client_service_id: string }
         Returns: Json
+      }
+      log_user_admin_event: {
+        Args: {
+          _action: string
+          _actor_id: string
+          _metadata?: Json
+          _target_user_id: string
+        }
+        Returns: string
       }
       set_calendar_cron_secret: { Args: { _value: string }; Returns: boolean }
     }

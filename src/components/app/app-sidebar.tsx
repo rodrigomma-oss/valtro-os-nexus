@@ -10,7 +10,7 @@ import {
   FolderKanban,
   Layers,
   Plug,
-
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
@@ -47,6 +47,10 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Integrações", to: "/crm/admin/integracoes", icon: Plug },
     ],
   },
+  {
+    label: "Administração",
+    items: [{ label: "Usuários", to: "/crm/admin/usuarios", icon: Shield }],
+  },
 
   {
     label: "Em breve",
@@ -65,8 +69,7 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const renderItem = (item: NavItem) => {
-    const active =
-      !item.disabled && (pathname === item.to || pathname.startsWith(`${item.to}/`));
+    const active = !item.disabled && (pathname === item.to || pathname.startsWith(`${item.to}/`));
 
     const baseClasses = cn(
       "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
@@ -105,13 +108,7 @@ export function AppSidebar() {
 
     if (item.external) {
       return (
-        <a
-          key={item.to}
-          href={item.to}
-          target="_blank"
-          rel="noreferrer"
-          className={baseClasses}
-        >
+        <a key={item.to} href={item.to} target="_blank" rel="noreferrer" className={baseClasses}>
           {content}
         </a>
       );

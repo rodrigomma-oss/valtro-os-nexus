@@ -37,6 +37,7 @@ import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/ap
 import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
+import { Route as AuthenticatedCrmAdminUsuariosRouteImport } from './routes/_authenticated.crm.admin.usuarios'
 import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_authenticated.crm.admin.integracoes'
 
 const TermosRoute = TermosRouteImport.update({
@@ -187,6 +188,12 @@ const AuthenticatedCrmClientesIdRoute =
     path: '/clientes/$id',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedCrmAdminUsuariosRoute =
+  AuthenticatedCrmAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedCrmRoute,
+  } as any)
 const AuthenticatedCrmAdminIntegracoesRoute =
   AuthenticatedCrmAdminIntegracoesRouteImport.update({
     id: '/admin/integracoes',
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
+  '/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
@@ -244,6 +252,7 @@ export interface FileRoutesByTo {
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
+  '/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
@@ -276,6 +285,7 @@ export interface FileRoutesById {
   '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
+  '/_authenticated/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/api/public/version'
     | '/crm/'
     | '/crm/admin/integracoes'
+    | '/crm/admin/usuarios'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
     | '/crm/projetos/$id'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/api/public/version'
     | '/crm'
     | '/crm/admin/integracoes'
+    | '/crm/admin/usuarios'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
     | '/crm/projetos/$id'
@@ -368,6 +380,7 @@ export interface FileRouteTypes {
     | '/api/public/version'
     | '/_authenticated/crm/'
     | '/_authenticated/crm/admin/integracoes'
+    | '/_authenticated/crm/admin/usuarios'
     | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
     | '/_authenticated/crm/projetos/$id'
@@ -596,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/crm/admin/usuarios': {
+      id: '/_authenticated/crm/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/crm/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedCrmAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedCrmRoute
+    }
     '/_authenticated/crm/admin/integracoes': {
       id: '/_authenticated/crm/admin/integracoes'
       path: '/admin/integracoes'
@@ -611,6 +631,7 @@ interface AuthenticatedCrmRouteChildren {
   AuthenticatedCrmServicosRoute: typeof AuthenticatedCrmServicosRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedCrmAdminIntegracoesRoute: typeof AuthenticatedCrmAdminIntegracoesRoute
+  AuthenticatedCrmAdminUsuariosRoute: typeof AuthenticatedCrmAdminUsuariosRoute
   AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
   AuthenticatedCrmProjetosIdRoute: typeof AuthenticatedCrmProjetosIdRoute
@@ -624,6 +645,7 @@ const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
   AuthenticatedCrmServicosRoute: AuthenticatedCrmServicosRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedCrmAdminIntegracoesRoute: AuthenticatedCrmAdminIntegracoesRoute,
+  AuthenticatedCrmAdminUsuariosRoute: AuthenticatedCrmAdminUsuariosRoute,
   AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
   AuthenticatedCrmProjetosIdRoute: AuthenticatedCrmProjetosIdRoute,
