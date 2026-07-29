@@ -313,7 +313,9 @@ export const listAuditEvents = createServerFn({ method: "GET" })
 
     const { data: events, error } = await context.supabase
       .from("user_admin_audit_events")
-      .select("id, actor_id, target_user_id, action, metadata, created_at")
+      .select(
+        "id, actor_id, actor_email, actor_name, target_user_id, target_email, target_name, action, metadata, created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);
@@ -325,6 +327,9 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       ]),
     ) as string[];
 
+    // O snapshot gravado no evento é a fonte primária de identidade e sobrevive a
+    // qualquer alteração posterior no cadastro. As buscas abaixo são apenas fallback
+    // para eventos legados, gravados antes da introdução das colunas de snapshot.
     const profileNames = await fetchUserProfileNames(context.supabase, userIds);
     const authMap: Record<string, string | null> = {};
 
@@ -339,9 +344,6 @@ export const listAuditEvents = createServerFn({ method: "GET" })
     }
 
     return (events ?? []).map((e) => {
-      const actorName = profileNames[e.actor_id] ?? null;
-      const targetName = e.target_user_id ? (profileNames[e.target_user_id] ?? null) : null;
-
       const metadata: Record<string, string | number | boolean | null> = {};
       if (e.metadata && typeof e.metadata === "object") {
         for (const [key, value] of Object.entries(e.metadata)) {
@@ -359,14 +361,17 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       return {
         id: e.id,
         actor_id: e.actor_id,
-        actor_email: authMap[e.actor_id] ?? null,
-        actor_name: actorName,
+        actor_email: e.actor_email ?? authMap[e.actor_id] ?? null,
+        actor_name: e.actor_name ?? profileNames[e.actor_id] ?? null,
         target_user_id: e.target_user_id,
-        target_email: e.target_user_id ? (authMap[e.target_user_id] ?? null) : null,
-        target_name: targetName,
+        target_email:
+          e.target_email ?? (e.target_user_id ? (authMap[e.target_user_id] ?? null) : null),
+        target_name:
+          e.target_name ?? (e.target_user_id ? (profileNames[e.target_user_id] ?? null) : null),
         action: e.action,
         metadata: Object.keys(metadata).length > 0 ? metadata : null,
         created_at: e.created_at,
       };
     });
   });
+
