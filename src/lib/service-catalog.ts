@@ -9,7 +9,12 @@
  * Rótulos de categoria vêm de `SERVICE_TYPE_LABEL` (tradução do enum), o que
  * é permitido: é label auxiliar, não fonte de serviços.
  */
-import type { CatalogService } from "@/lib/services.functions";
+import type {
+  CatalogService,
+  ServiceDefaultLimits,
+  ServiceOfferType,
+  ServicePricingMode,
+} from "@/lib/services.functions";
 import { SERVICE_TYPE_LABEL, type ServiceType } from "@/types/briefing";
 
 export interface ServiceCategoryGroup {
@@ -65,4 +70,42 @@ export function serviceCategoryOptions(
 export function serviceTypeLabel(value: ServiceType | null | undefined): string {
   if (!value) return "Não definido";
   return SERVICE_TYPE_LABEL[value] ?? "Não definido";
+}
+
+// ============================================================
+// Sprint 15.2.3B — Estrutura comercial do serviço
+// ============================================================
+
+/** Posição da oferta no portfólio. */
+export const SERVICE_OFFER_TYPE_LABEL: Record<ServiceOfferType, string> = {
+  principal: "Principal",
+  complementar: "Complementar",
+  recorrente: "Recorrente",
+};
+
+/** Modelo de precificação — "sob consulta" é estado explícito, não ausência de valor. */
+export const SERVICE_PRICING_MODE_LABEL: Record<ServicePricingMode, string> = {
+  fixo: "Preço fixo",
+  sob_consulta: "Sob consulta",
+};
+
+/** Contrato conhecido de limites (espelha a validação no banco). */
+export const SERVICE_LIMIT_LABEL: Record<keyof ServiceDefaultLimits, string> = {
+  max_products: "Produtos",
+  max_campaigns: "Campanhas",
+  max_users: "Usuários",
+};
+
+export const SERVICE_LIMIT_KEYS = Object.keys(
+  SERVICE_LIMIT_LABEL,
+) as (keyof ServiceDefaultLimits)[];
+
+/** Renderiza os limites do serviço em texto legível; "—" quando não há limites. */
+export function formatServiceLimits(limits: ServiceDefaultLimits | null | undefined): string {
+  if (!limits) return "—";
+  const parts = SERVICE_LIMIT_KEYS.flatMap((key) => {
+    const value = limits[key];
+    return typeof value === "number" ? [`${SERVICE_LIMIT_LABEL[key]}: ${value}`] : [];
+  });
+  return parts.length > 0 ? parts.join(" · ") : "—";
 }

@@ -1682,7 +1682,6 @@ export type Database = {
             | Database["public"]["Enums"]["billing_interval"]
             | null
           billing_type: Database["public"]["Enums"]["service_billing_type"]
-          briefing_template_key: string | null
           category: Database["public"]["Enums"]["service_type"]
           code: string
           created_at: string
@@ -1691,7 +1690,11 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          objective: string | null
+          offer_type: Database["public"]["Enums"]["service_offer_type"]
           onboarding_template_key: string | null
+          origin_service_id: string | null
+          pricing_mode: Database["public"]["Enums"]["service_pricing_mode"]
           sort_order: number
           updated_at: string
         }
@@ -1701,7 +1704,6 @@ export type Database = {
             | Database["public"]["Enums"]["billing_interval"]
             | null
           billing_type?: Database["public"]["Enums"]["service_billing_type"]
-          briefing_template_key?: string | null
           category?: Database["public"]["Enums"]["service_type"]
           code: string
           created_at?: string
@@ -1710,7 +1712,11 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          objective?: string | null
+          offer_type?: Database["public"]["Enums"]["service_offer_type"]
           onboarding_template_key?: string | null
+          origin_service_id?: string | null
+          pricing_mode?: Database["public"]["Enums"]["service_pricing_mode"]
           sort_order?: number
           updated_at?: string
         }
@@ -1720,7 +1726,6 @@ export type Database = {
             | Database["public"]["Enums"]["billing_interval"]
             | null
           billing_type?: Database["public"]["Enums"]["service_billing_type"]
-          briefing_template_key?: string | null
           category?: Database["public"]["Enums"]["service_type"]
           code?: string
           created_at?: string
@@ -1729,11 +1734,23 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          objective?: string | null
+          offer_type?: Database["public"]["Enums"]["service_offer_type"]
           onboarding_template_key?: string | null
+          origin_service_id?: string | null
+          pricing_mode?: Database["public"]["Enums"]["service_pricing_mode"]
           sort_order?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_origin_service_id_fkey"
+            columns: ["origin_service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -1936,6 +1953,8 @@ export type Database = {
         | "expirada"
         | "cancelada"
       service_billing_type: "pontual" | "recorrente"
+      service_offer_type: "principal" | "complementar" | "recorrente"
+      service_pricing_mode: "fixo" | "sob_consulta"
       service_type:
         | "nao_definido"
         | "gestao_shopee"
@@ -2252,6 +2271,8 @@ export const Constants = {
         "cancelada",
       ],
       service_billing_type: ["pontual", "recorrente"],
+      service_offer_type: ["principal", "complementar", "recorrente"],
+      service_pricing_mode: ["fixo", "sob_consulta"],
       service_type: [
         "nao_definido",
         "gestao_shopee",

@@ -16,6 +16,10 @@ import {
   type CatalogService,
 } from "@/lib/services.functions";
 import { getMyRoles } from "@/lib/leads.functions";
+import {
+  SERVICE_OFFER_TYPE_LABEL,
+  formatServiceLimits,
+} from "@/lib/service-catalog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/crm/servicos")({
@@ -34,12 +38,6 @@ function formatPrice(cents: number | null): string {
     style: "currency",
     currency: "BRL",
   });
-}
-
-function formatLimits(limits: Record<string, string | number | boolean | null>): string {
-  const keys = Object.keys(limits ?? {});
-  if (keys.length === 0) return "—";
-  return keys.map((k) => `${k}: ${String(limits[k])}`).join(" · ");
 }
 
 function ServicesCatalog() {
@@ -138,44 +136,44 @@ function ServicesCatalog() {
           <span
             className={cn(
               "font-medium",
-              s.default_price_cents == null && "text-amber-600",
+              s.pricing_mode === "sob_consulta" && "text-muted-foreground",
             )}
           >
-            {formatPrice(s.default_price_cents)}
+            {s.pricing_mode === "sob_consulta"
+              ? "Sob consulta"
+              : formatPrice(s.default_price_cents)}
           </span>
-          {s.default_price_cents == null && (
-            <p className="text-[10px] text-amber-600 mt-0.5">
-              Aguardando definição comercial
-            </p>
-          )}
         </div>
+      ),
+    },
+    {
+      key: "offer",
+      header: "Oferta",
+      render: (s) => (
+        <span className="text-xs text-muted-foreground">
+          {SERVICE_OFFER_TYPE_LABEL[s.offer_type]}
+        </span>
       ),
     },
     {
       key: "limits",
       header: "Limites",
       render: (s) => (
-        <span className="text-xs text-muted-foreground font-mono">
-          {formatLimits(s.default_limits)}
+        <span className="text-xs text-muted-foreground">
+          {formatServiceLimits(s.default_limits)}
         </span>
       ),
     },
     {
       key: "templates",
-      header: "Templates",
+      header: "Onboarding",
       render: (s) => (
-        <div className="text-xs text-muted-foreground space-y-0.5">
-          <div>
-            <span className="text-[10px] uppercase tracking-wider">Briefing:</span>{" "}
-            {s.briefing_template_key ?? "—"}
-          </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider">Onboarding:</span>{" "}
-            {s.onboarding_template_key ?? "—"}
-          </div>
-        </div>
+        <span className="text-xs text-muted-foreground">
+          {s.onboarding_template_key ?? "—"}
+        </span>
       ),
     },
+
     {
       key: "status",
       header: "Status",
