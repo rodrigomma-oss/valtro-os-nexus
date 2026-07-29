@@ -379,10 +379,8 @@ export const listAuditEvents = createServerFn({ method: "GET" })
     }
 
     return (events ?? []).map((e) => {
-      const actor = profileNames[e.actor_id] ?? { full_name: null, email: authMap[e.actor_id] ?? null };
-      const target = e.target_user_id
-        ? (profileNames[e.target_user_id] ?? { full_name: null, email: authMap[e.target_user_id] ?? null })
-        : { full_name: null, email: null };
+      const actorName = profileNames[e.actor_id] ?? null;
+      const targetName = e.target_user_id ? (profileNames[e.target_user_id] ?? null) : null;
 
       const metadata: Record<string, string | number | boolean | null> = {};
       if (e.metadata && typeof e.metadata === "object") {
@@ -396,11 +394,11 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       return {
         id: e.id,
         actor_id: e.actor_id,
-        actor_email: actor.email,
-        actor_name: actor.full_name,
+        actor_email: authMap[e.actor_id] ?? null,
+        actor_name: actorName,
         target_user_id: e.target_user_id,
-        target_email: target.email,
-        target_name: target.full_name,
+        target_email: e.target_user_id ? (authMap[e.target_user_id] ?? null) : null,
+        target_name: targetName,
         action: e.action,
         metadata: Object.keys(metadata).length > 0 ? metadata : null,
         created_at: e.created_at,
