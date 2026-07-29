@@ -138,12 +138,12 @@ export const listUsers = createServerFn({ method: "GET" })
     }
 
     return (users ?? []).map((u) => {
-      const profile = profileNames[u.id] ?? { full_name: null, email: null };
+      const fullName = profileNames[u.id] ?? null;
       const roles = rolesByUser[u.id] ?? [];
       return {
         id: u.id,
-        email: u.email ?? profile.email ?? "—",
-        full_name: profile.full_name ?? u.user_metadata?.full_name ?? u.user_metadata?.name ?? null,
+        email: u.email ?? "—",
+        full_name: fullName ?? u.user_metadata?.full_name ?? u.user_metadata?.name ?? null,
         avatar_url: u.user_metadata?.avatar_url ?? null,
         roles,
         role_label: mapRoleLabel(roles),
