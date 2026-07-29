@@ -3,8 +3,13 @@
  *
  * O operador seleciona apenas o Serviço. O Template correspondente é
  * resolvido no servidor via `templateTypeForService`.
+ *
+ * Sprint 15.2.3A — as opções vêm exclusivamente da tabela `services`
+ * (catálogo comercial oficial). Não existe mais lista fixa local.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Plus } from "lucide-react";
 import {
   Dialog,
@@ -23,7 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BRIEFING_SERVICE_CATALOG } from "@/config/briefing-service-catalog";
+import { listServices } from "@/lib/services.functions";
+import { serviceCategoryOptions } from "@/lib/service-catalog";
 import type { ServiceType } from "@/types/briefing";
 
 interface NewBriefingDialogProps {
@@ -49,11 +55,25 @@ export function NewBriefingDialog({
     Exclude<ServiceType, "nao_definido"> | undefined
   >(initial);
 
+  const listServicesFn = useServerFn(listServices);
+  const servicesQuery = useQuery({
+    queryKey: ["services-catalog", "active"],
+    queryFn: () => listServicesFn(),
+    enabled: open,
+    staleTime: 60_000,
+  });
+
+  const options = useMemo(
+    () => serviceCategoryOptions(servicesQuery.data ?? []),
+    [servicesQuery.data],
+  );
+
   useEffect(() => {
     if (open) setService(initial);
   }, [open, initial]);
 
   const canSubmit = !!service && !submitting;
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
