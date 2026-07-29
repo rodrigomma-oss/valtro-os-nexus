@@ -8,6 +8,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { serviceInputSchema } from "@/lib/services.schemas";
 import type { Database } from "@/integrations/supabase/types";
 
 export type ServiceBillingType = Database["public"]["Enums"]["service_billing_type"];
@@ -94,4 +95,55 @@ export const toggleServiceActive = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+/**
+ * Sprint 15.2.3C — Cadastro/edição do catálogo pelo mesmo formulário.
+ * A escrita continua governada pela RLS (`services_insert_admin` /
+ * `services_update_admin`) e pelas validações de banco da Sprint 15.2.3B:
+ * nenhuma regra de negócio é duplicada aqui.
+ */
+export type { ServiceInput } from "@/lib/services.schemas";
+
+export const upsertService = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => serviceInputSchema.parse(data))
+  .handler(async ({ data, context }): Promise<{ id: string }> => {
+    const { id, default_limits, ...rest } = data;
+
+    // Remove chaves vazias para respeitar o contrato fechado do banco.
+    const limits: Record<string, number> = {};
+    for (const key of ["max_products", "max_campaigns", "max_users"] as const) {
+      const value = default_limits[key];
+      if (typeof value === "number") limits[key] = value;
+    }
+
+    const payload = {
+      ...rest,
+      category: rest.category as ServiceCategory,
+      default_price_cents:
+        rest.pricing_mode === "sob_consulta" ? null : rest.default_price_cents,
+      billing_interval:
+        rest.billing_type === "recorrente" ? (rest.billing_interval ?? "monthly") : null,
+      default_limits: limits,
+    };
+
+    if (id) {
+      const { data: row, error } = await context.supabase
+        .from("services")
+        .update(payload)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw new Error(error.message);
+      return { id: row.id };
+    }
+
+    const { data: row, error } = await context.supabase
+      .from("services")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return { id: row.id };
   });
