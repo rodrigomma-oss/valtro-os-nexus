@@ -16,6 +16,10 @@ import {
   type CatalogService,
 } from "@/lib/services.functions";
 import { getMyRoles } from "@/lib/leads.functions";
+import {
+  SERVICE_OFFER_TYPE_LABEL,
+  formatServiceLimits,
+} from "@/lib/service-catalog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/crm/servicos")({

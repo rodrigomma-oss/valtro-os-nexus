@@ -9,7 +9,12 @@
  * Rótulos de categoria vêm de `SERVICE_TYPE_LABEL` (tradução do enum), o que
  * é permitido: é label auxiliar, não fonte de serviços.
  */
-import type { CatalogService } from "@/lib/services.functions";
+import type {
+  CatalogService,
+  ServiceDefaultLimits,
+  ServiceOfferType,
+  ServicePricingMode,
+} from "@/lib/services.functions";
 import { SERVICE_TYPE_LABEL, type ServiceType } from "@/types/briefing";
 
 export interface ServiceCategoryGroup {
@@ -70,12 +75,6 @@ export function serviceTypeLabel(value: ServiceType | null | undefined): string 
 // ============================================================
 // Sprint 15.2.3B — Estrutura comercial do serviço
 // ============================================================
-
-import type {
-  ServiceDefaultLimits,
-  ServiceOfferType,
-  ServicePricingMode,
-} from "@/lib/services.functions";
 
 /** Posição da oferta no portfólio. */
 export const SERVICE_OFFER_TYPE_LABEL: Record<ServiceOfferType, string> = {
