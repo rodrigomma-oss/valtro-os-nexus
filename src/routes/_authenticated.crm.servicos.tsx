@@ -251,7 +251,7 @@ function ServicesCatalog() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 md:p-10 space-y-6">
       <PageHeader
         title="Catálogo de Serviços"
         description="Fonte única do portfólio comercial. Cada serviço define objetivo, cobrança, escopo e onboarding."
