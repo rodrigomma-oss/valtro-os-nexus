@@ -58,13 +58,8 @@ import {
   type ProposalNegotiationType,
   type ProposalStatus,
 } from "@/types/proposal";
-import {
-  CATEGORY_LABEL,
-  SERVICE_LIBRARY,
-  groupServiceLibrary,
-  type ServiceCategory,
-} from "@/config/service-library";
 import { listServices, type CatalogService } from "@/lib/services.functions";
+import { groupServicesByCategory } from "@/lib/service-catalog";
 import { GenerateContractsDialog } from "./generate-contracts-dialog";
 
 interface ProposalDrawerProps {
@@ -222,7 +217,11 @@ export function ProposalDrawer({
     onError: (err: Error) => toast.error("Erro ao remover item.", { description: err.message }),
   });
 
-  const groups = useMemo(() => groupServiceLibrary(), []);
+  // Sprint 15.2.3A — a única fonte de serviços é a tabela `services`.
+  const serviceGroups = useMemo(
+    () => groupServicesByCategory(activeServices),
+    [activeServices],
+  );
 
   const totals = useMemo(() => {
     const total = items.reduce((acc, it) => acc + (it.subtotal ?? 0), 0);
@@ -310,10 +309,9 @@ export function ProposalDrawer({
                       {items.length} {items.length === 1 ? "item" : "itens"}
                     </p>
                     {canEdit && (
-                      <ServiceLibraryPopover
-                        groups={groups}
-                        skus={activeServices}
-                        onPickSku={(sku) =>
+                      <ServiceCatalogPopover
+                        groups={serviceGroups}
+                        onPickService={(sku) =>
                           addItem.mutate({
                             service_id: sku.id,
                             service_key: sku.code,
@@ -324,16 +322,6 @@ export function ProposalDrawer({
                               sku.default_price_cents != null
                                 ? sku.default_price_cents / 100
                                 : 0,
-                          })
-                        }
-                        onPick={(item) =>
-                          addItem.mutate({
-                            service_id: null,
-                            service_key: item.key,
-                            service_label: item.label,
-                            description: item.defaultDescription ?? null,
-                            quantity: 1,
-                            unit_price: item.defaultUnitPrice ?? 0,
                           })
                         }
                         onCustom={() =>
