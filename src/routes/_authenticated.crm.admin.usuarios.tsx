@@ -14,17 +14,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import {
-  Shield,
-  Users,
-  UserCog,
-  Eye,
-  Ban,
-  Mail,
-  Plus,
-  Search,
-  AlertTriangle,
-} from "lucide-react";
+import { Shield, Users, UserCog, Eye, Ban, Mail, Plus, Search, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 import { DataTable, type DataTableColumn } from "@/components/app/data-table";
 import { StatCard } from "@/components/app/stat-card";
@@ -103,9 +93,7 @@ function UsersAdminPage() {
   const [term, setTerm] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<
-    | { type: "role"; user: AdminUser; role: AppRole }
-    | { type: "block"; user: AdminUser }
-    | null
+    { type: "role"; user: AdminUser; role: AppRole } | { type: "block"; user: AdminUser } | null
   >(null);
 
   const rolesQuery = useQuery({

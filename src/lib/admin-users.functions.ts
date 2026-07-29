@@ -301,7 +301,6 @@ export const toggleUserBlock = createServerFn({ method: "POST" })
 // o banco impede a exclusão física: `profiles.id` e `user_roles.user_id`
 // referenciam `auth.users` com ON DELETE RESTRICT.
 
-
 // =============================================================
 // listAuditEvents
 // =============================================================
@@ -374,4 +373,3 @@ export const listAuditEvents = createServerFn({ method: "GET" })
       };
     });
   });
-
