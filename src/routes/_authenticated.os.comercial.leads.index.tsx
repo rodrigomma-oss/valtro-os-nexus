@@ -368,18 +368,19 @@ function CrmLeads() {
             >
               Ver detalhes
             </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={!canWrite && !isAdmin}
-              onClick={() => {
-                if (confirm(`Arquivar o lead "${row.company_name}"?`)) {
-                  archiveMutation.mutate(row.id);
-                }
-              }}
-              className="text-destructive"
-            >
-              <Archive className="h-4 w-4 mr-2" strokeWidth={1.75} />
-              Arquivar
-            </DropdownMenuItem>
+            {(canWrite || isAdmin) && (
+              <DropdownMenuItem
+                onClick={() => {
+                  if (confirm(`Arquivar o lead "${row.company_name}"?`)) {
+                    archiveMutation.mutate(row.id);
+                  }
+                }}
+                className="text-destructive"
+              >
+                <Archive className="h-4 w-4 mr-2" strokeWidth={1.75} />
+                Arquivar
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
