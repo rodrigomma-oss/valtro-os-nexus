@@ -40,6 +40,7 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
