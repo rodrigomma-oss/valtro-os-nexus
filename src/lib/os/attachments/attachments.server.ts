@@ -1,9 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-// @ts-nocheck
-// Note: This file uses @ts-nocheck to bypass a temporary "Type instantiation is excessively deep" error 
-// caused by the Supabase client while the local type definitions for the new 'attachments' table 
-// are being synchronized from the database.
 
 export async function prepareAttachmentUpload(params: {
   entityType: string;
