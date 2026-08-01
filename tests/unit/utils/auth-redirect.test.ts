@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeAuthRedirect } from '@/utils/auth-redirect';
+import { sanitizeAuthRedirect } from '../../../src/utils/auth-redirect';
 
 describe('sanitizeAuthRedirect', () => {
   const defaultFallback = '/os/dashboard';
