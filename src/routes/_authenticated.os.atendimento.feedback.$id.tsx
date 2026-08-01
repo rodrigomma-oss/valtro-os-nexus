@@ -183,7 +183,51 @@ function FeedbackDetail() {
   });
 
   if (feedbackQuery.isLoading) {
-...
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!feedback) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">Feedback não encontrado</h2>
+        <Button variant="link" asChild className="mt-4">
+          <Link to="/os/atendimento/feedback">Voltar para listagem</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const handleStartEdit = () => {
+    setEditTitle(feedback.title);
+    setEditDescription(feedback.description);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    updateMutation.mutate({
+      data: {
+        id,
+        title: editTitle,
+        description: editDescription,
+      },
+    });
+  };
+
+  const handleStatusChange = (newStatus: FeedbackStatus) => {
+    if (newStatus === "closed") {
+      closeFn({ data: { id } }).then(() => {
+        toast.success("Feedback encerrado.");
+        qc.invalidateQueries({ queryKey: ["feedback", id] });
+      }).catch(err => toast.error(translateFeedbackError(err.message)));
+    } else {
+      statusMutation.mutate({ data: { id, status: newStatus } });
+    }
+  };
+
   const handleReopen = () => {
     reopenFn({ data: { id } }).then(() => {
       toast.success("Feedback reaberto.");
