@@ -54,6 +54,7 @@ import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './
 import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
 import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
 import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
+import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -304,6 +305,12 @@ const AuthenticatedOsComercialClientesIdRoute =
     path: '/comercial/clientes/$id',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAtendimentoChamadosIdRoute =
+  AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
+    id: '/atendimento/chamados/$id',
+    path: '/atendimento/chamados/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -342,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -387,6 +395,7 @@ export interface FileRoutesByTo {
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -435,6 +444,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/_authenticated/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/_authenticated/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -483,6 +493,7 @@ export interface FileRouteTypes {
     | '/crm/clientes/'
     | '/crm/leads/'
     | '/crm/projetos/'
+    | '/os/atendimento/chamados/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -528,6 +539,7 @@ export interface FileRouteTypes {
     | '/crm/clientes'
     | '/crm/leads'
     | '/crm/projetos'
+    | '/os/atendimento/chamados/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -575,6 +587,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
     | '/_authenticated/crm/projetos/'
+    | '/_authenticated/os/atendimento/chamados/$id'
     | '/_authenticated/os/comercial/clientes/$id'
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
@@ -922,6 +935,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento/chamados/$id': {
+      id: '/_authenticated/os/atendimento/chamados/$id'
+      path: '/atendimento/chamados/$id'
+      fullPath: '/os/atendimento/chamados/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
   }
 }
 
@@ -933,6 +953,7 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAtendimentoBugsRoute: typeof AuthenticatedOsAtendimentoBugsRoute
   AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
+  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
@@ -952,6 +973,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAtendimentoFeedbackRoute:
     AuthenticatedOsAtendimentoFeedbackRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
+  AuthenticatedOsAtendimentoChamadosIdRoute:
+    AuthenticatedOsAtendimentoChamadosIdRoute,
   AuthenticatedOsComercialClientesIdRoute:
     AuthenticatedOsComercialClientesIdRoute,
   AuthenticatedOsComercialLeadsIdRoute: AuthenticatedOsComercialLeadsIdRoute,

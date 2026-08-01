@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -15,7 +14,6 @@ import { PageHeader } from "@/components/app/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -97,8 +95,6 @@ function TicketDetail() {
   const closeFn = useServerFn(closeTicket);
   const reopenFn = useServerFn(reopenTicket);
   const usersFn = useServerFn(listAssignableUsers);
-
-  const [note, setNote] = useState("");
 
   const queryKey = ["ticket", id];
   const query = useQuery({ queryKey, queryFn: () => getFn({ data: { id } }) });
@@ -327,30 +323,6 @@ function TicketDetail() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-1 sm:col-span-3">
-                  <Label htmlFor="tck-note">Observação interna</Label>
-                  <Textarea
-                    id="tck-note"
-                    rows={3}
-                    placeholder="Registre uma observação no histórico do chamado."
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                  />
-                  <div className="flex justify-end pt-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={note.trim().length < 3}
-                      onClick={() => {
-                        toast.info("Observação registrada apenas no histórico do chamado.");
-                        setNote("");
-                        invalidate();
-                      }}
-                    >
-                      Registrar observação
-                    </Button>
-                  </div>
                 </div>
               </CardContent>
             </Card>
