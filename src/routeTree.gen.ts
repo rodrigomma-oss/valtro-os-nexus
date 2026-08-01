@@ -29,6 +29,7 @@ import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
+import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
 import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
@@ -157,6 +158,12 @@ const AuthenticatedOsDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAtendimentoRoute =
+  AuthenticatedOsAtendimentoRouteImport.update({
+    id: '/atendimento',
+    path: '/atendimento',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 const AuthenticatedCrmServicosRoute =
   AuthenticatedCrmServicosRouteImport.update({
     id: '/crm/servicos',
@@ -207,9 +214,9 @@ const AuthenticatedOsComercialServicosRoute =
   } as any)
 const AuthenticatedOsAtendimentoFeedbackRoute =
   AuthenticatedOsAtendimentoFeedbackRouteImport.update({
-    id: '/atendimento/feedback',
-    path: '/atendimento/feedback',
-    getParentRoute: () => AuthenticatedOsRoute,
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 const AuthenticatedOsAdminUsuariosRoute =
   AuthenticatedOsAdminUsuariosRouteImport.update({
@@ -272,15 +279,15 @@ const AuthenticatedOsComercialClientesIndexRoute =
   } as any)
 const AuthenticatedOsAtendimentoChamadosIndexRoute =
   AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
-    id: '/atendimento/chamados/',
-    path: '/atendimento/chamados/',
-    getParentRoute: () => AuthenticatedOsRoute,
+    id: '/chamados/',
+    path: '/chamados/',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 const AuthenticatedOsAtendimentoBugsIndexRoute =
   AuthenticatedOsAtendimentoBugsIndexRouteImport.update({
-    id: '/atendimento/bugs/',
-    path: '/atendimento/bugs/',
-    getParentRoute: () => AuthenticatedOsRoute,
+    id: '/bugs/',
+    path: '/bugs/',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 const AuthenticatedOsProdutosValtroPricingBetaRoute =
   AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
@@ -308,15 +315,15 @@ const AuthenticatedOsComercialClientesIdRoute =
   } as any)
 const AuthenticatedOsAtendimentoChamadosIdRoute =
   AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
-    id: '/atendimento/chamados/$id',
-    path: '/atendimento/chamados/$id',
-    getParentRoute: () => AuthenticatedOsRoute,
+    id: '/chamados/$id',
+    path: '/chamados/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 const AuthenticatedOsAtendimentoBugsIdRoute =
   AuthenticatedOsAtendimentoBugsIdRouteImport.update({
-    id: '/atendimento/bugs/$id',
-    path: '/atendimento/bugs/$id',
-    getParentRoute: () => AuthenticatedOsRoute,
+    id: '/bugs/$id',
+    path: '/bugs/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -337,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -384,6 +392,7 @@ export interface FileRoutesByTo {
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -434,6 +443,7 @@ export interface FileRoutesById {
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/_authenticated/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -484,6 +494,7 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/crm/dashboard'
     | '/crm/servicos'
+    | '/os/atendimento'
     | '/os/dashboard'
     | '/api/public/version'
     | '/crm/'
@@ -531,6 +542,7 @@ export interface FileRouteTypes {
     | '/briefing'
     | '/crm/dashboard'
     | '/crm/servicos'
+    | '/os/atendimento'
     | '/os/dashboard'
     | '/api/public/version'
     | '/crm'
@@ -580,6 +592,7 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/servicos'
+    | '/_authenticated/os/atendimento'
     | '/_authenticated/os/dashboard'
     | '/api/public/version'
     | '/_authenticated/crm/'
@@ -773,6 +786,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsDashboardRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento': {
+      id: '/_authenticated/os/atendimento'
+      path: '/atendimento'
+      fullPath: '/os/atendimento'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
     '/_authenticated/crm/servicos': {
       id: '/_authenticated/crm/servicos'
       path: '/crm/servicos'
@@ -831,10 +851,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/os/atendimento/feedback': {
       id: '/_authenticated/os/atendimento/feedback'
-      path: '/atendimento/feedback'
+      path: '/feedback'
       fullPath: '/os/atendimento/feedback'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
     '/_authenticated/os/admin/usuarios': {
       id: '/_authenticated/os/admin/usuarios'
@@ -908,17 +928,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/os/atendimento/chamados/': {
       id: '/_authenticated/os/atendimento/chamados/'
-      path: '/atendimento/chamados'
+      path: '/chamados'
       fullPath: '/os/atendimento/chamados/'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
     '/_authenticated/os/atendimento/bugs/': {
       id: '/_authenticated/os/atendimento/bugs/'
-      path: '/atendimento/bugs'
+      path: '/bugs'
       fullPath: '/os/atendimento/bugs/'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIndexRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
     '/_authenticated/os/produtos/valtro-pricing/beta': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta'
@@ -950,52 +970,71 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/os/atendimento/chamados/$id': {
       id: '/_authenticated/os/atendimento/chamados/$id'
-      path: '/atendimento/chamados/$id'
+      path: '/chamados/$id'
       fullPath: '/os/atendimento/chamados/$id'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
     '/_authenticated/os/atendimento/bugs/$id': {
       id: '/_authenticated/os/atendimento/bugs/$id'
-      path: '/atendimento/bugs/$id'
+      path: '/bugs/$id'
       fullPath: '/os/atendimento/bugs/$id'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIdRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
   }
 }
 
+interface AuthenticatedOsAtendimentoRouteChildren {
+  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+  AuthenticatedOsAtendimentoBugsIdRoute: typeof AuthenticatedOsAtendimentoBugsIdRoute
+  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
+  AuthenticatedOsAtendimentoBugsIndexRoute: typeof AuthenticatedOsAtendimentoBugsIndexRoute
+  AuthenticatedOsAtendimentoChamadosIndexRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRoute
+}
+
+const AuthenticatedOsAtendimentoRouteChildren: AuthenticatedOsAtendimentoRouteChildren =
+  {
+    AuthenticatedOsAtendimentoFeedbackRoute:
+      AuthenticatedOsAtendimentoFeedbackRoute,
+    AuthenticatedOsAtendimentoBugsIdRoute:
+      AuthenticatedOsAtendimentoBugsIdRoute,
+    AuthenticatedOsAtendimentoChamadosIdRoute:
+      AuthenticatedOsAtendimentoChamadosIdRoute,
+    AuthenticatedOsAtendimentoBugsIndexRoute:
+      AuthenticatedOsAtendimentoBugsIndexRoute,
+    AuthenticatedOsAtendimentoChamadosIndexRoute:
+      AuthenticatedOsAtendimentoChamadosIndexRoute,
+  }
+
+const AuthenticatedOsAtendimentoRouteWithChildren =
+  AuthenticatedOsAtendimentoRoute._addFileChildren(
+    AuthenticatedOsAtendimentoRouteChildren,
+  )
+
 interface AuthenticatedOsRouteChildren {
+  AuthenticatedOsAtendimentoRoute: typeof AuthenticatedOsAtendimentoRouteWithChildren
   AuthenticatedOsDashboardRoute: typeof AuthenticatedOsDashboardRoute
   AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
-  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
-  AuthenticatedOsAtendimentoBugsIdRoute: typeof AuthenticatedOsAtendimentoBugsIdRoute
-  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
   AuthenticatedOsProdutosValtroPricingBetaRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRoute
-  AuthenticatedOsAtendimentoBugsIndexRoute: typeof AuthenticatedOsAtendimentoBugsIndexRoute
-  AuthenticatedOsAtendimentoChamadosIndexRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   AuthenticatedOsComercialClientesIndexRoute: typeof AuthenticatedOsComercialClientesIndexRoute
   AuthenticatedOsComercialLeadsIndexRoute: typeof AuthenticatedOsComercialLeadsIndexRoute
   AuthenticatedOsComercialProjetosIndexRoute: typeof AuthenticatedOsComercialProjetosIndexRoute
 }
 
 const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
+  AuthenticatedOsAtendimentoRoute: AuthenticatedOsAtendimentoRouteWithChildren,
   AuthenticatedOsDashboardRoute: AuthenticatedOsDashboardRoute,
   AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
-  AuthenticatedOsAtendimentoFeedbackRoute:
-    AuthenticatedOsAtendimentoFeedbackRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
-  AuthenticatedOsAtendimentoBugsIdRoute: AuthenticatedOsAtendimentoBugsIdRoute,
-  AuthenticatedOsAtendimentoChamadosIdRoute:
-    AuthenticatedOsAtendimentoChamadosIdRoute,
   AuthenticatedOsComercialClientesIdRoute:
     AuthenticatedOsComercialClientesIdRoute,
   AuthenticatedOsComercialLeadsIdRoute: AuthenticatedOsComercialLeadsIdRoute,
@@ -1003,10 +1042,6 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
     AuthenticatedOsComercialProjetosIdRoute,
   AuthenticatedOsProdutosValtroPricingBetaRoute:
     AuthenticatedOsProdutosValtroPricingBetaRoute,
-  AuthenticatedOsAtendimentoBugsIndexRoute:
-    AuthenticatedOsAtendimentoBugsIndexRoute,
-  AuthenticatedOsAtendimentoChamadosIndexRoute:
-    AuthenticatedOsAtendimentoChamadosIndexRoute,
   AuthenticatedOsComercialClientesIndexRoute:
     AuthenticatedOsComercialClientesIndexRoute,
   AuthenticatedOsComercialLeadsIndexRoute:
