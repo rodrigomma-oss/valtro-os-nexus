@@ -352,6 +352,59 @@ function CrmDashboard() {
 
       <OperationHero parts={heroParts} />
 
+      <BetaRiskBanner
+        counts={
+          beta.data?.counts ?? {
+            total: 0,
+            critica: 0,
+            atencao: 0,
+            normal: 0,
+            byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+          }
+        }
+      />
+
+      <Section
+        title="Operação do Beta Fechado"
+        description="Indicadores derivados de chamados, bugs, feedback, participantes e usuários internos."
+      >
+        <BetaMetricGrid metrics={beta.data?.metrics ?? []} isLoading={beta.isLoading} />
+      </Section>
+
+      <Section
+        title="Atenção necessária — Beta"
+        description="Pendências derivadas em tempo real. Cada item abre a entidade de origem."
+      >
+        <BetaAttentionList
+          items={beta.data?.attention ?? []}
+          counts={
+            beta.data?.counts ?? {
+              total: 0,
+              critica: 0,
+              atencao: 0,
+              normal: 0,
+              byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+            }
+          }
+          isLoading={beta.isLoading}
+        />
+      </Section>
+
+      <Section
+        title="Módulos do beta"
+        description="Situação consolidada por módulo — clique para abrir a lista completa."
+      >
+        <BetaModuleGrid modules={beta.data?.modules ?? []} />
+      </Section>
+
+      <Section
+        title="Últimos eventos do beta"
+        description="Timeline consolidada de chamados, bugs, feedback e participantes."
+      >
+        <BetaTimeline items={beta.data?.timeline ?? []} isLoading={beta.isLoading} />
+      </Section>
+
+
       <Section
         title="Resumo operacional"
         description="Indicadores derivados do estado real das entidades."
