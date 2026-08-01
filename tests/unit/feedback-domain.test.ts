@@ -1,20 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { feedbackStatusTransitions, getAvailableTransitions } from '../../src/lib/os/feedback-ui';
-import { FeedbackStatus } from '../../src/types/feedback';
+import { feedbackActionsFor } from '../../src/lib/os/feedback-ui';
 
 describe('Feedback Domain Logic', () => {
-  it('should define valid transitions correctly', () => {
-    const fromNew = getAvailableTransitions('new');
-    expect(fromNew).toContain('under_review');
-    expect(fromNew).toContain('dismissed');
-    expect(fromNew).not.toContain('implemented');
+  it('should define valid actions correctly', () => {
+    const fromNew = feedbackActionsFor('new');
+    expect(fromNew.map(a => a.to)).toContain('under_review');
+    expect(fromNew.map(a => a.to)).toContain('dismissed');
+    expect(fromNew.map(a => a.to)).not.toContain('implemented');
 
-    const fromClosed = getAvailableTransitions('closed');
+    const fromClosed = feedbackActionsFor('closed');
     expect(fromClosed).toHaveLength(0); // Terminal state
-  });
-
-  it('should block invalid transitions', () => {
-    // This is tested via getAvailableTransitions in UI, 
-    // DB trigger validation is checked via SQL simulation.
   });
 });
