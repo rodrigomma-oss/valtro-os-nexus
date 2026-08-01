@@ -163,10 +163,9 @@ export function NewTicketDialog({
               <Label>Produto</Label>
               <Select value={productId} onValueChange={setProductId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
+                  <SelectValue placeholder="Selecione o produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={NONE}>Não vinculado</SelectItem>
                   {(services.data ?? []).map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.name}
