@@ -216,7 +216,7 @@ function CrmLeadDetail() {
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
 
-  const leadName = leadQuery.data?.company_name;
+  const leadName = leadQuery.data?.lead.company_name;
   useEffect(() => {
     if (leadName) setBreadcrumbLabel(id, leadName);
   }, [id, leadName]);

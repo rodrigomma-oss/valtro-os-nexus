@@ -92,7 +92,7 @@ function ProjectDetail() {
   const canWrite = rolesQuery.data?.canWrite ?? false;
 
   const projectLabel = projectQuery.data
-    ? `${projectQuery.data.code} · ${projectQuery.data.name}`
+    ? `${projectQuery.data.project.code} · ${projectQuery.data.project.name}`
     : undefined;
   useEffect(() => {
     if (projectLabel) setBreadcrumbLabel(id, projectLabel);
