@@ -39,8 +39,8 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
       if (!isSameOrigin && !isAllowedTestOrigin) {
         return fallback;
       }
-      // Se for do mesmo origin, retorna apenas o path + search + hash
       const result = url.pathname + url.search + url.hash;
+      console.log('DEBUG REDIRECT:', { origin: url.origin, result });
       // Evita loops e garante que comece com /
       if (result.startsWith("/auth") || !result.startsWith("/")) return fallback;
       return result;
