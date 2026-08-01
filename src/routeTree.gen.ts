@@ -29,6 +29,7 @@ import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
+import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
@@ -141,6 +142,12 @@ const AuthenticatedOsDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedCrmDashboardRoute =
+  AuthenticatedCrmDashboardRouteImport.update({
+    id: '/crm/dashboard',
+    path: '/crm/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicGoogleCalendarSyncRoute =
   ApiPublicGoogleCalendarSyncRouteImport.update({
     id: '/api/public/google-calendar/sync',
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -255,6 +263,7 @@ export interface FileRoutesByTo {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing': typeof BriefingIndexRoute
+  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -289,6 +298,7 @@ export interface FileRoutesById {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
+  '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -323,6 +333,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing/'
+    | '/crm/dashboard'
     | '/os/dashboard'
     | '/api/public/version'
     | '/crm/'
@@ -354,6 +365,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing'
+    | '/crm/dashboard'
     | '/os/dashboard'
     | '/api/public/version'
     | '/crm'
@@ -387,6 +399,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing/'
+    | '/_authenticated/crm/dashboard'
     | '/_authenticated/os/dashboard'
     | '/api/public/version'
     | '/_authenticated/crm/'
@@ -566,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsDashboardRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/crm/dashboard': {
+      id: '/_authenticated/crm/dashboard'
+      path: '/crm/dashboard'
+      fullPath: '/crm/dashboard'
+      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/google-calendar/sync': {
       id: '/api/public/google-calendar/sync'
       path: '/api/public/google-calendar/sync'
@@ -686,12 +706,14 @@ const AuthenticatedOsRouteWithChildren = AuthenticatedOsRoute._addFileChildren(
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedOsRoute: typeof AuthenticatedOsRouteWithChildren
+  AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedOsRoute: AuthenticatedOsRouteWithChildren,
+  AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 
