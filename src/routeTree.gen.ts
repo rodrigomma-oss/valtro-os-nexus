@@ -57,6 +57,7 @@ import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './
 import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
 import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
 import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
+import { Route as AuthenticatedOsAtendimentoFeedbackIdRouteImport } from './routes/_authenticated.os.atendimento.feedback.$id'
 import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
 import { Route as AuthenticatedOsAtendimentoBugsIdRouteImport } from './routes/_authenticated.os.atendimento.bugs.$id'
 
@@ -327,6 +328,12 @@ const AuthenticatedOsComercialClientesIdRoute =
     path: '/comercial/clientes/$id',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAtendimentoFeedbackIdRoute =
+  AuthenticatedOsAtendimentoFeedbackIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoFeedbackRoute,
+  } as any)
 const AuthenticatedOsAtendimentoChamadosIdRoute =
   AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
     id: '/$id',
@@ -372,7 +379,7 @@ export interface FileRoutesByFullPath {
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
-  '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
+  '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
   '/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
+  '/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -420,7 +428,7 @@ export interface FileRoutesByTo {
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
-  '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
+  '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
@@ -429,6 +437,7 @@ export interface FileRoutesByTo {
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
   '/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
+  '/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -473,7 +482,7 @@ export interface FileRoutesById {
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
-  '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
+  '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
   '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
@@ -482,6 +491,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
   '/_authenticated/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/_authenticated/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
+  '/_authenticated/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
   '/_authenticated/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/crm/projetos/'
     | '/os/atendimento/bugs/$id'
     | '/os/atendimento/chamados/$id'
+    | '/os/atendimento/feedback/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/crm/projetos'
     | '/os/atendimento/bugs/$id'
     | '/os/atendimento/chamados/$id'
+    | '/os/atendimento/feedback/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -635,6 +647,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/projetos/'
     | '/_authenticated/os/atendimento/bugs/$id'
     | '/_authenticated/os/atendimento/chamados/$id'
+    | '/_authenticated/os/atendimento/feedback/$id'
     | '/_authenticated/os/comercial/clientes/$id'
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
@@ -1004,6 +1017,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento/feedback/$id': {
+      id: '/_authenticated/os/atendimento/feedback/$id'
+      path: '/$id'
+      fullPath: '/os/atendimento/feedback/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackIdRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+    }
     '/_authenticated/os/atendimento/chamados/$id': {
       id: '/_authenticated/os/atendimento/chamados/$id'
       path: '/$id'
@@ -1057,10 +1077,25 @@ const AuthenticatedOsAtendimentoChamadosRouteWithChildren =
     AuthenticatedOsAtendimentoChamadosRouteChildren,
   )
 
+interface AuthenticatedOsAtendimentoFeedbackRouteChildren {
+  AuthenticatedOsAtendimentoFeedbackIdRoute: typeof AuthenticatedOsAtendimentoFeedbackIdRoute
+}
+
+const AuthenticatedOsAtendimentoFeedbackRouteChildren: AuthenticatedOsAtendimentoFeedbackRouteChildren =
+  {
+    AuthenticatedOsAtendimentoFeedbackIdRoute:
+      AuthenticatedOsAtendimentoFeedbackIdRoute,
+  }
+
+const AuthenticatedOsAtendimentoFeedbackRouteWithChildren =
+  AuthenticatedOsAtendimentoFeedbackRoute._addFileChildren(
+    AuthenticatedOsAtendimentoFeedbackRouteChildren,
+  )
+
 interface AuthenticatedOsAtendimentoRouteChildren {
   AuthenticatedOsAtendimentoBugsRoute: typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   AuthenticatedOsAtendimentoChamadosRoute: typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
-  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
 }
 
 const AuthenticatedOsAtendimentoRouteChildren: AuthenticatedOsAtendimentoRouteChildren =
@@ -1070,7 +1105,7 @@ const AuthenticatedOsAtendimentoRouteChildren: AuthenticatedOsAtendimentoRouteCh
     AuthenticatedOsAtendimentoChamadosRoute:
       AuthenticatedOsAtendimentoChamadosRouteWithChildren,
     AuthenticatedOsAtendimentoFeedbackRoute:
-      AuthenticatedOsAtendimentoFeedbackRoute,
+      AuthenticatedOsAtendimentoFeedbackRouteWithChildren,
   }
 
 const AuthenticatedOsAtendimentoRouteWithChildren =
