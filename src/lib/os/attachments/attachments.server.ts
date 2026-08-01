@@ -1,5 +1,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+// @ts-nocheck - Aguardando sincronização de tipos do Supabase que contém as novas tabelas da Sprint VOS-001B.2A
+
 export async function prepareAttachmentUpload(params: {
   entityType: string;
   entityId: string;
@@ -11,11 +13,11 @@ export async function prepareAttachmentUpload(params: {
 
   // 1. Validar limite de anexos (ex: 5 por entidade)
   const { count, error: countError } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .select("*", { count: "exact", head: true })
-    .eq("entity_type", entityType)
-    .eq("entity_id", entityId)
-    .is("deleted_at", null);
+    .eq("entity_type" as any, entityType)
+    .eq("entity_id" as any, entityId)
+    .is("deleted_at" as any, null);
 
   if (countError) throw countError;
   if (count && count >= 5) {
@@ -25,7 +27,7 @@ export async function prepareAttachmentUpload(params: {
   // 2. Criar registro pendente
   const storagePath = `${entityType}/${entityId}/${Date.now()}-${filename}`;
   const { data: attachment, error: insertError } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .insert({
       entity_type: entityType,
       entity_id: entityId,
@@ -36,7 +38,7 @@ export async function prepareAttachmentUpload(params: {
       size_bytes: sizeBytes,
       uploaded_by: (await supabaseAdmin.auth.getUser()).data.user?.id || "",
       metadata: {},
-    })
+    } as any)
     .select()
     .single();
 
@@ -69,7 +71,7 @@ export async function finalizeAttachmentUpload(
 
   if (!fileExists || fileExists.length === 0) {
     // Limpar registro se o upload falhou
-    await supabaseAdmin.from("attachments").delete().eq("id", attachmentId);
+    await supabaseAdmin.from("attachments" as any).delete().eq("id" as any, attachmentId);
     throw new Error("Upload não detectado no storage.");
   }
 
@@ -78,10 +80,10 @@ export async function finalizeAttachmentUpload(
 
 export async function getAttachmentDownloadUrl(attachmentId: string) {
   const { data: attachment, error } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .select("*")
-    .eq("id", attachmentId)
-    .is("deleted_at", null)
+    .eq("id" as any, attachmentId)
+    .is("deleted_at" as any, null)
     .single();
 
   if (error || !attachment) throw new Error("Anexo não encontrado.");
@@ -99,12 +101,12 @@ export async function deleteAttachment(attachmentId: string) {
   const { data: user } = await supabaseAdmin.auth.getUser();
 
   const { error } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .update({
       deleted_at: new Date().toISOString(),
       deleted_by: user.user?.id,
     } as any)
-    .eq("id", attachmentId);
+    .eq("id" as any, attachmentId);
 
   if (error) throw error;
 
