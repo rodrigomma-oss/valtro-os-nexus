@@ -234,6 +234,131 @@ export type Database = {
           },
         ]
       }
+      bug_events: {
+        Row: {
+          bug_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          type: Database["public"]["Enums"]["bug_event_type"]
+        }
+        Insert: {
+          bug_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          type: Database["public"]["Enums"]["bug_event_type"]
+        }
+        Update: {
+          bug_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          type?: Database["public"]["Enums"]["bug_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bug_events_bug_id_fkey"
+            columns: ["bug_id"]
+            isOneToOne: false
+            referencedRelation: "bugs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bugs: {
+        Row: {
+          affected_version: string | null
+          category: Database["public"]["Enums"]["bug_category"]
+          closed_at: string | null
+          code: string
+          confirmed_at: string | null
+          created_at: string
+          description: string
+          environment: Database["public"]["Enums"]["bug_environment"]
+          external_reference: string | null
+          fixed_at: string | null
+          fixed_version: string | null
+          id: string
+          owner_id: string | null
+          reported_by: string
+          request_id: string | null
+          saas_product_id: string
+          severity: Database["public"]["Enums"]["bug_severity"]
+          status: Database["public"]["Enums"]["bug_status"]
+          ticket_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_version?: string | null
+          category?: Database["public"]["Enums"]["bug_category"]
+          closed_at?: string | null
+          code: string
+          confirmed_at?: string | null
+          created_at?: string
+          description: string
+          environment?: Database["public"]["Enums"]["bug_environment"]
+          external_reference?: string | null
+          fixed_at?: string | null
+          fixed_version?: string | null
+          id?: string
+          owner_id?: string | null
+          reported_by: string
+          request_id?: string | null
+          saas_product_id: string
+          severity?: Database["public"]["Enums"]["bug_severity"]
+          status?: Database["public"]["Enums"]["bug_status"]
+          ticket_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_version?: string | null
+          category?: Database["public"]["Enums"]["bug_category"]
+          closed_at?: string | null
+          code?: string
+          confirmed_at?: string | null
+          created_at?: string
+          description?: string
+          environment?: Database["public"]["Enums"]["bug_environment"]
+          external_reference?: string | null
+          fixed_at?: string | null
+          fixed_version?: string | null
+          id?: string
+          owner_id?: string | null
+          reported_by?: string
+          request_id?: string | null
+          saas_product_id?: string
+          severity?: Database["public"]["Enums"]["bug_severity"]
+          status?: Database["public"]["Enums"]["bug_status"]
+          ticket_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bugs_saas_product_id_fkey"
+            columns: ["saas_product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bugs_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_integrations: {
         Row: {
           access_token_ciphertext: string | null
@@ -2145,6 +2270,35 @@ export type Database = {
         | "cancelled"
         | "archived"
       billing_interval: "monthly"
+      bug_category:
+        | "ui_ux"
+        | "backend"
+        | "frontend"
+        | "security"
+        | "performance"
+        | "localization"
+        | "data_integrity"
+        | "other"
+      bug_environment: "production" | "staging" | "development" | "local"
+      bug_event_type:
+        | "created"
+        | "status_changed"
+        | "severity_changed"
+        | "assigned"
+        | "fixed"
+        | "confirmed"
+        | "commented"
+        | "closed"
+      bug_severity: "low" | "normal" | "high" | "critical" | "blocker"
+      bug_status:
+        | "new"
+        | "confirmed"
+        | "in_progress"
+        | "waiting_deploy"
+        | "fixed"
+        | "closed"
+        | "wont_fix"
+        | "duplicate"
       calendar_integration_status: "conectado" | "desconectado" | "erro"
       calendar_scope: "empresa" | "usuario"
       calendar_sync_status: "pendente" | "sincronizado" | "falha" | "removido"
@@ -2483,6 +2637,38 @@ export const Constants = {
         "archived",
       ],
       billing_interval: ["monthly"],
+      bug_category: [
+        "ui_ux",
+        "backend",
+        "frontend",
+        "security",
+        "performance",
+        "localization",
+        "data_integrity",
+        "other",
+      ],
+      bug_environment: ["production", "staging", "development", "local"],
+      bug_event_type: [
+        "created",
+        "status_changed",
+        "severity_changed",
+        "assigned",
+        "fixed",
+        "confirmed",
+        "commented",
+        "closed",
+      ],
+      bug_severity: ["low", "normal", "high", "critical", "blocker"],
+      bug_status: [
+        "new",
+        "confirmed",
+        "in_progress",
+        "waiting_deploy",
+        "fixed",
+        "closed",
+        "wont_fix",
+        "duplicate",
+      ],
       calendar_integration_status: ["conectado", "desconectado", "erro"],
       calendar_scope: ["empresa", "usuario"],
       calendar_sync_status: ["pendente", "sincronizado", "falha", "removido"],
