@@ -43,8 +43,9 @@ async function hydrate(supabase: any, rows: RawTicket[]): Promise<Ticket[]> {
 
   const [products, clients, leads, owners] = await Promise.all([
     productIds.length
-      ? supabase.from("services").select("id, name").in("id", productIds)
+      ? supabase.from("saas_products").select("id, name").in("id", productIds)
       : Promise.resolve({ data: [] }),
+
     clientIds.length
       ? supabase.from("clients").select("id, company_name").in("id", clientIds)
       : Promise.resolve({ data: [] }),
