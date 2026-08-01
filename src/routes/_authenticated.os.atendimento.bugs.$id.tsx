@@ -39,11 +39,7 @@ import {
 import { EmptyState } from "@/components/shared/empty-state";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { AttachmentsCard } from "@/components/app/attachments-card";
-import {
-  BugEnvironmentBadge,
-  BugSeverityBadge,
-  BugStatusBadge,
-} from "@/components/app/bug-badges";
+import { BugEnvironmentBadge, BugSeverityBadge, BugStatusBadge } from "@/components/app/bug-badges";
 import { MarkBugFixedDialog } from "@/components/app/mark-bug-fixed-dialog";
 import {
   assignBug,
@@ -379,9 +375,7 @@ function BugDetail() {
                     <Label>Severidade</Label>
                     <Select
                       value={bug.severity}
-                      onValueChange={(v) =>
-                        patchMutation.mutate({ severity: v as BugSeverity })
-                      }
+                      onValueChange={(v) => patchMutation.mutate({ severity: v as BugSeverity })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -400,9 +394,7 @@ function BugDetail() {
                     <Label>Categoria</Label>
                     <Select
                       value={bug.category}
-                      onValueChange={(v) =>
-                        patchMutation.mutate({ category: v as BugCategory })
-                      }
+                      onValueChange={(v) => patchMutation.mutate({ category: v as BugCategory })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -461,11 +453,7 @@ function BugDetail() {
 
                 <div className="space-y-1">
                   <Label htmlFor="bug-title">Título</Label>
-                  <Input
-                    id="bug-title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
+                  <Input id="bug-title" value={title} onChange={(e) => setTitle(e.target.value)} />
                 </div>
 
                 <div className="space-y-1">

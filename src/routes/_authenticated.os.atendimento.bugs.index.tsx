@@ -96,10 +96,12 @@ function BugsList() {
     owner !== ALL;
 
   /** Qualquer alteração de filtro reinicia a paginação server-side. */
-  const withReset = <T,>(setter: (v: T) => void) => (value: T) => {
-    setPage(1);
-    setter(value);
-  };
+  const withReset =
+    <T,>(setter: (v: T) => void) =>
+    (value: T) => {
+      setPage(1);
+      setter(value);
+    };
 
   const clearFilters = () => {
     setTerm("");
@@ -185,7 +187,11 @@ function BugsList() {
       header: "Severidade",
       render: (b) => <BugSeverityBadge severity={b.severity} />,
     },
-    { key: "category", header: "Categoria", render: (b) => <BugCategoryLabel category={b.category} /> },
+    {
+      key: "category",
+      header: "Categoria",
+      render: (b) => <BugCategoryLabel category={b.category} />,
+    },
     {
       key: "environment",
       header: "Ambiente",
@@ -260,8 +266,8 @@ function BugsList() {
         <div className="flex items-start gap-2.5 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
           <Eye className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            Seu perfil é somente leitura: você pode consultar bugs, histórico e anexos, mas não
-            pode registrar ou alterar registros.
+            Seu perfil é somente leitura: você pode consultar bugs, histórico e anexos, mas não pode
+            registrar ou alterar registros.
           </p>
         </div>
       )}
@@ -280,7 +286,10 @@ function BugsList() {
           />
         </div>
 
-        <Select value={status} onValueChange={withReset((v: string) => setStatus(v as BugStatus | typeof ALL))}>
+        <Select
+          value={status}
+          onValueChange={withReset((v: string) => setStatus(v as BugStatus | typeof ALL))}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Status" />
           </SelectTrigger>
