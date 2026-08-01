@@ -401,7 +401,7 @@ function FeedbackList() {
       <DataTable
         columns={columns}
         data={items}
-        isLoading={feedbackQuery.isLoading}
+        loading={feedbackQuery.isLoading}
         onRowClick={(f) => openFeedback(f.id)}
         emptyState={
           <EmptyState
