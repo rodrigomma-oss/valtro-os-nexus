@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-nocheck
+
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
 
