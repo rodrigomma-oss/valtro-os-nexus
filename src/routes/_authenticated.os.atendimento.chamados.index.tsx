@@ -18,7 +18,7 @@ import {
 import { TicketPriorityBadge, TicketStatusBadge } from "@/components/app/ticket-status-badge";
 import { NewTicketDialog } from "@/components/app/new-ticket-dialog";
 import { listTickets } from "@/lib/tickets.functions";
-import { listServices } from "@/lib/services.functions";
+import { listSaasProducts } from "@/lib/saas-products.functions";
 import { listAssignableUsers } from "@/lib/leads.functions";
 import { useCurrentRole } from "@/hooks/use-current-role";
 import type { Ticket, TicketPriority, TicketStatus } from "@/types/ticket";
@@ -58,7 +58,7 @@ function TicketsList() {
   const navigate = useNavigate();
   const { canWrite } = useCurrentRole();
   const listFn = useServerFn(listTickets);
-  const servicesFn = useServerFn(listServices);
+  const productsFn = useServerFn(listSaasProducts);
   const usersFn = useServerFn(listAssignableUsers);
 
   const [term, setTerm] = useState("");
@@ -80,7 +80,11 @@ function TicketsList() {
         },
       }),
   });
-  const services = useQuery({ queryKey: ["services"], queryFn: () => servicesFn(), staleTime: 60_000 });
+  const products = useQuery({
+    queryKey: ["saas-products", "active"],
+    queryFn: () => productsFn({ data: { activeOnly: true } }),
+    staleTime: 60_000,
+  });
   const users = useQuery({
     queryKey: ["assignable-users"],
     queryFn: () => usersFn(),
@@ -239,9 +243,9 @@ function TicketsList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>Todos os produtos</SelectItem>
-            {(services.data ?? []).map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.name}
+            {(products.data ?? []).map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}
               </SelectItem>
             ))}
           </SelectContent>
