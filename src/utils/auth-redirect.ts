@@ -29,12 +29,16 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
       const url = new URL(decoded);
       let currentOrigin = 'http://localhost:8080';
       try {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.location && window.location.origin) {
           currentOrigin = window.location.origin;
         }
       } catch (e) {}
       
-      if (url.origin !== currentOrigin && url.origin !== 'http://localhost:8080') {
+      // Validação permissiva para o domínio de teste e o domínio real
+      const isLocalhost = url.origin.includes('localhost:8080');
+      const isSameOrigin = url.origin === currentOrigin;
+
+      if (!isSameOrigin && !isLocalhost) {
         return fallback;
       }
       // Se for do mesmo origin, retorna apenas o path + search + hash
