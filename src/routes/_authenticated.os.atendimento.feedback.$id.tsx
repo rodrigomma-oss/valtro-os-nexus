@@ -480,10 +480,9 @@ function FeedbackDetail() {
           <AttachmentsCard 
             entityType="feedback" 
             entityId={id} 
-            maxFiles={5}
-            maxSize={20 * 1024 * 1024}
-            canManage={canWrite && feedback.status !== "closed" && feedback.status !== "dismissed"}
+            canWrite={canWrite && feedback.status !== "closed" && feedback.status !== "dismissed"}
           />
+
 
           <Card>
             <CardHeader>
