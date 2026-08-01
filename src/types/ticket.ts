@@ -37,7 +37,7 @@ export interface TicketEvent {
   ticket_id: string;
   type: TicketEventType;
   description: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, any> | null;
   created_by: string | null;
   created_by_name: string | null;
   created_at: string;

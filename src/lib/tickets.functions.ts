@@ -56,10 +56,10 @@ async function hydrate(supabase: any, rows: RawTicket[]): Promise<Ticket[]> {
       : Promise.resolve({ data: [] }),
   ]);
 
-  const pMap = new Map((products.data ?? []).map((p: any) => [p.id, p.name as string]));
-  const cMap = new Map((clients.data ?? []).map((c: any) => [c.id, c.company_name as string]));
-  const lMap = new Map((leads.data ?? []).map((l: any) => [l.id, l.company_name as string]));
-  const oMap = new Map((owners.data ?? []).map((o: any) => [o.id, o.full_name as string | null]));
+  const pMap = new Map<string, string>((products.data ?? []).map((p: any) => [p.id, p.name]));
+  const cMap = new Map<string, string>((clients.data ?? []).map((c: any) => [c.id, c.company_name]));
+  const lMap = new Map<string, string>((leads.data ?? []).map((l: any) => [l.id, l.company_name]));
+  const oMap = new Map<string, string | null>((owners.data ?? []).map((o: any) => [o.id, o.full_name]));
 
   return rows.map((r) => ({
     ...r,
