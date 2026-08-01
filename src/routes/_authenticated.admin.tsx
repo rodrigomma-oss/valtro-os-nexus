@@ -38,7 +38,7 @@ function AdminPage() {
             </Card>
           </Link>
 
-          <Link to="/os/admin/integracoes" search={{}} className="group">
+          <Link to="/os/admin/integracoes" search={{ google: undefined }} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-soft">
               <CardHeader className="pb-2">
                 <div className="mb-2 grid h-9 w-9 place-items-center rounded-lg bg-brand-soft text-primary">
