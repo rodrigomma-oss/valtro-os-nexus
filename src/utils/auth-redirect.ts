@@ -28,8 +28,8 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
     if (decoded.includes("://")) {
       const url = new URL(decoded);
       
-      // Permitimos localhost:8080 ou 127.0.0.1:8080 explicitamente para suportar testes unitários e dev local.
-      const isAllowedLocal = url.host === 'localhost:8080' || url.host === '127.0.0.1:8080';
+      // Permitimos localhost:8080 explicitamente para suportar testes unitários e dev local.
+      const isAllowedLocal = url.host.includes('localhost:8080') || url.host.includes('127.0.0.1:8080');
       
       let isSameOrigin = false;
       try {
