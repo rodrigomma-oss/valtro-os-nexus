@@ -7,6 +7,7 @@ describe('sanitizeAuthRedirect', () => {
   beforeEach(() => {
     // Mock window.location.origin
     vi.stubGlobal('location', { origin: 'http://localhost:8080' });
+    global.window = { location: { origin: 'http://localhost:8080' } } as any;
   });
 
   it('should return fallback if target is empty', () => {
