@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/shared/logo";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeAuthRedirect } from "@/utils/auth-redirect";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -27,15 +28,6 @@ export const Route = createFileRoute("/auth")({
 
 type Mode = "signin" | "forgot";
 
-function isSafeRedirect(target: string | undefined): target is string {
-  if (!target) return false;
-  try {
-    const url = new URL(target, window.location.origin);
-    return url.origin === window.location.origin;
-  } catch {
-    return false;
-  }
-}
 
 function AuthPage() {
   const { redirect } = Route.useSearch();
@@ -46,7 +38,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  const safeRedirect = isSafeRedirect(redirect) ? redirect : "/os/dashboard";
+  const safeRedirect = sanitizeAuthRedirect(redirect);
 
   useEffect(() => {
     // Usa getUser() (revalida com o Auth server) em vez de getSession() (só lê localStorage).
@@ -65,7 +57,7 @@ function AuthPage() {
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth",
+      redirect_uri: window.location.origin + "/auth" + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""),
     });
     if (result.error) {
       toast.error("Não foi possível entrar com o Google.", {
