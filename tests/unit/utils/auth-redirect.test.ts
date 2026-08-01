@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { sanitizeAuthRedirect } from './auth-redirect';
+import { sanitizeAuthRedirect } from '@/utils/auth-redirect';
 
 describe('sanitizeAuthRedirect', () => {
   const defaultFallback = '/os/dashboard';
