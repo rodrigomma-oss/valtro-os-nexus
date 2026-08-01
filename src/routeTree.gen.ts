@@ -38,6 +38,7 @@ import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/ap
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
+import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
 import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
@@ -201,6 +202,12 @@ const AuthenticatedOsAdminIntegracoesRoute =
     path: '/admin/integracoes',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedCrmProjetosIdRoute =
+  AuthenticatedCrmProjetosIdRouteImport.update({
+    id: '/crm/projetos/$id',
+    path: '/crm/projetos/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
   id: '/crm/leads/$id',
   path: '/crm/leads/$id',
@@ -272,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/os/': typeof AuthenticatedOsIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
@@ -309,6 +317,7 @@ export interface FileRoutesByTo {
   '/os': typeof AuthenticatedOsIndexRoute
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
@@ -349,6 +358,7 @@ export interface FileRoutesById {
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
+  '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/os/'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
+    | '/crm/projetos/$id'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/comercial/servicos'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/os'
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
+    | '/crm/projetos/$id'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/comercial/servicos'
@@ -465,6 +477,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/'
     | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
+    | '/_authenticated/crm/projetos/$id'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
     | '/_authenticated/os/comercial/servicos'
@@ -706,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAdminIntegracoesRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/crm/projetos/$id': {
+      id: '/_authenticated/crm/projetos/$id'
+      path: '/crm/projetos/$id'
+      fullPath: '/crm/projetos/$id'
+      preLoaderRoute: typeof AuthenticatedCrmProjetosIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crm/leads/$id': {
       id: '/_authenticated/crm/leads/$id'
       path: '/crm/leads/$id'
@@ -809,6 +829,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
+  AuthenticatedCrmProjetosIdRoute: typeof AuthenticatedCrmProjetosIdRoute
   AuthenticatedCrmClientesIndexRoute: typeof AuthenticatedCrmClientesIndexRoute
   AuthenticatedCrmLeadsIndexRoute: typeof AuthenticatedCrmLeadsIndexRoute
   AuthenticatedCrmProjetosIndexRoute: typeof AuthenticatedCrmProjetosIndexRoute
@@ -821,6 +842,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
+  AuthenticatedCrmProjetosIdRoute: AuthenticatedCrmProjetosIdRoute,
   AuthenticatedCrmClientesIndexRoute: AuthenticatedCrmClientesIndexRoute,
   AuthenticatedCrmLeadsIndexRoute: AuthenticatedCrmLeadsIndexRoute,
   AuthenticatedCrmProjetosIndexRoute: AuthenticatedCrmProjetosIndexRoute,
