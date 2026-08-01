@@ -29,6 +29,14 @@ import { getProjectsOverview, getClientsOverview } from "@/lib/projects.function
 import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon, Layers, Repeat } from "lucide-react";
 import { AttentionQueue } from "@/components/app/operations/attention-queue";
 import { getAttentionOverview } from "@/lib/attention.functions";
+import { getBetaOperationalOverview } from "@/lib/os/beta-dashboard.functions";
+import {
+  BetaAttentionList,
+  BetaMetricGrid,
+  BetaModuleGrid,
+  BetaRiskBanner,
+  BetaTimeline,
+} from "@/components/app/operations/beta-ops-panel";
 
 export const Route = createFileRoute("/_authenticated/os/dashboard")({
   component: CrmDashboard,
