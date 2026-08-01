@@ -431,15 +431,16 @@ function CrmLeads() {
               <Download className="h-4 w-4" strokeWidth={1.75} />
               Exportar
             </Button>
-            <Button
-              size="sm"
-              className="gap-2"
-              onClick={() => setDialogOpen(true)}
-              disabled={!canWrite}
-            >
-              <Plus className="h-4 w-4" strokeWidth={2} />
-              Novo lead
-            </Button>
+            {canWrite && (
+              <Button
+                size="sm"
+                className="gap-2"
+                onClick={() => setDialogOpen(true)}
+              >
+                <Plus className="h-4 w-4" strokeWidth={2} />
+                Novo lead
+              </Button>
+            )}
           </>
         }
       />

@@ -236,17 +236,17 @@ function ServicesCatalog() {
       key: "actions",
       header: <span className="sr-only">Ações</span>,
       className: "w-[64px] text-right",
-      render: (s) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={!isAdmin}
-          onClick={() => openEdit(s)}
-          aria-label={`Editar ${s.name}`}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
-      ),
+      render: (s) =>
+        isAdmin ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openEdit(s)}
+            aria-label={`Editar ${s.name}`}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        ) : null,
     },
   ];
 
