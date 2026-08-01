@@ -158,23 +158,28 @@ function ProjectDetail() {
               <span className="text-xs text-muted-foreground uppercase tracking-wider">
                 Status
               </span>
-              <Select
-                value={project.status}
-                onValueChange={(v) => statusMutation.mutate(v as ProjectStatus)}
-                disabled={!canWrite || statusMutation.isPending}
-              >
-                <SelectTrigger className="w-[210px] h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROJECT_STATUS_ORDER.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {PROJECT_STATUS_LABEL[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {canWrite ? (
+                <Select
+                  value={project.status}
+                  onValueChange={(v) => statusMutation.mutate(v as ProjectStatus)}
+                  disabled={statusMutation.isPending}
+                >
+                  <SelectTrigger className="w-[210px] h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROJECT_STATUS_ORDER.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {PROJECT_STATUS_LABEL[s]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <ProjectStatusBadge status={project.status} />
+              )}
             </div>
+
           </>
         }
       />
