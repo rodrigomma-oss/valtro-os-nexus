@@ -28,3 +28,36 @@ describe("VOS-001C — domínio de chamados", () => {
     expect(TICKET_CLOSED_STATUSES).not.toContain("resolved");
   });
 });
+
+/**
+ * Homologação VOS-001C — máquina de estados espelhada em teste.
+ * Fonte de verdade: public.ticket_transition_allowed (trigger no banco).
+ */
+const ALLOWED: Record<string, string[]> = {
+  open: ["waiting_customer", "waiting_internal", "resolved", "closed", "cancelled"],
+  waiting_customer: ["open", "waiting_internal", "resolved", "closed", "cancelled"],
+  waiting_internal: ["open", "waiting_customer", "resolved", "closed", "cancelled"],
+  resolved: ["open", "closed", "cancelled"],
+  closed: ["open"],
+  cancelled: [],
+};
+
+describe("VOS-001C — máquina de estados de chamados", () => {
+  it("cobre todos os status conhecidos", () => {
+    expect(Object.keys(ALLOWED).sort()).toEqual([...TICKET_STATUS_ORDER].sort());
+  });
+
+  it("nunca permite transição para o mesmo status", () => {
+    for (const [from, tos] of Object.entries(ALLOWED)) expect(tos).not.toContain(from);
+  });
+
+  it("trata cancelado como estado final e permite reabertura de encerrado", () => {
+    expect(ALLOWED["cancelled"]).toEqual([]);
+    expect(ALLOWED["closed"]).toEqual(["open"]);
+    expect(ALLOWED["resolved"]).toContain("open");
+  });
+
+  it("não permite sair de encerrado direto para resolvido", () => {
+    expect(ALLOWED["closed"]).not.toContain("resolved");
+  });
+});
