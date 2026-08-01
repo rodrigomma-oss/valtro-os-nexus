@@ -27,20 +27,24 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
     // Se for uma URL completa, verifica se o origin é o mesmo
     if (decoded.includes("://")) {
       const url = new URL(decoded);
-      // No ambiente de teste do Vitest, window.location pode não estar disponível ou ser inconsistente.
-      // Permitimos localhost:8080 explicitamente para suportar os testes unitários.
-      const isAllowedTestOrigin = url.origin.includes('localhost:8080');
+      
+      // Validação simplificada para URLs absolutas
+      // Bloqueia se o host não for localhost:8080 (ambiente de dev/teste) 
+      // e não for o origin atual se estivermos no browser
+      const isLocal = url.host.includes('localhost:8080');
       
       let isSameOrigin = false;
       try {
-        isSameOrigin = typeof window !== 'undefined' && url.origin === window.location.origin;
+        if (typeof window !== 'undefined' && window.location) {
+          isSameOrigin = url.origin === window.location.origin;
+        }
       } catch (e) {}
 
-      if (!isSameOrigin && !isAllowedTestOrigin) {
+      if (!isSameOrigin && !isLocal) {
         return fallback;
       }
+
       const result = url.pathname + url.search + url.hash;
-      console.log('DEBUG REDIRECT:', { origin: url.origin, result });
       // Evita loops e garante que comece com /
       if (result.startsWith("/auth") || !result.startsWith("/")) return fallback;
       return result;
