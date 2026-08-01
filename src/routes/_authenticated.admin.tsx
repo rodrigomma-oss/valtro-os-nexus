@@ -21,7 +21,7 @@ function AdminPage() {
         />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link to="/os/admin/usuarios" className="group">
+          <Link to="/os/admin/usuarios" search={{}} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-soft">
               <CardHeader className="pb-2">
                 <div className="mb-2 grid h-9 w-9 place-items-center rounded-lg bg-brand-soft text-primary">
@@ -38,7 +38,7 @@ function AdminPage() {
             </Card>
           </Link>
 
-          <Link to="/os/admin/integracoes" className="group">
+          <Link to="/os/admin/integracoes" search={{}} className="group">
             <Card className="transition-all hover:border-primary/50 hover:shadow-soft">
               <CardHeader className="pb-2">
                 <div className="mb-2 grid h-9 w-9 place-items-center rounded-lg bg-brand-soft text-primary">

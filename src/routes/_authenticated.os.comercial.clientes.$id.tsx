@@ -73,7 +73,7 @@ function ClientDetail() {
         actions={
           <>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/os/comercial/clientes">
+              <Link to="/os/comercial/clientes" search={{}}>
                 <ArrowLeft className="h-4 w-4 mr-2" strokeWidth={1.75} />
                 Voltar
               </Link>
@@ -83,6 +83,7 @@ function ClientDetail() {
                 <Link
                   to="/os/comercial/leads/$id"
                   params={{ id: client.lead_id }}
+                  search={{}}
                   className="gap-2"
                 >
                   <Building2 className="h-4 w-4" strokeWidth={1.75} />
