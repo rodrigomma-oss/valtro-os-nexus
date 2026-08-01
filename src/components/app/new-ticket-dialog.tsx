@@ -38,8 +38,8 @@ const NONE = "__none__";
 
 const ticketSchema = z.object({
   title: z.string().trim().min(4, "Informe um título com pelo menos 4 caracteres.").max(200),
-  description: z.string().trim().max(5000).optional(),
-  product_id: z.string().uuid().nullable(),
+  description: z.string().trim().min(10, "Descreva o chamado com pelo menos 10 caracteres.").max(5000),
+  product_id: z.string().uuid("Selecione o produto relacionado."),
   category: z.enum(["support", "question", "commercial", "billing", "technical", "other"]),
   priority: z.enum(["low", "normal", "high", "urgent"]),
   client_id: z.string().uuid().nullable(),
@@ -92,8 +92,8 @@ export function NewTicketDialog({
     mutationFn: () => {
       const parsed = ticketSchema.parse({
         title,
-        description: description.trim() || undefined,
-        product_id: productId === NONE ? null : productId,
+        description: description.trim(),
+        product_id: productId === NONE ? undefined : productId,
         category,
         priority,
         client_id: clientId === NONE ? null : clientId,
@@ -103,7 +103,7 @@ export function NewTicketDialog({
       return createFn({
         data: {
           title: parsed.title,
-          description: parsed.description ?? null,
+          description: parsed.description,
           product_id: parsed.product_id,
           category: parsed.category,
           priority: parsed.priority,

@@ -158,8 +158,8 @@ export const createTicket = createServerFn({ method: "POST" })
     z
       .object({
         title: z.string().trim().min(4).max(200),
-        description: z.string().trim().max(5000).optional().nullable(),
-        product_id: z.string().uuid().nullable().optional(),
+        description: z.string().trim().min(10).max(5000),
+        product_id: z.string().uuid(),
         category: z.enum(CATEGORY).default("support"),
         priority: z.enum(PRIORITY).default("normal"),
         client_id: z.string().uuid().nullable().optional(),
@@ -174,8 +174,8 @@ export const createTicket = createServerFn({ method: "POST" })
       .from("tickets")
       .insert({
         title: data.title,
-        description: data.description ?? null,
-        product_id: data.product_id ?? null,
+        description: data.description,
+        product_id: data.product_id,
         client_id: data.client_id ?? null,
         lead_id: data.lead_id ?? null,
         owner_id: data.owner_id ?? null,
@@ -203,8 +203,8 @@ export const updateTicket = createServerFn({ method: "POST" })
       .object({
         id: z.string().uuid(),
         title: z.string().trim().min(4).max(200).optional(),
-        description: z.string().trim().max(5000).nullable().optional(),
-        product_id: z.string().uuid().nullable().optional(),
+        description: z.string().trim().min(10).max(5000).optional(),
+        product_id: z.string().uuid().optional(),
         client_id: z.string().uuid().nullable().optional(),
         lead_id: z.string().uuid().nullable().optional(),
         category: z.enum(CATEGORY).optional(),
