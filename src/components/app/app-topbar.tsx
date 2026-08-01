@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, Search, LogOut, User as UserIcon, Settings } from "lucide-react";
+import { Bell, Search, LogOut, User as UserIcon, Settings, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { OsNav } from "./os-nav";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { clearSessionMarkers } from "@/lib/session";
+
 
 export interface AppTopbarProps {
   breadcrumb?: ReactNode;
@@ -57,9 +66,34 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
 
   return (
     <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 flex items-center gap-4 px-4 md:px-6">
+      <Sheet open={navOpen} onOpenChange={setNavOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden shrink-0"
+            aria-label="Abrir navegação"
+          >
+            <Menu className="h-5 w-5" strokeWidth={1.75} />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-72 p-0 bg-surface">
+          <SheetHeader className="h-16 justify-center border-b border-border px-6">
+            <SheetTitle className="text-left text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Valtro OS
+            </SheetTitle>
+          </SheetHeader>
+          <div className="p-3 overflow-y-auto">
+            <OsNav onNavigate={() => setNavOpen(false)} />
+          </div>
+        </SheetContent>
+      </Sheet>
+
       <div className="flex-1 min-w-0 flex items-center gap-4">
         <div className="min-w-0 hidden md:block">{breadcrumb}</div>
+        <span className="md:hidden text-sm font-semibold text-foreground">Valtro OS</span>
       </div>
+
 
       <div className="relative w-full max-w-xs hidden lg:block">
         <Search
