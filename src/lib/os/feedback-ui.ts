@@ -1,8 +1,4 @@
 import type {
-  FeedbackAction,
-  FeedbackCategory,
-  FeedbackEnvironment,
-  FeedbackSeverity,
   FeedbackStatus,
   FeedbackType,
   FeedbackSource,
