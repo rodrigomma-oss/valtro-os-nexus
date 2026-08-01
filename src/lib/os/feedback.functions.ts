@@ -1,6 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import type { 
+  FeedbackType, 
+  FeedbackSource, 
+  FeedbackStatus, 
+  FeedbackPerceivedValue, 
+  FeedbackSubscriptionInterest 
+} from "@/types/feedback";
 
 /**
  * Módulo de Gestão de Feedback do Beta Fechado (VOS-001E).
@@ -31,8 +38,6 @@ export const listFeedback = createServerFn({ method: "GET" })
     participant_email: z.string().optional(),
     status: z.string().optional(),
     type: z.string().optional(),
-    severity: z.string().optional(),
-    category: z.string().optional(),
     saas_product_id: z.string().optional(),
     owner_id: z.string().optional(),
     page: z.number().default(1),
@@ -52,8 +57,8 @@ export const listFeedback = createServerFn({ method: "GET" })
 
     if (data.code) query = query.ilike("code", `%${data.code}%`);
     if (data.participant_email) query = query.ilike("participant_email", `%${data.participant_email}%`);
-    if (data.status) query = query.eq("status", data.status);
-    if (data.type) query = query.eq("type", data.type);
+    if (data.status) query = query.eq("status", data.status as FeedbackStatus);
+    if (data.type) query = query.eq("type", data.type as FeedbackType);
     if (data.saas_product_id) query = query.eq("saas_product_id", data.saas_product_id);
     if (data.owner_id) query = query.eq("owner_id", data.owner_id);
     
@@ -139,8 +144,9 @@ export const createFeedback = createServerFn({ method: "POST" })
       .insert([{
         ...data,
         created_by: userData.user.id,
-        status: "new"
-      }])
+        status: "new" as FeedbackStatus,
+        code: "AUTO" // Will be replaced by trigger, but needed for type safety if code is required
+      } as any])
       .select()
       .single();
 
@@ -164,7 +170,12 @@ export const updateFeedback = createServerFn({ method: "POST" })
     const { id, ...patch } = data;
     const { error } = await supabase
       .from("feedback")
-      .update(patch)
+      .update({
+        ...patch,
+        type: patch.type as FeedbackType,
+        perceived_value: patch.perceived_value as FeedbackPerceivedValue,
+        subscription_interest: patch.subscription_interest as FeedbackSubscriptionInterest,
+      } as any)
       .eq("id", id);
 
     if (error) throw new Error(error.message);
@@ -194,7 +205,7 @@ export const changeFeedbackStatus = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("feedback")
-      .update({ status: data.status })
+      .update({ status: data.status as FeedbackStatus })
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -206,7 +217,7 @@ export const closeFeedback = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("feedback")
-      .update({ status: "closed" })
+      .update({ status: "closed" as FeedbackStatus })
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -218,7 +229,7 @@ export const reopenFeedback = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("feedback")
-      .update({ status: "under_review" })
+      .update({ status: "under_review" as FeedbackStatus })
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
