@@ -65,6 +65,125 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_participant_events: {
+        Row: {
+          beta_participant_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          metadata: Json
+          type: Database["public"]["Enums"]["beta_participant_event_type"]
+        }
+        Insert: {
+          beta_participant_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          type: Database["public"]["Enums"]["beta_participant_event_type"]
+        }
+        Update: {
+          beta_participant_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          type?: Database["public"]["Enums"]["beta_participant_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_participant_events_beta_participant_id_fkey"
+            columns: ["beta_participant_id"]
+            isOneToOne: false
+            referencedRelation: "beta_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beta_participants: {
+        Row: {
+          accepted_at: string | null
+          activated_at: string | null
+          beta_program_id: string
+          code: string
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          ended_at: string | null
+          id: string
+          interest_to_subscribe: Database["public"]["Enums"]["beta_participant_interest"]
+          invitation_token: string
+          invited_by: string | null
+          name: string
+          notes: string | null
+          saas_product_id: string
+          status: Database["public"]["Enums"]["beta_participant_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          activated_at?: string | null
+          beta_program_id: string
+          code: string
+          converted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email: string
+          ended_at?: string | null
+          id?: string
+          interest_to_subscribe?: Database["public"]["Enums"]["beta_participant_interest"]
+          invitation_token?: string
+          invited_by?: string | null
+          name: string
+          notes?: string | null
+          saas_product_id: string
+          status?: Database["public"]["Enums"]["beta_participant_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          activated_at?: string | null
+          beta_program_id?: string
+          code?: string
+          converted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          ended_at?: string | null
+          id?: string
+          interest_to_subscribe?: Database["public"]["Enums"]["beta_participant_interest"]
+          invitation_token?: string
+          invited_by?: string | null
+          name?: string
+          notes?: string | null
+          saas_product_id?: string
+          status?: Database["public"]["Enums"]["beta_participant_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_participants_beta_program_id_fkey"
+            columns: ["beta_program_id"]
+            isOneToOne: false
+            referencedRelation: "beta_programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "beta_participants_saas_product_id_fkey"
+            columns: ["saas_product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       beta_programs: {
         Row: {
           archived_at: string | null
@@ -2355,6 +2474,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      beta_participant_transition_allowed: {
+        Args: {
+          _from: Database["public"]["Enums"]["beta_participant_status"]
+          _to: Database["public"]["Enums"]["beta_participant_status"]
+        }
+        Returns: boolean
+      }
       can_access_attachment_entity: {
         Args: { _entity_id: string; _entity_type: string }
         Returns: boolean
@@ -2414,6 +2540,31 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      beta_participant_event_type:
+        | "created"
+        | "invited"
+        | "accepted"
+        | "activated"
+        | "deactivated"
+        | "removed"
+        | "converted"
+        | "interest_changed"
+        | "notes_changed"
+        | "linked_user"
+        | "reopened"
+      beta_participant_interest:
+        | "no"
+        | "maybe"
+        | "yes"
+        | "already_customer"
+        | "unknown"
+      beta_participant_status:
+        | "invited"
+        | "accepted"
+        | "active"
+        | "inactive"
+        | "removed"
+        | "converted"
       beta_program_status:
         | "draft"
         | "planned"
@@ -2845,6 +2996,34 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      beta_participant_event_type: [
+        "created",
+        "invited",
+        "accepted",
+        "activated",
+        "deactivated",
+        "removed",
+        "converted",
+        "interest_changed",
+        "notes_changed",
+        "linked_user",
+        "reopened",
+      ],
+      beta_participant_interest: [
+        "no",
+        "maybe",
+        "yes",
+        "already_customer",
+        "unknown",
+      ],
+      beta_participant_status: [
+        "invited",
+        "accepted",
+        "active",
+        "inactive",
+        "removed",
+        "converted",
+      ],
       beta_program_status: [
         "draft",
         "planned",
