@@ -83,7 +83,7 @@ function ClientDetail() {
                 <Link
                   to="/os/comercial/leads/$id"
                   params={{ id: client.lead_id }}
-                  search={{}}
+                  search={{ proposta: undefined, acao: undefined }}
                   className="gap-2"
                 >
                   <Building2 className="h-4 w-4" strokeWidth={1.75} />

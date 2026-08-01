@@ -363,7 +363,7 @@ function CrmLeads() {
                 navigate({
                   to: "/os/comercial/leads/$id",
                   params: { id: row.id },
-                  search: {},
+                  search: { proposta: undefined, acao: undefined },
                 })
               }
             >

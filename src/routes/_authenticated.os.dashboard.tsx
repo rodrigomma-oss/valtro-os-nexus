@@ -560,7 +560,7 @@ function CrmDashboard() {
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
         <InboxList
           items={data?.inbox ?? []}
-          onOpen={(id) => navigate({ to: "/os/comercial/leads/$id", params: { id }, search: {} })}
+          onOpen={(id) => navigate({ to: "/os/comercial/leads/$id", params: { id }, search: { proposta: undefined, acao: undefined } })}
         />
       </Section>
 
