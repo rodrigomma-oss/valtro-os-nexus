@@ -40,6 +40,7 @@ const ENTITY_TABLES: Record<string, string> = {
   project: "projects",
   lead: "leads",
   client_service: "client_services",
+  bug: "bugs",
 };
 
 export function requestId(): string | null {
