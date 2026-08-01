@@ -219,7 +219,9 @@ function UsersAdminPage() {
       header: "Ações",
       className: "text-right",
       render: (u) => {
+        if (!isAdmin) return null;
         return (
+
           <div className="flex items-center justify-end gap-2">
             <Select
               value={u.roles[0] ?? "viewer"}
