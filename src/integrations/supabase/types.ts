@@ -65,6 +65,68 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_programs: {
+        Row: {
+          archived_at: string | null
+          code: string
+          created_at: string
+          created_by: string
+          description: string | null
+          ends_at: string | null
+          enrollment_ends_at: string | null
+          enrollment_starts_at: string | null
+          id: string
+          name: string
+          saas_product_id: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["beta_program_status"]
+          target_participants: number | null
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          code: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          ends_at?: string | null
+          enrollment_ends_at?: string | null
+          enrollment_starts_at?: string | null
+          id?: string
+          name: string
+          saas_product_id: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["beta_program_status"]
+          target_participants?: number | null
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          ends_at?: string | null
+          enrollment_ends_at?: string | null
+          enrollment_starts_at?: string | null
+          id?: string
+          name?: string
+          saas_product_id?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["beta_program_status"]
+          target_participants?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_programs_saas_product_id_fkey"
+            columns: ["saas_product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       briefing_responses: {
         Row: {
           completed_at: string | null
@@ -1726,6 +1788,36 @@ export type Database = {
           },
         ]
       }
+      saas_products: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          status: Database["public"]["Enums"]["saas_product_status"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          status?: Database["public"]["Enums"]["saas_product_status"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["saas_product_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
@@ -1915,7 +2007,7 @@ export type Database = {
             foreignKeyName: "tickets_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "services"
+            referencedRelation: "saas_products"
             referencedColumns: ["id"]
           },
         ]
@@ -2024,6 +2116,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
+      beta_program_status:
+        | "draft"
+        | "planned"
+        | "active"
+        | "paused"
+        | "completed"
+        | "cancelled"
+        | "archived"
       billing_interval: "monthly"
       calendar_integration_status: "conectado" | "desconectado" | "erro"
       calendar_scope: "empresa" | "usuario"
@@ -2175,6 +2275,7 @@ export type Database = {
         | "rejeitada"
         | "expirada"
         | "cancelada"
+      saas_product_status: "active" | "inactive" | "archived"
       service_billing_type: "pontual" | "recorrente"
       service_offer_type: "principal" | "complementar" | "recorrente"
       service_pricing_mode: "fixo" | "sob_consulta"
@@ -2352,6 +2453,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "operator", "viewer"],
+      beta_program_status: [
+        "draft",
+        "planned",
+        "active",
+        "paused",
+        "completed",
+        "cancelled",
+        "archived",
+      ],
       billing_interval: ["monthly"],
       calendar_integration_status: ["conectado", "desconectado", "erro"],
       calendar_scope: ["empresa", "usuario"],
@@ -2517,6 +2627,7 @@ export const Constants = {
         "expirada",
         "cancelada",
       ],
+      saas_product_status: ["active", "inactive", "archived"],
       service_billing_type: ["pontual", "recorrente"],
       service_offer_type: ["principal", "complementar", "recorrente"],
       service_pricing_mode: ["fixo", "sob_consulta"],

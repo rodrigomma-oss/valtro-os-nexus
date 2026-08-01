@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTicket } from "@/lib/tickets.functions";
-import { listServices } from "@/lib/services.functions";
+import { listSaasProducts } from "@/lib/saas-products.functions";
 import { listClients } from "@/lib/clients.functions";
 import { listLeads, listAssignableUsers } from "@/lib/leads.functions";
 import type { TicketCategory, TicketPriority } from "@/types/ticket";
@@ -58,7 +58,7 @@ export function NewTicketDialog({
 }) {
   const qc = useQueryClient();
   const createFn = useServerFn(createTicket);
-  const servicesFn = useServerFn(listServices);
+  const productsFn = useServerFn(listSaasProducts);
   const clientsFn = useServerFn(listClients);
   const leadsFn = useServerFn(listLeads);
   const usersFn = useServerFn(listAssignableUsers);
@@ -72,7 +72,11 @@ export function NewTicketDialog({
   const [leadId, setLeadId] = useState(NONE);
   const [ownerId, setOwnerId] = useState(NONE);
 
-  const services = useQuery({ queryKey: ["services"], queryFn: () => servicesFn(), enabled: open });
+  const products = useQuery({
+    queryKey: ["saas-products", "active"],
+    queryFn: () => productsFn({ data: { activeOnly: true } }),
+    enabled: open,
+  });
   const clients = useQuery({ queryKey: ["clients"], queryFn: () => clientsFn({ data: {} }), enabled: open });
   const leads = useQuery({ queryKey: ["leads"], queryFn: () => leadsFn({ data: {} }), enabled: open });
   const users = useQuery({ queryKey: ["assignable-users"], queryFn: () => usersFn(), enabled: open });
@@ -166,9 +170,9 @@ export function NewTicketDialog({
                   <SelectValue placeholder="Selecione o produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(services.data ?? []).map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.name}
+                  {(products.data ?? []).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
