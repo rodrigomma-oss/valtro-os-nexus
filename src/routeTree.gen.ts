@@ -23,22 +23,22 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
-import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
+import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
-import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
+import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
-import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
-import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
-import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
-import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
-import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
+import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
-import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
-import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
-import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
-import { Route as AuthenticatedCrmAdminUsuariosRouteImport } from './routes/_authenticated.crm.admin.usuarios'
-import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_authenticated.crm.admin.integracoes'
+import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
+import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
+import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
+import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
+import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
+import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
+import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
+import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
+import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -109,9 +109,9 @@ const BriefingTokenRoute = BriefingTokenRouteImport.update({
   path: '/briefing/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
-  id: '/crm',
-  path: '/crm',
+const AuthenticatedOsRoute = AuthenticatedOsRouteImport.update({
+  id: '/os',
+  path: '/os',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -119,45 +119,21 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
+const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedCrmRoute,
+  getParentRoute: () => AuthenticatedOsRoute,
 } as any)
 const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   id: '/api/public/version',
   path: '/api/public/version',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCrmServicosRoute =
-  AuthenticatedCrmServicosRouteImport.update({
-    id: '/servicos',
-    path: '/servicos',
-    getParentRoute: () => AuthenticatedCrmRoute,
-  } as any)
-const AuthenticatedCrmDashboardRoute =
-  AuthenticatedCrmDashboardRouteImport.update({
+const AuthenticatedOsDashboardRoute =
+  AuthenticatedOsDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
-    getParentRoute: () => AuthenticatedCrmRoute,
-  } as any)
-const AuthenticatedCrmProjetosIndexRoute =
-  AuthenticatedCrmProjetosIndexRouteImport.update({
-    id: '/projetos/',
-    path: '/projetos/',
-    getParentRoute: () => AuthenticatedCrmRoute,
-  } as any)
-const AuthenticatedCrmLeadsIndexRoute =
-  AuthenticatedCrmLeadsIndexRouteImport.update({
-    id: '/leads/',
-    path: '/leads/',
-    getParentRoute: () => AuthenticatedCrmRoute,
-  } as any)
-const AuthenticatedCrmClientesIndexRoute =
-  AuthenticatedCrmClientesIndexRouteImport.update({
-    id: '/clientes/',
-    path: '/clientes/',
-    getParentRoute: () => AuthenticatedCrmRoute,
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 const ApiPublicGoogleCalendarSyncRoute =
   ApiPublicGoogleCalendarSyncRouteImport.update({
@@ -171,34 +147,59 @@ const ApiPublicGoogleCalendarCallbackRoute =
     path: '/api/public/google-calendar/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedCrmProjetosIdRoute =
-  AuthenticatedCrmProjetosIdRouteImport.update({
-    id: '/projetos/$id',
-    path: '/projetos/$id',
-    getParentRoute: () => AuthenticatedCrmRoute,
+const AuthenticatedOsComercialServicosRoute =
+  AuthenticatedOsComercialServicosRouteImport.update({
+    id: '/comercial/servicos',
+    path: '/comercial/servicos',
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
-  id: '/leads/$id',
-  path: '/leads/$id',
-  getParentRoute: () => AuthenticatedCrmRoute,
-} as any)
-const AuthenticatedCrmClientesIdRoute =
-  AuthenticatedCrmClientesIdRouteImport.update({
-    id: '/clientes/$id',
-    path: '/clientes/$id',
-    getParentRoute: () => AuthenticatedCrmRoute,
-  } as any)
-const AuthenticatedCrmAdminUsuariosRoute =
-  AuthenticatedCrmAdminUsuariosRouteImport.update({
+const AuthenticatedOsAdminUsuariosRoute =
+  AuthenticatedOsAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
     path: '/admin/usuarios',
-    getParentRoute: () => AuthenticatedCrmRoute,
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedCrmAdminIntegracoesRoute =
-  AuthenticatedCrmAdminIntegracoesRouteImport.update({
+const AuthenticatedOsAdminIntegracoesRoute =
+  AuthenticatedOsAdminIntegracoesRouteImport.update({
     id: '/admin/integracoes',
     path: '/admin/integracoes',
-    getParentRoute: () => AuthenticatedCrmRoute,
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialProjetosIndexRoute =
+  AuthenticatedOsComercialProjetosIndexRouteImport.update({
+    id: '/comercial/projetos/',
+    path: '/comercial/projetos/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialLeadsIndexRoute =
+  AuthenticatedOsComercialLeadsIndexRouteImport.update({
+    id: '/comercial/leads/',
+    path: '/comercial/leads/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialClientesIndexRoute =
+  AuthenticatedOsComercialClientesIndexRouteImport.update({
+    id: '/comercial/clientes/',
+    path: '/comercial/clientes/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialProjetosIdRoute =
+  AuthenticatedOsComercialProjetosIdRouteImport.update({
+    id: '/comercial/projetos/$id',
+    path: '/comercial/projetos/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialLeadsIdRoute =
+  AuthenticatedOsComercialLeadsIdRouteImport.update({
+    id: '/comercial/leads/$id',
+    path: '/comercial/leads/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialClientesIdRoute =
+  AuthenticatedOsComercialClientesIdRouteImport.update({
+    id: '/comercial/clientes/$id',
+    path: '/comercial/clientes/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -213,24 +214,24 @@ export interface FileRoutesByFullPath {
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/os': typeof AuthenticatedOsRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
-  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
-  '/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
-  '/crm/': typeof AuthenticatedCrmIndexRoute
-  '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
-  '/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
-  '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
-  '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
-  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/os/': typeof AuthenticatedOsIndexRoute
+  '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
+  '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
-  '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
-  '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
-  '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
+  '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
+  '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
+  '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
+  '/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
+  '/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -247,20 +248,20 @@ export interface FileRoutesByTo {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing': typeof BriefingIndexRoute
-  '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
-  '/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
-  '/crm': typeof AuthenticatedCrmIndexRoute
-  '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
-  '/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
-  '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
-  '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
-  '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/os': typeof AuthenticatedOsIndexRoute
+  '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
+  '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
-  '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
-  '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
-  '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
+  '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
+  '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
+  '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
+  '/os/comercial/leads': typeof AuthenticatedOsComercialLeadsIndexRoute
+  '/os/comercial/projetos': typeof AuthenticatedOsComercialProjetosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -276,24 +277,24 @@ export interface FileRoutesById {
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
+  '/_authenticated/os': typeof AuthenticatedOsRouteWithChildren
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/briefing/': typeof BriefingIndexRoute
-  '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
-  '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
+  '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
-  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
-  '/_authenticated/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
-  '/_authenticated/crm/admin/usuarios': typeof AuthenticatedCrmAdminUsuariosRoute
-  '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
-  '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
-  '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
+  '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
+  '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
-  '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
-  '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
-  '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/_authenticated/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
+  '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
+  '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
+  '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
+  '/_authenticated/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
+  '/_authenticated/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -309,24 +310,24 @@ export interface FileRouteTypes {
     | '/solucoes'
     | '/termos'
     | '/admin'
-    | '/crm'
+    | '/os'
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing/'
-    | '/crm/dashboard'
-    | '/crm/servicos'
+    | '/os/dashboard'
     | '/api/public/version'
-    | '/crm/'
-    | '/crm/admin/integracoes'
-    | '/crm/admin/usuarios'
-    | '/crm/clientes/$id'
-    | '/crm/leads/$id'
-    | '/crm/projetos/$id'
+    | '/os/'
+    | '/os/admin/integracoes'
+    | '/os/admin/usuarios'
+    | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
-    | '/crm/clientes/'
-    | '/crm/leads/'
-    | '/crm/projetos/'
+    | '/os/comercial/clientes/$id'
+    | '/os/comercial/leads/$id'
+    | '/os/comercial/projetos/$id'
+    | '/os/comercial/clientes/'
+    | '/os/comercial/leads/'
+    | '/os/comercial/projetos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -343,20 +344,20 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing'
-    | '/crm/dashboard'
-    | '/crm/servicos'
+    | '/os/dashboard'
     | '/api/public/version'
-    | '/crm'
-    | '/crm/admin/integracoes'
-    | '/crm/admin/usuarios'
-    | '/crm/clientes/$id'
-    | '/crm/leads/$id'
-    | '/crm/projetos/$id'
+    | '/os'
+    | '/os/admin/integracoes'
+    | '/os/admin/usuarios'
+    | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
-    | '/crm/clientes'
-    | '/crm/leads'
-    | '/crm/projetos'
+    | '/os/comercial/clientes/$id'
+    | '/os/comercial/leads/$id'
+    | '/os/comercial/projetos/$id'
+    | '/os/comercial/clientes'
+    | '/os/comercial/leads'
+    | '/os/comercial/projetos'
   id:
     | '__root__'
     | '/'
@@ -371,24 +372,24 @@ export interface FileRouteTypes {
     | '/solucoes'
     | '/termos'
     | '/_authenticated/admin'
-    | '/_authenticated/crm'
+    | '/_authenticated/os'
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/briefing/'
-    | '/_authenticated/crm/dashboard'
-    | '/_authenticated/crm/servicos'
+    | '/_authenticated/os/dashboard'
     | '/api/public/version'
-    | '/_authenticated/crm/'
-    | '/_authenticated/crm/admin/integracoes'
-    | '/_authenticated/crm/admin/usuarios'
-    | '/_authenticated/crm/clientes/$id'
-    | '/_authenticated/crm/leads/$id'
-    | '/_authenticated/crm/projetos/$id'
+    | '/_authenticated/os/'
+    | '/_authenticated/os/admin/integracoes'
+    | '/_authenticated/os/admin/usuarios'
+    | '/_authenticated/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
-    | '/_authenticated/crm/clientes/'
-    | '/_authenticated/crm/leads/'
-    | '/_authenticated/crm/projetos/'
+    | '/_authenticated/os/comercial/clientes/$id'
+    | '/_authenticated/os/comercial/leads/$id'
+    | '/_authenticated/os/comercial/projetos/$id'
+    | '/_authenticated/os/comercial/clientes/'
+    | '/_authenticated/os/comercial/leads/'
+    | '/_authenticated/os/comercial/projetos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -511,11 +512,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/crm': {
-      id: '/_authenticated/crm'
-      path: '/crm'
-      fullPath: '/crm'
-      preLoaderRoute: typeof AuthenticatedCrmRouteImport
+    '/_authenticated/os': {
+      id: '/_authenticated/os'
+      path: '/os'
+      fullPath: '/os'
+      preLoaderRoute: typeof AuthenticatedOsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -525,12 +526,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/crm/': {
-      id: '/_authenticated/crm/'
+    '/_authenticated/os/': {
+      id: '/_authenticated/os/'
       path: '/'
-      fullPath: '/crm/'
-      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
+      fullPath: '/os/'
+      preLoaderRoute: typeof AuthenticatedOsIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
     '/api/public/version': {
       id: '/api/public/version'
@@ -539,40 +540,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicVersionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/crm/servicos': {
-      id: '/_authenticated/crm/servicos'
-      path: '/servicos'
-      fullPath: '/crm/servicos'
-      preLoaderRoute: typeof AuthenticatedCrmServicosRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/dashboard': {
-      id: '/_authenticated/crm/dashboard'
+    '/_authenticated/os/dashboard': {
+      id: '/_authenticated/os/dashboard'
       path: '/dashboard'
-      fullPath: '/crm/dashboard'
-      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/projetos/': {
-      id: '/_authenticated/crm/projetos/'
-      path: '/projetos'
-      fullPath: '/crm/projetos/'
-      preLoaderRoute: typeof AuthenticatedCrmProjetosIndexRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/leads/': {
-      id: '/_authenticated/crm/leads/'
-      path: '/leads'
-      fullPath: '/crm/leads/'
-      preLoaderRoute: typeof AuthenticatedCrmLeadsIndexRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/clientes/': {
-      id: '/_authenticated/crm/clientes/'
-      path: '/clientes'
-      fullPath: '/crm/clientes/'
-      preLoaderRoute: typeof AuthenticatedCrmClientesIndexRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
+      fullPath: '/os/dashboard'
+      preLoaderRoute: typeof AuthenticatedOsDashboardRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
     '/api/public/google-calendar/sync': {
       id: '/api/public/google-calendar/sync'
@@ -588,83 +561,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGoogleCalendarCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/crm/projetos/$id': {
-      id: '/_authenticated/crm/projetos/$id'
-      path: '/projetos/$id'
-      fullPath: '/crm/projetos/$id'
-      preLoaderRoute: typeof AuthenticatedCrmProjetosIdRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
+    '/_authenticated/os/comercial/servicos': {
+      id: '/_authenticated/os/comercial/servicos'
+      path: '/comercial/servicos'
+      fullPath: '/os/comercial/servicos'
+      preLoaderRoute: typeof AuthenticatedOsComercialServicosRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/crm/leads/$id': {
-      id: '/_authenticated/crm/leads/$id'
-      path: '/leads/$id'
-      fullPath: '/crm/leads/$id'
-      preLoaderRoute: typeof AuthenticatedCrmLeadsIdRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/clientes/$id': {
-      id: '/_authenticated/crm/clientes/$id'
-      path: '/clientes/$id'
-      fullPath: '/crm/clientes/$id'
-      preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
-    }
-    '/_authenticated/crm/admin/usuarios': {
-      id: '/_authenticated/crm/admin/usuarios'
+    '/_authenticated/os/admin/usuarios': {
+      id: '/_authenticated/os/admin/usuarios'
       path: '/admin/usuarios'
-      fullPath: '/crm/admin/usuarios'
-      preLoaderRoute: typeof AuthenticatedCrmAdminUsuariosRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
+      fullPath: '/os/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedOsAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/crm/admin/integracoes': {
-      id: '/_authenticated/crm/admin/integracoes'
+    '/_authenticated/os/admin/integracoes': {
+      id: '/_authenticated/os/admin/integracoes'
       path: '/admin/integracoes'
-      fullPath: '/crm/admin/integracoes'
-      preLoaderRoute: typeof AuthenticatedCrmAdminIntegracoesRouteImport
-      parentRoute: typeof AuthenticatedCrmRoute
+      fullPath: '/os/admin/integracoes'
+      preLoaderRoute: typeof AuthenticatedOsAdminIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/projetos/': {
+      id: '/_authenticated/os/comercial/projetos/'
+      path: '/comercial/projetos'
+      fullPath: '/os/comercial/projetos/'
+      preLoaderRoute: typeof AuthenticatedOsComercialProjetosIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/leads/': {
+      id: '/_authenticated/os/comercial/leads/'
+      path: '/comercial/leads'
+      fullPath: '/os/comercial/leads/'
+      preLoaderRoute: typeof AuthenticatedOsComercialLeadsIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/clientes/': {
+      id: '/_authenticated/os/comercial/clientes/'
+      path: '/comercial/clientes'
+      fullPath: '/os/comercial/clientes/'
+      preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/projetos/$id': {
+      id: '/_authenticated/os/comercial/projetos/$id'
+      path: '/comercial/projetos/$id'
+      fullPath: '/os/comercial/projetos/$id'
+      preLoaderRoute: typeof AuthenticatedOsComercialProjetosIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/leads/$id': {
+      id: '/_authenticated/os/comercial/leads/$id'
+      path: '/comercial/leads/$id'
+      fullPath: '/os/comercial/leads/$id'
+      preLoaderRoute: typeof AuthenticatedOsComercialLeadsIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/clientes/$id': {
+      id: '/_authenticated/os/comercial/clientes/$id'
+      path: '/comercial/clientes/$id'
+      fullPath: '/os/comercial/clientes/$id'
+      preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
   }
 }
 
-interface AuthenticatedCrmRouteChildren {
-  AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
-  AuthenticatedCrmServicosRoute: typeof AuthenticatedCrmServicosRoute
-  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
-  AuthenticatedCrmAdminIntegracoesRoute: typeof AuthenticatedCrmAdminIntegracoesRoute
-  AuthenticatedCrmAdminUsuariosRoute: typeof AuthenticatedCrmAdminUsuariosRoute
-  AuthenticatedCrmClientesIdRoute: typeof AuthenticatedCrmClientesIdRoute
-  AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
-  AuthenticatedCrmProjetosIdRoute: typeof AuthenticatedCrmProjetosIdRoute
-  AuthenticatedCrmClientesIndexRoute: typeof AuthenticatedCrmClientesIndexRoute
-  AuthenticatedCrmLeadsIndexRoute: typeof AuthenticatedCrmLeadsIndexRoute
-  AuthenticatedCrmProjetosIndexRoute: typeof AuthenticatedCrmProjetosIndexRoute
+interface AuthenticatedOsRouteChildren {
+  AuthenticatedOsDashboardRoute: typeof AuthenticatedOsDashboardRoute
+  AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
+  AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
+  AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
+  AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
+  AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
+  AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
+  AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
+  AuthenticatedOsComercialClientesIndexRoute: typeof AuthenticatedOsComercialClientesIndexRoute
+  AuthenticatedOsComercialLeadsIndexRoute: typeof AuthenticatedOsComercialLeadsIndexRoute
+  AuthenticatedOsComercialProjetosIndexRoute: typeof AuthenticatedOsComercialProjetosIndexRoute
 }
 
-const AuthenticatedCrmRouteChildren: AuthenticatedCrmRouteChildren = {
-  AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
-  AuthenticatedCrmServicosRoute: AuthenticatedCrmServicosRoute,
-  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
-  AuthenticatedCrmAdminIntegracoesRoute: AuthenticatedCrmAdminIntegracoesRoute,
-  AuthenticatedCrmAdminUsuariosRoute: AuthenticatedCrmAdminUsuariosRoute,
-  AuthenticatedCrmClientesIdRoute: AuthenticatedCrmClientesIdRoute,
-  AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
-  AuthenticatedCrmProjetosIdRoute: AuthenticatedCrmProjetosIdRoute,
-  AuthenticatedCrmClientesIndexRoute: AuthenticatedCrmClientesIndexRoute,
-  AuthenticatedCrmLeadsIndexRoute: AuthenticatedCrmLeadsIndexRoute,
-  AuthenticatedCrmProjetosIndexRoute: AuthenticatedCrmProjetosIndexRoute,
+const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
+  AuthenticatedOsDashboardRoute: AuthenticatedOsDashboardRoute,
+  AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
+  AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
+  AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
+  AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
+  AuthenticatedOsComercialClientesIdRoute:
+    AuthenticatedOsComercialClientesIdRoute,
+  AuthenticatedOsComercialLeadsIdRoute: AuthenticatedOsComercialLeadsIdRoute,
+  AuthenticatedOsComercialProjetosIdRoute:
+    AuthenticatedOsComercialProjetosIdRoute,
+  AuthenticatedOsComercialClientesIndexRoute:
+    AuthenticatedOsComercialClientesIndexRoute,
+  AuthenticatedOsComercialLeadsIndexRoute:
+    AuthenticatedOsComercialLeadsIndexRoute,
+  AuthenticatedOsComercialProjetosIndexRoute:
+    AuthenticatedOsComercialProjetosIndexRoute,
 }
 
-const AuthenticatedCrmRouteWithChildren =
-  AuthenticatedCrmRoute._addFileChildren(AuthenticatedCrmRouteChildren)
+const AuthenticatedOsRouteWithChildren = AuthenticatedOsRoute._addFileChildren(
+  AuthenticatedOsRouteChildren,
+)
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
+  AuthenticatedOsRoute: typeof AuthenticatedOsRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
+  AuthenticatedOsRoute: AuthenticatedOsRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
