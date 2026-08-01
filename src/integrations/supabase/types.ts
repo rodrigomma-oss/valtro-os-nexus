@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      attachments: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json
+          mime_type: string
+          original_filename: string
+          size_bytes: number
+          storage_path: string
+          stored_filename: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json
+          mime_type: string
+          original_filename: string
+          size_bytes: number
+          storage_path: string
+          stored_filename: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json
+          mime_type?: string
+          original_filename?: string
+          size_bytes?: number
+          storage_path?: string
+          stored_filename?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       briefing_responses: {
         Row: {
           completed_at: string | null
@@ -1752,6 +1803,123 @@ export type Database = {
           },
         ]
       }
+      ticket_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          metadata: Json
+          ticket_id: string
+          type: Database["public"]["Enums"]["ticket_event_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          ticket_id: string
+          type: Database["public"]["Enums"]["ticket_event_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          ticket_id?: string
+          type?: Database["public"]["Enums"]["ticket_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_events_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          category: Database["public"]["Enums"]["ticket_category"]
+          client_id: string | null
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          lead_id: string | null
+          owner_id: string | null
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          product_id: string | null
+          protocol: string
+          source: Database["public"]["Enums"]["ticket_source"]
+          status: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["ticket_category"]
+          client_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          owner_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          product_id?: string | null
+          protocol: string
+          source?: Database["public"]["Enums"]["ticket_source"]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["ticket_category"]
+          client_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          owner_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          product_id?: string | null
+          protocol?: string
+          source?: Database["public"]["Enums"]["ticket_source"]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_admin_audit_events: {
         Row: {
           action: string
@@ -2024,6 +2192,30 @@ export type Database = {
         | "consultoria"
         | "diagnostico"
         | "custom"
+      ticket_category:
+        | "support"
+        | "question"
+        | "commercial"
+        | "billing"
+        | "technical"
+        | "other"
+      ticket_event_type:
+        | "created"
+        | "status_changed"
+        | "owner_changed"
+        | "priority_changed"
+        | "closed"
+        | "reopened"
+        | "note_added"
+      ticket_priority: "low" | "normal" | "high" | "urgent"
+      ticket_source: "admin" | "portal" | "email" | "api"
+      ticket_status:
+        | "open"
+        | "waiting_customer"
+        | "waiting_internal"
+        | "resolved"
+        | "closed"
+        | "cancelled"
       token_status: "pendente" | "ativo" | "concluido" | "expirado" | "revogado"
     }
     CompositeTypes: {
@@ -2343,6 +2535,33 @@ export const Constants = {
         "consultoria",
         "diagnostico",
         "custom",
+      ],
+      ticket_category: [
+        "support",
+        "question",
+        "commercial",
+        "billing",
+        "technical",
+        "other",
+      ],
+      ticket_event_type: [
+        "created",
+        "status_changed",
+        "owner_changed",
+        "priority_changed",
+        "closed",
+        "reopened",
+        "note_added",
+      ],
+      ticket_priority: ["low", "normal", "high", "urgent"],
+      ticket_source: ["admin", "portal", "email", "api"],
+      ticket_status: [
+        "open",
+        "waiting_customer",
+        "waiting_internal",
+        "resolved",
+        "closed",
+        "cancelled",
       ],
       token_status: ["pendente", "ativo", "concluido", "expirado", "revogado"],
     },

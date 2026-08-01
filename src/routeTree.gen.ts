@@ -38,7 +38,6 @@ import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/pu
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
 import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
-import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
 import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
@@ -50,10 +49,12 @@ import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_
 import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
 import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
 import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
+import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta'
 import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
 import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
 import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
+import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -209,12 +210,6 @@ const AuthenticatedOsAtendimentoFeedbackRoute =
     path: '/atendimento/feedback',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedOsAtendimentoChamadosRoute =
-  AuthenticatedOsAtendimentoChamadosRouteImport.update({
-    id: '/atendimento/chamados',
-    path: '/atendimento/chamados',
-    getParentRoute: () => AuthenticatedOsRoute,
-  } as any)
 const AuthenticatedOsAtendimentoBugsRoute =
   AuthenticatedOsAtendimentoBugsRouteImport.update({
     id: '/atendimento/bugs',
@@ -280,6 +275,12 @@ const AuthenticatedOsComercialClientesIndexRoute =
     path: '/comercial/clientes/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAtendimentoChamadosIndexRoute =
+  AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
+    id: '/atendimento/chamados/',
+    path: '/atendimento/chamados/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 const AuthenticatedOsProdutosValtroPricingBetaRoute =
   AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
     id: '/produtos/valtro-pricing/beta',
@@ -302,6 +303,12 @@ const AuthenticatedOsComercialClientesIdRoute =
   AuthenticatedOsComercialClientesIdRouteImport.update({
     id: '/comercial/clientes/$id',
     path: '/comercial/clientes/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsAtendimentoChamadosIdRoute =
+  AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
+    id: '/atendimento/chamados/$id',
+    path: '/atendimento/chamados/$id',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 
@@ -335,7 +342,6 @@ export interface FileRoutesByFullPath {
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRoute
-  '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRoute
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -343,10 +349,12 @@ export interface FileRoutesByFullPath {
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -380,7 +388,6 @@ export interface FileRoutesByTo {
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRoute
-  '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRoute
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -388,10 +395,12 @@ export interface FileRoutesByTo {
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -428,7 +437,6 @@ export interface FileRoutesById {
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRoute
-  '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRoute
   '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
   '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -436,10 +444,12 @@ export interface FileRoutesById {
   '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/_authenticated/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/_authenticated/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/_authenticated/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/_authenticated/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/_authenticated/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/_authenticated/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -476,7 +486,6 @@ export interface FileRouteTypes {
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/atendimento/bugs'
-    | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
     | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
@@ -484,10 +493,12 @@ export interface FileRouteTypes {
     | '/crm/clientes/'
     | '/crm/leads/'
     | '/crm/projetos/'
+    | '/os/atendimento/chamados/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
     | '/os/produtos/valtro-pricing/beta'
+    | '/os/atendimento/chamados/'
     | '/os/comercial/clientes/'
     | '/os/comercial/leads/'
     | '/os/comercial/projetos/'
@@ -521,7 +532,6 @@ export interface FileRouteTypes {
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/atendimento/bugs'
-    | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
     | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
@@ -529,10 +539,12 @@ export interface FileRouteTypes {
     | '/crm/clientes'
     | '/crm/leads'
     | '/crm/projetos'
+    | '/os/atendimento/chamados/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
     | '/os/produtos/valtro-pricing/beta'
+    | '/os/atendimento/chamados'
     | '/os/comercial/clientes'
     | '/os/comercial/leads'
     | '/os/comercial/projetos'
@@ -568,7 +580,6 @@ export interface FileRouteTypes {
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
     | '/_authenticated/os/atendimento/bugs'
-    | '/_authenticated/os/atendimento/chamados'
     | '/_authenticated/os/atendimento/feedback'
     | '/_authenticated/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
@@ -576,10 +587,12 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
     | '/_authenticated/crm/projetos/'
+    | '/_authenticated/os/atendimento/chamados/$id'
     | '/_authenticated/os/comercial/clientes/$id'
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
     | '/_authenticated/os/produtos/valtro-pricing/beta'
+    | '/_authenticated/os/atendimento/chamados/'
     | '/_authenticated/os/comercial/clientes/'
     | '/_authenticated/os/comercial/leads/'
     | '/_authenticated/os/comercial/projetos/'
@@ -810,13 +823,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/atendimento/chamados': {
-      id: '/_authenticated/os/atendimento/chamados'
-      path: '/atendimento/chamados'
-      fullPath: '/os/atendimento/chamados'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
-    }
     '/_authenticated/os/atendimento/bugs': {
       id: '/_authenticated/os/atendimento/bugs'
       path: '/atendimento/bugs'
@@ -894,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento/chamados/': {
+      id: '/_authenticated/os/atendimento/chamados/'
+      path: '/atendimento/chamados'
+      fullPath: '/os/atendimento/chamados/'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
     '/_authenticated/os/produtos/valtro-pricing/beta': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta'
       path: '/produtos/valtro-pricing/beta'
@@ -922,6 +935,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento/chamados/$id': {
+      id: '/_authenticated/os/atendimento/chamados/$id'
+      path: '/atendimento/chamados/$id'
+      fullPath: '/os/atendimento/chamados/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
   }
 }
 
@@ -931,13 +951,14 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
   AuthenticatedOsAtendimentoBugsRoute: typeof AuthenticatedOsAtendimentoBugsRoute
-  AuthenticatedOsAtendimentoChamadosRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
   AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
+  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
   AuthenticatedOsProdutosValtroPricingBetaRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  AuthenticatedOsAtendimentoChamadosIndexRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   AuthenticatedOsComercialClientesIndexRoute: typeof AuthenticatedOsComercialClientesIndexRoute
   AuthenticatedOsComercialLeadsIndexRoute: typeof AuthenticatedOsComercialLeadsIndexRoute
   AuthenticatedOsComercialProjetosIndexRoute: typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -949,11 +970,11 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
   AuthenticatedOsAtendimentoBugsRoute: AuthenticatedOsAtendimentoBugsRoute,
-  AuthenticatedOsAtendimentoChamadosRoute:
-    AuthenticatedOsAtendimentoChamadosRoute,
   AuthenticatedOsAtendimentoFeedbackRoute:
     AuthenticatedOsAtendimentoFeedbackRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
+  AuthenticatedOsAtendimentoChamadosIdRoute:
+    AuthenticatedOsAtendimentoChamadosIdRoute,
   AuthenticatedOsComercialClientesIdRoute:
     AuthenticatedOsComercialClientesIdRoute,
   AuthenticatedOsComercialLeadsIdRoute: AuthenticatedOsComercialLeadsIdRoute,
@@ -961,6 +982,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
     AuthenticatedOsComercialProjetosIdRoute,
   AuthenticatedOsProdutosValtroPricingBetaRoute:
     AuthenticatedOsProdutosValtroPricingBetaRoute,
+  AuthenticatedOsAtendimentoChamadosIndexRoute:
+    AuthenticatedOsAtendimentoChamadosIndexRoute,
   AuthenticatedOsComercialClientesIndexRoute:
     AuthenticatedOsComercialClientesIndexRoute,
   AuthenticatedOsComercialLeadsIndexRoute:
