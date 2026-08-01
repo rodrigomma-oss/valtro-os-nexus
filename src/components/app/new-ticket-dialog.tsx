@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createTicket } from "@/lib/tickets.functions";
-import { listServices } from "@/lib/services.functions";
+import { listSaasProducts } from "@/lib/saas-products.functions";
 import { listClients } from "@/lib/clients.functions";
 import { listLeads, listAssignableUsers } from "@/lib/leads.functions";
 import type { TicketCategory, TicketPriority } from "@/types/ticket";
