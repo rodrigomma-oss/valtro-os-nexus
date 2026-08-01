@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { setBreadcrumbLabel } from "@/lib/breadcrumb-store";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Loader2, Building2 } from "lucide-react";
