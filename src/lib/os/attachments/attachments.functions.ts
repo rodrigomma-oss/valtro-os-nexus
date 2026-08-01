@@ -45,3 +45,10 @@ export const deleteAttachmentFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return deleteAttachment(data.attachmentId);
   });
+
+export const listAttachmentsFn = createServerFn({ method: "GET" })
+  .inputValidator(z.object({ entityType: z.string(), entityId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const { listAttachments } = await import("./attachments.server");
+    return listAttachments(data.entityType, data.entityId);
+  });

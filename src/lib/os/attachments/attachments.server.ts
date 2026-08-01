@@ -115,3 +115,25 @@ export async function deleteAttachment(attachmentId: string) {
 
   return { success: true };
 }
+
+export interface AttachmentRow {
+  id: string;
+  original_filename: string;
+  mime_type: string;
+  size_bytes: number;
+  created_at: string;
+}
+
+export async function listAttachments(entityType: string, entityId: string) {
+  const client = supabaseAdmin as any;
+  const { data, error } = await client
+    .from("attachments")
+    .select("id, original_filename, mime_type, size_bytes, created_at")
+    .eq("entity_type", entityType)
+    .eq("entity_id", entityId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as AttachmentRow[];
+}
