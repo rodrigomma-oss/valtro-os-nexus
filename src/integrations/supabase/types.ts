@@ -901,6 +901,159 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          bug_id: string | null
+          closed_at: string | null
+          code: string
+          created_at: string
+          created_by: string
+          description: string
+          desired_feature: string | null
+          id: string
+          owner_id: string | null
+          participant_email: string | null
+          participant_name: string | null
+          participant_user_id: string | null
+          perceived_value: Database["public"]["Enums"]["feedback_perceived_value"]
+          reviewed_at: string | null
+          saas_product_id: string
+          source: Database["public"]["Enums"]["feedback_source"]
+          status: Database["public"]["Enums"]["feedback_status"]
+          subscription_interest: Database["public"]["Enums"]["feedback_subscription_interest"]
+          ticket_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["feedback_type"]
+          updated_at: string
+        }
+        Insert: {
+          bug_id?: string | null
+          closed_at?: string | null
+          code: string
+          created_at?: string
+          created_by: string
+          description: string
+          desired_feature?: string | null
+          id?: string
+          owner_id?: string | null
+          participant_email?: string | null
+          participant_name?: string | null
+          participant_user_id?: string | null
+          perceived_value?: Database["public"]["Enums"]["feedback_perceived_value"]
+          reviewed_at?: string | null
+          saas_product_id: string
+          source: Database["public"]["Enums"]["feedback_source"]
+          status?: Database["public"]["Enums"]["feedback_status"]
+          subscription_interest?: Database["public"]["Enums"]["feedback_subscription_interest"]
+          ticket_id?: string | null
+          title: string
+          type: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+        }
+        Update: {
+          bug_id?: string | null
+          closed_at?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          desired_feature?: string | null
+          id?: string
+          owner_id?: string | null
+          participant_email?: string | null
+          participant_name?: string | null
+          participant_user_id?: string | null
+          perceived_value?: Database["public"]["Enums"]["feedback_perceived_value"]
+          reviewed_at?: string | null
+          saas_product_id?: string
+          source?: Database["public"]["Enums"]["feedback_source"]
+          status?: Database["public"]["Enums"]["feedback_status"]
+          subscription_interest?: Database["public"]["Enums"]["feedback_subscription_interest"]
+          ticket_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_bug_id_fkey"
+            columns: ["bug_id"]
+            isOneToOne: false
+            referencedRelation: "bugs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_saas_product_id_fkey"
+            columns: ["saas_product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: Database["public"]["Enums"]["feedback_event_type"]
+          feedback_id: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: Database["public"]["Enums"]["feedback_event_type"]
+          feedback_id: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["feedback_event_type"]
+          feedback_id?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_events_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "feedback"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follow_ups: {
         Row: {
           cancel_reason: string | null
@@ -2345,6 +2498,60 @@ export type Database = {
         | "cancelado"
       client_status: "ativo" | "inativo" | "arquivado"
       cycle_payment_status: "pendente" | "pago" | "vencido" | "dispensado"
+      feedback_event_type:
+        | "created"
+        | "status_changed"
+        | "type_changed"
+        | "owner_changed"
+        | "perceived_value_changed"
+        | "subscription_interest_changed"
+        | "desired_feature_changed"
+        | "linked_to_ticket"
+        | "linked_to_bug"
+        | "accepted"
+        | "planned"
+        | "implemented"
+        | "dismissed"
+        | "closed"
+        | "reopened"
+      feedback_perceived_value:
+        | "very_low"
+        | "low"
+        | "medium"
+        | "high"
+        | "very_high"
+        | "not_informed"
+      feedback_source:
+        | "internal"
+        | "beta_portal"
+        | "support"
+        | "interview"
+        | "email"
+        | "whatsapp"
+        | "other"
+      feedback_status:
+        | "new"
+        | "under_review"
+        | "accepted"
+        | "planned"
+        | "implemented"
+        | "dismissed"
+        | "closed"
+      feedback_subscription_interest:
+        | "no"
+        | "maybe"
+        | "yes"
+        | "already_subscribed"
+        | "not_informed"
+      feedback_type:
+        | "praise"
+        | "suggestion"
+        | "complaint"
+        | "question"
+        | "usability"
+        | "feature_request"
+        | "pricing"
+        | "other"
       follow_up_status: "agendado" | "concluido" | "cancelado" | "reagendado"
       lead_contact_channel:
         | "whatsapp"
@@ -2729,6 +2936,66 @@ export const Constants = {
       ],
       client_status: ["ativo", "inativo", "arquivado"],
       cycle_payment_status: ["pendente", "pago", "vencido", "dispensado"],
+      feedback_event_type: [
+        "created",
+        "status_changed",
+        "type_changed",
+        "owner_changed",
+        "perceived_value_changed",
+        "subscription_interest_changed",
+        "desired_feature_changed",
+        "linked_to_ticket",
+        "linked_to_bug",
+        "accepted",
+        "planned",
+        "implemented",
+        "dismissed",
+        "closed",
+        "reopened",
+      ],
+      feedback_perceived_value: [
+        "very_low",
+        "low",
+        "medium",
+        "high",
+        "very_high",
+        "not_informed",
+      ],
+      feedback_source: [
+        "internal",
+        "beta_portal",
+        "support",
+        "interview",
+        "email",
+        "whatsapp",
+        "other",
+      ],
+      feedback_status: [
+        "new",
+        "under_review",
+        "accepted",
+        "planned",
+        "implemented",
+        "dismissed",
+        "closed",
+      ],
+      feedback_subscription_interest: [
+        "no",
+        "maybe",
+        "yes",
+        "already_subscribed",
+        "not_informed",
+      ],
+      feedback_type: [
+        "praise",
+        "suggestion",
+        "complaint",
+        "question",
+        "usability",
+        "feature_request",
+        "pricing",
+        "other",
+      ],
       follow_up_status: ["agendado", "concluido", "cancelado", "reagendado"],
       lead_contact_channel: [
         "whatsapp",
