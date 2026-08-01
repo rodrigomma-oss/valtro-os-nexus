@@ -45,11 +45,11 @@ test.describe("Sprint 11 — Propostas comerciais", () => {
     const negotiationText = `E2E ${runId} — nota de negociação de teste`;
 
     // ---- 1) Sessão autenticada ------------------------------------------
-    await page.goto("/crm/dashboard", { waitUntil: "domcontentloaded" });
+    await page.goto("/os/dashboard", { waitUntil: "domcontentloaded" });
     await expect(page).not.toHaveURL(/\/auth/);
 
     // ---- 2) Abrir lead + 3) ProposalsCard visível -----------------------
-    await page.goto(`/crm/leads/${LEAD_ID}`, { waitUntil: "domcontentloaded" });
+    await page.goto(`/os/comercial/leads/${LEAD_ID}`, { waitUntil: "domcontentloaded" });
     const proposalsCard = page.getByTestId("proposals-card");
     await expect(proposalsCard).toBeVisible();
     // aguarda estado terminal (loading some)
@@ -182,7 +182,7 @@ test.describe("Sprint 11 — Propostas comerciais", () => {
     ).toBeVisible();
 
     // ---- 19-21) Centro de Operações -------------------------------------
-    await page.goto("/crm/dashboard", { waitUntil: "domcontentloaded" });
+    await page.goto("/os/dashboard", { waitUntil: "domcontentloaded" });
     await expect(
       page.getByRole("heading", { name: "Propostas comerciais" }),
     ).toBeVisible({ timeout: 15_000 });

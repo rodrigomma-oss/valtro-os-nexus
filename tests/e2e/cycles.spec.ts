@@ -16,8 +16,8 @@ import { test, expect, type Page } from "@playwright/test";
 const HAS_AUTH = !!process.env.E2E_TEST_EMAIL && !!process.env.E2E_TEST_PASSWORD;
 
 async function openClientWithContracts(page: Page) {
-  await page.goto("/crm/clientes", { waitUntil: "domcontentloaded" });
-  const firstLink = page.locator('a[href^="/crm/clientes/"]').first();
+  await page.goto("/os/comercial/clientes", { waitUntil: "domcontentloaded" });
+  const firstLink = page.locator('a[href^="/os/comercial/clientes/"]').first();
   await expect(firstLink).toBeVisible();
   await firstLink.click();
   await expect(page.getByTestId("contracted-services-card")).toBeVisible();

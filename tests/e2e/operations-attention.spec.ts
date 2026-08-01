@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Centro de Operações — Atenção necessária", () => {
   test("renderiza a fila com filtros de categoria e prioridade", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
 
     const queue = page.getByTestId("attention-queue");
     await expect(queue).toBeVisible();
@@ -22,7 +22,7 @@ test.describe("Centro de Operações — Atenção necessária", () => {
   });
 
   test("filtro por categoria restringe os itens exibidos", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
 
     await page.getByTestId("attn-filter-ciclos").click();
@@ -35,7 +35,7 @@ test.describe("Centro de Operações — Atenção necessária", () => {
   });
 
   test("filtro de prioridade mantém apenas itens críticos", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
 
     await page.getByTestId("attn-priority-critica").click();
@@ -47,7 +47,7 @@ test.describe("Centro de Operações — Atenção necessária", () => {
   });
 
   test("CTA leva à entidade de origem", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
 
     const first = page.getByTestId("attention-item").first();
@@ -73,7 +73,7 @@ test.describe("Centro de Operações — Atenção necessária", () => {
  */
 test.describe("Sprint 13.10 — leads iniciais e CTA de contratação", () => {
   test("cards legados atuam como atalhos, não como segunda fila", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
     // Se houver indicadores, eles são links de navegação (sem lista concorrente).
     const shortcuts = page.getByTestId("dashboard-shortcuts");
@@ -83,7 +83,7 @@ test.describe("Sprint 13.10 — leads iniciais e CTA de contratação", () => {
   });
 
   test("categoria leads mostra apenas pendências de lead", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
     await page.getByTestId("attn-filter-leads").click();
 
@@ -106,7 +106,7 @@ test.describe("Sprint 13.10 — leads iniciais e CTA de contratação", () => {
   });
 
   test("proposta aprovada abre o lead com a proposta e a ação em contexto", async ({ page }) => {
-    await page.goto("/crm/dashboard");
+    await page.goto("/os/dashboard");
     await page.getByTestId("attention-queue").waitFor();
     await page.getByTestId("attn-filter-propostas").click();
 

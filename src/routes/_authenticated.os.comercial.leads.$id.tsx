@@ -334,23 +334,28 @@ function CrmLeadDetail() {
               <span className="text-xs text-muted-foreground uppercase tracking-wider">
                 Status
               </span>
-              <Select
-                value={lead.status}
-                onValueChange={(v) => statusMutation.mutate(v as LeadStatus)}
-                disabled={!canWrite || statusMutation.isPending}
-              >
-                <SelectTrigger className="w-[170px] h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>
-                      <StatusBadge status={o.value} />
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {canWrite ? (
+                <Select
+                  value={lead.status}
+                  onValueChange={(v) => statusMutation.mutate(v as LeadStatus)}
+                  disabled={statusMutation.isPending}
+                >
+                  <SelectTrigger className="w-[170px] h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        <StatusBadge status={o.value} />
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <StatusBadge status={lead.status} />
+              )}
             </div>
+
             {canWrite && (
               <Button
                 variant="outline"

@@ -219,7 +219,9 @@ function UsersAdminPage() {
       header: "Ações",
       className: "text-right",
       render: (u) => {
+        if (!isAdmin) return null;
         return (
+
           <div className="flex items-center justify-end gap-2">
             <Select
               value={u.roles[0] ?? "viewer"}
@@ -292,10 +294,13 @@ function UsersAdminPage() {
                 className="pl-9"
               />
             </div>
-            <Button onClick={() => setInviteOpen(true)} disabled={!isAdmin}>
-              <Plus className="mr-2 h-4 w-4" />
-              Convidar usuário
-            </Button>
+            {isAdmin ? (
+              <Button onClick={() => setInviteOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Convidar usuário
+              </Button>
+            ) : null}
+
           </div>
 
           <DataTable
