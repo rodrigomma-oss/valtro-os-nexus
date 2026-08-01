@@ -1,7 +1,9 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-// Sincronização de tipos do Supabase pendente para tabelas VOS-001B.2A
 // @ts-nocheck
+// Note: This file uses @ts-nocheck to bypass a temporary "Type instantiation is excessively deep" error 
+// caused by the Supabase client while the local type definitions for the new 'attachments' table 
+// are being synchronized from the database.
 
 export async function prepareAttachmentUpload(params: {
   entityType: string;
@@ -11,9 +13,11 @@ export async function prepareAttachmentUpload(params: {
   sizeBytes: number;
 }) {
   const { entityType, entityId, filename, mimeType, sizeBytes } = params;
+  const client = supabaseAdmin as any;
 
   // 1. Validar limite de anexos (ex: 5 por entidade)
-  const { count, error: countError } = await (supabaseAdmin.from("attachments" as any) as any)
+  const { count, error: countError } = await client
+    .from("attachments")
     .select("*", { count: "exact", head: true })
     .eq("entity_type", entityType)
     .eq("entity_id", entityId)
@@ -26,7 +30,8 @@ export async function prepareAttachmentUpload(params: {
 
   // 2. Criar registro pendente
   const storagePath = `${entityType}/${entityId}/${Date.now()}-${filename}`;
-  const { data: attachment, error: insertError } = await (supabaseAdmin.from("attachments" as any) as any)
+  const { data: attachment, error: insertError } = await client
+    .from("attachments")
     .insert({
       entity_type: entityType,
       entity_id: entityId,
@@ -61,6 +66,7 @@ export async function finalizeAttachmentUpload(
   attachmentId: string,
   storagePath: string
 ) {
+  const client = supabaseAdmin as any;
   // Verificar se o arquivo realmente existe no storage
   const { data: fileExists } = await supabaseAdmin.storage
     .from("os-attachments")
@@ -70,7 +76,7 @@ export async function finalizeAttachmentUpload(
 
   if (!fileExists || fileExists.length === 0) {
     // Limpar registro se o upload falhou
-    await (supabaseAdmin.from("attachments" as any) as any).delete().eq("id", attachmentId);
+    await client.from("attachments").delete().eq("id", attachmentId);
     throw new Error("Upload não detectado no storage.");
   }
 
@@ -78,7 +84,9 @@ export async function finalizeAttachmentUpload(
 }
 
 export async function getAttachmentDownloadUrl(attachmentId: string) {
-  const { data: attachment, error } = await (supabaseAdmin.from("attachments" as any) as any)
+  const client = supabaseAdmin as any;
+  const { data: attachment, error } = await client
+    .from("attachments")
     .select("*")
     .eq("id", attachmentId)
     .is("deleted_at", null)
@@ -96,9 +104,11 @@ export async function getAttachmentDownloadUrl(attachmentId: string) {
 }
 
 export async function deleteAttachment(attachmentId: string) {
+  const client = supabaseAdmin as any;
   const { data: user } = await supabaseAdmin.auth.getUser();
 
-  const { error } = await (supabaseAdmin.from("attachments" as any) as any)
+  const { error } = await client
+    .from("attachments")
     .update({
       deleted_at: new Date().toISOString(),
       deleted_by: user.user?.id,
