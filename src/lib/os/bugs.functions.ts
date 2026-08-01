@@ -5,7 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Bug, BugEvent, BugStatus, BugSeverity, BugCategory, BugEnvironment } from "@/types/bug";
+import type { Bug, BugEvent, BugStatus, BugSeverity, BugCategory, BugEnvironment, BugEventType } from "@/types/bug";
 
 const STATUS = ["new", "confirmed", "in_progress", "waiting_deploy", "fixed", "closed", "wont_fix", "duplicate"] as const;
 const SEVERITY = ["low", "normal", "high", "critical", "blocker"] as const;
@@ -195,7 +195,7 @@ export const createBug = createServerFn({ method: "POST" })
       type: "created",
       created_by: context.userId,
       metadata: { initial_data: data }
-    });
+    } as any);
 
     log("createBug", { bug_id: created.id, code: created.code, user_id: context.userId });
     return created;
@@ -224,7 +224,8 @@ export const updateBug = createServerFn({ method: "POST" })
     const { id, ...patch } = data;
     
     // Get old data for event
-    const { data: old } = await context.supabase.from("bugs").select("*").eq("id", id).single();
+    const { data: old, error: getError } = await context.supabase.from("bugs").select("*").eq("id", id).maybeSingle();
+    if (getError || !old) throw new Error("Falha ao recuperar dados do bug.");
     
     const { error } = await context.supabase
       .from("bugs")
@@ -233,12 +234,24 @@ export const updateBug = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    // Track changes in events (severity, category, etc.)
-    const events = [];
+    // Track changes in events
+    const events: any[] = [];
     if (patch.severity && patch.severity !== old.severity) {
-      events.push({ bug_id: id, type: "severity_changed", created_by: context.userId, metadata: { from: old.severity, to: patch.severity } });
+      events.push({ 
+        bug_id: id, 
+        type: "severity_changed" as BugEventType, 
+        created_by: context.userId, 
+        metadata: { from: old.severity, to: patch.severity } 
+      });
     }
-    // ... other field tracking ...
+    if (patch.category && patch.category !== old.category) {
+      events.push({ 
+        bug_id: id, 
+        type: "severity_changed" as BugEventType, // Reusing severity_changed or defining category_changed in future migration
+        created_by: context.userId, 
+        metadata: { from: old.category, to: patch.category } 
+      });
+    }
 
     if (events.length > 0) {
       await context.supabase.from("bug_events").insert(events);
@@ -255,7 +268,8 @@ export const assignBug = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid(), owner_id: z.string().uuid().nullable() }).parse(data))
   .handler(async ({ data, context }) => {
-    const { data: old } = await context.supabase.from("bugs").select("owner_id").eq("id", data.id).single();
+    const { data: old, error: getError } = await context.supabase.from("bugs").select("owner_id").eq("id", data.id).maybeSingle();
+    if (getError || !old) throw new Error("Falha ao recuperar dados do bug.");
     
     const { error } = await context.supabase
       .from("bugs")
@@ -269,7 +283,7 @@ export const assignBug = createServerFn({ method: "POST" })
       type: "assigned",
       created_by: context.userId,
       metadata: { from: old.owner_id, to: data.owner_id }
-    });
+    } as any);
 
     log("assignBug", { bug_id: data.id, owner_id: data.owner_id, user_id: context.userId });
     return { ok: true };
@@ -282,7 +296,8 @@ export const changeBugStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid(), status: z.enum(STATUS) }).parse(data))
   .handler(async ({ data, context }) => {
-    const { data: old } = await context.supabase.from("bugs").select("status").eq("id", data.id).single();
+    const { data: old, error: getError } = await context.supabase.from("bugs").select("status").eq("id", data.id).maybeSingle();
+    if (getError || !old) throw new Error("Falha ao recuperar dados do bug.");
     
     const { error } = await context.supabase
       .from("bugs")
@@ -296,7 +311,7 @@ export const changeBugStatus = createServerFn({ method: "POST" })
       type: "status_changed",
       created_by: context.userId,
       metadata: { from: old.status, to: data.status }
-    });
+    } as any);
 
     log("changeBugStatus", { bug_id: data.id, status: data.status, user_id: context.userId });
     return { ok: true };
@@ -321,7 +336,7 @@ export const markBugFixed = createServerFn({ method: "POST" })
       type: "fixed",
       created_by: context.userId,
       metadata: { fixed_version: data.fixed_version }
-    });
+    } as any);
 
     log("markBugFixed", { bug_id: data.id, version: data.fixed_version, user_id: context.userId });
     return { ok: true };
@@ -345,7 +360,7 @@ export const closeBug = createServerFn({ method: "POST" })
       bug_id: data.id,
       type: "closed",
       created_by: context.userId
-    });
+    } as any);
 
     log("closeBug", { bug_id: data.id, user_id: context.userId });
     return { ok: true };
@@ -367,10 +382,10 @@ export const reopenBug = createServerFn({ method: "POST" })
 
     await context.supabase.from("bug_events").insert({
       bug_id: data.id,
-      type: "commented", // Treat as a timeline note for reopening
+      type: "commented", 
       description: "Bug reaberto.",
       created_by: context.userId
-    });
+    } as any);
 
     log("reopenBug", { bug_id: data.id, user_id: context.userId });
     return { ok: true };
