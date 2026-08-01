@@ -347,13 +347,14 @@ function FeedbackDetail() {
             </CardHeader>
             <CardContent>
               <TimelineCard 
-                events={events?.map(e => ({
+                title="Histórico de Eventos"
+                items={events?.map(e => ({
                   id: e.id,
-                  type: e.type,
-                  description: e.description,
-                  metadata: e.metadata,
-                  created_at: e.created_at,
-                  created_by_name: e.created_by_name
+                  icon: History, // Default icon for history
+                  title: describeFeedbackEvent(e),
+                  description: e.created_by_name ? `Realizado por ${e.created_by_name}` : "Sistema",
+                  date: new Date(e.created_at).toLocaleString("pt-BR"),
+                  tone: feedbackEventTone(e.event_type) as any
                 })) || []} 
               />
             </CardContent>
