@@ -26,6 +26,7 @@ import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
@@ -124,6 +125,11 @@ const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedOsRoute,
 } as any)
+const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
+  id: '/crm/',
+  path: '/crm/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   id: '/api/public/version',
   path: '/api/public/version',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/briefing/': typeof BriefingIndexRoute
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/crm/': typeof AuthenticatedCrmIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/briefing': typeof BriefingIndexRoute
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/crm': typeof AuthenticatedCrmIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/os/dashboard'
     | '/api/public/version'
+    | '/crm/'
     | '/os/'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/briefing'
     | '/os/dashboard'
     | '/api/public/version'
+    | '/crm'
     | '/os'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
@@ -378,6 +389,7 @@ export interface FileRouteTypes {
     | '/briefing/'
     | '/_authenticated/os/dashboard'
     | '/api/public/version'
+    | '/_authenticated/crm/'
     | '/_authenticated/os/'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
@@ -533,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
+      path: '/crm'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/version': {
       id: '/api/public/version'
       path: '/api/public/version'
@@ -667,11 +686,13 @@ const AuthenticatedOsRouteWithChildren = AuthenticatedOsRoute._addFileChildren(
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedOsRoute: typeof AuthenticatedOsRouteWithChildren
+  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedOsRoute: AuthenticatedOsRouteWithChildren,
+  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
