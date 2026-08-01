@@ -427,7 +427,8 @@ function FeedbackDetail() {
                 {canWrite ? (
                   <Select 
                     value={feedback.owner_id || NONE} 
-                    onValueChange={(v) => assignMutation.mutate({ id, owner_id: v === NONE ? null : v })}
+                    onValueChange={(v) => assignMutation.mutate({ data: { id, owner_id: v === NONE ? null : v } })}
+
                   >
                     <SelectTrigger>
                       <SelectValue />
