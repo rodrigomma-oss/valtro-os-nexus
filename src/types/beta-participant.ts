@@ -60,7 +60,7 @@ export interface BetaParticipantEvent {
   beta_participant_id: string;
   type: BetaParticipantEventType;
   description: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, any> | null;
   created_by: string | null;
   created_at: string;
   created_by_name?: string | null;
