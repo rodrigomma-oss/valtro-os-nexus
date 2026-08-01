@@ -29,6 +29,14 @@ import { getProjectsOverview, getClientsOverview } from "@/lib/projects.function
 import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriangle as AlertTriangleIcon, Layers, Repeat } from "lucide-react";
 import { AttentionQueue } from "@/components/app/operations/attention-queue";
 import { getAttentionOverview } from "@/lib/attention.functions";
+import { getBetaOperationalOverview } from "@/lib/os/beta-dashboard.functions";
+import {
+  BetaAttentionList,
+  BetaMetricGrid,
+  BetaModuleGrid,
+  BetaRiskBanner,
+  BetaTimeline,
+} from "@/components/app/operations/beta-ops-panel";
 
 export const Route = createFileRoute("/_authenticated/os/dashboard")({
   component: CrmDashboard,
@@ -256,6 +264,18 @@ function CrmDashboard() {
     staleTime: 30_000,
   });
 
+  /**
+   * VOS-001G — Operação do Beta Fechado.
+   * Uma única leitura consolidada (tickets, bugs, feedback, participantes,
+   * papéis internos e eventos), toda derivada em runtime via RLS.
+   */
+  const getBetaFn = useServerFn(getBetaOperationalOverview);
+  const beta = useQuery({
+    queryKey: ["beta-operational-overview"],
+    queryFn: () => getBetaFn(),
+    staleTime: 30_000,
+  });
+
 
   const heroParts: string[] = [];
   if (data) {
@@ -331,6 +351,59 @@ function CrmDashboard() {
       />
 
       <OperationHero parts={heroParts} />
+
+      <BetaRiskBanner
+        counts={
+          beta.data?.counts ?? {
+            total: 0,
+            critica: 0,
+            atencao: 0,
+            normal: 0,
+            byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+          }
+        }
+      />
+
+      <Section
+        title="Operação do Beta Fechado"
+        description="Indicadores derivados de chamados, bugs, feedback, participantes e usuários internos."
+      >
+        <BetaMetricGrid metrics={beta.data?.metrics ?? []} isLoading={beta.isLoading} />
+      </Section>
+
+      <Section
+        title="Atenção necessária — Beta"
+        description="Pendências derivadas em tempo real. Cada item abre a entidade de origem."
+      >
+        <BetaAttentionList
+          items={beta.data?.attention ?? []}
+          counts={
+            beta.data?.counts ?? {
+              total: 0,
+              critica: 0,
+              atencao: 0,
+              normal: 0,
+              byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+            }
+          }
+          isLoading={beta.isLoading}
+        />
+      </Section>
+
+      <Section
+        title="Módulos do beta"
+        description="Situação consolidada por módulo — clique para abrir a lista completa."
+      >
+        <BetaModuleGrid modules={beta.data?.modules ?? []} />
+      </Section>
+
+      <Section
+        title="Últimos eventos do beta"
+        description="Timeline consolidada de chamados, bugs, feedback e participantes."
+      >
+        <BetaTimeline items={beta.data?.timeline ?? []} isLoading={beta.isLoading} />
+      </Section>
+
 
       <Section
         title="Resumo operacional"

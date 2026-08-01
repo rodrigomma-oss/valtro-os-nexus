@@ -12,7 +12,9 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) {
       throw redirect({
         to: "/auth",
-        search: { redirect: location.pathname + location.search + location.hash },
+        // `location.search` é um objeto no TanStack Router; `href` já contém
+        // pathname + query + hash como string (concatenar o objeto quebrava o gate).
+        search: { redirect: location.href },
       });
     }
     return { user: data.user };
