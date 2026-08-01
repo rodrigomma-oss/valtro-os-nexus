@@ -28,24 +28,23 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
     if (decoded.includes("://")) {
       const url = new URL(decoded);
       
-      // Validação simplificada para URLs absolutas
-      // Bloqueia se o host não for localhost:8080 (ambiente de dev/teste) 
-      // e não for o origin atual se estivermos no browser
-      const isLocal = url.host.includes('localhost:8080');
-      
-      let isSameOrigin = false;
+      let isAllowedOrigin = false;
       try {
         if (typeof window !== 'undefined' && window.location) {
-          isSameOrigin = url.origin === window.location.origin;
+          isAllowedOrigin = url.origin === window.location.origin;
+        } else {
+          // Fallback para ambiente de teste/SSR
+          isAllowedOrigin = url.host.includes('localhost:8080');
         }
-      } catch (e) {}
+      } catch (e) {
+        isAllowedOrigin = url.host.includes('localhost:8080');
+      }
 
-      if (!isSameOrigin && !isLocal) {
+      if (!isAllowedOrigin) {
         return fallback;
       }
 
       const result = url.pathname + url.search + url.hash;
-      // Evita loops e garante que comece com /
       if (result.startsWith("/auth") || !result.startsWith("/")) return fallback;
       return result;
     }
