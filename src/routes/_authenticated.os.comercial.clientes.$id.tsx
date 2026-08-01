@@ -43,6 +43,13 @@ function ClientDetail() {
     staleTime: 60_000,
   });
 
+  const clientName = clientQuery.data?.company_name;
+  useEffect(() => {
+    if (clientName) setBreadcrumbLabel(id, clientName);
+  }, [id, clientName]);
+
+
+
 
   if (clientQuery.isLoading) {
     return (
