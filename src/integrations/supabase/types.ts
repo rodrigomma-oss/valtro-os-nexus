@@ -29,7 +29,7 @@ export type Database = {
           storage_path: string
           stored_filename: string
           updated_at: string
-          uploaded_by: string | null
+          uploaded_by: string
         }
         Insert: {
           created_at?: string
@@ -45,7 +45,7 @@ export type Database = {
           storage_path: string
           stored_filename: string
           updated_at?: string
-          uploaded_by?: string | null
+          uploaded_by: string
         }
         Update: {
           created_at?: string
@@ -61,7 +61,7 @@ export type Database = {
           storage_path?: string
           stored_filename?: string
           updated_at?: string
-          uploaded_by?: string | null
+          uploaded_by?: string
         }
         Relationships: []
       }
@@ -2077,6 +2077,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_attachment_entity: {
+        Args: { _entity_id: string; _entity_type: string; _user_id: string }
+        Returns: boolean
+      }
       client_service_transition_allowed: {
         Args: {
           _from: Database["public"]["Enums"]["client_service_status"]
