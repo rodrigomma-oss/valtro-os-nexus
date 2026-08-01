@@ -2081,8 +2081,20 @@ export type Database = {
         Args: { _entity_id: string; _entity_type: string; _user_id: string }
         Returns: boolean
       }
+      can_access_client: {
+        Args: { _client_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_access_lead: {
+        Args: { _lead_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_access_onboarding: {
         Args: { _onboarding_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_access_project: {
+        Args: { _project_id: string; _user_id: string }
         Returns: boolean
       }
       client_service_transition_allowed: {
