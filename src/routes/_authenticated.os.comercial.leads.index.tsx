@@ -635,7 +635,11 @@ function CrmLeads() {
           data={paginated}
           getRowId={(row) => row.id}
           onRowClick={(row) =>
-            navigate({ to: "/os/comercial/leads/$id", params: { id: row.id } })
+            navigate({
+              to: "/os/comercial/leads/$id",
+              params: { id: row.id },
+              search: { proposta: undefined, acao: undefined },
+            })
           }
           emptyState={emptyState}
         />

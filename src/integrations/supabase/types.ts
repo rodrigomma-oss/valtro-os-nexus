@@ -1848,12 +1848,12 @@ export type Database = {
           closed_at: string | null
           created_at: string
           created_by: string | null
-          description: string | null
+          description: string
           id: string
           lead_id: string | null
           owner_id: string | null
           priority: Database["public"]["Enums"]["ticket_priority"]
-          product_id: string | null
+          product_id: string
           protocol: string
           source: Database["public"]["Enums"]["ticket_source"]
           status: Database["public"]["Enums"]["ticket_status"]
@@ -1866,12 +1866,12 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           created_by?: string | null
-          description?: string | null
+          description: string
           id?: string
           lead_id?: string | null
           owner_id?: string | null
           priority?: Database["public"]["Enums"]["ticket_priority"]
-          product_id?: string | null
+          product_id: string
           protocol: string
           source?: Database["public"]["Enums"]["ticket_source"]
           status?: Database["public"]["Enums"]["ticket_status"]
@@ -1884,12 +1884,12 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           created_by?: string | null
-          description?: string | null
+          description?: string
           id?: string
           lead_id?: string | null
           owner_id?: string | null
           priority?: Database["public"]["Enums"]["ticket_priority"]
-          product_id?: string | null
+          product_id?: string
           protocol?: string
           source?: Database["public"]["Enums"]["ticket_source"]
           status?: Database["public"]["Enums"]["ticket_status"]
@@ -2014,6 +2014,13 @@ export type Database = {
         Returns: string
       }
       set_calendar_cron_secret: { Args: { _value: string }; Returns: boolean }
+      ticket_transition_allowed: {
+        Args: {
+          _from: Database["public"]["Enums"]["ticket_status"]
+          _to: Database["public"]["Enums"]["ticket_status"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
