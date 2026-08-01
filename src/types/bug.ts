@@ -1,12 +1,12 @@
 export type BugStatus =
   | "new"
+  | "triage"
   | "confirmed"
   | "in_progress"
-  | "waiting_deploy"
+  | "in_testing"
   | "fixed"
   | "closed"
-  | "wont_fix"
-  | "duplicate";
+  | "rejected";
 
 export type BugSeverity = "low" | "normal" | "high" | "critical" | "blocker";
 
@@ -26,9 +26,17 @@ export type BugEventType =
   | "created"
   | "status_changed"
   | "severity_changed"
+  | "category_changed"
+  | "owner_changed"
+  | "affected_version_changed"
+  | "fixed_version_changed"
+  | "request_id_changed"
+  | "linked_to_ticket"
   | "assigned"
   | "fixed"
   | "confirmed"
+  | "reopened"
+  | "rejected"
   | "commented"
   | "closed";
 
