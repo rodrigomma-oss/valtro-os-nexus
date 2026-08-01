@@ -2289,16 +2289,27 @@ export type Database = {
         | "confirmed"
         | "commented"
         | "closed"
+        | "category_changed"
+        | "owner_changed"
+        | "affected_version_changed"
+        | "fixed_version_changed"
+        | "request_id_changed"
+        | "linked_to_ticket"
+        | "reopened"
+        | "rejected"
       bug_severity: "low" | "normal" | "high" | "critical" | "blocker"
       bug_status:
         | "new"
+        | "triage"
         | "confirmed"
         | "in_progress"
+        | "in_testing"
         | "waiting_deploy"
         | "fixed"
         | "closed"
         | "wont_fix"
         | "duplicate"
+        | "rejected"
       calendar_integration_status: "conectado" | "desconectado" | "erro"
       calendar_scope: "empresa" | "usuario"
       calendar_sync_status: "pendente" | "sincronizado" | "falha" | "removido"
@@ -2657,17 +2668,28 @@ export const Constants = {
         "confirmed",
         "commented",
         "closed",
+        "category_changed",
+        "owner_changed",
+        "affected_version_changed",
+        "fixed_version_changed",
+        "request_id_changed",
+        "linked_to_ticket",
+        "reopened",
+        "rejected",
       ],
       bug_severity: ["low", "normal", "high", "critical", "blocker"],
       bug_status: [
         "new",
+        "triage",
         "confirmed",
         "in_progress",
+        "in_testing",
         "waiting_deploy",
         "fixed",
         "closed",
         "wont_fix",
         "duplicate",
+        "rejected",
       ],
       calendar_integration_status: ["conectado", "desconectado", "erro"],
       calendar_scope: ["empresa", "usuario"],
