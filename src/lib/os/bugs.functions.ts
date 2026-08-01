@@ -7,7 +7,16 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Bug, BugEvent, BugStatus, BugSeverity, BugCategory, BugEnvironment } from "@/types/bug";
 
-const STATUS = ["new", "confirmed", "in_progress", "waiting_deploy", "fixed", "closed", "wont_fix", "duplicate"] as const;
+const STATUS = [
+  "new",
+  "triage",
+  "confirmed",
+  "in_progress",
+  "in_testing",
+  "fixed",
+  "closed",
+  "rejected",
+] as const;
 const SEVERITY = ["low", "normal", "high", "critical", "blocker"] as const;
 const CATEGORY = ["ui_ux", "backend", "frontend", "security", "performance", "localization", "data_integrity", "other"] as const;
 const ENVIRONMENT = ["production", "staging", "development", "local"] as const;
