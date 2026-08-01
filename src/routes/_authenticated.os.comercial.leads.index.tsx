@@ -70,7 +70,7 @@ const QUICK_VIEWS: readonly QuickView[] = [
   "followups-proximos",
 ] as const;
 
-export const Route = createFileRoute("/_authenticated/crm/leads/")({
+export const Route = createFileRoute("/_authenticated/os/comercial/leads/")({
   component: CrmLeads,
   validateSearch: (s: Record<string, unknown>): { view?: QuickView } => ({
     view: QUICK_VIEWS.includes(s.view as QuickView)
@@ -361,7 +361,7 @@ function CrmLeads() {
             <DropdownMenuItem
               onClick={() =>
                 navigate({
-                  to: "/crm/leads/$id",
+                  to: "/os/comercial/leads/$id",
                   params: { id: row.id },
                 })
               }
@@ -632,7 +632,7 @@ function CrmLeads() {
           data={paginated}
           getRowId={(row) => row.id}
           onRowClick={(row) =>
-            navigate({ to: "/crm/leads/$id", params: { id: row.id } })
+            navigate({ to: "/os/comercial/leads/$id", params: { id: row.id } })
           }
           emptyState={emptyState}
         />

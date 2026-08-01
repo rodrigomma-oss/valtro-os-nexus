@@ -20,7 +20,7 @@ import {
   TARGET_CALENDAR_SUMMARY,
 } from "@/lib/google-calendar/oauth.server";
 
-const ADMIN_PATH = "/crm/admin/integracoes";
+const ADMIN_PATH = "/os/admin/integracoes";
 
 function back(origin: string, status: string): Response {
   return new Response(null, {

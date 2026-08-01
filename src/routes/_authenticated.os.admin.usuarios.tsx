@@ -72,7 +72,7 @@ const ACTION_LABEL: Record<string, string> = {
   cancel_invite: "Convite cancelado",
 };
 
-export const Route = createFileRoute("/_authenticated/crm/admin/usuarios")({
+export const Route = createFileRoute("/_authenticated/os/admin/usuarios")({
   component: UsersAdminPage,
   head: () => ({
     meta: [

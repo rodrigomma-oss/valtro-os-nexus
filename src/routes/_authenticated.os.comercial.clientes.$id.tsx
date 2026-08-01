@@ -10,7 +10,7 @@ import { ContractedServicesCard } from "@/components/app/contracted-services-car
 import { getClient } from "@/lib/clients.functions";
 import { getMyRoles } from "@/lib/leads.functions";
 
-export const Route = createFileRoute("/_authenticated/crm/clientes/$id")({
+export const Route = createFileRoute("/_authenticated/os/comercial/clientes/$id")({
   component: ClientDetail,
   /**
    * Sprint 13.9 (P1-3) — `?cs=<client_service_id>` chega do Centro de
@@ -64,7 +64,7 @@ function ClientDetail() {
         actions={
           <>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/crm/clientes">
+              <Link to="/os/comercial/clientes">
                 <ArrowLeft className="h-4 w-4 mr-2" strokeWidth={1.75} />
                 Voltar
               </Link>
@@ -72,7 +72,7 @@ function ClientDetail() {
             {client.lead_id && (
               <Button variant="outline" size="sm" asChild>
                 <Link
-                  to="/crm/leads/$id"
+                  to="/os/comercial/leads/$id"
                   params={{ id: client.lead_id }}
                   className="gap-2"
                 >

@@ -47,7 +47,7 @@ import {
 import { ServiceFormDialog } from "@/components/app/service-form-dialog";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/crm/servicos")({
+export const Route = createFileRoute("/_authenticated/os/comercial/servicos")({
   component: ServicesCatalog,
   head: () => ({
     meta: [

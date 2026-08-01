@@ -33,23 +33,23 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Operação",
     items: [
-      { label: "Centro de Operações", to: "/crm/dashboard", icon: LayoutDashboard },
-      { label: "Leads", to: "/crm/leads", icon: Users },
-      { label: "Clientes", to: "/crm/clientes", icon: Building2 },
-      { label: "Projetos", to: "/crm/projetos", icon: FolderKanban },
-      { label: "Catálogo de Serviços", to: "/crm/servicos", icon: Layers },
+      { label: "Centro de Operações", to: "/os/dashboard", icon: LayoutDashboard },
+      { label: "Leads", to: "/os/comercial/leads", icon: Users },
+      { label: "Clientes", to: "/os/comercial/clientes", icon: Building2 },
+      { label: "Projetos", to: "/os/comercial/projetos", icon: FolderKanban },
+      { label: "Catálogo de Serviços", to: "/os/comercial/servicos", icon: Layers },
     ],
   },
   {
     label: "Ferramentas",
     items: [
       { label: "Portal de Diagnóstico", to: "/diagnostico", icon: ClipboardList, external: true },
-      { label: "Integrações", to: "/crm/admin/integracoes", icon: Plug },
+      { label: "Integrações", to: "/os/admin/integracoes", icon: Plug },
     ],
   },
   {
     label: "Administração",
-    items: [{ label: "Usuários", to: "/crm/admin/usuarios", icon: Shield }],
+    items: [{ label: "Usuários", to: "/os/admin/usuarios", icon: Shield }],
   },
 
   {
@@ -124,7 +124,7 @@ export function AppSidebar() {
   return (
     <aside className="hidden md:flex md:w-64 shrink-0 flex-col border-r border-border bg-surface">
       <div className="flex h-16 items-center px-6 border-b border-border">
-        <Link to="/crm/dashboard" className="flex items-center">
+        <Link to="/os/dashboard" className="flex items-center">
           <Logo variant="compact" />
         </Link>
       </div>

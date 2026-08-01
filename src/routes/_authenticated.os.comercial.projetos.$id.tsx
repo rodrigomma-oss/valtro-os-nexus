@@ -35,7 +35,7 @@ import { getMyRoles } from "@/lib/leads.functions";
 import type { ProjectEvent, ProjectEventType, ProjectStatus } from "@/types/project";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_ORDER } from "@/types/project";
 
-export const Route = createFileRoute("/_authenticated/crm/projetos/$id")({
+export const Route = createFileRoute("/_authenticated/os/comercial/projetos/$id")({
   component: ProjectDetail,
   head: () => ({
     meta: [
@@ -141,7 +141,7 @@ function ProjectDetail() {
         actions={
           <>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/crm/projetos">
+              <Link to="/os/comercial/projetos">
                 <ArrowLeft className="h-4 w-4 mr-2" strokeWidth={1.75} />
                 Voltar
               </Link>
@@ -191,7 +191,7 @@ function ProjectDetail() {
                 value={
                   project.client_name ? (
                     <Link
-                      to="/crm/clientes/$id"
+                      to="/os/comercial/clientes/$id"
                       params={{ id: project.client_id }}
                       className="text-primary hover:underline"
                     >

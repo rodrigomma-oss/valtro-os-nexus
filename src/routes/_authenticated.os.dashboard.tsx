@@ -30,7 +30,7 @@ import { CalendarClock, Phone as PhoneIcon, FolderKanban, Building2, AlertTriang
 import { AttentionQueue } from "@/components/app/operations/attention-queue";
 import { getAttentionOverview } from "@/lib/attention.functions";
 
-export const Route = createFileRoute("/_authenticated/crm/dashboard")({
+export const Route = createFileRoute("/_authenticated/os/dashboard")({
   component: CrmDashboard,
   head: () => ({
     meta: [
@@ -320,7 +320,7 @@ function CrmDashboard() {
         description="O que precisa da sua atenção agora — priorizado pela nossa metodologia consultiva."
         actions={
           <Link
-            to="/crm/leads"
+            to="/os/comercial/leads"
             search={{ view: "novos-do-site" }}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
@@ -354,14 +354,14 @@ function CrmDashboard() {
             value={attention.data?.summary.projetosAtivos ?? 0}
             tone="primary"
             icon={FolderKanban}
-            to="/crm/projetos"
+            to="/os/comercial/projetos"
           />
           <FollowUpTile
             label="Serviços ativos"
             value={attention.data?.summary.servicosAtivos ?? 0}
             tone="success"
             icon={Layers}
-            to="/crm/clientes"
+            to="/os/comercial/clientes"
           />
           <FollowUpTile
             label="Ciclos ativos"
@@ -416,7 +416,7 @@ function CrmDashboard() {
                 value={c.value}
                 tone={c.tone}
                 icon={c.icon}
-                to="/crm/leads"
+                to="/os/comercial/leads"
                 search={c.search}
               />
             ))}
@@ -435,7 +435,7 @@ function CrmDashboard() {
               value={followUps.data.followUpsVencidos}
               tone="danger"
               icon={CalendarClock}
-              to="/crm/leads"
+              to="/os/comercial/leads"
               search={{ view: "followups-vencidos" as const }}
             />
             <FollowUpTile
@@ -443,7 +443,7 @@ function CrmDashboard() {
               value={followUps.data.followUpsHoje}
               tone="primary"
               icon={CalendarClock}
-              to="/crm/leads"
+              to="/os/comercial/leads"
               search={{ view: "followups-hoje" as const }}
             />
             <FollowUpTile
@@ -451,7 +451,7 @@ function CrmDashboard() {
               value={followUps.data.followUpsProximos7}
               tone="info"
               icon={CalendarClock}
-              to="/crm/leads"
+              to="/os/comercial/leads"
               search={{ view: "followups-proximos" as const }}
             />
             <FollowUpTile
@@ -529,28 +529,28 @@ function CrmDashboard() {
               value={clients.data?.ativos ?? 0}
               tone="success"
               icon={Building2}
-              to="/crm/clientes"
+              to="/os/comercial/clientes"
             />
             <FollowUpTile
               label="Projetos ativos"
               value={projects.data?.ativos ?? 0}
               tone="primary"
               icon={FolderKanban}
-              to="/crm/projetos"
+              to="/os/comercial/projetos"
             />
             <FollowUpTile
               label="Aguardando cliente"
               value={projects.data?.aguardandoCliente ?? 0}
               tone="warning"
               icon={FolderKanban}
-              to="/crm/projetos"
+              to="/os/comercial/projetos"
             />
             <FollowUpTile
               label="Projetos atrasados"
               value={projects.data?.atrasados ?? 0}
               tone="danger"
               icon={AlertTriangleIcon}
-              to="/crm/projetos"
+              to="/os/comercial/projetos"
             />
           </div>
         </Section>
@@ -560,7 +560,7 @@ function CrmDashboard() {
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
         <InboxList
           items={data?.inbox ?? []}
-          onOpen={(id) => navigate({ to: "/crm/leads/$id", params: { id } })}
+          onOpen={(id) => navigate({ to: "/os/comercial/leads/$id", params: { id } })}
         />
       </Section>
 
@@ -574,7 +574,7 @@ function CrmDashboard() {
               hint: s.hint,
               tone: PIPELINE_TONE[s.id],
             }))}
-            onStageClick={() => navigate({ to: "/crm/leads" })}
+            onStageClick={() => navigate({ to: "/os/comercial/leads" })}
           />
         </Section>
       )}
@@ -644,7 +644,7 @@ function CrmDashboard() {
       </div>
 
       <div className="text-xs text-muted-foreground">
-        <Link to="/crm/leads" className="text-primary hover:underline">
+        <Link to="/os/comercial/leads" className="text-primary hover:underline">
           Ver todos os leads →
         </Link>
       </div>

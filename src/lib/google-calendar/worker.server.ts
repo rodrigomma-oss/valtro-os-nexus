@@ -81,7 +81,7 @@ function buildEvent(fu: FollowUpRow, crmOrigin: string) {
     `Status no CRM: ${done ? "Concluído" : "Agendado"}`,
     fu.reason ? `Motivo: ${fu.reason}` : null,
     done && fu.outcome_notes ? `Resultado: ${fu.outcome_notes}` : null,
-    `Lead no CRM: ${crmOrigin}/crm/leads/${fu.lead_id}`,
+    `Lead no CRM: ${crmOrigin}/os/comercial/leads/${fu.lead_id}`,
     "",
     "Evento gerado pelo CRM Valtro Labs. O CRM é a fonte de verdade — edite o follow-up no CRM.",
   ].filter(Boolean) as string[];

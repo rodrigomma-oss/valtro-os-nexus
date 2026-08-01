@@ -46,7 +46,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  const safeRedirect = isSafeRedirect(redirect) ? redirect : "/crm/dashboard";
+  const safeRedirect = isSafeRedirect(redirect) ? redirect : "/os/dashboard";
 
   useEffect(() => {
     // Usa getUser() (revalida com o Auth server) em vez de getSession() (só lê localStorage).

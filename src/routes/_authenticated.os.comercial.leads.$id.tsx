@@ -67,7 +67,7 @@ import { MessageComposerDialog } from "@/components/app/message-composer-dialog"
 import type { LeadEvent, LeadEventType, LeadNote, LeadStatus } from "@/types/lead";
 import { STATUS_LABEL } from "@/types/lead";
 
-export const Route = createFileRoute("/_authenticated/crm/leads/$id")({
+export const Route = createFileRoute("/_authenticated/os/comercial/leads/$id")({
   /**
    * Sprint 13.10 (P1-5) — deep-link vindo da fila "Atenção necessária":
    * `?proposta=<id>` abre a proposta correta no drawer e
@@ -319,7 +319,7 @@ function CrmLeadDetail() {
         actions={
           <>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/crm/leads">
+              <Link to="/os/comercial/leads">
                 <ArrowLeft className="h-4 w-4 mr-2" strokeWidth={1.75} />
                 Voltar
               </Link>
@@ -356,7 +356,7 @@ function CrmLeadDetail() {
             </Button>
             {lead.client_id ? (
               <Button variant="outline" size="sm" className="gap-2" asChild>
-                <Link to="/crm/clientes/$id" params={{ id: lead.client_id }}>
+                <Link to="/os/comercial/clientes/$id" params={{ id: lead.client_id }}>
                   <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
                   Ver cliente
                 </Link>

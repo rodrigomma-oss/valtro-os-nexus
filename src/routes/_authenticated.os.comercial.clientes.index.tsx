@@ -23,7 +23,7 @@ import type { Client, ClientStatus } from "@/types/client";
 import { CLIENT_STATUS_LABEL, CLIENT_STATUS_TONE } from "@/types/client";
 import { formatPhone } from "@/lib/formatters";
 
-export const Route = createFileRoute("/_authenticated/crm/clientes/")({
+export const Route = createFileRoute("/_authenticated/os/comercial/clientes/")({
   component: ClientsList,
   head: () => ({
     meta: [
@@ -171,7 +171,7 @@ function ClientsList() {
         data={filtered}
         loading={clientsQuery.isLoading}
         getRowId={(c) => c.id}
-        onRowClick={(c) => navigate({ to: "/crm/clientes/$id", params: { id: c.id } })}
+        onRowClick={(c) => navigate({ to: "/os/comercial/clientes/$id", params: { id: c.id } })}
         emptyState={
           q ? (
             <EmptyState

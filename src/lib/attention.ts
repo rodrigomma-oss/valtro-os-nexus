@@ -249,7 +249,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
   for (const lead of source.leads) {
     const leadCta = (label: string): AttentionCta => ({
       label,
-      to: "/crm/leads/$id",
+      to: "/os/comercial/leads/$id",
       params: { id: lead.id },
     });
 
@@ -354,7 +354,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         // Deep-link: abre a proposta correta já no drawer (sem procurar na lista).
         cta: {
           label: "Ver proposta",
-          to: "/crm/leads/$id",
+          to: "/os/comercial/leads/$id",
           params: { id: p.lead_id },
           search: { proposta: p.id },
         },
@@ -377,7 +377,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
         // automaticamente — a confirmação segue manual e explícita.
         cta: {
           label: "Gerar contratações",
-          to: "/crm/leads/$id",
+          to: "/os/comercial/leads/$id",
           params: { id: p.lead_id },
           search: { proposta: p.id, acao: "contratacoes" },
         },
@@ -405,7 +405,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     const serviceOnboardings = onboardingsByService.get(cs.id) ?? [];
     const cta: AttentionCta = {
       label: "Ver contratação",
-      to: "/crm/clientes/$id",
+      to: "/os/comercial/clientes/$id",
       params: { id: cs.client_id },
       search: { cs: cs.id },
     };
@@ -461,7 +461,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
       const oDays = daysSince(o.updated_at, now);
       const onboardingCta: AttentionCta = {
         label: "Ver onboarding",
-        to: "/crm/clientes/$id",
+        to: "/os/comercial/clientes/$id",
         params: { id: cs.client_id },
         search: { cs: cs.id },
       };
@@ -506,7 +506,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     const active = cycles.find((c) => c.status === "ativo");
     const cycleCta: AttentionCta = {
       label: "Ver ciclo",
-      to: "/crm/clientes/$id",
+      to: "/os/comercial/clientes/$id",
       params: { id: cs.client_id },
       search: { cs: cs.id },
     };
@@ -576,7 +576,7 @@ export function buildAttentionQueue(source: AttentionSource): AttentionItem[] {
     const detail = pj.code ? `${pj.code} · ${pj.name}` : pj.name;
     const cta: AttentionCta = {
       label: "Ver projeto",
-      to: "/crm/projetos/$id",
+      to: "/os/comercial/projetos/$id",
       params: { id: pj.id },
     };
 

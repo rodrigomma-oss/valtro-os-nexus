@@ -49,7 +49,7 @@ const CALLBACK_MESSAGES: Record<string, { tone: "ok" | "warn" | "error"; text: s
   falha: { tone: "error", text: "Não foi possível concluir a conexão com o Google." },
 };
 
-export const Route = createFileRoute("/_authenticated/crm/admin/integracoes")({
+export const Route = createFileRoute("/_authenticated/os/admin/integracoes")({
   component: IntegracoesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     google: typeof search.google === "string" ? search.google : undefined,
@@ -89,7 +89,7 @@ function StatusPill({ status }: { status: string }) {
 
 function IntegracoesPage() {
   const qc = useQueryClient();
-  const search = useSearch({ from: "/_authenticated/crm/admin/integracoes" });
+  const search = useSearch({ from: "/_authenticated/os/admin/integracoes" });
 
   const statusFn = useServerFn(getCalendarIntegrationStatus);
   const connectFn = useServerFn(startGoogleCalendarConnect);

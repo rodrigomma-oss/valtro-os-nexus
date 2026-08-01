@@ -21,7 +21,7 @@ import { listProjects, getProjectsOverview } from "@/lib/projects.functions";
 import type { Project, ProjectStatus } from "@/types/project";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_ORDER } from "@/types/project";
 
-export const Route = createFileRoute("/_authenticated/crm/projetos/")({
+export const Route = createFileRoute("/_authenticated/os/comercial/projetos/")({
   component: ProjectsList,
   head: () => ({
     meta: [
@@ -171,7 +171,7 @@ function ProjectsList() {
         data={filtered}
         loading={projectsQuery.isLoading}
         getRowId={(p) => p.id}
-        onRowClick={(p) => navigate({ to: "/crm/projetos/$id", params: { id: p.id } })}
+        onRowClick={(p) => navigate({ to: "/os/comercial/projetos/$id", params: { id: p.id } })}
         emptyState={
           q ? (
             <EmptyState
