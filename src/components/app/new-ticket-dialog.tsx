@@ -58,7 +58,7 @@ export function NewTicketDialog({
 }) {
   const qc = useQueryClient();
   const createFn = useServerFn(createTicket);
-  const servicesFn = useServerFn(listServices);
+  const productsFn = useServerFn(listSaasProducts);
   const clientsFn = useServerFn(listClients);
   const leadsFn = useServerFn(listLeads);
   const usersFn = useServerFn(listAssignableUsers);
