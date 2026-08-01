@@ -1,14 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { sanitizeAuthRedirect } from '@/utils/auth-redirect';
+import { describe, it, expect } from 'vitest';
+import { sanitizeAuthRedirect } from './auth-redirect';
 
 describe('sanitizeAuthRedirect', () => {
   const defaultFallback = '/os/dashboard';
-
-  beforeEach(() => {
-    // Mock window.location.origin
-    vi.stubGlobal('location', { origin: 'http://localhost:8080' });
-    global.window = { location: { origin: 'http://localhost:8080' } } as any;
-  });
 
   it('should return fallback if target is empty', () => {
     expect(sanitizeAuthRedirect(null)).toBe(defaultFallback);
@@ -42,6 +36,7 @@ describe('sanitizeAuthRedirect', () => {
   });
 
   it('should handle full internal URLs', () => {
+    // Como o ambiente de teste é Node (sem window), o fallback do helper usa http://localhost:8080
     expect(sanitizeAuthRedirect('http://localhost:8080/os/test')).toBe('/os/test');
   });
 
