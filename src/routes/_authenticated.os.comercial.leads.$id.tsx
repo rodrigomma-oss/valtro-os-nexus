@@ -345,15 +345,17 @@ function CrmLeadDetail() {
                 </SelectContent>
               </Select>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setComposerOpen(true)}
-            >
-              <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
-              Comunicação
-            </Button>
+            {canWrite && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => setComposerOpen(true)}
+              >
+                <MessageCircle className="h-4 w-4" strokeWidth={1.75} />
+                Comunicação
+              </Button>
+            )}
             {lead.client_id ? (
               <Button variant="outline" size="sm" className="gap-2" asChild>
                 <Link to="/os/comercial/clientes/$id" params={{ id: lead.client_id }}>
@@ -362,29 +364,32 @@ function CrmLeadDetail() {
                 </Link>
               </Button>
             ) : (
+              canWrite && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setConvertOpen(true)}
+                >
+                  <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
+                  Converter em cliente
+                </Button>
+              )
+            )}
+            {canWrite && (
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2"
-                disabled={!canWrite}
-                onClick={() => setConvertOpen(true)}
+                className="gap-2 text-destructive"
+                disabled={!!lead.archived_at || archiveMutation.isPending}
+                onClick={() => {
+                  if (confirm("Arquivar este lead?")) archiveMutation.mutate();
+                }}
               >
-                <Trophy className="h-4 w-4 text-emerald-600" strokeWidth={1.75} />
-                Converter em cliente
+                <Archive className="h-4 w-4" strokeWidth={1.75} />
+                {lead.archived_at ? "Arquivado" : "Arquivar"}
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 text-destructive"
-              disabled={!canWrite || !!lead.archived_at || archiveMutation.isPending}
-              onClick={() => {
-                if (confirm("Arquivar este lead?")) archiveMutation.mutate();
-              }}
-            >
-              <Archive className="h-4 w-4" strokeWidth={1.75} />
-              {lead.archived_at ? "Arquivado" : "Arquivar"}
-            </Button>
           </>
         }
       />

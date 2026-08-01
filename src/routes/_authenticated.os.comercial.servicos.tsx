@@ -256,10 +256,12 @@ function ServicesCatalog() {
         title="Catálogo de Serviços"
         description="Fonte única do portfólio comercial. Cada serviço define objetivo, cobrança, escopo e onboarding."
         actions={
-          <Button onClick={openCreate} disabled={!isAdmin}>
-            <Plus className="h-4 w-4" />
-            Novo Serviço
-          </Button>
+          isAdmin ? (
+            <Button onClick={openCreate}>
+              <Plus className="h-4 w-4" />
+              Novo Serviço
+            </Button>
+          ) : undefined
         }
       />
 
