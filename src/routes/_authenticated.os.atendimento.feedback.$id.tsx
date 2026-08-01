@@ -348,9 +348,9 @@ function FeedbackDetail() {
             <CardContent>
               <TimelineCard 
                 title="Histórico de Eventos"
-                items={events?.map(e => ({
+                items={(events as any[])?.map(e => ({
                   id: e.id,
-                  icon: History, // Default icon for history
+                  icon: History,
                   title: describeFeedbackEvent(e),
                   description: e.created_by_name ? `Realizado por ${e.created_by_name}` : "Sistema",
                   date: new Date(e.created_at).toLocaleString("pt-BR"),
