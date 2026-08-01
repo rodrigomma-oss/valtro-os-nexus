@@ -30,6 +30,7 @@ import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticat
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
+import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
 import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
@@ -152,6 +153,12 @@ const AuthenticatedCrmDashboardRoute =
     path: '/crm/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCrmProjetosIndexRoute =
+  AuthenticatedCrmProjetosIndexRouteImport.update({
+    id: '/crm/projetos/',
+    path: '/crm/projetos/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCrmLeadsIndexRoute =
   AuthenticatedCrmLeadsIndexRouteImport.update({
     id: '/crm/leads/',
@@ -272,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
+  '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -308,6 +316,7 @@ export interface FileRoutesByTo {
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
+  '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -347,6 +356,7 @@ export interface FileRoutesById {
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
+  '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
   '/_authenticated/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/api/public/google-calendar/sync'
     | '/crm/clientes/'
     | '/crm/leads/'
+    | '/crm/projetos/'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/api/public/google-calendar/sync'
     | '/crm/clientes'
     | '/crm/leads'
+    | '/crm/projetos'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
@@ -460,6 +472,7 @@ export interface FileRouteTypes {
     | '/api/public/google-calendar/sync'
     | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
+    | '/_authenticated/crm/projetos/'
     | '/_authenticated/os/comercial/clientes/$id'
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
@@ -637,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/crm/projetos/': {
+      id: '/_authenticated/crm/projetos/'
+      path: '/crm/projetos'
+      fullPath: '/crm/projetos/'
+      preLoaderRoute: typeof AuthenticatedCrmProjetosIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crm/leads/': {
       id: '/_authenticated/crm/leads/'
       path: '/crm/leads'
@@ -791,6 +811,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrmLeadsIdRoute: typeof AuthenticatedCrmLeadsIdRoute
   AuthenticatedCrmClientesIndexRoute: typeof AuthenticatedCrmClientesIndexRoute
   AuthenticatedCrmLeadsIndexRoute: typeof AuthenticatedCrmLeadsIndexRoute
+  AuthenticatedCrmProjetosIndexRoute: typeof AuthenticatedCrmProjetosIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -802,6 +823,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrmLeadsIdRoute: AuthenticatedCrmLeadsIdRoute,
   AuthenticatedCrmClientesIndexRoute: AuthenticatedCrmClientesIndexRoute,
   AuthenticatedCrmLeadsIndexRoute: AuthenticatedCrmLeadsIndexRoute,
+  AuthenticatedCrmProjetosIndexRoute: AuthenticatedCrmProjetosIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
