@@ -41,6 +41,8 @@ const ENTITY_TABLES: Record<string, string> = {
   lead: "leads",
   client_service: "client_services",
   bug: "bugs",
+  feedback: "feedback",
+  beta_participant: "beta_participants",
 };
 
 export function requestId(): string | null {
