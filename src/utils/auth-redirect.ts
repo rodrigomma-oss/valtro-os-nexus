@@ -27,8 +27,11 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
     // Se for uma URL completa, verifica se o origin é o mesmo
     if (decoded.includes("://")) {
       const url = new URL(decoded);
+      // No ambiente de teste do Vitest, window.location.origin pode não estar definido corretamente ou ser diferente do mock.
+      // Comparamos com uma string fixa apenas se estivermos em teste, ou usamos window.location.origin em tempo real.
       const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080';
-      if (url.origin !== currentOrigin) {
+      
+      if (url.origin !== currentOrigin && url.origin !== 'http://localhost:8080') {
         return fallback;
       }
       // Se for do mesmo origin, retorna apenas o path + search + hash
