@@ -39,6 +39,8 @@ import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/pu
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
 import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
+import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
+import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
 import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
@@ -218,6 +220,18 @@ const AuthenticatedOsAtendimentoFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
+const AuthenticatedOsAtendimentoChamadosRoute =
+  AuthenticatedOsAtendimentoChamadosRouteImport.update({
+    id: '/chamados',
+    path: '/chamados',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+  } as any)
+const AuthenticatedOsAtendimentoBugsRoute =
+  AuthenticatedOsAtendimentoBugsRouteImport.update({
+    id: '/bugs',
+    path: '/bugs',
+    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+  } as any)
 const AuthenticatedOsAdminUsuariosRoute =
   AuthenticatedOsAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
@@ -279,15 +293,15 @@ const AuthenticatedOsComercialClientesIndexRoute =
   } as any)
 const AuthenticatedOsAtendimentoChamadosIndexRoute =
   AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
-    id: '/chamados/',
-    path: '/chamados/',
-    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
   } as any)
 const AuthenticatedOsAtendimentoBugsIndexRoute =
   AuthenticatedOsAtendimentoBugsIndexRouteImport.update({
-    id: '/bugs/',
-    path: '/bugs/',
-    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
   } as any)
 const AuthenticatedOsProdutosValtroPricingBetaRoute =
   AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
@@ -315,15 +329,15 @@ const AuthenticatedOsComercialClientesIdRoute =
   } as any)
 const AuthenticatedOsAtendimentoChamadosIdRoute =
   AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
-    id: '/chamados/$id',
-    path: '/chamados/$id',
-    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
   } as any)
 const AuthenticatedOsAtendimentoBugsIdRoute =
   AuthenticatedOsAtendimentoBugsIdRouteImport.update({
-    id: '/bugs/$id',
-    path: '/bugs/$id',
-    getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -356,6 +370,8 @@ export interface FileRoutesByFullPath {
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
+  '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -455,6 +471,8 @@ export interface FileRoutesById {
   '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
+  '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRoute
   '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -506,6 +524,8 @@ export interface FileRouteTypes {
     | '/crm/projetos/$id'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
+    | '/os/atendimento/bugs'
+    | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
     | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
@@ -604,6 +624,8 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/projetos/$id'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
+    | '/_authenticated/os/atendimento/bugs'
+    | '/_authenticated/os/atendimento/chamados'
     | '/_authenticated/os/atendimento/feedback'
     | '/_authenticated/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
@@ -856,6 +878,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteImport
       parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
+    '/_authenticated/os/atendimento/chamados': {
+      id: '/_authenticated/os/atendimento/chamados'
+      path: '/chamados'
+      fullPath: '/os/atendimento/chamados'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
+    '/_authenticated/os/atendimento/bugs': {
+      id: '/_authenticated/os/atendimento/bugs'
+      path: '/bugs'
+      fullPath: '/os/atendimento/bugs'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
     '/_authenticated/os/admin/usuarios': {
       id: '/_authenticated/os/admin/usuarios'
       path: '/admin/usuarios'
@@ -928,17 +964,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/os/atendimento/chamados/': {
       id: '/_authenticated/os/atendimento/chamados/'
-      path: '/chamados'
+      path: '/'
       fullPath: '/os/atendimento/chamados/'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
     }
     '/_authenticated/os/atendimento/bugs/': {
       id: '/_authenticated/os/atendimento/bugs/'
-      path: '/bugs'
+      path: '/'
       fullPath: '/os/atendimento/bugs/'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
     }
     '/_authenticated/os/produtos/valtro-pricing/beta': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta'
@@ -970,41 +1006,71 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/os/atendimento/chamados/$id': {
       id: '/_authenticated/os/atendimento/chamados/$id'
-      path: '/chamados/$id'
+      path: '/$id'
       fullPath: '/os/atendimento/chamados/$id'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
     }
     '/_authenticated/os/atendimento/bugs/$id': {
       id: '/_authenticated/os/atendimento/bugs/$id'
-      path: '/bugs/$id'
+      path: '/$id'
       fullPath: '/os/atendimento/bugs/$id'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIdRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
     }
   }
 }
 
-interface AuthenticatedOsAtendimentoRouteChildren {
-  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+interface AuthenticatedOsAtendimentoBugsRouteChildren {
   AuthenticatedOsAtendimentoBugsIdRoute: typeof AuthenticatedOsAtendimentoBugsIdRoute
-  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
   AuthenticatedOsAtendimentoBugsIndexRoute: typeof AuthenticatedOsAtendimentoBugsIndexRoute
+}
+
+const AuthenticatedOsAtendimentoBugsRouteChildren: AuthenticatedOsAtendimentoBugsRouteChildren =
+  {
+    AuthenticatedOsAtendimentoBugsIdRoute:
+      AuthenticatedOsAtendimentoBugsIdRoute,
+    AuthenticatedOsAtendimentoBugsIndexRoute:
+      AuthenticatedOsAtendimentoBugsIndexRoute,
+  }
+
+const AuthenticatedOsAtendimentoBugsRouteWithChildren =
+  AuthenticatedOsAtendimentoBugsRoute._addFileChildren(
+    AuthenticatedOsAtendimentoBugsRouteChildren,
+  )
+
+interface AuthenticatedOsAtendimentoChamadosRouteChildren {
+  AuthenticatedOsAtendimentoChamadosIdRoute: typeof AuthenticatedOsAtendimentoChamadosIdRoute
   AuthenticatedOsAtendimentoChamadosIndexRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRoute
+}
+
+const AuthenticatedOsAtendimentoChamadosRouteChildren: AuthenticatedOsAtendimentoChamadosRouteChildren =
+  {
+    AuthenticatedOsAtendimentoChamadosIdRoute:
+      AuthenticatedOsAtendimentoChamadosIdRoute,
+    AuthenticatedOsAtendimentoChamadosIndexRoute:
+      AuthenticatedOsAtendimentoChamadosIndexRoute,
+  }
+
+const AuthenticatedOsAtendimentoChamadosRouteWithChildren =
+  AuthenticatedOsAtendimentoChamadosRoute._addFileChildren(
+    AuthenticatedOsAtendimentoChamadosRouteChildren,
+  )
+
+interface AuthenticatedOsAtendimentoRouteChildren {
+  AuthenticatedOsAtendimentoBugsRoute: typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
+  AuthenticatedOsAtendimentoChamadosRoute: typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
+  AuthenticatedOsAtendimentoFeedbackRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
 }
 
 const AuthenticatedOsAtendimentoRouteChildren: AuthenticatedOsAtendimentoRouteChildren =
   {
+    AuthenticatedOsAtendimentoBugsRoute:
+      AuthenticatedOsAtendimentoBugsRouteWithChildren,
+    AuthenticatedOsAtendimentoChamadosRoute:
+      AuthenticatedOsAtendimentoChamadosRouteWithChildren,
     AuthenticatedOsAtendimentoFeedbackRoute:
       AuthenticatedOsAtendimentoFeedbackRoute,
-    AuthenticatedOsAtendimentoBugsIdRoute:
-      AuthenticatedOsAtendimentoBugsIdRoute,
-    AuthenticatedOsAtendimentoChamadosIdRoute:
-      AuthenticatedOsAtendimentoChamadosIdRoute,
-    AuthenticatedOsAtendimentoBugsIndexRoute:
-      AuthenticatedOsAtendimentoBugsIndexRoute,
-    AuthenticatedOsAtendimentoChamadosIndexRoute:
-      AuthenticatedOsAtendimentoChamadosIndexRoute,
   }
 
 const AuthenticatedOsAtendimentoRouteWithChildren =
@@ -1112,13 +1178,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
