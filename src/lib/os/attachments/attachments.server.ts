@@ -1,159 +1,115 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { z } from "zod";
+import { Database } from "@/integrations/supabase/types";
 
-export const ALLOWED_ENTITY_TYPES = ["foundation_test", "ticket", "bug", "feedback", "beta_participant"] as const;
-export type EntityType = (typeof ALLOWED_ENTITY_TYPES)[number];
+export type Attachment = Database["public"]["Tables"]["attachments"]["Row"];
 
-export async function validateEntityAccess(userId: string, entityType: string, entityId: string) {
-  // In this sprint, we only support foundation_test for testing
-  if (entityType === "foundation_test") return true;
-  
-  // Future implementation: check access based on entityType and entityId
-  return false;
-}
-
-export async function prepareUpload(params: {
-  userId: string;
-  entityType: EntityType;
+export async function prepareAttachmentUpload(params: {
+  entityType: string;
   entityId: string;
   filename: string;
   mimeType: string;
   sizeBytes: number;
 }) {
-  const { userId, entityType, entityId, filename, mimeType, sizeBytes } = params;
+  const { entityType, entityId, filename, mimeType, sizeBytes } = params;
 
-  // 1. Validate entity access
-  const hasAccess = await validateEntityAccess(userId, entityType, entityId);
-  if (!hasAccess) throw new Error("Acesso negado à entidade.");
-
-  // 2. Validate attachment count (max 5 active)
+  // 1. Validar limite de anexos (ex: 5 por entidade)
   const { count, error: countError } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .select("*", { count: "exact", head: true })
-    .eq("entity_type", entityType)
-    .eq("entity_id", entityId)
-    .is("deleted_at", null);
+    .eq("entity_type" as any, entityType)
+    .eq("entity_id" as any, entityId)
+    .is("deleted_at" as any, null);
 
   if (countError) throw countError;
-  if (count && count >= 5) throw new Error("Limite de 5 anexos por entidade atingido.");
+  if (count && count >= 5) {
+    throw new Error("Limite de 5 anexos por entidade atingido.");
+  }
 
-  // 3. Generate secure path and metadata
-  const attachmentId = crypto.randomUUID();
-  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
-  const storagePath = `${entityType}/${entityId}/${attachmentId}-${sanitizedFilename}`;
+  // 2. Criar registro pendente
+  const storagePath = `${entityType}/${entityId}/${Date.now()}-${filename}`;
+  const { data: attachment, error: insertError } = await supabaseAdmin
+    .from("attachments" as any)
+    .insert({
+      entity_type: entityType,
+      entity_id: entityId,
+      storage_path: storagePath,
+      original_filename: filename,
+      stored_filename: filename,
+      mime_type: mimeType,
+      size_bytes: sizeBytes,
+      uploaded_by: (await supabaseAdmin.auth.getUser()).data.user?.id || "",
+      metadata: {},
+    } as any)
+    .select()
+    .single();
 
-  // 4. Generate signed upload URL (valid for 5 mins)
-  const { data, error: storageError } = await supabaseAdmin.storage
+  if (insertError) throw insertError;
+
+  // 3. Gerar URL assinada para upload
+  const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
     .from("os-attachments")
     .createSignedUploadUrl(storagePath);
 
-  if (storageError) throw storageError;
+  if (uploadError) throw uploadError;
 
   return {
-    attachmentId,
-    uploadUrl: data.signedUrl,
-    token: data.token,
+    attachmentId: (attachment as any).id,
+    uploadUrl: uploadData.signedUrl,
     storagePath,
   };
 }
 
-export async function finalizeUpload(params: {
-  userId: string;
-  attachmentId: string;
-  entityType: string;
-  entityId: string;
-  storagePath: string;
-  originalFilename: string;
-  mimeType: string;
-  sizeBytes: number;
-}) {
-  const { userId, attachmentId, entityType, entityId, storagePath, originalFilename, mimeType, sizeBytes } = params;
-
-  // 1. Verify object exists in storage
-  const { data: fileData, error: fileError } = await supabaseAdmin.storage
+export async function finalizeAttachmentUpload(
+  attachmentId: string,
+  storagePath: string
+) {
+  // Verificar se o arquivo realmente existe no storage
+  const { data: fileExists } = await supabaseAdmin.storage
     .from("os-attachments")
     .list(storagePath.split("/").slice(0, -1).join("/"), {
       search: storagePath.split("/").pop(),
     });
 
-  if (fileError || !fileData || fileData.length === 0) {
-    throw new Error("Arquivo não encontrado no storage.");
+  if (!fileExists || fileExists.length === 0) {
+    // Limpar registro se o upload falhou
+    await supabaseAdmin.from("attachments" as any).delete().eq("id" as any, attachmentId);
+    throw new Error("Upload não detectado no storage.");
   }
 
-  // 2. Create database record
-  const storedFilename = storagePath.split("/").pop()!;
-  const { data, error } = await supabaseAdmin
-    .from("attachments")
-    .insert({
-      id: attachmentId,
-      entity_type: entityType,
-      entity_id: entityId,
-      storage_path: storagePath,
-      original_filename: originalFilename,
-      stored_filename: storedFilename,
-      mime_type: mimeType,
-      size_bytes: sizeBytes,
-      uploaded_by: userId,
-      metadata: {},
-    })
-    .select()
-    .single();
-
-  if (error) {
-    // Cleanup orphan object if DB insert fails
-    await supabaseAdmin.storage.from("os-attachments").remove([storagePath]);
-    throw error;
-  }
-
-  return data;
+  return { success: true };
 }
 
-export async function getDownloadUrl(userId: string, attachmentId: string) {
-  // 1. Fetch attachment record
+export async function getAttachmentDownloadUrl(attachmentId: string) {
   const { data: attachment, error } = await supabaseAdmin
-    .from("attachments")
+    .from("attachments" as any)
     .select("*")
-    .eq("id", attachmentId)
-    .is("deleted_at", null)
+    .eq("id" as any, attachmentId)
+    .is("deleted_at" as any, null)
     .single();
 
   if (error || !attachment) throw new Error("Anexo não encontrado.");
 
-  // 2. Validate access to entity (using stored entity_type/entity_id)
-  const hasAccess = await validateEntityAccess(userId, attachment.entity_type, attachment.entity_id);
-  if (!hasAccess) throw new Error("Acesso negado.");
-
-  // 3. Generate signed URL (5 mins)
-  const { data, error: storageError } = await supabaseAdmin.storage
+  const { data, error: urlError } = await supabaseAdmin.storage
     .from("os-attachments")
-    .createSignedUrl(attachment.storage_path, 300);
+    .createSignedUrl((attachment as any).storage_path, 300); // 5 minutos
 
-  if (storageError) throw storageError;
+  if (urlError) throw urlError;
 
-  return data.signedUrl;
+  return { url: data.signedUrl };
 }
 
-export async function removeAttachment(userId: string, attachmentId: string) {
-  const { data: attachment, error: fetchError } = await supabaseAdmin
-    .from("attachments")
-    .select("*")
-    .eq("id", attachmentId)
-    .single();
+export async function deleteAttachment(attachmentId: string) {
+  const { data: user } = await supabaseAdmin.auth.getUser();
 
-  if (fetchError || !attachment) throw new Error("Anexo não encontrado.");
-
-  // Logic removal
-  const { error: updateError } = await supabaseAdmin
-    .from("attachments")
+  const { error } = await supabaseAdmin
+    .from("attachments" as any)
     .update({
       deleted_at: new Date().toISOString(),
-      deleted_by: userId,
-    })
-    .eq("id", attachmentId);
+      deleted_by: user.user?.id,
+    } as any)
+    .eq("id" as any, attachmentId);
 
-  if (updateError) throw updateError;
-  
+  if (error) throw error;
+
   return { success: true };
 }
