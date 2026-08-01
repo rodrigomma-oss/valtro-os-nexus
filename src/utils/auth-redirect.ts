@@ -31,7 +31,10 @@ export function sanitizeAuthRedirect(target: string | null | undefined, fallback
         return fallback;
       }
       // Se for do mesmo origin, retorna apenas o path + search + hash
-      return url.pathname + url.search + url.hash;
+      const result = url.pathname + url.search + url.hash;
+      // Evita loops e garante que comece com /
+      if (result.startsWith("/auth") || !result.startsWith("/")) return fallback;
+      return result;
     }
 
     // Garante que comece com uma única / e não seja /auth (loop)
