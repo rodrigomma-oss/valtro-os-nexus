@@ -12,11 +12,12 @@ import {
 export const prepareAttachmentUploadFn = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
-      entityType: z.string(),
-      entityId: z.string(),
-      filename: z.string(),
-      mimeType: z.string(),
-      sizeBytes: z.number(),
+      entityType: z.string().min(1),
+      entityId: z.string().uuid(),
+      filename: z.string().trim().min(1).max(255),
+      mimeType: z.string().min(1),
+      // Limite alinhado ao bucket privado os-attachments (20 MB).
+      sizeBytes: z.number().int().positive().max(20 * 1024 * 1024),
     })
   )
   .handler(async ({ data }) => {
