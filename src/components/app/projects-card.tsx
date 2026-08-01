@@ -81,7 +81,7 @@ export function ProjectsCard({
                 <li key={p.id} className="rounded-xl border border-border bg-card p-3">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <Link
-                      to="/crm/projetos/$id"
+                      to="/os/comercial/projetos/$id"
                       params={{ id: p.id }}
                       className="flex-1 min-w-0 text-left group"
                     >

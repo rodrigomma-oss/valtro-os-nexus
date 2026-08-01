@@ -1,6 +1,6 @@
 /**
  * Sprint — Sincronização do Centro de Operações.
- * Retorna dados reais para o Dashboard (`/crm/dashboard`).
+ * Retorna dados reais para o Dashboard (`/os/dashboard`).
  * Fonte de verdade: tabelas `leads`, `lead_events`, `briefing_tokens`.
  */
 import { createServerFn } from "@tanstack/react-start";

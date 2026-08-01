@@ -57,7 +57,7 @@ function ResetPasswordPage() {
       return;
     }
     toast.success("Senha atualizada.");
-    navigate({ to: "/crm/dashboard", replace: true });
+    navigate({ to: "/os/dashboard", replace: true });
   };
 
   return (

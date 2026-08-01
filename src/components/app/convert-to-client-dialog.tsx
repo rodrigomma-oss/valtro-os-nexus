@@ -42,7 +42,7 @@ export function ConvertToClientDialog({
       qc.invalidateQueries({ queryKey: ["clients-overview"] });
       onConverted?.(res.client_id);
       onOpenChange(false);
-      navigate({ to: "/crm/clientes/$id", params: { id: res.client_id } });
+      navigate({ to: "/os/comercial/clientes/$id", params: { id: res.client_id } });
     },
     onError: (err: Error) =>
       toast.error("Não foi possível converter.", { description: err.message }),
