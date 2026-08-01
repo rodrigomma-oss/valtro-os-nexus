@@ -1,6 +1,8 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-// @ts-nocheck - Aguardando sincronização de tipos do Supabase que contém as novas tabelas da Sprint VOS-001B.2A
+/**
+ * @ts-nocheck - Aguardando sincronização de tipos do Supabase
+ */
 
 export async function prepareAttachmentUpload(params: {
   entityType: string;
