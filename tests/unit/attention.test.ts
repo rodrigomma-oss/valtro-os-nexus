@@ -62,7 +62,7 @@ describe("fila de atenção — detecção", () => {
     expect(items[0].priority).toBe("critica");
     expect(items[0].cta).toEqual({
       label: "Ver briefing",
-      to: "/crm/leads/$id",
+      to: "/os/comercial/leads/$id",
       params: { id: "l1" },
     });
   });
@@ -152,7 +152,7 @@ describe("fila de atenção — detecção", () => {
     const items = buildAttentionQueue(source({ clientServices: [recurring] }));
     expect(items.map((i) => i.kind)).toEqual(["recorrente_sem_proximo_ciclo"]);
     expect(items[0].label).toBe("Recorrente ativa sem nenhum ciclo");
-    expect(items[0].cta.to).toBe("/crm/clientes/$id");
+    expect(items[0].cta.to).toBe("/os/comercial/clientes/$id");
   });
 
   it("ciclo concluído sem próximo ciclo é detectado", () => {
@@ -249,7 +249,7 @@ describe("fila de atenção — detecção", () => {
     expect(items[0].priority).toBe("critica");
     expect(items[0].cta).toEqual({
       label: "Ver projeto",
-      to: "/crm/projetos/$id",
+      to: "/os/comercial/projetos/$id",
       params: { id: "pj1" },
     });
   });
@@ -442,7 +442,7 @@ describe("Sprint 13.10 — P1-2 leads em estágio inicial", () => {
     expect(items).toHaveLength(1);
     expect(items[0].kind).toBe("lead_novo_sem_triagem");
     expect(items[0].category).toBe("leads");
-    expect(items[0].cta.to).toBe("/crm/leads/$id");
+    expect(items[0].cta.to).toBe("/os/comercial/leads/$id");
     expect(items[0].cta.params).toEqual({ id: "l1" });
   });
 
@@ -517,7 +517,7 @@ describe("Sprint 13.10 — P1-5 CTA direto para contratação", () => {
     expect(items[0].kind).toBe("proposta_aprovada_sem_contratacao");
     expect(items[0].cta).toEqual({
       label: "Gerar contratações",
-      to: "/crm/leads/$id",
+      to: "/os/comercial/leads/$id",
       params: { id: "l1" },
       search: { proposta: "p1", acao: "contratacoes" },
     });

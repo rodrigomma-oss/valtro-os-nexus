@@ -21,7 +21,7 @@ test.describe("Central de comunicação — copiar & registrar", () => {
   test("copia a mensagem e registra o contato no histórico", async ({
     page,
   }) => {
-    await page.goto(`/crm/leads/${LEAD_ID}`, { waitUntil: "networkidle" });
+    await page.goto(`/os/comercial/leads/${LEAD_ID}`, { waitUntil: "networkidle" });
 
     // Abre o composer
     await page.getByRole("button", { name: "Comunicação" }).first().click();

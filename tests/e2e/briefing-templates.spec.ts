@@ -784,7 +784,7 @@ test.describe("Sprint 12.0B — Templates especializados de Briefing", () => {
       "clipboard-write",
     ]);
 
-    await page.goto(`/crm/leads/${LEAD_ID}`, { waitUntil: "domcontentloaded" });
+    await page.goto(`/os/comercial/leads/${LEAD_ID}`, { waitUntil: "domcontentloaded" });
     await expect(page).not.toHaveURL(/\/auth/);
     await expect(page.getByText(/Histórico de Briefings/i)).toBeVisible();
 
