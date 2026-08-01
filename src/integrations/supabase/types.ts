@@ -2078,7 +2078,7 @@ export type Database = {
     }
     Functions: {
       can_access_attachment_entity: {
-        Args: { _entity_id: string; _entity_type: string; _user_id: string }
+        Args: { _entity_id: string; _entity_type: string }
         Returns: boolean
       }
       can_access_client: {
