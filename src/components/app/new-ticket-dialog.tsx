@@ -72,7 +72,11 @@ export function NewTicketDialog({
   const [leadId, setLeadId] = useState(NONE);
   const [ownerId, setOwnerId] = useState(NONE);
 
-  const services = useQuery({ queryKey: ["services"], queryFn: () => servicesFn(), enabled: open });
+  const products = useQuery({
+    queryKey: ["saas-products", "active"],
+    queryFn: () => productsFn({ data: { activeOnly: true } }),
+    enabled: open,
+  });
   const clients = useQuery({ queryKey: ["clients"], queryFn: () => clientsFn({ data: {} }), enabled: open });
   const leads = useQuery({ queryKey: ["leads"], queryFn: () => leadsFn({ data: {} }), enabled: open });
   const users = useQuery({ queryKey: ["assignable-users"], queryFn: () => usersFn(), enabled: open });
