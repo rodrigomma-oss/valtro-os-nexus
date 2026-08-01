@@ -329,7 +329,7 @@ export function NewFeedbackDialog({ open, onOpenChange }: NewFeedbackDialogProps
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={NONE}>Nenhum</SelectItem>
-                    {tickets.data?.items.map((t) => (
+                    {tickets.data?.map((t: any) => (
                       <SelectItem key={t.id} value={t.id}>
                         {t.protocol} - {t.title}
                       </SelectItem>
