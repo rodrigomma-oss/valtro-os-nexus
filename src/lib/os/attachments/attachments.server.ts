@@ -232,10 +232,16 @@ export async function finalizeAttachmentUpload(
     });
 
   if (!fileExists || fileExists.length === 0) {
-    await admin.from("attachments").delete().eq("id", attachmentId);
+    // Exclusão física é bloqueada por trigger; usamos remoção lógica autorizada.
+    await admin
+      .from("attachments")
+      .update({ deleted_at: new Date().toISOString(), deleted_by: ctx.userId })
+      .eq("id", attachmentId)
+      .is("deleted_at", null);
     log("upload_not_detected", { user_id: ctx.userId, attachment_id: attachmentId });
     throw new Error("Upload não detectado no storage.");
   }
+
 
   log("upload_finalized", { user_id: ctx.userId, attachment_id: attachmentId });
   return { success: true };
