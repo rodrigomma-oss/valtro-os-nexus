@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { setBreadcrumbLabel } from "@/lib/breadcrumb-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -89,6 +90,13 @@ function ProjectDetail() {
   });
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
+
+  const projectLabel = projectQuery.data
+    ? `${projectQuery.data.code} · ${projectQuery.data.name}`
+    : undefined;
+  useEffect(() => {
+    if (projectLabel) setBreadcrumbLabel(id, projectLabel);
+  }, [id, projectLabel]);
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["project", id] });

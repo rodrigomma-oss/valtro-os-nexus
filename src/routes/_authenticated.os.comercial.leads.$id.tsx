@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { setBreadcrumbLabel } from "@/lib/breadcrumb-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -214,6 +215,11 @@ function CrmLeadDetail() {
   const [convertOpen, setConvertOpen] = useState(false);
 
   const canWrite = rolesQuery.data?.canWrite ?? false;
+
+  const leadName = leadQuery.data?.company_name;
+  useEffect(() => {
+    if (leadName) setBreadcrumbLabel(id, leadName);
+  }, [id, leadName]);
 
   const activeBriefing = (briefingsQuery.data ?? []).find(
     (t) => t.status === "ativo" || t.status === "pendente",
