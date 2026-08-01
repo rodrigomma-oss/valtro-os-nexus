@@ -264,6 +264,18 @@ function CrmDashboard() {
     staleTime: 30_000,
   });
 
+  /**
+   * VOS-001G — Operação do Beta Fechado.
+   * Uma única leitura consolidada (tickets, bugs, feedback, participantes,
+   * papéis internos e eventos), toda derivada em runtime via RLS.
+   */
+  const getBetaFn = useServerFn(getBetaOperationalOverview);
+  const beta = useQuery({
+    queryKey: ["beta-operational-overview"],
+    queryFn: () => getBetaFn(),
+    staleTime: 30_000,
+  });
+
 
   const heroParts: string[] = [];
   if (data) {
