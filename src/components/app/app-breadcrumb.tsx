@@ -7,20 +7,39 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useBreadcrumbLabels } from "@/lib/breadcrumb-store";
 
 const SEGMENT_LABELS: Record<string, string> = {
-  crm: "CRM",
-  leads: "Leads",
+  os: "Valtro OS",
+  crm: "Valtro OS",
   dashboard: "Dashboard",
+  comercial: "Comercial",
+  leads: "Leads",
+  clientes: "Clientes",
+  projetos: "Projetos",
+  servicos: "Serviços",
+  atendimento: "Atendimento",
+  chamados: "Chamados",
+  bugs: "Bugs",
+  feedback: "Feedback",
+  produtos: "Produtos",
+  "valtro-pricing": "Valtro Pricing",
+  beta: "Beta Fechado",
+  admin: "Administração",
+  usuarios: "Usuários",
+  integracoes: "Integrações",
   analises: "Análises",
   propostas: "Propostas",
-  clientes: "Clientes",
   configuracoes: "Configurações",
   briefing: "Briefing",
-  admin: "Admin",
 };
 
-function labelFor(segment: string): string {
+/** Segmentos que não representam uma página navegável própria. */
+const NON_NAVIGABLE = new Set(["comercial", "atendimento", "produtos", "valtro-pricing", "admin"]);
+
+function labelFor(segment: string, dynamicLabels: Record<string, string>): string {
+  const dynamic = dynamicLabels[segment];
+  if (dynamic) return dynamic;
   const mapped = SEGMENT_LABELS[segment];
   if (mapped) return mapped;
   if (segment.startsWith("lead-")) return segment.toUpperCase();
@@ -28,12 +47,12 @@ function labelFor(segment: string): string {
 }
 
 /**
- * Breadcrumb do painel — deriva os itens diretamente do pathname atual.
- * Separadores são renderizados como irmãos dos itens (nunca aninhados) para
- * evitar `<li>` dentro de `<li>` e o consequente hydration mismatch.
+ * Breadcrumb do painel — deriva os itens do pathname atual e usa rótulos
+ * amigáveis registrados pelas páginas de detalhe (lead/cliente/projeto).
  */
 export function AppBreadcrumb() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const dynamicLabels = useBreadcrumbLabels();
   const segments = pathname.split("/").filter(Boolean);
 
   if (segments.length === 0) return null;
@@ -41,11 +60,16 @@ export function AppBreadcrumb() {
   const nodes = segments.flatMap((segment, idx) => {
     const href = "/" + segments.slice(0, idx + 1).join("/");
     const isLast = idx === segments.length - 1;
+    const label = labelFor(segment, dynamicLabels);
+    const navigable = !NON_NAVIGABLE.has(segment);
+
     const item = (
       <BreadcrumbItem key={`item-${href}`}>
-        {isLast ? (
-          <BreadcrumbPage className="text-foreground font-medium">
-            {labelFor(segment)}
+        {isLast || !navigable ? (
+          <BreadcrumbPage
+            className={isLast ? "text-foreground font-medium" : "text-muted-foreground"}
+          >
+            {label}
           </BreadcrumbPage>
         ) : (
           <BreadcrumbLink asChild>
@@ -53,15 +77,14 @@ export function AppBreadcrumb() {
               to={href}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              {labelFor(segment)}
+              {label}
             </Link>
           </BreadcrumbLink>
         )}
       </BreadcrumbItem>
     );
-    return isLast
-      ? [item]
-      : [item, <BreadcrumbSeparator key={`sep-${href}`} />];
+
+    return isLast ? [item] : [item, <BreadcrumbSeparator key={`sep-${href}`} />];
   });
 
   return (
