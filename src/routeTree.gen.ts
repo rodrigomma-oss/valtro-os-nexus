@@ -49,6 +49,7 @@ import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_
 import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
 import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
 import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
+import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta'
 import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
 import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
@@ -273,6 +274,12 @@ const AuthenticatedOsComercialClientesIndexRoute =
     path: '/comercial/clientes/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAtendimentoChamadosIndexRoute =
+  AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
+    id: '/atendimento/chamados/',
+    path: '/atendimento/chamados/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 const AuthenticatedOsProdutosValtroPricingBetaRoute =
   AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
     id: '/produtos/valtro-pricing/beta',
@@ -339,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -383,6 +391,7 @@ export interface FileRoutesByTo {
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -430,6 +439,7 @@ export interface FileRoutesById {
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/_authenticated/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  '/_authenticated/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/_authenticated/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/_authenticated/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
     | '/os/produtos/valtro-pricing/beta'
+    | '/os/atendimento/chamados/'
     | '/os/comercial/clientes/'
     | '/os/comercial/leads/'
     | '/os/comercial/projetos/'
@@ -521,6 +532,7 @@ export interface FileRouteTypes {
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
     | '/os/produtos/valtro-pricing/beta'
+    | '/os/atendimento/chamados'
     | '/os/comercial/clientes'
     | '/os/comercial/leads'
     | '/os/comercial/projetos'
@@ -567,6 +579,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
     | '/_authenticated/os/produtos/valtro-pricing/beta'
+    | '/_authenticated/os/atendimento/chamados/'
     | '/_authenticated/os/comercial/clientes/'
     | '/_authenticated/os/comercial/leads/'
     | '/_authenticated/os/comercial/projetos/'
@@ -874,6 +887,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/atendimento/chamados/': {
+      id: '/_authenticated/os/atendimento/chamados/'
+      path: '/atendimento/chamados'
+      fullPath: '/os/atendimento/chamados/'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
     '/_authenticated/os/produtos/valtro-pricing/beta': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta'
       path: '/produtos/valtro-pricing/beta'
@@ -917,6 +937,7 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
   AuthenticatedOsProdutosValtroPricingBetaRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+  AuthenticatedOsAtendimentoChamadosIndexRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   AuthenticatedOsComercialClientesIndexRoute: typeof AuthenticatedOsComercialClientesIndexRoute
   AuthenticatedOsComercialLeadsIndexRoute: typeof AuthenticatedOsComercialLeadsIndexRoute
   AuthenticatedOsComercialProjetosIndexRoute: typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -938,6 +959,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
     AuthenticatedOsComercialProjetosIdRoute,
   AuthenticatedOsProdutosValtroPricingBetaRoute:
     AuthenticatedOsProdutosValtroPricingBetaRoute,
+  AuthenticatedOsAtendimentoChamadosIndexRoute:
+    AuthenticatedOsAtendimentoChamadosIndexRoute,
   AuthenticatedOsComercialClientesIndexRoute:
     AuthenticatedOsComercialClientesIndexRoute,
   AuthenticatedOsComercialLeadsIndexRoute:
