@@ -61,6 +61,7 @@ import { Route as AuthenticatedOsAtendimentoFeedbackIdRouteImport } from './rout
 import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
 import { Route as AuthenticatedOsAtendimentoBugsIdRouteImport } from './routes/_authenticated.os.atendimento.bugs.$id'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.index'
+import { Route as AuthenticatedOsProdutosValtroPricingBetaIdRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.$id'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -353,6 +354,12 @@ const AuthenticatedOsProdutosValtroPricingBetaIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedOsProdutosValtroPricingBetaRoute,
   } as any)
+const AuthenticatedOsProdutosValtroPricingBetaIdRoute =
+  AuthenticatedOsProdutosValtroPricingBetaIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsProdutosValtroPricingBetaRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -405,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
+  '/os/produtos/valtro-pricing/beta/$id': typeof AuthenticatedOsProdutosValtroPricingBetaIdRoute
   '/os/produtos/valtro-pricing/beta/': typeof AuthenticatedOsProdutosValtroPricingBetaIndexRoute
 }
 export interface FileRoutesByTo {
@@ -454,6 +462,7 @@ export interface FileRoutesByTo {
   '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos': typeof AuthenticatedOsComercialProjetosIndexRoute
+  '/os/produtos/valtro-pricing/beta/$id': typeof AuthenticatedOsProdutosValtroPricingBetaIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaIndexRoute
 }
 export interface FileRoutesById {
@@ -509,6 +518,7 @@ export interface FileRoutesById {
   '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/_authenticated/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/_authenticated/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
+  '/_authenticated/os/produtos/valtro-pricing/beta/$id': typeof AuthenticatedOsProdutosValtroPricingBetaIdRoute
   '/_authenticated/os/produtos/valtro-pricing/beta/': typeof AuthenticatedOsProdutosValtroPricingBetaIndexRoute
 }
 export interface FileRouteTypes {
@@ -564,6 +574,7 @@ export interface FileRouteTypes {
     | '/os/comercial/clientes/'
     | '/os/comercial/leads/'
     | '/os/comercial/projetos/'
+    | '/os/produtos/valtro-pricing/beta/$id'
     | '/os/produtos/valtro-pricing/beta/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -613,6 +624,7 @@ export interface FileRouteTypes {
     | '/os/comercial/clientes'
     | '/os/comercial/leads'
     | '/os/comercial/projetos'
+    | '/os/produtos/valtro-pricing/beta/$id'
     | '/os/produtos/valtro-pricing/beta'
   id:
     | '__root__'
@@ -667,6 +679,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/comercial/clientes/'
     | '/_authenticated/os/comercial/leads/'
     | '/_authenticated/os/comercial/projetos/'
+    | '/_authenticated/os/produtos/valtro-pricing/beta/$id'
     | '/_authenticated/os/produtos/valtro-pricing/beta/'
   fileRoutesById: FileRoutesById
 }
@@ -1056,6 +1069,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport
       parentRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRoute
     }
+    '/_authenticated/os/produtos/valtro-pricing/beta/$id': {
+      id: '/_authenticated/os/produtos/valtro-pricing/beta/$id'
+      path: '/$id'
+      fullPath: '/os/produtos/valtro-pricing/beta/$id'
+      preLoaderRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIdRouteImport
+      parentRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRoute
+    }
   }
 }
 
@@ -1132,11 +1152,14 @@ const AuthenticatedOsAtendimentoRouteWithChildren =
   )
 
 interface AuthenticatedOsProdutosValtroPricingBetaRouteChildren {
+  AuthenticatedOsProdutosValtroPricingBetaIdRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIdRoute
   AuthenticatedOsProdutosValtroPricingBetaIndexRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIndexRoute
 }
 
 const AuthenticatedOsProdutosValtroPricingBetaRouteChildren: AuthenticatedOsProdutosValtroPricingBetaRouteChildren =
   {
+    AuthenticatedOsProdutosValtroPricingBetaIdRoute:
+      AuthenticatedOsProdutosValtroPricingBetaIdRoute,
     AuthenticatedOsProdutosValtroPricingBetaIndexRoute:
       AuthenticatedOsProdutosValtroPricingBetaIndexRoute,
   }
