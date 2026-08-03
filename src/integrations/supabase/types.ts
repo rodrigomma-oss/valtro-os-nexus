@@ -73,6 +73,98 @@ export type Database = {
           },
         ]
       }
+      api_audit_logs: {
+        Row: {
+          application_id: string | null
+          client_request_id: string | null
+          created_at: string
+          credential_id: string | null
+          duration_ms: number | null
+          environment:
+            | Database["public"]["Enums"]["api_application_environment"]
+            | null
+          error_code: string | null
+          id: string
+          ip: string | null
+          method: string
+          path: string
+          product_id: string | null
+          request_id: string
+          scopes: string[] | null
+          status_code: number
+          user_agent: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          client_request_id?: string | null
+          created_at?: string
+          credential_id?: string | null
+          duration_ms?: number | null
+          environment?:
+            | Database["public"]["Enums"]["api_application_environment"]
+            | null
+          error_code?: string | null
+          id?: string
+          ip?: string | null
+          method: string
+          path: string
+          product_id?: string | null
+          request_id: string
+          scopes?: string[] | null
+          status_code: number
+          user_agent?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          client_request_id?: string | null
+          created_at?: string
+          credential_id?: string | null
+          duration_ms?: number | null
+          environment?:
+            | Database["public"]["Enums"]["api_application_environment"]
+            | null
+          error_code?: string | null
+          id?: string
+          ip?: string | null
+          method?: string
+          path?: string
+          product_id?: string | null
+          request_id?: string
+          scopes?: string[] | null
+          status_code?: number
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_audit_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "api_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_audit_logs_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "api_credentials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_audit_logs_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "api_credentials_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_audit_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_credentials: {
         Row: {
           activated_at: string | null
@@ -134,6 +226,45 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "api_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_request_nonces: {
+        Row: {
+          created_at: string
+          credential_id: string
+          expires_at: string
+          id: string
+          nonce: string
+        }
+        Insert: {
+          created_at?: string
+          credential_id: string
+          expires_at: string
+          id?: string
+          nonce: string
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string
+          expires_at?: string
+          id?: string
+          nonce?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_request_nonces_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "api_credentials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_request_nonces_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "api_credentials_safe"
             referencedColumns: ["id"]
           },
         ]
