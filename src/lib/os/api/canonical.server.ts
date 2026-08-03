@@ -31,7 +31,7 @@ export function createCanonicalRequest(params: CanonicalRequestParams): string {
   let canonicalQueryString = '';
   if (queryString) {
     const searchParams = new URLSearchParams(queryString);
-    const keys = Array.from(searchParams.keys()).sort();
+    const keys = Array.from(new Set(searchParams.keys())).sort();
     const parts: string[] = [];
     
     for (const key of keys) {
