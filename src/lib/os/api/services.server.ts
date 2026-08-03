@@ -106,7 +106,21 @@ export async function generateCredential(applicationId: string, userId: string) 
 }
 
 /**
- * Revoga uma aplicação e todas as suas credenciais.
+ * Suspende uma aplicação (bloqueia temporariamente).
+ */
+export async function suspendApplication(applicationId: string, userId: string) {
+  const { error } = await (supabaseAdmin.from('api_applications') as any)
+    .update({ 
+      status: 'suspended',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', applicationId);
+
+  if (error) throw error;
+}
+
+/**
+ * Revoga uma aplicação e todas as suas credenciais de forma permanente.
  */
 export async function revokeApplication(applicationId: string, reason: string, userId: string) {
   const { error } = await (supabaseAdmin.from('api_applications') as any)
@@ -119,7 +133,7 @@ export async function revokeApplication(applicationId: string, reason: string, u
 
   if (error) throw error;
 
-  // Revoga todas as credenciais ativas
+  // Revoga todas as credenciais ativas/pendentes
   await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
@@ -131,7 +145,21 @@ export async function revokeApplication(applicationId: string, reason: string, u
 }
 
 /**
- * Revoga uma credencial específica.
+ * Ativa uma credencial pendente.
+ */
+export async function activateCredential(credentialId: string, userId: string) {
+  const { error } = await (supabaseAdmin.from('api_credentials') as any)
+    .update({ 
+      status: 'active',
+      activated_at: new Date().toISOString()
+    })
+    .eq('id', credentialId);
+
+  if (error) throw error;
+}
+
+/**
+ * Revoga uma credencial específica de forma permanente.
  */
 export async function revokeCredential(credentialId: string, reason: string, userId: string) {
   const { error } = await (supabaseAdmin.from('api_credentials') as any)
@@ -144,3 +172,17 @@ export async function revokeCredential(credentialId: string, reason: string, use
 
   if (error) throw error;
 }
+
+/**
+ * Lista credenciais de uma aplicação (sem o segredo).
+ */
+export async function listApplicationCredentials(applicationId: string) {
+  const { data, error } = await (supabaseAdmin.from('api_credentials_safe') as any)
+    .select('*')
+    .eq('application_id', applicationId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
