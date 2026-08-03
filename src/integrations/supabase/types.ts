@@ -16,54 +16,105 @@ export type Database = {
     Tables: {
       api_applications: {
         Row: {
+          activation_at: string | null
+          admin_message: string | null
           allowed_scopes: string[]
+          capabilities: string[]
           client_id: string
           created_at: string
           created_by: string | null
+          deprecation_at: string | null
           display_name: string
           environment: Database["public"]["Enums"]["api_application_environment"]
+          feature_flags: Json
           id: string
           last_used_at: string | null
+          max_api_version_id: string | null
+          min_api_version_id: string | null
+          preferred_api_version_id: string | null
           product_id: string | null
           rate_limit_config: Json | null
           revocation_reason: string | null
           revoked_at: string | null
           status: Database["public"]["Enums"]["api_application_status"]
+          sunset_at: string | null
+          technical_limits: Json
           updated_at: string
         }
         Insert: {
+          activation_at?: string | null
+          admin_message?: string | null
           allowed_scopes?: string[]
+          capabilities?: string[]
           client_id: string
           created_at?: string
           created_by?: string | null
+          deprecation_at?: string | null
           display_name: string
           environment?: Database["public"]["Enums"]["api_application_environment"]
+          feature_flags?: Json
           id?: string
           last_used_at?: string | null
+          max_api_version_id?: string | null
+          min_api_version_id?: string | null
+          preferred_api_version_id?: string | null
           product_id?: string | null
           rate_limit_config?: Json | null
           revocation_reason?: string | null
           revoked_at?: string | null
           status?: Database["public"]["Enums"]["api_application_status"]
+          sunset_at?: string | null
+          technical_limits?: Json
           updated_at?: string
         }
         Update: {
+          activation_at?: string | null
+          admin_message?: string | null
           allowed_scopes?: string[]
+          capabilities?: string[]
           client_id?: string
           created_at?: string
           created_by?: string | null
+          deprecation_at?: string | null
           display_name?: string
           environment?: Database["public"]["Enums"]["api_application_environment"]
+          feature_flags?: Json
           id?: string
           last_used_at?: string | null
+          max_api_version_id?: string | null
+          min_api_version_id?: string | null
+          preferred_api_version_id?: string | null
           product_id?: string | null
           rate_limit_config?: Json | null
           revocation_reason?: string | null
           revoked_at?: string | null
           status?: Database["public"]["Enums"]["api_application_status"]
+          sunset_at?: string | null
+          technical_limits?: Json
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "api_applications_max_api_version_id_fkey"
+            columns: ["max_api_version_id"]
+            isOneToOne: false
+            referencedRelation: "api_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_applications_min_api_version_id_fkey"
+            columns: ["min_api_version_id"]
+            isOneToOne: false
+            referencedRelation: "api_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_applications_preferred_api_version_id_fkey"
+            columns: ["preferred_api_version_id"]
+            isOneToOne: false
+            referencedRelation: "api_versions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "api_applications_product_id_fkey"
             columns: ["product_id"]
@@ -265,6 +316,59 @@ export type Database = {
             columns: ["credential_id"]
             isOneToOne: false
             referencedRelation: "api_credentials_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_versions: {
+        Row: {
+          created_at: string
+          deprecated_at: string | null
+          display_name: string
+          documentation_url: string | null
+          id: string
+          public_message: string | null
+          released_at: string | null
+          replacement_version_id: string | null
+          status: Database["public"]["Enums"]["api_version_status"]
+          sunset_at: string | null
+          updated_at: string
+          version_code: string
+        }
+        Insert: {
+          created_at?: string
+          deprecated_at?: string | null
+          display_name: string
+          documentation_url?: string | null
+          id?: string
+          public_message?: string | null
+          released_at?: string | null
+          replacement_version_id?: string | null
+          status?: Database["public"]["Enums"]["api_version_status"]
+          sunset_at?: string | null
+          updated_at?: string
+          version_code: string
+        }
+        Update: {
+          created_at?: string
+          deprecated_at?: string | null
+          display_name?: string
+          documentation_url?: string | null
+          id?: string
+          public_message?: string | null
+          released_at?: string | null
+          replacement_version_id?: string | null
+          status?: Database["public"]["Enums"]["api_version_status"]
+          sunset_at?: string | null
+          updated_at?: string
+          version_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_versions_replacement_version_id_fkey"
+            columns: ["replacement_version_id"]
+            isOneToOne: false
+            referencedRelation: "api_versions"
             referencedColumns: ["id"]
           },
         ]
@@ -2843,6 +2947,12 @@ export type Database = {
       api_application_environment: "development" | "staging" | "production"
       api_application_status: "active" | "suspended" | "revoked"
       api_credential_status: "pending" | "active" | "revoked" | "expired"
+      api_version_status:
+        | "development"
+        | "stable"
+        | "deprecated"
+        | "sunset"
+        | "disabled"
       app_role: "admin" | "operator" | "viewer"
       beta_participant_event_type:
         | "created"
@@ -3302,6 +3412,13 @@ export const Constants = {
       api_application_environment: ["development", "staging", "production"],
       api_application_status: ["active", "suspended", "revoked"],
       api_credential_status: ["pending", "active", "revoked", "expired"],
+      api_version_status: [
+        "development",
+        "stable",
+        "deprecated",
+        "sunset",
+        "disabled",
+      ],
       app_role: ["admin", "operator", "viewer"],
       beta_participant_event_type: [
         "created",
