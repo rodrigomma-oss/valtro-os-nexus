@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { createApplication, generateCredential, ALLOWED_SCOPES } from '@/lib/os/api/services.server';
+import { createApplication, generateCredential, revokeApplication, ALLOWED_SCOPES } from '@/lib/os/api/services.server';
 
 // Mock Supabase
 const mockSingle = vi.fn();
 const mockSelect = vi.fn(() => ({ single: mockSingle }));
-const mockEq = vi.fn(() => ({ single: mockSingle, in: mockIn }));
 const mockIn = vi.fn(() => ({ single: mockSingle }));
+const mockEq = vi.fn(() => ({ single: mockSingle, in: mockIn }));
+const mockInsert = vi.fn(() => ({ select: mockSelect }));
 const mockUpdate = vi.fn(() => ({ eq: mockEq }));
 const mockOrder = vi.fn(() => ({ single: mockSingle }));
 const mockFrom = vi.fn(() => ({ insert: mockInsert, select: mockSelect, update: mockUpdate, order: mockOrder }));
-
 
 vi.mock('@/integrations/supabase/client.server', () => ({
   supabaseAdmin: {
@@ -53,7 +53,6 @@ describe('API Services Module', () => {
     await expect(createApplication(params)).rejects.toThrow(/Escopos inválidos/);
   });
 
-
   it('should generate a credential and return the secret only once', async () => {
     const appId = 'app-123';
     mockSingle.mockResolvedValueOnce({ data: { id: appId, client_id: 'vlt_app_123' }, error: null }); // get app
@@ -91,4 +90,3 @@ describe('API Services Module', () => {
     }));
   });
 });
-

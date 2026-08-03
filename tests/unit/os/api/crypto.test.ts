@@ -37,7 +37,6 @@ describe('API Crypto Module', () => {
     const secret = 'test-secret';
     const encrypted = await encryptSecret(secret, 'aad');
     
-    // Tamper auth tag (base64 decode, modify, encode)
     const buf = Buffer.from(encrypted.authTag, 'base64');
     buf[0] ^= 1;
     encrypted.authTag = buf.toString('base64');
@@ -64,22 +63,20 @@ describe('API Crypto Module', () => {
     expect(secureCompare('abc', 'abcd')).toBe(false);
   });
 
-
-  it('should fail if master key is missing', () => {
+  it('should fail if master key is missing', async () => {
     const originalKey = process.env.API_MASTER_ENCRYPTION_KEY;
     delete process.env.API_MASTER_ENCRYPTION_KEY;
     
-    expect(generateHmacSecret).toBeDefined(); // doesn't use master key
-    expect(() => encryptSecret('test', 'aad')).rejects.toThrow(/não configurada/);
+    await expect(encryptSecret('test', 'aad')).rejects.toThrow(/não configurada/);
     
     process.env.API_MASTER_ENCRYPTION_KEY = originalKey;
   });
 
-  it('should fail if master key is invalid length', () => {
+  it('should fail if master key is invalid length', async () => {
     const originalKey = process.env.API_MASTER_ENCRYPTION_KEY;
     process.env.API_MASTER_ENCRYPTION_KEY = 'too-short';
     
-    expect(() => encryptSecret('test', 'aad')).rejects.toThrow(/string hex de 32 bytes/);
+    await expect(encryptSecret('test', 'aad')).rejects.toThrow(/string hex de 32 bytes/);
     
     process.env.API_MASTER_ENCRYPTION_KEY = originalKey;
   });
@@ -95,4 +92,3 @@ describe('API Crypto Module', () => {
     await expect(decryptSecret(encrypted, 'aad')).rejects.toThrow();
   });
 });
-
