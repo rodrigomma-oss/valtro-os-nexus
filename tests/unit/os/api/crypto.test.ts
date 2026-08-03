@@ -62,6 +62,8 @@ describe('API Crypto Module', () => {
     expect(secureCompare('abc', 'abc')).toBe(true);
     expect(secureCompare('abc', 'abd')).toBe(false);
     expect(secureCompare('abc', 'abcd')).toBe(false);
+  });
+
 
   it('should fail if master key is missing', () => {
     const originalKey = process.env.API_MASTER_ENCRYPTION_KEY;

@@ -51,6 +51,8 @@ describe('API Services Module', () => {
     };
 
     await expect(createApplication(params)).rejects.toThrow(/Escopos inválidos/);
+  });
+
 
   it('should generate a credential and return the secret only once', async () => {
     const appId = 'app-123';
