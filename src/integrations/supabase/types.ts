@@ -14,6 +14,130 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_applications: {
+        Row: {
+          allowed_scopes: string[]
+          client_id: string
+          created_at: string
+          created_by: string | null
+          display_name: string
+          environment: Database["public"]["Enums"]["api_application_environment"]
+          id: string
+          last_used_at: string | null
+          product_id: string | null
+          rate_limit_config: Json | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          status: Database["public"]["Enums"]["api_application_status"]
+          updated_at: string
+        }
+        Insert: {
+          allowed_scopes?: string[]
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          display_name: string
+          environment?: Database["public"]["Enums"]["api_application_environment"]
+          id?: string
+          last_used_at?: string | null
+          product_id?: string | null
+          rate_limit_config?: Json | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_application_status"]
+          updated_at?: string
+        }
+        Update: {
+          allowed_scopes?: string[]
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          display_name?: string
+          environment?: Database["public"]["Enums"]["api_application_environment"]
+          id?: string
+          last_used_at?: string | null
+          product_id?: string | null
+          rate_limit_config?: Json | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_application_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_applications_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_credentials: {
+        Row: {
+          activated_at: string | null
+          application_id: string
+          authentication_tag: string
+          created_at: string
+          created_by: string | null
+          encrypted_secret: string
+          encryption_iv: string
+          encryption_version: number
+          expires_at: string | null
+          id: string
+          key_id: string
+          last_used_at: string | null
+          master_key_version: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          status: Database["public"]["Enums"]["api_credential_status"]
+        }
+        Insert: {
+          activated_at?: string | null
+          application_id: string
+          authentication_tag: string
+          created_at?: string
+          created_by?: string | null
+          encrypted_secret: string
+          encryption_iv: string
+          encryption_version?: number
+          expires_at?: string | null
+          id?: string
+          key_id: string
+          last_used_at?: string | null
+          master_key_version: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_credential_status"]
+        }
+        Update: {
+          activated_at?: string | null
+          application_id?: string
+          authentication_tag?: string
+          created_at?: string
+          created_by?: string | null
+          encrypted_secret?: string
+          encryption_iv?: string
+          encryption_version?: number
+          expires_at?: string | null
+          id?: string
+          key_id?: string
+          last_used_at?: string | null
+          master_key_version?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_credential_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_credentials_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "api_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attachments: {
         Row: {
           created_at: string
@@ -2468,7 +2592,56 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      api_credentials_safe: {
+        Row: {
+          activated_at: string | null
+          application_id: string | null
+          created_at: string | null
+          encryption_version: number | null
+          expires_at: string | null
+          id: string | null
+          key_id: string | null
+          last_used_at: string | null
+          master_key_version: string | null
+          revoked_at: string | null
+          status: Database["public"]["Enums"]["api_credential_status"] | null
+        }
+        Insert: {
+          activated_at?: string | null
+          application_id?: string | null
+          created_at?: string | null
+          encryption_version?: number | null
+          expires_at?: string | null
+          id?: string | null
+          key_id?: string | null
+          last_used_at?: string | null
+          master_key_version?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_credential_status"] | null
+        }
+        Update: {
+          activated_at?: string | null
+          application_id?: string | null
+          created_at?: string | null
+          encryption_version?: number | null
+          expires_at?: string | null
+          id?: string | null
+          key_id?: string | null
+          last_used_at?: string | null
+          master_key_version?: string | null
+          revoked_at?: string | null
+          status?: Database["public"]["Enums"]["api_credential_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_credentials_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "api_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       beta_participant_transition_allowed: {
@@ -2536,6 +2709,9 @@ export type Database = {
       }
     }
     Enums: {
+      api_application_environment: "development" | "staging" | "production"
+      api_application_status: "active" | "suspended" | "revoked"
+      api_credential_status: "pending" | "active" | "revoked" | "expired"
       app_role: "admin" | "operator" | "viewer"
       beta_participant_event_type:
         | "created"
@@ -2992,6 +3168,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      api_application_environment: ["development", "staging", "production"],
+      api_application_status: ["active", "suspended", "revoked"],
+      api_credential_status: ["pending", "active", "revoked", "expired"],
       app_role: ["admin", "operator", "viewer"],
       beta_participant_event_type: [
         "created",
