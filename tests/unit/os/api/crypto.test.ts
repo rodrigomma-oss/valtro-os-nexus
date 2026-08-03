@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { generateHmacSecret, encryptSecret, decryptSecret, generateSecureId, secureCompare } from '../crypto.server';
+import { generateHmacSecret, encryptSecret, decryptSecret, generateSecureId, secureCompare } from '@/lib/os/api/crypto.server';
 
 describe('API Crypto Module', () => {
   beforeAll(() => {
