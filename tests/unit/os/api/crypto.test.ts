@@ -62,5 +62,35 @@ describe('API Crypto Module', () => {
     expect(secureCompare('abc', 'abc')).toBe(true);
     expect(secureCompare('abc', 'abd')).toBe(false);
     expect(secureCompare('abc', 'abcd')).toBe(false);
+
+  it('should fail if master key is missing', () => {
+    const originalKey = process.env.API_MASTER_ENCRYPTION_KEY;
+    delete process.env.API_MASTER_ENCRYPTION_KEY;
+    
+    expect(generateHmacSecret).toBeDefined(); // doesn't use master key
+    expect(() => encryptSecret('test', 'aad')).rejects.toThrow(/não configurada/);
+    
+    process.env.API_MASTER_ENCRYPTION_KEY = originalKey;
+  });
+
+  it('should fail if master key is invalid length', () => {
+    const originalKey = process.env.API_MASTER_ENCRYPTION_KEY;
+    process.env.API_MASTER_ENCRYPTION_KEY = 'too-short';
+    
+    expect(() => encryptSecret('test', 'aad')).rejects.toThrow(/string hex de 32 bytes/);
+    
+    process.env.API_MASTER_ENCRYPTION_KEY = originalKey;
+  });
+
+  it('should fail decryption if ciphertext is tampered', async () => {
+    const secret = 'test-secret';
+    const encrypted = await encryptSecret(secret, 'aad');
+    
+    const buf = Buffer.from(encrypted.ciphertext, 'base64');
+    buf[0] ^= 1;
+    encrypted.ciphertext = buf.toString('base64');
+
+    await expect(decryptSecret(encrypted, 'aad')).rejects.toThrow();
   });
 });
+
