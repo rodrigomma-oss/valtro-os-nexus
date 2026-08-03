@@ -19,7 +19,8 @@ export async function logApiRequest(params: AuditLogParams) {
   const { context, method, path, statusCode, durationMs, errorCode } = params;
 
   try {
-    await (supabaseAdmin.from('api_audit_logs') as any).insert({
+    await (supabaseAdmin.from('api_audit_logs' as any) as any).insert({
+
       application_id: context.applicationId,
       credential_id: context.credentialId,
       product_id: context.productId,
@@ -54,7 +55,7 @@ export async function logUnauthorizedAccess(
   ip?: string
 ) {
   try {
-    await (supabaseAdmin.from('api_audit_logs') as any).insert({
+    await (supabaseAdmin.from('api_audit_logs' as any) as any).insert({
       method,
       path,
       status_code: statusCode,

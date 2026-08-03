@@ -158,7 +158,7 @@ export async function authenticateRequest(request: Request): Promise<{ context: 
 
     // 6. Registrar Nonce (Prevenção de Replay) - Atômico via DB
     const expiresAt = new Date(requestTs + TIMESTAMP_WINDOW_MS).toISOString();
-    const { error: nonceError } = await (supabaseAdmin.from('api_request_nonces') as any)
+    const { error: nonceError } = await (supabaseAdmin.from('api_request_nonces' as any) as any)
       .insert({
         credential_id: credential.id,
         nonce,
