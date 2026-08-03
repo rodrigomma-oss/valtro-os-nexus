@@ -3,13 +3,14 @@ import { createApplication, generateCredential, revokeApplication, ALLOWED_SCOPE
 
 // Mock Supabase
 const mockSingle = vi.fn();
-const mockSelect = vi.fn(() => ({ single: mockSingle }));
 const mockIn = vi.fn(() => ({ single: mockSingle }));
 const mockEq = vi.fn(() => ({ single: mockSingle, in: mockIn }));
+const mockSelect = vi.fn(() => ({ eq: mockEq, single: mockSingle }));
 const mockInsert = vi.fn(() => ({ select: mockSelect }));
 const mockUpdate = vi.fn(() => ({ eq: mockEq }));
 const mockOrder = vi.fn(() => ({ single: mockSingle }));
 const mockFrom = vi.fn(() => ({ insert: mockInsert, select: mockSelect, update: mockUpdate, order: mockOrder }));
+
 
 vi.mock('@/integrations/supabase/client.server', () => ({
   supabaseAdmin: {
