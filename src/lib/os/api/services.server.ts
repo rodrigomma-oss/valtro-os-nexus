@@ -1,12 +1,14 @@
 /**
  * Serviços Administrativos Internos da API (Server-Only).
  * Acesso restrito a usuários com papel 'admin'.
+ * 
+ * SECURITY: Estas funções usam supabaseAdmin e devem ser chamadas
+ * apenas em contextos autenticados após verificação de has_role('admin').
  */
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { generateSecureId, generateHmacSecret, encryptSecret, decryptSecret } from "./crypto.server";
+import { generateSecureId, generateHmacSecret, encryptSecret } from "./crypto.server";
 
 export type ApiApplicationEnvironment = 'development' | 'staging' | 'production';
-export type ApiApplicationStatus = 'active' | 'suspended' | 'revoked';
 
 export const ALLOWED_SCOPES = [
   'support:tickets:create',
@@ -34,15 +36,14 @@ export async function createApplication(params: CreateAppParams) {
   const { displayName, productId, environment, allowedScopes, userId } = params;
 
   // Valida escopos
-  const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s));
+  const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
   if (invalidScopes.length > 0) {
     throw new Error(`Escopos inválidos: ${invalidScopes.join(', ')}`);
   }
 
   const clientId = generateSecureId('vlt_app_');
 
-  const { data, error } = await supabaseAdmin
-    .from('api_applications')
+  const { data, error } = await (supabaseAdmin.from('api_applications') as any)
     .insert({
       client_id: clientId,
       display_name: displayName,
@@ -63,8 +64,7 @@ export async function createApplication(params: CreateAppParams) {
  * O segredo original é retornado apenas uma vez aqui.
  */
 export async function generateCredential(applicationId: string, userId: string) {
-  const { data: app, error: appError } = await supabaseAdmin
-    .from('api_applications')
+  const { data: app, error: appError } = await (supabaseAdmin.from('api_applications') as any)
     .select('id, client_id')
     .eq('id', applicationId)
     .single();
@@ -78,8 +78,7 @@ export async function generateCredential(applicationId: string, userId: string) 
   const aad = `${applicationId}:${keyId}`;
   const encrypted = await encryptSecret(rawSecret, aad);
 
-  const { data: credential, error: credError } = await supabaseAdmin
-    .from('api_credentials')
+  const { data: credential, error: credError } = await (supabaseAdmin.from('api_credentials') as any)
     .insert({
       application_id: applicationId,
       key_id: keyId,
@@ -98,7 +97,10 @@ export async function generateCredential(applicationId: string, userId: string) 
   if (credError) throw credError;
 
   return {
-    ...credential,
+    id: credential.id,
+    key_id: credential.key_id,
+    status: credential.status,
+    created_at: credential.created_at,
     secret: rawSecret, // RETORNADO APENAS UMA VEZ
   };
 }
@@ -107,8 +109,7 @@ export async function generateCredential(applicationId: string, userId: string) 
  * Revoga uma aplicação e todas as suas credenciais.
  */
 export async function revokeApplication(applicationId: string, reason: string, userId: string) {
-  const { error } = await supabaseAdmin
-    .from('api_applications')
+  const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({
       status: 'revoked',
       revoked_at: new Date().toISOString(),
@@ -119,8 +120,7 @@ export async function revokeApplication(applicationId: string, reason: string, u
   if (error) throw error;
 
   // Revoga todas as credenciais ativas
-  await supabaseAdmin
-    .from('api_credentials')
+  await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
       revoked_at: new Date().toISOString(),
@@ -134,8 +134,7 @@ export async function revokeApplication(applicationId: string, reason: string, u
  * Revoga uma credencial específica.
  */
 export async function revokeCredential(credentialId: string, reason: string, userId: string) {
-  const { error } = await supabaseAdmin
-    .from('api_credentials')
+  const { error } = await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
       revoked_at: new Date().toISOString(),
