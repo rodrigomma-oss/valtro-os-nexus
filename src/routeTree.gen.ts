@@ -27,6 +27,7 @@ import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
+import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
@@ -152,6 +153,11 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/crm/',
   path: '/crm/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiV1MetaRoute = ApiV1MetaRouteImport.update({
+  id: '/api/v1/meta',
+  path: '/api/v1/meta',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   id: '/api/public/version',
@@ -388,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/api/v1/meta': typeof ApiV1MetaRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -442,6 +449,7 @@ export interface FileRoutesByTo {
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/api/v1/meta': typeof ApiV1MetaRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/_authenticated/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
+  '/api/v1/meta': typeof ApiV1MetaRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/os/atendimento'
     | '/os/dashboard'
     | '/api/public/version'
+    | '/api/v1/meta'
     | '/crm/'
     | '/os/'
     | '/crm/admin/integracoes'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/os/atendimento'
     | '/os/dashboard'
     | '/api/public/version'
+    | '/api/v1/meta'
     | '/crm'
     | '/os'
     | '/crm/admin/integracoes'
@@ -660,6 +671,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/atendimento'
     | '/_authenticated/os/dashboard'
     | '/api/public/version'
+    | '/api/v1/meta'
     | '/_authenticated/crm/'
     | '/_authenticated/os/'
     | '/_authenticated/crm/admin/integracoes'
@@ -711,6 +723,7 @@ export interface RootRouteChildren {
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
+  ApiV1MetaRoute: typeof ApiV1MetaRoute
   ApiPublicGoogleCalendarCallbackRoute: typeof ApiPublicGoogleCalendarCallbackRoute
   ApiPublicGoogleCalendarSyncRoute: typeof ApiPublicGoogleCalendarSyncRoute
   ApiV1InternalAuthCheckRoute: typeof ApiV1InternalAuthCheckRoute
@@ -843,6 +856,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/crm/'
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/v1/meta': {
+      id: '/api/v1/meta'
+      path: '/api/v1/meta'
+      fullPath: '/api/v1/meta'
+      preLoaderRoute: typeof ApiV1MetaRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/version': {
       id: '/api/public/version'
@@ -1283,6 +1303,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
+  ApiV1MetaRoute: ApiV1MetaRoute,
   ApiPublicGoogleCalendarCallbackRoute: ApiPublicGoogleCalendarCallbackRoute,
   ApiPublicGoogleCalendarSyncRoute: ApiPublicGoogleCalendarSyncRoute,
   ApiV1InternalAuthCheckRoute: ApiV1InternalAuthCheckRoute,

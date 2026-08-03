@@ -1,12 +1,17 @@
 /**
  * Serviços Administrativos Internos da API (Server-Only).
- * Acesso restrito a usuários com papel 'admin'.
- * 
- * SECURITY: Estas funções usam supabaseAdmin e devem ser chamadas
- * apenas em contextos autenticados após verificação de has_role('admin').
+ * Acesso restrito a usuários com papel 'admin' e MFA AAL2.
  */
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { generateSecureId, generateHmacSecret, encryptSecret } from "./crypto.server";
+import { 
+  ApiCapability, 
+  ApiVersionStatus, 
+  TechnicalLimits, 
+  FeatureFlags,
+  API_CAPABILITIES,
+  API_VERSION_STATUS 
+} from "./types";
 
 export type ApiApplicationEnvironment = 'development' | 'staging' | 'production';
 
@@ -21,6 +26,31 @@ export const ALLOWED_SCOPES = [
 
 export type ApiScope = typeof ALLOWED_SCOPES[number];
 
+/**
+ * Garante que o usuário tem papel admin e nível de autenticação AAL2.
+ */
+async function enforceAdminAAL2() {
+  const { data: { session }, error } = await (supabaseAdmin.auth as any).getSession();
+  if (error || !session) throw new Error('Não autenticado.');
+  
+  const { data: roleData } = await supabaseAdmin
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', session.user.id)
+    .eq('role', 'admin')
+    .single();
+
+  if (!roleData) throw new Error('Acesso negado: Administradores apenas.');
+  
+  if (session.user.app_metadata?.aal !== 'aal2') {
+    // Nota: Em desenvolvimento/preview o Lovable pode não injetar AAL2 por padrão.
+    // Em produção, isso é mandatório.
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('MFA AAL2 exigido para operações administrativas de API.');
+    }
+  }
+}
+
 interface CreateAppParams {
   displayName: string;
   productId?: string;
@@ -33,9 +63,9 @@ interface CreateAppParams {
  * Cria uma nova aplicação cliente.
  */
 export async function createApplication(params: CreateAppParams) {
+  await enforceAdminAAL2();
   const { displayName, productId, environment, allowedScopes, userId } = params;
 
-  // Valida escopos
   const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
   if (invalidScopes.length > 0) {
     throw new Error(`Escopos inválidos: ${invalidScopes.join(', ')}`);
@@ -61,9 +91,9 @@ export async function createApplication(params: CreateAppParams) {
 
 /**
  * Gera uma nova credencial para uma aplicação.
- * O segredo original é retornado apenas uma vez aqui.
  */
 export async function generateCredential(applicationId: string, userId: string) {
+  await enforceAdminAAL2();
   const { data: app, error: appError } = await (supabaseAdmin.from('api_applications') as any)
     .select('id, client_id')
     .eq('id', applicationId)
@@ -73,8 +103,6 @@ export async function generateCredential(applicationId: string, userId: string) 
 
   const keyId = generateSecureId('vlt_key_');
   const rawSecret = generateHmacSecret();
-  
-  // AAD canônico: application_id:key_id
   const aad = `${applicationId}:${keyId}`;
   const encrypted = await encryptSecret(rawSecret, aad);
 
@@ -87,7 +115,7 @@ export async function generateCredential(applicationId: string, userId: string) 
       authentication_tag: encrypted.authTag,
       encryption_version: encrypted.version,
       master_key_version: encrypted.masterKeyVersion,
-      status: 'active', // Ativa por padrão na criação interna
+      status: 'active',
       activated_at: new Date().toISOString(),
       created_by: userId,
     })
@@ -101,14 +129,53 @@ export async function generateCredential(applicationId: string, userId: string) 
     key_id: credential.key_id,
     status: credential.status,
     created_at: credential.created_at,
-    secret: rawSecret, // RETORNADO APENAS UMA VEZ
+    secret: rawSecret,
   };
 }
 
 /**
- * Suspende uma aplicação (bloqueia temporariamente).
+ * Atualiza configurações do consumidor.
+ */
+export async function updateConsumerSettings(
+  applicationId: string, 
+  settings: {
+    capabilities?: ApiCapability[];
+    featureFlags?: FeatureFlags;
+    technicalLimits?: TechnicalLimits;
+    minApiVersionId?: string;
+    maxApiVersionId?: string;
+    preferredApiVersionId?: string;
+    adminMessage?: string;
+  }
+) {
+  await enforceAdminAAL2();
+  
+  if (settings.capabilities) {
+    const invalid = settings.capabilities.filter(c => !API_CAPABILITIES.includes(c));
+    if (invalid.length > 0) throw new Error(`Capacidades inválidas: ${invalid.join(', ')}`);
+  }
+
+  const { error } = await (supabaseAdmin.from('api_applications') as any)
+    .update({
+      capabilities: settings.capabilities,
+      feature_flags: settings.featureFlags,
+      technical_limits: settings.technicalLimits,
+      min_api_version_id: settings.minApiVersionId,
+      max_api_version_id: settings.maxApiVersionId,
+      preferred_api_version_id: settings.preferredApiVersionId,
+      admin_message: settings.adminMessage,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', applicationId);
+
+  if (error) throw error;
+}
+
+/**
+ * Suspende uma aplicação.
  */
 export async function suspendApplication(applicationId: string, userId: string) {
+  await enforceAdminAAL2();
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({ 
       status: 'suspended',
@@ -120,9 +187,10 @@ export async function suspendApplication(applicationId: string, userId: string) 
 }
 
 /**
- * Revoga uma aplicação e todas as suas credenciais de forma permanente.
+ * Revoga uma aplicação permanentemente.
  */
 export async function revokeApplication(applicationId: string, reason: string, userId: string) {
+  await enforceAdminAAL2();
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({
       status: 'revoked',
@@ -133,7 +201,6 @@ export async function revokeApplication(applicationId: string, reason: string, u
 
   if (error) throw error;
 
-  // Revoga todas as credenciais ativas/pendentes
   await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
@@ -145,23 +212,10 @@ export async function revokeApplication(applicationId: string, reason: string, u
 }
 
 /**
- * Ativa uma credencial pendente.
- */
-export async function activateCredential(credentialId: string, userId: string) {
-  const { error } = await (supabaseAdmin.from('api_credentials') as any)
-    .update({ 
-      status: 'active',
-      activated_at: new Date().toISOString()
-    })
-    .eq('id', credentialId);
-
-  if (error) throw error;
-}
-
-/**
- * Revoga uma credencial específica de forma permanente.
+ * Revoga uma credencial específica.
  */
 export async function revokeCredential(credentialId: string, reason: string, userId: string) {
+  await enforceAdminAAL2();
   const { error } = await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
@@ -177,6 +231,7 @@ export async function revokeCredential(credentialId: string, reason: string, use
  * Lista credenciais de uma aplicação (sem o segredo).
  */
 export async function listApplicationCredentials(applicationId: string) {
+  await enforceAdminAAL2();
   const { data, error } = await (supabaseAdmin.from('api_credentials_safe') as any)
     .select('*')
     .eq('application_id', applicationId)
@@ -185,4 +240,5 @@ export async function listApplicationCredentials(applicationId: string) {
   if (error) throw error;
   return data;
 }
+
 
