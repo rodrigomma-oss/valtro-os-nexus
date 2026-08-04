@@ -37,6 +37,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
+// Definindo os escopos localmente para evitar dependências circulares com .server.ts
 const ALLOWED_SCOPES = [
   'support:tickets:create',
   'support:tickets:read',
@@ -72,8 +73,11 @@ export function NewAppDialog() {
     try {
       await createFn({ data: values });
       toast.success("Aplicação criada com sucesso");
+      
+      // Invalida o cache para atualizar as tabelas
       queryClient.invalidateQueries({ queryKey: ["api-applications"] });
       queryClient.invalidateQueries({ queryKey: ["api-audit-logs"] });
+      
       setOpen(false);
       form.reset();
     } catch (error) {
@@ -145,7 +149,7 @@ export function NewAppDialog() {
 
             <div className="space-y-2">
               <FormLabel>Escopos de Acesso</FormLabel>
-              <div className="grid grid-cols-1 gap-2 border rounded-md p-3 max-h-[200px] overflow-y-auto">
+              <div className="grid grid-cols-1 gap-2 border rounded-md p-3 max-h-[200px] overflow-y-auto bg-muted/30">
                 {ALLOWED_SCOPES.map((scope) => (
                   <FormField
                     key={scope}
@@ -169,7 +173,7 @@ export function NewAppDialog() {
                               }}
                             />
                           </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
+                          <FormLabel className="font-normal cursor-pointer text-sm">
                             {scope}
                           </FormLabel>
                         </FormItem>
