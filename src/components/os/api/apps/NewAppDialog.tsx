@@ -108,6 +108,11 @@ export function NewAppDialog() {
             Configure uma nova aplicação consumidora da API Valtro OS.
           </DialogDescription>
         </DialogHeader>
+
+        <Form {...form}>
+          <form className="space-y-4">
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
