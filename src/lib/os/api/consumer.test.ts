@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 import { 
   API_CAPABILITIES, 
   API_VERSION_STATUS,
