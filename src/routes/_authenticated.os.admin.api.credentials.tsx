@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getCredentials, rotateCredentialFn, revokeCredentialFn } from '@/lib/os/api/credentials.functions';
-import { DataTable } from '@/components/app/data-table';
+import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, ShieldOff, Key, Copy, Check } from 'lucide-react';
@@ -42,22 +42,22 @@ function CredentialsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const columns = [
+  const columns: DataTableColumn<any>[] = [
     {
-      accessorKey: 'key_id',
+      key: 'key_id',
       header: 'Key ID',
-      cell: ({ row }: any) => <code className="text-xs">{row.original.key_id}</code>,
+      render: (cred) => <code className="text-xs">{cred.key_id}</code>,
     },
     {
-      accessorKey: 'application.display_name',
+      key: 'app',
       header: 'Aplicação',
-      cell: ({ row }: any) => row.original.application?.display_name,
+      render: (cred) => cred.application?.display_name,
     },
     {
-      accessorKey: 'status',
+      key: 'status',
       header: 'Status',
-      cell: ({ row }: any) => {
-        const status = row.original.status;
+      render: (cred) => {
+        const status = cred.status;
         const variants: any = {
           active: 'success',
           revoked: 'destructive',
@@ -71,28 +71,28 @@ function CredentialsPage() {
       },
     },
     {
-      accessorKey: 'last_used_at',
+      key: 'last_used',
       header: 'Último Uso',
-      cell: ({ row }: any) => 
-        row.original.last_used_at 
-          ? format(new Date(row.original.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+      render: (cred) => 
+        cred.last_used_at 
+          ? format(new Date(cred.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
           : 'Nunca',
     },
     {
-      accessorKey: 'created_at',
+      key: 'created_at',
       header: 'Criada em',
-      cell: ({ row }: any) => 
-        format(new Date(row.original.created_at), "dd/MM/yyyy", { locale: ptBR }),
+      render: (cred) => 
+        format(new Date(cred.created_at), "dd/MM/yyyy", { locale: ptBR }),
     },
     {
-      id: 'actions',
+      key: 'actions',
       header: 'Ações',
-      cell: ({ row }: any) => {
-        const cred = row.original;
+      className: "text-right",
+      render: (cred) => {
         if (cred.status !== 'active') return null;
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <Button 
               variant="ghost" 
               size="icon" 
@@ -139,7 +139,6 @@ function CredentialsPage() {
       <DataTable
         columns={columns}
         data={credentials || []}
-        searchPlaceholder="Buscar credenciais..."
       />
 
       <Dialog open={!!newCredential} onOpenChange={(open) => !open && setNewCredential(null)}>

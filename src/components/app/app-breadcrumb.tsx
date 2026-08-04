@@ -32,6 +32,10 @@ const SEGMENT_LABELS: Record<string, string> = {
   propostas: "Propostas",
   configuracoes: "Configurações",
   briefing: "Briefing",
+  api: "API Pública",
+  applications: "Aplicações",
+  credentials: "Credenciais",
+  audit: "Auditoria",
 };
 
 /** Segmentos que não representam uma página navegável própria. */

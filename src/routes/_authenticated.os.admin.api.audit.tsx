@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getAuditLogs } from '@/lib/os/api/audit.functions';
-import { DataTable } from '@/components/app/data-table';
+import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -16,52 +16,53 @@ function AuditLogsPage() {
     queryFn: () => getAuditLogs(),
   });
 
-  const columns = [
+  const columns: DataTableColumn<any>[] = [
     {
-      accessorKey: 'created_at',
+      key: 'created_at',
       header: 'Data',
-      cell: ({ row }: any) => 
-        format(new Date(row.original.created_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR }),
+      render: (log) => 
+        format(new Date(log.created_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR }),
     },
     {
-      accessorKey: 'method',
+      key: 'method',
       header: 'Método',
-      cell: ({ row }: any) => (
-        <Badge variant="outline">{row.original.method}</Badge>
+      render: (log) => (
+        <Badge variant="outline">{log.method}</Badge>
       ),
     },
     {
-      accessorKey: 'path',
+      key: 'path',
       header: 'Path',
-      cell: ({ row }: any) => <code className="text-xs">{row.original.path}</code>,
+      render: (log) => <code className="text-xs">{log.path}</code>,
     },
     {
-      accessorKey: 'status_code',
+      key: 'status',
       header: 'Status',
-      cell: ({ row }: any) => {
-        const code = row.original.status_code;
+      render: (log) => {
+        const code = log.status_code;
         const variant = code >= 200 && code < 300 ? 'success' : code >= 400 ? 'destructive' : 'secondary';
         return <Badge variant={variant as any}>{code}</Badge>;
       },
     },
     {
-      accessorKey: 'application.display_name',
+      key: 'app',
       header: 'Aplicação',
-      cell: ({ row }: any) => row.original.application?.display_name || 'Unauthenticated',
+      render: (log) => log.application?.display_name || 'Unauthenticated',
     },
     {
-      accessorKey: 'request_id',
+      key: 'request_id',
       header: 'Request ID',
-      cell: ({ row }: any) => <code className="text-[10px] text-muted-foreground">{row.original.request_id}</code>,
+      render: (log) => <code className="text-[10px] text-muted-foreground">{log.request_id}</code>,
     },
     {
-      accessorKey: 'duration_ms',
+      key: 'duration',
       header: 'Duração',
-      cell: ({ row }: any) => `${row.original.duration_ms}ms`,
+      render: (log) => `${log.duration_ms}ms`,
     },
     {
-      accessorKey: 'ip',
+      key: 'ip',
       header: 'IP',
+      render: (log) => log.ip || '-',
     },
   ];
 
@@ -70,7 +71,6 @@ function AuditLogsPage() {
       <DataTable
         columns={columns}
         data={logs || []}
-        searchPlaceholder="Buscar logs..."
       />
     </div>
   );

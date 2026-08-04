@@ -1,13 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getApplications } from '@/lib/os/api/apps.functions';
-import { DataTable } from '@/components/app/data-table';
+import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Plus, Power, PowerOff, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { useServerFn } from '@tanstack/react-start';
 import { suspendApplicationFn, revokeApplicationFn } from '@/lib/os/api/apps.functions';
@@ -25,19 +24,19 @@ function ApplicationsPage() {
   const suspendFn = useServerFn(suspendApplicationFn);
   const revokeFn = useServerFn(revokeApplicationFn);
 
-  const columns = [
+  const columns: DataTableColumn<any>[] = [
     {
-      accessorKey: 'display_name',
+      key: 'name',
       header: 'Nome',
-      cell: ({ row }: any) => (
-        <div className="font-medium">{row.original.display_name}</div>
+      render: (app) => (
+        <div className="font-medium">{app.display_name}</div>
       ),
     },
     {
-      accessorKey: 'status',
+      key: 'status',
       header: 'Status',
-      cell: ({ row }: any) => {
-        const status = row.original.status;
+      render: (app) => {
+        const status = app.status;
         const variants: any = {
           active: 'success',
           suspended: 'warning',
@@ -52,35 +51,35 @@ function ApplicationsPage() {
       },
     },
     {
-      accessorKey: 'environment',
+      key: 'environment',
       header: 'Ambiente',
-      cell: ({ row }: any) => (
+      render: (app) => (
         <Badge variant="outline" className="capitalize">
-          {row.original.environment}
+          {app.environment}
         </Badge>
       ),
     },
     {
-      accessorKey: 'last_used_at',
+      key: 'last_used',
       header: 'Último Uso',
-      cell: ({ row }: any) => 
-        row.original.last_used_at 
-          ? format(new Date(row.original.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+      render: (app) => 
+        app.last_used_at 
+          ? format(new Date(app.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
           : 'Nunca utilizado',
     },
     {
-      accessorKey: 'created_at',
+      key: 'created_at',
       header: 'Criada em',
-      cell: ({ row }: any) => 
-        format(new Date(row.original.created_at), "dd/MM/yyyy", { locale: ptBR }),
+      render: (app) => 
+        format(new Date(app.created_at), "dd/MM/yyyy", { locale: ptBR }),
     },
     {
-      id: 'actions',
+      key: 'actions',
       header: 'Ações',
-      cell: ({ row }: any) => {
-        const app = row.original;
+      className: "text-right",
+      render: (app) => {
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <Button variant="ghost" size="icon" title="Visualizar">
               <Eye className="h-4 w-4" />
             </Button>
@@ -149,7 +148,6 @@ function ApplicationsPage() {
       <DataTable
         columns={columns}
         data={apps || []}
-        searchPlaceholder="Buscar aplicações..."
       />
     </div>
   );
