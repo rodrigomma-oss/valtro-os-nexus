@@ -136,11 +136,11 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Sim, Adicionar apenas o segundo campo:
+          Passo 6
 
-{"<Select>"}
+Adicionar apenas:
 
-Sem Checkbox.
+{"<DialogFooter>"}
 
 Sem map.
         </div>
