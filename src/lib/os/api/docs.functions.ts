@@ -6,7 +6,8 @@ import { z } from "zod";
 // fs.readFile(process.cwd()) não é confiável em ambientes serverless/edge.
 
 const DOCS_CONTENT = import.meta.glob("/docs/api/*.{md,yaml}", {
-  as: "raw",
+  query: "?raw",
+  import: "default",
   eager: true,
 });
 
