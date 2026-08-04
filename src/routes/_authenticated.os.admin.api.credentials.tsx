@@ -5,7 +5,7 @@ import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RefreshCw, ShieldOff, Search, Plus, AlertCircle } from 'lucide-react';
+import { RefreshCw, ShieldOff, Search, Plus, AlertCircle, Inbox } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useMemo } from 'react';
@@ -43,8 +43,8 @@ function CredentialsPage() {
     if (!credentials) return [];
     const term = search.toLowerCase();
     return credentials.filter(c => 
-      c.key_id.toLowerCase().includes(term) || 
-      c.application?.display_name?.toLowerCase().includes(term)
+      (c.key_id?.toLowerCase().includes(term) ?? false) || 
+      (c.application?.display_name?.toLowerCase().includes(term) ?? false)
     );
   }, [credentials, search]);
 
@@ -93,7 +93,7 @@ function CredentialsPage() {
     {
       key: 'key_id',
       header: 'Key ID',
-      render: (cred) => <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{cred.key_id}</code>,
+      render: (cred) => <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{cred.key_id || '—'}</code>,
     },
     {
       key: 'app',
@@ -125,7 +125,7 @@ function CredentialsPage() {
     {
       key: 'created_at',
       header: 'Criada em',
-      render: (cred) => format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+      render: (cred) => cred.created_at ? format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—',
     },
     {
       key: 'last_used',
@@ -183,6 +183,22 @@ function CredentialsPage() {
     );
   }
 
+  const emptyState = (
+    <div className="flex flex-col items-center justify-center p-12 text-center bg-muted/20 rounded-lg border border-dashed">
+      <Inbox className="h-10 w-10 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-semibold">Nenhuma credencial</h3>
+      <p className="text-muted-foreground max-w-md mt-2">
+        {search ? "Nenhuma credencial corresponde à sua busca." : "Ainda não existem credenciais geradas para as aplicações."}
+      </p>
+      {!search && (
+        <Button variant="outline" className="mt-6" onClick={() => setIsNewDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Gerar primeira credencial
+        </Button>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -205,7 +221,7 @@ function CredentialsPage() {
         columns={columns}
         data={filteredCredentials}
         loading={isLoading}
-        emptyMessage="Nenhuma credencial encontrada."
+        emptyState={emptyState}
       />
 
       {/* Modals */}
