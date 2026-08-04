@@ -38,24 +38,7 @@ export function SuspendAppDialog({ application }: SuspendAppDialogProps) {
     setIsLoading(true);
     try {
       if (isSuspended) {
-        // As per OPS-API-003D.4 requirement: "chamar exclusivamente a Server Function existente"
-        // Wait, for reactivation, I should check if there's a reactivate function.
-        // Let's re-read apps.functions.ts. It only has suspendApplicationFn.
-        // Wait, I should check if the backend service supports reactivation or if it's the same function.
-        // If there's no reactivateApplicationFn, I might need to check services.server.ts.
-        
-        // Re-reading services.server.ts might be necessary to see if suspendApplication handles both.
-        // But the requirement says "chamar exclusivamente a Server Function existente".
-        // Let's check if there is a reactivateApplicationFn I missed.
-        
-        // Actually, if it's not there, I'll have to use the supabase client to update status directly? 
-        // NO, the requirement says "Consumir exclusivamente Server Functions".
-        // Let me check apps.functions.ts again.
-        
-        // Wait, I only saw get, create, update, suspend, revoke.
-        // I will check services.server.ts to see if suspendApplication(id, userId) toggles or just suspends.
-        
-        await suspendApp({ data: { id: application.id } });
+        await reactivateApp({ data: { id: application.id } });
       } else {
         await suspendApp({ data: { id: application.id } });
       }
