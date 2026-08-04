@@ -140,7 +140,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
           adicione SOMENTE
 
-          import { createApplicationFn }
+          import {"{"} createApplicationFn {"}"} from "@/lib/os/api/apps.functions";
 
           Não utilize.
 
