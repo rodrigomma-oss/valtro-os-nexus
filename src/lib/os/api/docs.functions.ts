@@ -3,6 +3,9 @@ import { z } from "zod";
 import fs from "fs/promises";
 import path from "path";
 
+// No Cloudflare Workers, arquivos estáticos devem estar no diretório de build
+// ou lidos via importações diretas se forem pequenos. 
+// Para TanStack Start na Edge, fs.readFile(process.cwd() + "...") pode falhar se o arquivo não estiver no bundle.
 const DOCS_DIR = path.join(process.cwd(), "docs/api");
 
 const DOC_FILES: Record<string, string> = {
