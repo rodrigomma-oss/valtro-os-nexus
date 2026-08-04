@@ -49,7 +49,7 @@ function DevelopersHome() {
           </CardHeader>
           <CardContent>
             <Link 
-              to="/api-docs/getting-started" 
+              to={"/api-docs/getting-started" as any} 
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
               Começar agora
@@ -70,7 +70,7 @@ function DevelopersHome() {
           </CardHeader>
           <CardContent>
             <Link 
-              to="/api-docs/authentication" 
+              to={"/api-docs/authentication" as any} 
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
               Ver protocolo

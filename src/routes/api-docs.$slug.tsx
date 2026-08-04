@@ -64,7 +64,7 @@ function ApiDocPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <MarkdownContent content={data.content} />
+      <MarkdownContent content={data?.content as string} />
     </div>
   );
 }

@@ -33,24 +33,24 @@ export const getApiDoc = createServerFn({ method: "GET" })
       throw new Error("Document not found");
     }
 
-    const content = DOCS_CONTENT[filePath];
-    if (content === undefined) {
+    const content = (DOCS_CONTENT as any)[filePath];
+    if (content === undefined || content === null) {
       console.error(`[getApiDoc] Content not found in glob for: ${filePath}`);
       throw new Error(`Failed to read document: ${data.slug}`);
     }
 
-    return { content };
+    return { content: String(content) };
   });
 
 export const getApiSpec = createServerFn({ method: "GET" })
   .handler(async () => {
     const filePath = "/docs/api/openapi-v1.yaml";
-    const content = DOCS_CONTENT[filePath];
+    const content = (DOCS_CONTENT as any)[filePath];
     
-    if (content === undefined) {
+    if (content === undefined || content === null) {
       console.error("[getApiSpec] Spec not found in glob");
       throw new Error("Failed to read api spec");
     }
 
-    return { content };
+    return { content: String(content) };
   });
