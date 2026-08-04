@@ -49,6 +49,7 @@ const ALLOWED_SCOPES = [
 
 const formSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+  description: z.string().optional(),
   environment: z.enum(["development", "staging", "production"]),
   allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
 });
@@ -64,6 +65,7 @@ export function NewAppDialog() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       displayName: "",
+      description: "",
       environment: "development",
       allowedScopes: ["support:tickets:read"],
     },
@@ -116,6 +118,18 @@ export function NewAppDialog() {
                   <FormDescription>
                     Nome identificador para uso administrativo.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descrição (Opcional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Integração com o CRM externo" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

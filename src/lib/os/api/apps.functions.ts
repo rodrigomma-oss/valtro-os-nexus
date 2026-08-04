@@ -57,6 +57,7 @@ export const getApplicationById = createServerFn({ method: "GET" })
 export const createApplicationFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({
     displayName: z.string().min(3),
+    description: z.string().optional(),
     productId: z.string().optional(),
     environment: z.enum(['development', 'staging', 'production']),
     allowedScopes: z.array(z.string())

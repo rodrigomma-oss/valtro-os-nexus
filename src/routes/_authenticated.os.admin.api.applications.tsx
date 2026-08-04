@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { getApplications } from '@/lib/os/api/apps.functions';
+import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -93,8 +94,8 @@ function ApplicationsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 max-w-sm">
-        <div className="relative flex-1">
+      <div className="flex items-center justify-between gap-2">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por nome..."
@@ -103,6 +104,7 @@ function ApplicationsPage() {
             className="pl-9"
           />
         </div>
+        <NewAppDialog />
       </div>
 
       {filteredApps.length === 0 ? (

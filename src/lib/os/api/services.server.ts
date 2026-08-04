@@ -53,6 +53,7 @@ async function enforceAdminAAL2() {
 
 interface CreateAppParams {
   displayName: string;
+  description?: string;
   productId?: string;
   environment: ApiApplicationEnvironment;
   allowedScopes: ApiScope[];
@@ -64,7 +65,7 @@ interface CreateAppParams {
  */
 export async function createApplication(params: CreateAppParams) {
   await enforceAdminAAL2();
-  const { displayName, productId, environment, allowedScopes, userId } = params;
+  const { displayName, description, productId, environment, allowedScopes, userId } = params;
 
   const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
   if (invalidScopes.length > 0) {
@@ -77,6 +78,7 @@ export async function createApplication(params: CreateAppParams) {
     .insert({
       client_id: clientId,
       display_name: displayName,
+      description: description,
       product_id: productId,
       environment,
       allowed_scopes: allowedScopes,
