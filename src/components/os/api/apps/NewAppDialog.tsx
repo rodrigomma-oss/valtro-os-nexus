@@ -142,8 +142,8 @@ export function NewAppDialog() {
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={createFn.isPending}>
-                {createFn.isPending ? "Criando..." : "Criar Aplicação"}
+              <Button type="submit">
+                Criar Aplicação
               </Button>
             </DialogFooter>
           </form>
