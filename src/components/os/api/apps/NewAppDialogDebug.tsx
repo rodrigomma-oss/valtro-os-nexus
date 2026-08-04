@@ -1,42 +1,68 @@
 "use client";
 
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
-import { useServerFn } from "@tanstack/react-start";
+
+const schema = z.object({
+  name: z.string().min(1),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 export function NewAppDialogDebug() {
   const [open, setOpen] = useState(false);
+  
+  // Mantendo useServerFn da etapa anterior
   const createApplication = useServerFn(createApplicationFn);
+
+  // Etapa 3: Inicializando o formulário
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  console.log("NewAppDialogDebug render - open:", open);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={() => setOpen(true)}>
+      <Button 
+        onClick={() => {
+          console.log("Debug Button Clicked");
+          setOpen(true);
+        }}
+      >
         Abrir Debug Binary
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nova Aplicação (Debug)</DialogTitle>
+          <DialogTitle>Teste de Depuração Binária - Etapa 3</DialogTitle>
           <DialogDescription>
-            Teste de depuração binária.
+            Este é um componente simplificado para isolar o problema.
+            Dependências atuais: useServerFn + react-hook-form + zodResolver.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <p>Teste</p>
+          <p>Teste: O formulário foi inicializado (useForm), mas não renderizado.</p>
         </div>
-        <DialogFooter>
+        <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Fechar
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
