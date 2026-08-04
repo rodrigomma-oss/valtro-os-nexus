@@ -31,10 +31,20 @@ const SLUG_LABELS: Record<string, string> = {
 
 function ApiDocPage() {
   const { slug } = Route.useParams();
-  const { data } = useSuspenseQuery({
+  const { data, error } = useSuspenseQuery({
     queryKey: ["api-docs", slug],
     queryFn: () => getApiDoc({ data: { slug } }),
+    retry: false,
   });
+
+  if (error) {
+    return (
+      <div className="p-8 border border-destructive/20 bg-destructive/5 rounded-lg text-destructive">
+        <h2 className="text-xl font-bold mb-2">Erro ao carregar documento</h2>
+        <p>Ocorreu um problema ao tentar carregar "{slug}". Verifique se o caminho está correto.</p>
+      </div>
+    );
+  }
 
   const label = SLUG_LABELS[slug] || slug;
 

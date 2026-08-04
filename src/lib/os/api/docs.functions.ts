@@ -23,6 +23,7 @@ export const getApiDoc = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const fileName = DOC_FILES[data.slug as keyof typeof DOC_FILES];
     if (!fileName) {
+      console.error(`[getApiDoc] Slug not found in mapping: ${data.slug}`);
       throw new Error("Document not found");
     }
 
@@ -30,9 +31,9 @@ export const getApiDoc = createServerFn({ method: "GET" })
       const filePath = path.join(DOCS_DIR, fileName);
       const content = await fs.readFile(filePath, "utf-8");
       return { content };
-    } catch (error) {
-      console.error(`Error reading doc ${data.slug}:`, error);
-      throw new Error("Failed to read document");
+    } catch (error: any) {
+      console.error(`[getApiDoc] Error reading doc ${data.slug} at ${fileName}:`, error.message);
+      throw new Error(`Failed to read document: ${data.slug}`);
     }
   });
 

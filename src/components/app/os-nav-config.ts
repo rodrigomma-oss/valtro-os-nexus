@@ -86,7 +86,7 @@ export const OS_NAV_GROUPS: NavGroup[] = [
         label: "Portal do Desenvolvedor",
         to: "/api-docs",
         icon: Code2,
-        external: true,
+        external: false,
       },
     ],
   },
