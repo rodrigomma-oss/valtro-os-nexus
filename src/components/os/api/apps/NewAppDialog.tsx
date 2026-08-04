@@ -57,6 +57,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function NewAppDialog() {
   const [open, setOpen] = useState(false);
+  console.log("[NewAppDialog] render, open state:", open);
   const queryClient = useQueryClient();
   const createFn = useServerFn(createApplicationFn);
 
@@ -87,8 +88,14 @@ export function NewAppDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={() => setOpen(true)}>
+    <Dialog open={open} onOpenChange={(val) => {
+      console.log("[NewAppDialog] onOpenChange triggered with:", val);
+      setOpen(val);
+    }}>
+      <Button onClick={() => {
+        console.log("[NewAppDialog] Button onClick event");
+        setOpen(true);
+      }}>
         <Plus className="mr-2 h-4 w-4" />
         Criar Aplicação
       </Button>

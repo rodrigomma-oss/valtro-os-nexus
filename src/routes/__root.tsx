@@ -134,9 +134,6 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body className="antialiased font-sans">
-        <div className="sr-only" aria-hidden="true">
-          /clear
-        </div>
         {children}
         <Scripts />
       </body>
