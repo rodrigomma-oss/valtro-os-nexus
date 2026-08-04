@@ -140,7 +140,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 Adicionar somente:
 
-<Select>
+&lt;Select&gt;
         </div>
         <Scripts />
       </body>
