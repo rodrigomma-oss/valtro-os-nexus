@@ -135,26 +135,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body className="antialiased font-sans">
         <div className="sr-only" aria-hidden="true">
-          ## Análise de Interesse de Participantes Beta em Conversão
-
-**Funcionalidade:**
-
-*   Identificar e analisar o interesse de participantes beta em converter para planos pagos.
-*   Expor essa informação de interesse a todas as funções internas relevantes, independentemente da necessidade direta.
-
-**Requisitos Técnicos:**
-
-*   Implementar um mecanismo para registrar o interesse de conversão dos participantes beta.
-*   Desenvolver um sistema de notificação ou dashboard para disseminar essa informação.
-*   Garantir que a disseminação ocorra para todos os departamentos/funções designados.
-
-**Passos Necessários:**
-
-1.  **Definir Critérios de Interesse:** Estabelecer quais ações ou indicadores demonstram interesse de conversão (ex: visitas à página de preços, interações com funcionalidades premium, feedback direto).
-2.  **Implementar Rastreamento:** Integrar ferramentas de análise ou desenvolver lógica para rastrear os critérios definidos.
-3.  **Configurar Disseminação:** Mapear as funções internas que devem receber a informação e configurar o método de envio (ex: e-mail, Slack, dashboard compartilhado).
-4.  **Testar e Validar:** Verificar se o interesse está sendo corretamente capturado e disseminado para as funções corretas.
-5.  **Monitorar e Ajustar:** Acompanhar a eficácia do processo e fazer ajustes conforme necessário.
+          /clear
         </div>
         {children}
         <Scripts />
