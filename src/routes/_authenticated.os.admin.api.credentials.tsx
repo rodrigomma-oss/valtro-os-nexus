@@ -136,6 +136,11 @@ function CredentialsPage() {
           : <span className="text-muted-foreground italic">Nunca</span>,
     },
     {
+      key: 'last_ip',
+      header: 'Último IP',
+      render: (cred) => <span className="text-muted-foreground font-mono text-xs">{cred.last_ip || '—'}</span>,
+    },
+    {
       key: 'actions',
       header: 'Ações',
       className: "text-right",
