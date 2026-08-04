@@ -135,46 +135,26 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body className="antialiased font-sans">
         <div className="sr-only" aria-hidden="true">
-          # Definição de View de Segurança
+          ## Análise de Interesse de Participantes Beta em Conversão
 
 **Funcionalidade:**
 
-Criar uma view SQL chamada `security_definer_view` que será executada com os privilégios do proprietário da view, não do usuário que a consulta.
+*   Identificar e analisar o interesse de participantes beta em converter para planos pagos.
+*   Expor essa informação de interesse a todas as funções internas relevantes, independentemente da necessidade direta.
 
 **Requisitos Técnicos:**
 
-*   A view deve ser criada em um banco de dados SQL compatível (ex: PostgreSQL, MySQL).
-*   A sintaxe exata para definir uma view como `SECURITY DEFINER` pode variar ligeiramente entre os sistemas de gerenciamento de banco de dados.
+*   Implementar um mecanismo para registrar o interesse de conversão dos participantes beta.
+*   Desenvolver um sistema de notificação ou dashboard para disseminar essa informação.
+*   Garantir que a disseminação ocorra para todos os departamentos/funções designados.
 
 **Passos Necessários:**
 
-1.  **Definir a Consulta Base:** Escreva a consulta SQL que retornará os dados desejados para a view.
-2.  **Criar a View:** Utilize a instrução `CREATE VIEW` com a cláusula `SECURITY DEFINER`.
-
-**Exemplo (PostgreSQL):**
-
-```sql
-CREATE VIEW security_definer_view AS
-SELECT column1, column2
-FROM your_table
-WHERE condition;
-
-ALTER VIEW security_definer_view SECURITY DEFINER;
-```
-
-**Exemplo (MySQL):**
-
-```sql
-CREATE DEFINER = 'owner_user'@'localhost' VIEW security_definer_view AS
-SELECT column1, column2
-FROM your_table
-WHERE condition;
-```
-
-**Observações:**
-
-*   Certifique-se de que o usuário proprietário da view tenha as permissões necessárias para acessar os dados subjacentes.
-*   O uso de `SECURITY DEFINER` deve ser feito com cautela, pois pode introduzir riscos de segurança se não for configurado corretamente.
+1.  **Definir Critérios de Interesse:** Estabelecer quais ações ou indicadores demonstram interesse de conversão (ex: visitas à página de preços, interações com funcionalidades premium, feedback direto).
+2.  **Implementar Rastreamento:** Integrar ferramentas de análise ou desenvolver lógica para rastrear os critérios definidos.
+3.  **Configurar Disseminação:** Mapear as funções internas que devem receber a informação e configurar o método de envio (ex: e-mail, Slack, dashboard compartilhado).
+4.  **Testar e Validar:** Verificar se o interesse está sendo corretamente capturado e disseminado para as funções corretas.
+5.  **Monitorar e Ajustar:** Acompanhar a eficácia do processo e fazer ajustes conforme necessário.
         </div>
         {children}
         <Scripts />
