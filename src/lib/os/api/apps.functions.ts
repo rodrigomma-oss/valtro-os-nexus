@@ -13,14 +13,32 @@ import { API_CAPABILITIES, TechnicalLimitsSchema, FeatureFlagsSchema } from "./t
 
 export const getApplications = createServerFn({ method: "GET" })
   .handler(async () => {
-    // Note: We join with profiles to get creator information since api_applications.created_by 
-    // references auth.users which is typically linked to public.profiles by ID.
-    const { data, error } = await supabaseAdmin
+    // We use a manual join strategy because api_applications references auth.users(id),
+    // and there is no direct foreign key from api_applications to public.profiles.
+    const { data: apps, error: appsError } = await supabaseAdmin
       .from('api_applications')
-      .select(`
-        *,
-        created_by_user:created_by(full_name)
-      `)
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (appsError) throw appsError;
+
+    // Fetch creators profiles separately to avoid invalid relationship join errors
+    const creatorIds = [...new Set(apps.map(app => app.created_by).filter(Boolean))];
+    
+    let profilesMap: Record<string, string> = {};
+    if (creatorIds.length > 0) {
+      const { data: profiles } = await supabaseAdmin
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', creatorIds);
+      
+      profilesMap = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p.full_name }), {});
+    }
+
+    return apps.map(app => ({
+      ...app,
+      created_by_user: app.created_by ? { full_name: profilesMap[app.created_by] || 'Usuário Desconhecido' } : null
+    }));
       .order('created_at', { ascending: false });
 
     if (error) throw error;
