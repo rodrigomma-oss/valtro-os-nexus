@@ -136,89 +136,151 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          # OPS-API-003D.2-ISO — Teste de Isolamento
+          # OPS-API-003D.2-DEBUG
 
-          NÃO corrija o componente existente.
+          O teste de isolamento trouxe uma conclusão definitiva.
 
-          NÃO altere NewAppDialog.
+          Resultado:
 
-          NÃO altere Dialog.
+          ✓ DialogIsolationTest abre normalmente.
 
-          NÃO altere backend.
+          ✗ NewAppDialog continua sem abrir.
 
-          O objetivo é descobrir se o problema está no componente ou na página.
+          Portanto:
+
+          O problema NÃO está no Dialog.
+
+          O problema NÃO está no Radix.
+
+          O problema NÃO está no Layout.
+
+          O problema NÃO está na Página.
+
+          O problema está EXCLUSIVAMENTE dentro do NewAppDialog.
 
           --------------------------------------------------
 
-          Crie temporariamente um componente mínimo chamado:
+          Não quero mais auditorias.
 
-          DialogIsolationTest.tsx
+          Quero depuração binária.
 
-          Conteúdo:
+          --------------------------------------------------
 
-          - "use client";
+          PASSO 1
 
-          - um botão "Abrir Teste";
+          Faça uma cópia temporária do NewAppDialog.
 
-          - um Dialog do shadcn;
+          --------------------------------------------------
 
-          - apenas um DialogContent contendo:
+          PASSO 2
+
+          Remova TODAS as dependências abaixo:
+
+          - react-hook-form
+
+          - zod
+
+          - useServerFn
+
+          - useQueryClient
+
+          - toast
+
+          - Form
+
+          - Input
+
+          - Select
+
+          - Checkbox
+
+          - createApplicationFn
+
+          --------------------------------------------------
+
+          Dentro do DialogContent deixe apenas:
+
+          Título
+
+          Descrição
+
+          Texto:
 
           "Teste"
 
+          Botão:
+
+          Fechar
+
           Nada mais.
 
-          Sem formulário.
-
-          Sem Server Functions.
-
-          Sem React Hook Form.
-
-          Sem TanStack Query.
-
-          Sem useServerFn.
-
-          Sem Zod.
-
-          Sem Checkbox.
-
-          Sem Select.
-
-          Somente:
-
-          useState
-
-          Dialog
-
-          Button
-
           --------------------------------------------------
 
-          Na página de Aplicações,
+          Teste.
 
-          renderize esse componente imediatamente abaixo do PageHeader.
+          Responder:
 
-          Não remova NewAppDialog.
-
-          Os dois devem aparecer.
-
-          --------------------------------------------------
-
-          Responder apenas:
-
-          1. O DialogIsolationTest abre?
+          O modal abre?
 
           SIM ou NÃO.
 
-          2. O NewAppDialog abre?
+          --------------------------------------------------
+
+          Se abrir:
+
+          Adicione novamente apenas:
+
+          react-hook-form
+
+          Teste.
+
+          Responder:
+
+          Abre?
 
           SIM ou NÃO.
 
-          3. Se o DialogIsolationTest funcionar e o NewAppDialog não funcionar,
+          --------------------------------------------------
 
-          listar exatamente quais dependências existem apenas no NewAppDialog.
+          Continue adicionando UMA dependência por vez.
 
-          Não implemente nenhuma outra correção.
+          Nesta ordem:
+
+          1 react-hook-form
+
+          2 zod
+
+          3 Form
+
+          4 Input
+
+          5 Select
+
+          6 Checkbox
+
+          7 useQueryClient
+
+          8 toast
+
+          9 useServerFn
+
+          10 createApplicationFn
+
+          Após adicionar cada uma:
+
+          Responder:
+
+          Ainda abre?
+
+          SIM ou NÃO.
+
+          Parar exatamente quando voltar a quebrar.
+
+          Não corrigir.
+
+          Não seguir.
+
+          Apenas informar qual dependência fez o modal deixar de abrir.
         </div>
         <Scripts />
       </body>
