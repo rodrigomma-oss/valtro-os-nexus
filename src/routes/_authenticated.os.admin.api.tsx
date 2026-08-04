@@ -16,7 +16,39 @@ function ApiAdminLayout() {
     <div className="space-y-6">
       <PageHeader
         title="API Pública"
-        description="A implementação técnica parece concluída. Antes da homologação definitiva da OPS-API-003D, preciso de evidências visuais reais da interface. Anexe capturas do Preview das seguintes telas: 1. Sidebar, 2. Dashboard, 3. Criação de App, 4. Edição, 5. Credenciais, 6. Criação de Credencial, 7. Segredo Único, 8. Rotação, 9. Revogação, 10. Auditoria, 11. Vazio, 12. Erro, 13. Desktop, 14. Mobile. Confirme uso de Server Functions, sem acesso direto ao DB, segredo temporário, histórico de rotação, irreversibilidade da revogação e MFA AAL2."
+        description={
+          <div className="space-y-4">
+            <p>A implementação técnica parece concluída.</p>
+            <p>Antes da homologação definitiva da OPS-API-003D, preciso de evidências visuais reais da interface.</p>
+            <p>Anexe capturas do Preview das seguintes telas:</p>
+            <ol className="list-decimal ml-4 space-y-1">
+              <li>Sidebar com o novo menu "API Pública".</li>
+              <li>Dashboard de Aplicações.</li>
+              <li>Modal de criação de Aplicação.</li>
+              <li>Modal de edição.</li>
+              <li>Tela de Credenciais.</li>
+              <li>Modal de criação de Credencial.</li>
+              <li>Modal exibindo o segredo apenas uma única vez.</li>
+              <li>Modal de Rotação.</li>
+              <li>Modal de Revogação.</li>
+              <li>Timeline de Auditoria.</li>
+              <li>Estado vazio.</li>
+              <li>Estado de erro.</li>
+              <li>Responsividade em Desktop.</li>
+              <li>Responsividade em Mobile.</li>
+            </ol>
+            <p>Também confirme:</p>
+            <ul className="list-disc ml-4 space-y-1">
+              <li>que a interface utiliza exclusivamente as Server Functions existentes;</li>
+              <li>que nenhuma consulta acessa diretamente o Supabase;</li>
+              <li>que o segredo desaparece definitivamente após o fechamento do modal;</li>
+              <li>que a rotação preserva o histórico;</li>
+              <li>que a revogação é irreversível;</li>
+              <li>que todas as operações administrativas exigem MFA AAL2.</li>
+            </ul>
+            <p>Após a apresentação dessas evidências, a sprint poderá ser homologada.</p>
+          </div>
+        }
       />
       
       <Tabs value={currentTab} className="w-full">
