@@ -11,6 +11,7 @@ import { ptBR } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
+import { DialogIsolationTest } from '@/components/os/api/apps/DialogIsolationTest';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
@@ -106,6 +107,8 @@ function ApplicationsPage() {
 
   return (
     <div className="space-y-4">
+      <DialogIsolationTest />
+      
       <div className="flex items-center justify-between gap-2">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
