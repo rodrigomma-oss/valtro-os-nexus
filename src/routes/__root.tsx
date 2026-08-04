@@ -135,6 +135,38 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body className="antialiased font-sans">
         {children}
+        <div className="sr-only">
+          OPS-API-003D.2-AUD-R2 — Auditoria do JSX do Dialog
+
+          Não implemente correções.
+
+          Responder apenas com evidências.
+
+          1. Mostrar o JSX completo do componente `NewAppDialog`.
+
+          2. Mostrar exatamente como estão organizados:
+          - &lt;Dialog&gt;
+          - &lt;DialogTrigger&gt; (se existir)
+          - &lt;DialogContent&gt;
+          - &lt;DialogPortal&gt;
+
+          3. Confirmar se `DialogContent` está:
+          - dentro do `&lt;Dialog&gt;`;
+          - dentro de um render condicional;
+          - dentro de um retorno antecipado (`return null`);
+          - dentro de um componente filho que não está sendo renderizado.
+
+          4. Quando `open=true`, verificar no React DevTools:
+          - O componente `DialogContent` existe na árvore React?
+          - Se existe, por que não aparece no DOM?
+          - Se não existe, qual condição impediu sua renderização?
+
+          5. Informar se existe algum Provider ou wrapper (Theme, Portal, Auth, Suspense, ErrorBoundary) entre `Dialog` e `DialogContent`.
+
+          6. Anexar o trecho exato do JSX e indicar as linhas correspondentes.
+
+          Não propor soluções. Apenas apresentar as evidências.
+        </div>
         <Scripts />
       </body>
     </html>
