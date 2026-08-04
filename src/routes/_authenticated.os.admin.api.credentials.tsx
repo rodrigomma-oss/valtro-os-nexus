@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { getCredentials, rotateCredentialFn, revokeCredentialFn } from '@/lib/os/api/credentials.functions';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,7 @@ function CredentialsPage() {
 
   const rotateFn = useServerFn(rotateCredentialFn);
   const revokeFn = useServerFn(revokeCredentialFn);
+  const queryClient = useQueryClient();
   
   const [newCredential, setNewCredential] = useState<{ key_id: string, secret: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -41,6 +42,7 @@ function CredentialsPage() {
     toast.success("Segredo copiado!");
     setTimeout(() => setCopied(false), 2000);
   };
+
 
   const columns: DataTableColumn<any>[] = [
     {
@@ -102,6 +104,8 @@ function CredentialsPage() {
                    try {
                      const result = await rotateFn({ data: { credentialId: cred.id, applicationId: cred.application_id } });
                      setNewCredential(result as any);
+                     queryClient.invalidateQueries({ queryKey: ['api-credentials'] });
+                     queryClient.invalidateQueries({ queryKey: ['api-audit-logs'] });
                    } catch (e) {
                      toast.error("Erro ao rotacionar");
                    }
@@ -118,8 +122,10 @@ function CredentialsPage() {
               onClick={async () => {
                 if(confirm("Revogar esta credencial permanentemente?")) {
                   try {
-                    await revokeFn({ data: { credentialId: cred.id, reason: "Revogação manual" } });
+                    await revokeFn({ data: { credentialId: cred.id, reason: "Revogação manual via painel" } });
                     toast.success("Credencial revogada");
+                    queryClient.invalidateQueries({ queryKey: ['api-credentials'] });
+                    queryClient.invalidateQueries({ queryKey: ['api-audit-logs'] });
                   } catch (e) {
                     toast.error("Erro ao revogar");
                   }
