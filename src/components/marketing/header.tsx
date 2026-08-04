@@ -183,7 +183,7 @@ export function Header() {
               aria-label="Instagram (abre em nova aba)"
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-muted-foreground"
             >
-              <Instagram className="h-4 w-4" aria-hidden />
+              <Camera className="h-4 w-4" aria-hidden />
             </a>
           </div>
         </div>

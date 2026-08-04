@@ -271,7 +271,7 @@ function CrmLeads() {
           </p>
           {row.instagram && (
             <p className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-0.5">
-              <Instagram className="h-3 w-3" strokeWidth={1.75} />
+              <Camera className="h-3 w-3" strokeWidth={1.75} />
               {row.instagram}
             </p>
           )}
