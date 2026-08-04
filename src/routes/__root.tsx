@@ -136,53 +136,59 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-DEBUG — Etapa 2
+          OPS-API-003D.2-DEBUG — Etapa 3
 
-NÃO implemente nenhuma funcionalidade nova.
+Continuar trabalhando apenas no NewAppDialogDebug.tsx.
 
-NÃO altere o NewAppDialog.
+Não alterar o NewAppDialog original.
 
-Trabalhe apenas no componente temporário `NewAppDialogDebug.tsx`.
+Manter exatamente o componente que já abre corretamente.
 
-O teste anterior confirmou que:
+Adicionar apenas:
 
-- O Dialog mínimo abre normalmente.
+1. react-hook-form
 
-- O simples import de `createApplicationFn` NÃO quebra o modal.
+2. useForm()
 
-Agora execute apenas o seguinte experimento:
+3. zodResolver
 
-1. Adicione:
+4. schema
 
-```ts
+NÃO adicionar:
 
-const createApplication = useServerFn(createApplicationFn);
+- &lt;Form&gt;
 
-```
+- &lt;FormField&gt;
 
-2. Não utilize essa variável.
+- &lt;Input&gt;
 
-3. Não execute a Server Function.
+- &lt;Checkbox&gt;
 
-4. Não adicione formulário.
+- &lt;Select&gt;
 
-5. Não adicione React Hook Form.
+- &lt;useServerFn&gt; (manter como está)
 
-6. Não adicione Zod.
+- createApplicationFn (manter como está)
 
-7. Não altere o restante do componente.
+Apenas inicializar o formulário:
 
-Depois responda apenas:
+const form = useForm(...)
 
-- O botão "Abrir Debug Binary" continua abrindo o modal?
+Sem utilizá-lo no JSX.
 
-  - SIM
+Depois testar.
 
-  - NÃO
+Responder somente:
 
-Se NÃO, informe que o problema ocorre ao inicializar `useServerFn(createApplicationFn)`.
+O botão "Abrir Debug Binary" continua abrindo?
 
-Se SIM, não faça nenhuma outra alteração e aguarde a próxima instrução.
+SIM
+
+ou
+
+NÃO
+
+Não adicionar nenhuma outra dependência.
         </div>
         <Scripts />
       </body>
