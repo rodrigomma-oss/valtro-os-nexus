@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { getApplications } from '@/lib/os/api/apps.functions';
 import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
+import { EditAppDialog } from '@/components/os/api/apps/EditAppDialog';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
