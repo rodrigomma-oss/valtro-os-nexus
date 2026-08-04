@@ -136,9 +136,9 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-AUD-FINAL
+          OPS-API-003D.2-AUD-DIFF
 
-Identificação do componente real em execução.
+Comparação estrutural entre componentes original e debug.
         </div>
         <Scripts />
       </body>
