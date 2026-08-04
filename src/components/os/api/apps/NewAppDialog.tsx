@@ -122,6 +122,25 @@ export function NewAppDialog() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="environment"
+              render={({ field }) => (
+                <FormItem>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o ambiente" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="production">Produção</SelectItem>
+                      <SelectItem value="development">Desenvolvimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
           </form>
         </Form>
       </DialogContent>
