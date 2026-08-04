@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { getApplications } from '@/lib/os/api/apps.functions';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -11,25 +10,23 @@ import { toast } from 'sonner';
 import { useServerFn } from '@tanstack/react-start';
 import { suspendApplicationFn, revokeApplicationFn } from '@/lib/os/api/apps.functions';
 import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
 });
 
 function ApplicationsPage() {
-  console.log("Rendering ApplicationsPage");
-  const { data: apps, error, isLoading } = useSuspenseQuery({
+  const { data: apps, error, isLoading } = useQuery({
     queryKey: ['api-applications'],
     queryFn: () => getApplications(),
   });
 
-  if (error) {
-    console.error("Query error:", error);
-    throw error;
-  }
-
   const suspendFn = useServerFn(suspendApplicationFn);
   const revokeFn = useServerFn(revokeApplicationFn);
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Carregando aplicações...</div>;
+  if (error) return <div className="p-8 text-center text-destructive">Erro ao carregar aplicações.</div>;
 
   const columns: DataTableColumn<any>[] = [
     {
