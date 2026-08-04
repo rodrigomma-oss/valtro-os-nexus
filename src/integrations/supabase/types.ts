@@ -24,7 +24,6 @@ export type Database = {
           created_at: string
           created_by: string | null
           deprecation_at: string | null
-          description: string | null
           display_name: string
           environment: Database["public"]["Enums"]["api_application_environment"]
           feature_flags: Json
@@ -51,7 +50,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deprecation_at?: string | null
-          description?: string | null
           display_name: string
           environment?: Database["public"]["Enums"]["api_application_environment"]
           feature_flags?: Json
@@ -78,7 +76,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deprecation_at?: string | null
-          description?: string | null
           display_name?: string
           environment?: Database["public"]["Enums"]["api_application_environment"]
           feature_flags?: Json
