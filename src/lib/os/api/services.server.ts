@@ -39,7 +39,7 @@ async function enforceAdminAAL2(userId?: string) {
     .select('role')
     .eq('user_id', userId)
     .eq('role', 'admin')
-    .maybeSingle();
+    .single();
 
   if (!roleData) throw new Error('Acesso negado: Administradores apenas.');
 }
