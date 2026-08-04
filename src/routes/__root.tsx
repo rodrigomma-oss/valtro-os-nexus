@@ -138,7 +138,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <div className="sr-only">
           Sim, Adicionar apenas o segundo campo:
 
-<Select>
+{"<Select>"}
 
 Sem Checkbox.
 

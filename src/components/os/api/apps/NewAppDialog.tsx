@@ -121,6 +121,7 @@ export function NewAppDialog() {
                   </FormControl>
                 </FormItem>
               )}
+            />
             <FormField
               control={form.control}
               name="environment"
