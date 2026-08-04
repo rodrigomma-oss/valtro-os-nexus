@@ -141,6 +141,11 @@ export function NewAppDialog() {
                 </FormItem>
               )}
             />
+            <DialogFooter>
+              <Button type="submit">
+                Criar Aplicação
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>
