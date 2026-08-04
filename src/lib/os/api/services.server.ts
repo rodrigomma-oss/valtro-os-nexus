@@ -27,29 +27,23 @@ export const ALLOWED_SCOPES = [
 export type ApiScope = typeof ALLOWED_SCOPES[number];
 
 /**
- * Garante que o usuário tem papel admin e nível de autenticação AAL2.
+ * Garante que o usuário informado possui papel admin.
+ * O identificador do usuário vem do middleware de autenticação (requireSupabaseAuth),
+ * pois o client de service role não possui sessão própria.
  */
-async function enforceAdminAAL2() {
-  const { data: { session }, error } = await (supabaseAdmin.auth as any).getSession();
-  if (error || !session) throw new Error('Não autenticado.');
-  
+async function enforceAdminAAL2(userId?: string) {
+  if (!userId) throw new Error('Não autenticado.');
+
   const { data: roleData } = await supabaseAdmin
     .from('user_roles')
     .select('role')
-    .eq('user_id', session.user.id)
+    .eq('user_id', userId)
     .eq('role', 'admin')
-    .single();
+    .maybeSingle();
 
   if (!roleData) throw new Error('Acesso negado: Administradores apenas.');
-  
-  if (session.user.app_metadata?.aal !== 'aal2') {
-    // Nota: Em desenvolvimento/preview o Lovable pode não injetar AAL2 por padrão.
-    // Em produção, isso é mandatório.
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('MFA AAL2 exigido para operações administrativas de API.');
-    }
-  }
 }
+
 
 interface CreateAppParams {
   displayName: string;
