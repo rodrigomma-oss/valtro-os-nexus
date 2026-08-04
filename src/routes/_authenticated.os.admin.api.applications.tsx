@@ -17,10 +17,16 @@ export const Route = createFileRoute('/_authenticated/os/admin/api/applications'
 });
 
 function ApplicationsPage() {
-  const { data: apps } = useSuspenseQuery({
+  console.log("Rendering ApplicationsPage");
+  const { data: apps, error, isLoading } = useSuspenseQuery({
     queryKey: ['api-applications'],
     queryFn: () => getApplications(),
   });
+
+  if (error) {
+    console.error("Query error:", error);
+    throw error;
+  }
 
   const suspendFn = useServerFn(suspendApplicationFn);
   const revokeFn = useServerFn(revokeApplicationFn);
