@@ -50,6 +50,7 @@ import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes
 import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
+import { Route as AuthenticatedOsAdminApiRouteImport } from './routes/_authenticated.os.admin.api'
 import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
 import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
 import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
@@ -60,6 +61,7 @@ import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes
 import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
 import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
 import { Route as AuthenticatedOsAtendimentoBugsIndexRouteImport } from './routes/_authenticated.os.atendimento.bugs.index'
+import { Route as AuthenticatedOsAdminApiIndexRouteImport } from './routes/_authenticated.os.admin.api.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta'
 import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
 import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
@@ -67,6 +69,9 @@ import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes
 import { Route as AuthenticatedOsAtendimentoFeedbackIdRouteImport } from './routes/_authenticated.os.atendimento.feedback.$id'
 import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
 import { Route as AuthenticatedOsAtendimentoBugsIdRouteImport } from './routes/_authenticated.os.atendimento.bugs.$id'
+import { Route as AuthenticatedOsAdminApiCredentialsRouteImport } from './routes/_authenticated.os.admin.api.credentials'
+import { Route as AuthenticatedOsAdminApiAuditRouteImport } from './routes/_authenticated.os.admin.api.audit'
+import { Route as AuthenticatedOsAdminApiApplicationsRouteImport } from './routes/_authenticated.os.admin.api.applications'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIdRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.$id'
 
@@ -289,6 +294,11 @@ const AuthenticatedOsAdminIntegracoesRoute =
     path: '/admin/integracoes',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
+const AuthenticatedOsAdminApiRoute = AuthenticatedOsAdminApiRouteImport.update({
+  id: '/admin/api',
+  path: '/admin/api',
+  getParentRoute: () => AuthenticatedOsRoute,
+} as any)
 const AuthenticatedCrmProjetosIdRoute =
   AuthenticatedCrmProjetosIdRouteImport.update({
     id: '/crm/projetos/$id',
@@ -348,6 +358,12 @@ const AuthenticatedOsAtendimentoBugsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
   } as any)
+const AuthenticatedOsAdminApiIndexRoute =
+  AuthenticatedOsAdminApiIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
 const AuthenticatedOsProdutosValtroPricingBetaRoute =
   AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
     id: '/produtos/valtro-pricing/beta',
@@ -389,6 +405,24 @@ const AuthenticatedOsAtendimentoBugsIdRoute =
     id: '/$id',
     path: '/$id',
     getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
+  } as any)
+const AuthenticatedOsAdminApiCredentialsRoute =
+  AuthenticatedOsAdminApiCredentialsRouteImport.update({
+    id: '/credentials',
+    path: '/credentials',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
+const AuthenticatedOsAdminApiAuditRoute =
+  AuthenticatedOsAdminApiAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
+const AuthenticatedOsAdminApiApplicationsRoute =
+  AuthenticatedOsAdminApiApplicationsRouteImport.update({
+    id: '/applications',
+    path: '/applications',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
   } as any)
 const AuthenticatedOsProdutosValtroPricingBetaIndexRoute =
   AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport.update({
@@ -437,6 +471,7 @@ export interface FileRoutesByFullPath {
   '/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
@@ -449,6 +484,9 @@ export interface FileRoutesByFullPath {
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/admin/api/applications': typeof AuthenticatedOsAdminApiApplicationsRoute
+  '/os/admin/api/audit': typeof AuthenticatedOsAdminApiAuditRoute
+  '/os/admin/api/credentials': typeof AuthenticatedOsAdminApiCredentialsRoute
   '/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
@@ -456,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRouteWithChildren
+  '/os/admin/api/': typeof AuthenticatedOsAdminApiIndexRoute
   '/os/atendimento/bugs/': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
@@ -506,12 +545,16 @@ export interface FileRoutesByTo {
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
+  '/os/admin/api/applications': typeof AuthenticatedOsAdminApiApplicationsRoute
+  '/os/admin/api/audit': typeof AuthenticatedOsAdminApiAuditRoute
+  '/os/admin/api/credentials': typeof AuthenticatedOsAdminApiCredentialsRoute
   '/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
   '/os/comercial/clientes/$id': typeof AuthenticatedOsComercialClientesIdRoute
   '/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
+  '/os/admin/api': typeof AuthenticatedOsAdminApiIndexRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
@@ -556,6 +599,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/clientes/$id': typeof AuthenticatedCrmClientesIdRoute
   '/_authenticated/crm/leads/$id': typeof AuthenticatedCrmLeadsIdRoute
   '/_authenticated/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
+  '/_authenticated/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
@@ -568,6 +612,9 @@ export interface FileRoutesById {
   '/_authenticated/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/_authenticated/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/_authenticated/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
+  '/_authenticated/os/admin/api/applications': typeof AuthenticatedOsAdminApiApplicationsRoute
+  '/_authenticated/os/admin/api/audit': typeof AuthenticatedOsAdminApiAuditRoute
+  '/_authenticated/os/admin/api/credentials': typeof AuthenticatedOsAdminApiCredentialsRoute
   '/_authenticated/os/atendimento/bugs/$id': typeof AuthenticatedOsAtendimentoBugsIdRoute
   '/_authenticated/os/atendimento/chamados/$id': typeof AuthenticatedOsAtendimentoChamadosIdRoute
   '/_authenticated/os/atendimento/feedback/$id': typeof AuthenticatedOsAtendimentoFeedbackIdRoute
@@ -575,6 +622,7 @@ export interface FileRoutesById {
   '/_authenticated/os/comercial/leads/$id': typeof AuthenticatedOsComercialLeadsIdRoute
   '/_authenticated/os/comercial/projetos/$id': typeof AuthenticatedOsComercialProjetosIdRoute
   '/_authenticated/os/produtos/valtro-pricing/beta': typeof AuthenticatedOsProdutosValtroPricingBetaRouteWithChildren
+  '/_authenticated/os/admin/api/': typeof AuthenticatedOsAdminApiIndexRoute
   '/_authenticated/os/atendimento/bugs/': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/_authenticated/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
@@ -619,6 +667,7 @@ export interface FileRouteTypes {
     | '/crm/clientes/$id'
     | '/crm/leads/$id'
     | '/crm/projetos/$id'
+    | '/os/admin/api'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/atendimento/bugs'
@@ -631,6 +680,9 @@ export interface FileRouteTypes {
     | '/crm/clientes/'
     | '/crm/leads/'
     | '/crm/projetos/'
+    | '/os/admin/api/applications'
+    | '/os/admin/api/audit'
+    | '/os/admin/api/credentials'
     | '/os/atendimento/bugs/$id'
     | '/os/atendimento/chamados/$id'
     | '/os/atendimento/feedback/$id'
@@ -638,6 +690,7 @@ export interface FileRouteTypes {
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
     | '/os/produtos/valtro-pricing/beta'
+    | '/os/admin/api/'
     | '/os/atendimento/bugs/'
     | '/os/atendimento/chamados/'
     | '/os/comercial/clientes/'
@@ -688,12 +741,16 @@ export interface FileRouteTypes {
     | '/crm/clientes'
     | '/crm/leads'
     | '/crm/projetos'
+    | '/os/admin/api/applications'
+    | '/os/admin/api/audit'
+    | '/os/admin/api/credentials'
     | '/os/atendimento/bugs/$id'
     | '/os/atendimento/chamados/$id'
     | '/os/atendimento/feedback/$id'
     | '/os/comercial/clientes/$id'
     | '/os/comercial/leads/$id'
     | '/os/comercial/projetos/$id'
+    | '/os/admin/api'
     | '/os/atendimento/bugs'
     | '/os/atendimento/chamados'
     | '/os/comercial/clientes'
@@ -737,6 +794,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/clientes/$id'
     | '/_authenticated/crm/leads/$id'
     | '/_authenticated/crm/projetos/$id'
+    | '/_authenticated/os/admin/api'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
     | '/_authenticated/os/atendimento/bugs'
@@ -749,6 +807,9 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/clientes/'
     | '/_authenticated/crm/leads/'
     | '/_authenticated/crm/projetos/'
+    | '/_authenticated/os/admin/api/applications'
+    | '/_authenticated/os/admin/api/audit'
+    | '/_authenticated/os/admin/api/credentials'
     | '/_authenticated/os/atendimento/bugs/$id'
     | '/_authenticated/os/atendimento/chamados/$id'
     | '/_authenticated/os/atendimento/feedback/$id'
@@ -756,6 +817,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/comercial/leads/$id'
     | '/_authenticated/os/comercial/projetos/$id'
     | '/_authenticated/os/produtos/valtro-pricing/beta'
+    | '/_authenticated/os/admin/api/'
     | '/_authenticated/os/atendimento/bugs/'
     | '/_authenticated/os/atendimento/chamados/'
     | '/_authenticated/os/comercial/clientes/'
@@ -1077,6 +1139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAdminIntegracoesRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
+    '/_authenticated/os/admin/api': {
+      id: '/_authenticated/os/admin/api'
+      path: '/admin/api'
+      fullPath: '/os/admin/api'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
     '/_authenticated/crm/projetos/$id': {
       id: '/_authenticated/crm/projetos/$id'
       path: '/crm/projetos/$id'
@@ -1147,6 +1216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIndexRouteImport
       parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
     }
+    '/_authenticated/os/admin/api/': {
+      id: '/_authenticated/os/admin/api/'
+      path: '/'
+      fullPath: '/os/admin/api/'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiIndexRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
     '/_authenticated/os/produtos/valtro-pricing/beta': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta'
       path: '/produtos/valtro-pricing/beta'
@@ -1195,6 +1271,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/os/atendimento/bugs/$id'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIdRouteImport
       parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
+    }
+    '/_authenticated/os/admin/api/credentials': {
+      id: '/_authenticated/os/admin/api/credentials'
+      path: '/credentials'
+      fullPath: '/os/admin/api/credentials'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiCredentialsRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
+    '/_authenticated/os/admin/api/audit': {
+      id: '/_authenticated/os/admin/api/audit'
+      path: '/audit'
+      fullPath: '/os/admin/api/audit'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiAuditRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
+    '/_authenticated/os/admin/api/applications': {
+      id: '/_authenticated/os/admin/api/applications'
+      path: '/applications'
+      fullPath: '/os/admin/api/applications'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiApplicationsRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
     }
     '/_authenticated/os/produtos/valtro-pricing/beta/': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta/'
@@ -1285,6 +1382,28 @@ const AuthenticatedOsAtendimentoRouteWithChildren =
     AuthenticatedOsAtendimentoRouteChildren,
   )
 
+interface AuthenticatedOsAdminApiRouteChildren {
+  AuthenticatedOsAdminApiApplicationsRoute: typeof AuthenticatedOsAdminApiApplicationsRoute
+  AuthenticatedOsAdminApiAuditRoute: typeof AuthenticatedOsAdminApiAuditRoute
+  AuthenticatedOsAdminApiCredentialsRoute: typeof AuthenticatedOsAdminApiCredentialsRoute
+  AuthenticatedOsAdminApiIndexRoute: typeof AuthenticatedOsAdminApiIndexRoute
+}
+
+const AuthenticatedOsAdminApiRouteChildren: AuthenticatedOsAdminApiRouteChildren =
+  {
+    AuthenticatedOsAdminApiApplicationsRoute:
+      AuthenticatedOsAdminApiApplicationsRoute,
+    AuthenticatedOsAdminApiAuditRoute: AuthenticatedOsAdminApiAuditRoute,
+    AuthenticatedOsAdminApiCredentialsRoute:
+      AuthenticatedOsAdminApiCredentialsRoute,
+    AuthenticatedOsAdminApiIndexRoute: AuthenticatedOsAdminApiIndexRoute,
+  }
+
+const AuthenticatedOsAdminApiRouteWithChildren =
+  AuthenticatedOsAdminApiRoute._addFileChildren(
+    AuthenticatedOsAdminApiRouteChildren,
+  )
+
 interface AuthenticatedOsProdutosValtroPricingBetaRouteChildren {
   AuthenticatedOsProdutosValtroPricingBetaIdRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIdRoute
   AuthenticatedOsProdutosValtroPricingBetaIndexRoute: typeof AuthenticatedOsProdutosValtroPricingBetaIndexRoute
@@ -1307,6 +1426,7 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAtendimentoRoute: typeof AuthenticatedOsAtendimentoRouteWithChildren
   AuthenticatedOsDashboardRoute: typeof AuthenticatedOsDashboardRoute
   AuthenticatedOsIndexRoute: typeof AuthenticatedOsIndexRoute
+  AuthenticatedOsAdminApiRoute: typeof AuthenticatedOsAdminApiRouteWithChildren
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
@@ -1323,6 +1443,7 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAtendimentoRoute: AuthenticatedOsAtendimentoRouteWithChildren,
   AuthenticatedOsDashboardRoute: AuthenticatedOsDashboardRoute,
   AuthenticatedOsIndexRoute: AuthenticatedOsIndexRoute,
+  AuthenticatedOsAdminApiRoute: AuthenticatedOsAdminApiRouteWithChildren,
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
@@ -1423,13 +1544,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
