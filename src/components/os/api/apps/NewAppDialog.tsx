@@ -121,6 +121,7 @@ export function NewAppDialog() {
                   <FormMessage />
                 </FormItem>
               )}
+            />
             <FormField
               control={form.control}
               name="description"
