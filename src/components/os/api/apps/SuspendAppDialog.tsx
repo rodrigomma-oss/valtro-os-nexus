@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Power, PowerOff, Loader2 } from "lucide-react";
-import { suspendApplicationFn } from "@/lib/os/api/apps.functions";
+import { suspendApplicationFn, reactivateApplicationFn } from "@/lib/os/api/apps.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 interface SuspendAppDialogProps {
@@ -29,6 +29,7 @@ export function SuspendAppDialog({ application }: SuspendAppDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const suspendApp = useServerFn(suspendApplicationFn);
+  const reactivateApp = useServerFn(reactivateApplicationFn);
 
   const isSuspended = application.status === 'suspended';
   const actionLabel = isSuspended ? 'Reativar' : 'Suspender';

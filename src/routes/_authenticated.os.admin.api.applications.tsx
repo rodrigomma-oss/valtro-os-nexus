@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { getApplications } from '@/lib/os/api/apps.functions';
 import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
 import { EditAppDialog } from '@/components/os/api/apps/EditAppDialog';
+import { SuspendAppDialog } from '@/components/os/api/apps/SuspendAppDialog';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -95,7 +96,10 @@ function ApplicationsPage() {
       key: 'actions',
       header: 'Ações',
       render: (app) => (
-        <EditAppDialog application={app} />
+        <div className="flex items-center gap-1">
+          <EditAppDialog application={app} />
+          <SuspendAppDialog application={app} />
+        </div>
       ),
     },
   ];

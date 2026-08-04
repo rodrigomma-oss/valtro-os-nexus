@@ -101,6 +101,23 @@ export const suspendApplicationFn = createServerFn({ method: "POST" })
     return suspendApplication(data.id, user.id);
   });
 
+export const reactivateApplicationFn = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ id: z.string() }))
+  .handler(async ({ data }) => {
+    const { data: { user } } = await (supabaseAdmin.auth as any).getUser();
+    if (!user) throw new Error("Não autorizado");
+    
+    const { error } = await supabaseAdmin
+      .from('api_applications')
+      .update({ 
+        status: 'active',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', data.id);
+
+    if (error) throw error;
+  });
+
 export const revokeApplicationFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ id: z.string(), reason: z.string() }))
   .handler(async ({ data }) => {
