@@ -141,6 +141,50 @@ export function NewAppDialog() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="allowedScopes"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Escopos de Acesso</FormLabel>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    {ALLOWED_SCOPES.map((scope) => (
+                      <FormField
+                        key={scope}
+                        control={form.control}
+                        name="allowedScopes"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={scope}
+                              className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-2"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(scope)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, scope])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value: string) => value !== scope
+                                          )
+                                        )
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-xs font-normal cursor-pointer">
+                                {scope}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
             <DialogFooter>
               <Button type="submit">
                 Criar Aplicação

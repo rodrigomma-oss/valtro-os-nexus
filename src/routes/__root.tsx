@@ -136,13 +136,11 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Passo 6
+          Passo 7 (último)
 
-Adicionar apenas:
+Adicionar somente:
 
-{"<DialogFooter>"}
-
-Sem map.
+{"{ALLOWED_SCOPES.map(...)}"}
         </div>
         <Scripts />
       </body>
