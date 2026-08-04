@@ -39,10 +39,6 @@ export const getApplications = createServerFn({ method: "GET" })
       ...app,
       created_by_user: app.created_by ? { full_name: profilesMap[app.created_by] || 'Usuário Desconhecido' } : null
     }));
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
   });
 
 export const getApplicationById = createServerFn({ method: "GET" })
