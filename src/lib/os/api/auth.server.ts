@@ -1,22 +1,32 @@
 import * as crypto from "node:crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Database } from "@/integrations/supabase/types";
 import { decryptSecret, EncryptedPayload, secureCompare } from "./crypto.server";
 import { createCanonicalRequest } from "./canonical.server";
-import { createApiRequestId } from "./responses.server";
+import { createApiRequestId, getApiClientRequestId } from "./responses.server";
+import { TechnicalLimitsSchema, type TechnicalLimits } from "./types";
+
+export interface ApiRateLimitConfig {
+  requestsPerMinute: number;
+}
+
+type ApiApplicationEnvironment = Database["public"]["Enums"]["api_application_environment"];
 
 export interface ApiAuthContext {
-  applicationId: string;
-  clientId: string;
-  productId?: string;
-  environment: string;
-  credentialId: string;
-  keyId: string;
-  scopes: string[];
-  requestId: string;
-  clientRequestId?: string;
-  requestTimestamp: string;
-  ip?: string;
-  userAgent?: string;
+  readonly applicationId: string;
+  readonly clientId: string;
+  readonly productId?: string | null;
+  readonly environment: ApiApplicationEnvironment;
+  readonly credentialId: string;
+  readonly keyId: string;
+  readonly scopes: readonly string[];
+  readonly technicalLimits: Readonly<TechnicalLimits>;
+  readonly rateLimit: Readonly<ApiRateLimitConfig>;
+  readonly requestId: string;
+  readonly clientRequestId?: string;
+  readonly requestTimestamp: string;
+  readonly ip?: string;
+  readonly userAgent?: string;
 }
 
 export interface AuthError {
@@ -33,12 +43,13 @@ const TIMESTAMP_WINDOW_MS = 15 * 60 * 1000; // 15 minutos
 export async function authenticateRequest(
   request: Request,
   requestId = createApiRequestId(),
+  rawBody?: Uint8Array,
 ): Promise<{ context: ApiAuthContext } | { error: AuthError; requestId: string }> {
   const timestamp = request.headers.get("x-valtro-timestamp");
   const nonce = request.headers.get("x-valtro-nonce");
   const keyId = request.headers.get("x-valtro-key-id");
   const signature = request.headers.get("x-valtro-signature");
-  const clientRequestId = request.headers.get("x-valtro-request-id") || undefined;
+  const clientRequestId = getApiClientRequestId(request);
 
   // 1. Validar headers obrigatórios
   if (!timestamp || !nonce || !keyId || !signature) {
@@ -79,9 +90,8 @@ export async function authenticateRequest(
   }
 
   // 4. Localizar Credencial e Aplicação
-  const { data: credential, error: credError } = await (
-    supabaseAdmin.from("api_credentials") as any
-  )
+  const { data: credential, error: credError } = await supabaseAdmin
+    .from("api_credentials")
     .select(
       `
       *,
@@ -91,7 +101,9 @@ export async function authenticateRequest(
         product_id,
         environment,
         status,
-        allowed_scopes
+        allowed_scopes,
+        technical_limits,
+        rate_limit_config
       )
     `,
     )
@@ -100,6 +112,17 @@ export async function authenticateRequest(
     .single();
 
   if (credError || !credential) {
+    return {
+      error: {
+        code: "INVALID_CREDENTIAL",
+        message: "Credencial inválida, expirada ou revogada.",
+        status: 401,
+      },
+      requestId,
+    };
+  }
+
+  if (credential.expires_at && new Date(credential.expires_at).getTime() <= now) {
     return {
       error: {
         code: "INVALID_CREDENTIAL",
@@ -124,7 +147,7 @@ export async function authenticateRequest(
 
   // 5. Reconstruir Canonical Request e Validar Assinatura
   try {
-    const body = await request.clone().arrayBuffer();
+    const body = rawBody ?? new Uint8Array(await request.clone().arrayBuffer());
     const url = new URL(request.url);
 
     const canonical = createCanonicalRequest({
@@ -170,9 +193,7 @@ export async function authenticateRequest(
 
     // 6. Registrar Nonce (Prevenção de Replay) - Atômico via DB
     const expiresAt = new Date(requestTs + TIMESTAMP_WINDOW_MS).toISOString();
-    const { error: nonceError } = await (
-      supabaseAdmin.from("api_request_nonces" as any) as any
-    ).insert({
+    const { error: nonceError } = await supabaseAdmin.from("api_request_nonces").insert({
       credential_id: credential.id,
       nonce,
       expires_at: expiresAt,
@@ -180,7 +201,7 @@ export async function authenticateRequest(
 
     if (nonceError) {
       // Se for erro de duplicidade (23505), é um ataque de replay
-      if ((nonceError as any).code === "23505") {
+      if (nonceError.code === "23505") {
         return {
           error: {
             code: "REPLAY_ATTACK",
@@ -194,6 +215,20 @@ export async function authenticateRequest(
     }
 
     // 7. Montar Contexto Autenticado (Imutável)
+    const technicalLimitsResult = TechnicalLimitsSchema.safeParse(app.technical_limits);
+    const technicalLimits = Object.freeze(
+      technicalLimitsResult.success ? technicalLimitsResult.data : TechnicalLimitsSchema.parse({}),
+    );
+    const rateLimitConfig = app.rate_limit_config;
+    const configuredRpm = Number(
+      rateLimitConfig && typeof rateLimitConfig === "object" && !Array.isArray(rateLimitConfig)
+        ? rateLimitConfig.requests_per_minute
+        : undefined,
+    );
+    const rateLimit = Object.freeze({
+      requestsPerMinute: Number.isInteger(configuredRpm) && configuredRpm > 0 ? configuredRpm : 100,
+    });
+
     const context: ApiAuthContext = Object.freeze({
       applicationId: app.id,
       clientId: app.client_id,
@@ -201,7 +236,9 @@ export async function authenticateRequest(
       environment: app.environment,
       credentialId: credential.id,
       keyId: credential.key_id,
-      scopes: app.allowed_scopes || [],
+      scopes: Object.freeze([...(app.allowed_scopes || [])]),
+      technicalLimits,
+      rateLimit,
       requestId,
       clientRequestId,
       requestTimestamp: timestamp,

@@ -31,8 +31,15 @@ interface ApiSuccessResponseOptions<T> extends ApiResponseOptions {
   requestId: string;
 }
 
+const CLIENT_REQUEST_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+
 export function createApiRequestId(): string {
   return `req_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+}
+
+export function getApiClientRequestId(request: Request): string | undefined {
+  const candidate = request.headers.get("x-valtro-request-id")?.trim();
+  return candidate && CLIENT_REQUEST_ID_PATTERN.test(candidate) ? candidate : undefined;
 }
 
 function apiHeaders(requestId: string, extraHeaders?: HeadersInit): Headers {

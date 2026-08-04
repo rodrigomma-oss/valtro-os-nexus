@@ -8,7 +8,18 @@ export interface AuditLogParams {
   statusCode: number;
   durationMs: number;
   errorCode?: string;
-  errorDetails?: string;
+}
+
+export interface UnauthenticatedAuditLogParams {
+  method: string;
+  path: string;
+  statusCode: number;
+  durationMs: number;
+  requestId: string;
+  errorCode?: string;
+  clientRequestId?: string;
+  ip?: string;
+  userAgent?: string;
 }
 
 /**
@@ -19,8 +30,7 @@ export async function logApiRequest(params: AuditLogParams) {
   const { context, method, path, statusCode, durationMs, errorCode } = params;
 
   try {
-    await (supabaseAdmin.from('api_audit_logs' as any) as any).insert({
-
+    const { error } = await supabaseAdmin.from("api_audit_logs").insert({
       application_id: context.applicationId,
       credential_id: context.credentialId,
       product_id: context.productId,
@@ -32,39 +42,36 @@ export async function logApiRequest(params: AuditLogParams) {
       client_request_id: context.clientRequestId,
       ip: context.ip,
       user_agent: context.userAgent,
-      scopes: context.scopes,
+      scopes: [...context.scopes],
       error_code: errorCode,
-      duration_ms: durationMs
+      duration_ms: durationMs,
     });
+    if (error) throw error;
   } catch (err) {
-    // Falha silenciosa na auditoria para não interromper a resposta, 
+    // Falha silenciosa na auditoria para não interromper a resposta,
     // mas loga o erro internamente.
-    console.error('[API_AUDIT_LOG_ERROR]', err);
+    console.error("[API_AUDIT_LOG_ERROR]", err);
   }
 }
 
 /**
- * Registra uma tentativa de acesso negado antes da criação do contexto total.
+ * Registra uma requisição sem contexto autenticado, inclusive acessos negados.
  */
-export async function logUnauthorizedAccess(
-  method: string, 
-  path: string, 
-  statusCode: number,
-  errorCode: string,
-  requestId: string,
-  ip?: string
-) {
+export async function logUnauthenticatedApiRequest(params: UnauthenticatedAuditLogParams) {
   try {
-    await (supabaseAdmin.from('api_audit_logs' as any) as any).insert({
-      method,
-      path,
-      status_code: statusCode,
-      error_code: errorCode,
-      request_id: requestId,
-      ip,
-      duration_ms: 0
+    const { error } = await supabaseAdmin.from("api_audit_logs").insert({
+      method: params.method,
+      path: params.path,
+      status_code: params.statusCode,
+      error_code: params.errorCode,
+      request_id: params.requestId,
+      client_request_id: params.clientRequestId,
+      ip: params.ip,
+      user_agent: params.userAgent,
+      duration_ms: params.durationMs,
     });
+    if (error) throw error;
   } catch (err) {
-    console.error('[API_AUDIT_LOG_UNAUTHORIZED_ERROR]', err);
+    console.error("[API_AUDIT_LOG_UNAUTHENTICATED_ERROR]", err);
   }
 }

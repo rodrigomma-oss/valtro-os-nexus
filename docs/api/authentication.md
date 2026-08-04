@@ -1,34 +1,26 @@
 # Autenticação HMAC-SHA256 (`VALTRO-HMAC-SHA256-V1`)
 
-Este documento descreve a fundação de autenticação implementada para futuras rotas autenticadas da API v1.
-
-Atualmente, nenhum endpoint autenticado de negócio está publicado no contrato público. A autenticação HMAC está conectada apenas à rota técnica interna `/api/v1/_internal/auth-check`, indisponível em produção. Sua adoção transversal pertence ao pipeline compartilhado de uma sprint futura.
+Nenhum endpoint autenticado de negócio está publicado no contrato público. A autenticação HMAC está conectada ao pipeline compartilhado e à rota técnica interna `/api/v1/_internal/auth-check`, indisponível em produção. Cada rota declara explicitamente se exige HMAC e quais scopes são obrigatórios.
 
 ## Credenciais
 
-O prefixo implementado no código e exigido pelo banco é:
-
-```text
-vlt_key_
-```
-
-Exemplo de Key ID válido:
+O Key ID usa o prefixo `vlt_key_`. Exemplo:
 
 ```text
 vlt_key_0123456789abcdef01234567
 ```
 
-O Key Secret deve permanecer exclusivamente no backend seguro do consumidor. Não deve ser enviado ao navegador.
+O Key Secret deve permanecer exclusivamente no backend seguro do consumidor e nunca deve ser enviado ao navegador.
 
 ## Headers requeridos
 
-| Header                | Descrição                                 | Exemplo                            |
-| --------------------- | ----------------------------------------- | ---------------------------------- |
-| `X-Valtro-Key-ID`     | Identificador público da credencial.      | `vlt_key_0123456789abcdef01234567` |
-| `X-Valtro-Timestamp`  | Timestamp Unix em milissegundos.          | `1785812400000`                    |
-| `X-Valtro-Nonce`      | Valor aleatório entre 16 e 64 caracteres. | `n_01k1wxyz89abcdef`               |
-| `X-Valtro-Signature`  | HMAC-SHA256 hexadecimal em minúsculas.    | `a3f...2e1`                        |
-| `X-Valtro-Request-ID` | Identificador opcional do consumidor.     | `consumer_req_001`                 |
+| Header                | Descrição                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `X-Valtro-Key-ID`     | Identificador público da credencial.                                                |
+| `X-Valtro-Timestamp`  | Timestamp Unix em milissegundos.                                                    |
+| `X-Valtro-Nonce`      | Valor aleatório entre 16 e 64 caracteres.                                           |
+| `X-Valtro-Signature`  | HMAC-SHA256 hexadecimal em minúsculas.                                              |
+| `X-Valtro-Request-ID` | Correlação opcional do consumidor; não substitui o request ID gerado pelo servidor. |
 
 ## Requisição canônica
 
@@ -52,46 +44,15 @@ BODY_HASH
 - `BODY_HASH` é o SHA-256 hexadecimal em minúsculas do corpo exato enviado.
 - Para corpo vazio, o hash é `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
 
-## Assinatura
-
-```typescript
-import { createHash, createHmac } from "node:crypto";
-
-function signRequest(
-  secret: string,
-  params: {
-    timestamp: string;
-    nonce: string;
-    method: string;
-    path: string;
-    canonicalQuery: string;
-    contentType: string;
-    body: string;
-  },
-) {
-  const bodyHash = createHash("sha256").update(params.body).digest("hex");
-  const canonical = [
-    "VALTRO-HMAC-SHA256-V1",
-    params.timestamp,
-    params.nonce,
-    params.method.toUpperCase(),
-    params.path,
-    params.canonicalQuery,
-    params.contentType.trim().toLowerCase(),
-    bodyHash,
-  ].join("\n");
-
-  return createHmac("sha256", secret).update(canonical).digest("hex");
-}
-```
-
-## Controles implementados na fundação
+## Controles implementados
 
 - Janela de timestamp de 15 minutos.
 - Nonce entre 16 e 64 caracteres.
-- Consumo único do nonce por credencial no banco.
+- Consumo único do nonce por credencial no banco, depois da assinatura válida.
 - Comparação da assinatura em tempo constante.
 - Segredo armazenado com AES-256-GCM.
-- Auditoria disponível para handlers que chamem explicitamente o módulo correspondente.
+- Corpo bruto preservado para assinatura antes da validação Zod, sem leitura destrutiva duplicada.
+- Autenticação, scopes e auditoria aplicados pelo pipeline conforme a configuração da rota.
+- Auditoria best-effort sem corpo, segredo, assinatura ou ciphertext.
 
-Rate limiting e aplicação automática de autenticação, autorização e auditoria ainda não fazem parte do runtime compartilhado.
+Rate limiting distribuído ainda não está ativo. Uma rota que habilite essa etapa sem provedor persistente falha fechada com `RATE_LIMIT_UNAVAILABLE`.

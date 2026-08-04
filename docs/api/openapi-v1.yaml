@@ -6,8 +6,9 @@ info:
     Contrato público dos endpoints atualmente implementados na API v1 do Valtro OS.
 
     Neste momento, somente o endpoint de metadados está disponível no contrato
-    público. Endpoints de negócio e o pipeline HMAC compartilhado permanecem
-    planejados e não são anunciados como operacionais.
+    público. O pipeline compartilhado de versionamento, request ID, erros e
+    auditoria já atende esta rota. Endpoints de negócio permanecem planejados
+    e não são anunciados como operacionais.
 
     O hostname definitivo da API ainda não foi homologado. O servidor hospedado
     abaixo representa o ambiente atual da aplicação, não um domínio definitivo
@@ -35,8 +36,7 @@ paths:
       summary: Consultar metadados da API
       description: |
         Retorna a versão v1 e seu estado de ciclo de vida. O controle de
-        disponibilidade descrito aqui está implementado somente neste endpoint;
-        o middleware global de versionamento permanece planejado.
+        disponibilidade é aplicado pelo pipeline compartilhado das rotas v1.
       x-valtro-implementation-status: implemented
       responses:
         "200":
@@ -73,7 +73,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "503":
-          description: A versão v1 está desabilitada.
+          description: A versão v1 está desabilitada ou sua data de sunset passou.
           headers:
             X-Valtro-Request-ID:
               $ref: "#/components/headers/RequestId"

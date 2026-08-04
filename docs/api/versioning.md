@@ -2,13 +2,7 @@
 
 ## Path versioning
 
-A versão principal integra o path:
-
-```text
-/api/v1/...
-```
-
-Alterações incompatíveis deverão usar uma nova versão principal, como `/api/v2`.
+A versão principal integra o path: `/api/v1/...`. Alterações incompatíveis deverão usar uma nova versão principal, como `/api/v2`.
 
 ## Estados persistidos
 
@@ -22,22 +16,19 @@ Alterações incompatíveis deverão usar uma nova versão principal, como `/api
 
 Esses estados são persistidos em `api_versions`. A v1 é criada pelas migrations com estado inicial `stable`.
 
-## Comportamento implementado em `/meta`
+## Comportamento transversal implementado
 
-`GET /api/v1/meta` consulta o registro `v1` e:
+O pipeline das rotas v1 consulta o registro `v1` e:
 
-- retorna HTTP 200 com os metadados quando a versão está disponível;
+- prossegue para as demais etapas da rota quando a versão está disponível;
 - retorna HTTP 404 com `VERSION_UNAVAILABLE` quando o registro não pode ser localizado;
 - retorna HTTP 503 com `VERSION_UNAVAILABLE` quando o estado é `disabled`;
+- retorna HTTP 503 com `VERSION_UNAVAILABLE` quando `sunset_at` já passou;
 - adiciona `Deprecation` e `Sunset` quando as datas correspondentes estão configuradas;
-- retorna `X-Valtro-API-Version` nas respostas de sucesso;
+- retorna `X-Valtro-API-Version` quando a versão foi localizada;
 - retorna `X-Valtro-Request-ID` nas respostas JSON.
 
-## Comportamento planejado
-
-A verificação global de disponibilidade da versão ainda não existe. Portanto, o comportamento de `/meta` não deve ser interpretado como enforcement automático para todas as futuras rotas v1.
-
-O pipeline compartilhado deverá aplicar versionamento, autenticação, autorização, limites e auditoria de maneira uniforme antes da publicação de endpoints de negócio.
+`GET /api/v1/meta` usa esse mesmo pipeline e reflete o estado carregado por ele. Futuras rotas v1 criadas com `createApiHandler` herdarão a verificação; rotas legadas fora de `/api/v1` não são afetadas.
 
 ## Decisões pendentes
 

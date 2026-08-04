@@ -2,28 +2,28 @@
 
 Esta matriz separa o contrato público v1 das rotas internas, operacionais e planejadas.
 
-| Componente                                 | Status       | Contrato público v1 | Observação                                                  |
-| ------------------------------------------ | ------------ | ------------------- | ----------------------------------------------------------- |
-| `GET /api/v1/meta`                         | Implementado | Sim                 | Único endpoint público v1 atualmente contratado.            |
-| `POST /api/v1/_internal/auth-check`        | Interno      | Não                 | Diagnóstico HMAC; retorna 404 em produção.                  |
-| `GET /api/public/version`                  | Operacional  | Não                 | Guard de versão usado pelo CI.                              |
-| `GET /api/public/google-calendar/callback` | Operacional  | Não                 | Callback OAuth com segurança própria.                       |
-| `POST /api/public/google-calendar/sync`    | Operacional  | Não                 | Cron autenticado por Bearer secret.                         |
-| HMAC `VALTRO-HMAC-SHA256-V1`               | Parcial      | Ainda não           | Fundação implementada, sem endpoint autenticado de negócio. |
-| Autorização por scopes                     | Parcial      | Ainda não           | Helper existente, sem aplicação em handler público.         |
-| Auditoria de API                           | Parcial      | Ainda não           | Módulo existente, conectado apenas ao diagnóstico interno.  |
-| Rate limiting                              | Planejado    | Não                 | Default persistido em 100 rpm, sem enforcement.             |
-| Limite de payload                          | Planejado    | Não                 | Defaults persistidos, sem enforcement.                      |
-| `POST /api/v1/support/tickets`             | Planejado    | Não                 | Sem handler; removido temporariamente do OpenAPI público.   |
-| `POST /api/v1/support/bugs`                | Planejado    | Não                 | Sem handler; removido temporariamente do OpenAPI público.   |
-| Feedback, sugestões e anexos               | Planejado    | Não                 | Capacidades/scopes existem, endpoints não.                  |
+| Componente                                 | Status       | Contrato público v1 | Observação                                                                                          |
+| ------------------------------------------ | ------------ | ------------------- | --------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/meta`                         | Implementado | Sim                 | Único endpoint público v1 atualmente contratado; usa o pipeline compartilhado.                      |
+| `POST /api/v1/_internal/auth-check`        | Interno      | Não                 | Diagnóstico HMAC pelo pipeline; retorna 404 em produção.                                            |
+| `GET /api/public/version`                  | Operacional  | Não                 | Guard de versão usado pelo CI; fora do pipeline v1.                                                 |
+| `GET /api/public/google-calendar/callback` | Operacional  | Não                 | Callback OAuth com segurança própria.                                                               |
+| `POST /api/public/google-calendar/sync`    | Operacional  | Não                 | Cron autenticado por Bearer secret.                                                                 |
+| Pipeline compartilhado v1                  | Implementado | Infraestrutura      | Ordem comum de versão, HMAC, scopes, validação, limites, handler, auditoria e envelope.             |
+| HMAC `VALTRO-HMAC-SHA256-V1`               | Implementado | Ainda não           | Integrado ao pipeline; nenhum endpoint autenticado de negócio foi publicado.                        |
+| Autorização por scopes                     | Implementado | Ainda não           | Política “todos obrigatórios” disponível; nenhuma rota atual exige scope.                           |
+| Auditoria de API                           | Implementado | Infraestrutura      | Transversal nas duas rotas v1, com persistência best-effort.                                        |
+| Rate limiting                              | Parcial      | Não                 | Contrato fail-closed e respostas existem; enforcement distribuído aguarda migration homologada.     |
+| Limite de payload                          | Implementado | Infraestrutura      | Valida bytes reais e limite por aplicação; streaming incremental permanece limitado pelo framework. |
+| `POST /api/v1/support/tickets`             | Planejado    | Não                 | Sem handler; não consta no OpenAPI público.                                                         |
+| `POST /api/v1/support/bugs`                | Planejado    | Não                 | Sem handler; não consta no OpenAPI público.                                                         |
+| Feedback, sugestões e anexos               | Planejado    | Não                 | Capacidades/scopes existem, endpoints não.                                                          |
 
 ## Infraestrutura pendente
 
-- Pipeline compartilhado para autenticação, versão, scopes, limites, erros e auditoria.
 - Hostname público definitivo.
-- Rate limiting e limites de payload em runtime.
-- Testes de integração dos handlers e conformidade entre runtime e OpenAPI.
+- Persistência atômica e distribuída para rate limiting.
+- Endpoints autenticados de negócio para exercitar scopes, schemas e rate limiting em produção.
 
 ## Migrations duplicadas
 

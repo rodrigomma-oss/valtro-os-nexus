@@ -32,20 +32,18 @@ Host: valtro-vision-forge.lovable.app
 Accept: application/json
 ```
 
-## Autenticação futura
+## Autenticação
 
-A fundação `VALTRO-HMAC-SHA256-V1` está implementada, mas ainda não existe endpoint autenticado de negócio no contrato público. Consulte `authentication.md` para o protocolo técnico atual.
+A fundação `VALTRO-HMAC-SHA256-V1` e sua integração ao pipeline compartilhado estão implementadas, mas ainda não existe endpoint autenticado de negócio no contrato público. Consulte `authentication.md` para o protocolo técnico atual.
 
 ## Limites técnicos
 
-Os valores persistidos atualmente são configurações de preparação e não garantias aplicadas pelo runtime:
+| Limite                               | Default configurado | Enforcement atual                                                                                 |
+| ------------------------------------ | ------------------: | ------------------------------------------------------------------------------------------------- |
+| Requisições por minuto por aplicação |                 100 | Não ativo; persistência atômica aguarda homologação.                                              |
+| Payload por requisição               |               1 MiB | Implementado no pipeline, com limite por aplicação autenticada e teto absoluto default de 10 MiB. |
+| Anexo individual                     |              10 MiB | Não aplicável enquanto não houver endpoint público de anexos.                                     |
+| Anexos por entidade                  |                   5 | Não aplicável enquanto não houver endpoint público de anexos.                                     |
+| Janela de timestamp HMAC             |          15 minutos | Implementada no autenticador HMAC.                                                                |
 
-| Limite                               | Default configurado | Enforcement atual                                     |
-| ------------------------------------ | ------------------: | ----------------------------------------------------- |
-| Requisições por minuto por aplicação |                 100 | Não implementado.                                     |
-| Payload por requisição               |               1 MiB | Não implementado.                                     |
-| Anexo individual                     |              10 MiB | Não aplicável enquanto não houver endpoint de anexos. |
-| Anexos por entidade                  |                   5 | Não aplicável enquanto não houver endpoint de anexos. |
-| Janela de timestamp HMAC             |          15 minutos | Implementada na fundação HMAC.                        |
-
-Clientes não devem depender dos valores ainda não aplicados como SLA ou garantia contratual. O pipeline compartilhado e o enforcement permanecem planejados.
+O limite de payload mede os bytes reais, mas sem `Content-Length` o framework precisa terminar o buffering antes de rejeitar o corpo; consulte `pipeline.md`. O valor de RPM não é SLA nem garantia contratual enquanto o rate limiter distribuído não for homologado e ativado.

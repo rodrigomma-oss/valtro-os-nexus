@@ -3,11 +3,29 @@ import {
   apiErrorResponse,
   apiSuccessResponse,
   createApiRequestId,
+  getApiClientRequestId,
 } from "@/lib/os/api/responses.server";
 
 describe("API response primitives", () => {
   it("creates request IDs using the public contract format", () => {
     expect(createApiRequestId()).toMatch(/^req_[a-f0-9]{16}$/);
+  });
+
+  it("accepts only bounded client correlation IDs", () => {
+    expect(
+      getApiClientRequestId(
+        new Request("https://api.example.com", {
+          headers: { "x-valtro-request-id": "consumer_req-001" },
+        }),
+      ),
+    ).toBe("consumer_req-001");
+    expect(
+      getApiClientRequestId(
+        new Request("https://api.example.com", {
+          headers: { "x-valtro-request-id": "invalid request id" },
+        }),
+      ),
+    ).toBeUndefined();
   });
 
   it("creates a consistent error envelope and response headers", async () => {

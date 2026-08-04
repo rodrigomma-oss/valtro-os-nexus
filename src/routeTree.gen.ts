@@ -36,7 +36,7 @@ import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authent
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
 import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
-import { Route as ApiV1InternalAuthCheckRouteImport } from './routes/api/v1/_internal/auth-check'
+import { Route as ApiV1InternalAuthCheckRouteImport } from './routes/api/v1/[_]internal/auth-check'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
@@ -208,7 +208,7 @@ const AuthenticatedCrmClientesIndexRoute =
   } as any)
 const ApiV1InternalAuthCheckRoute = ApiV1InternalAuthCheckRouteImport.update({
   id: '/api/v1/_internal/auth-check',
-  path: '/api/v1/auth-check',
+  path: '/api/v1/_internal/auth-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicGoogleCalendarSyncRoute =
@@ -410,7 +410,7 @@ export interface FileRoutesByFullPath {
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
-  '/api/v1/auth-check': typeof ApiV1InternalAuthCheckRoute
+  '/api/v1/_internal/auth-check': typeof ApiV1InternalAuthCheckRoute
   '/crm/clientes/': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads/': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos/': typeof AuthenticatedCrmProjetosIndexRoute
@@ -463,7 +463,7 @@ export interface FileRoutesByTo {
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
-  '/api/v1/auth-check': typeof ApiV1InternalAuthCheckRoute
+  '/api/v1/_internal/auth-check': typeof ApiV1InternalAuthCheckRoute
   '/crm/clientes': typeof AuthenticatedCrmClientesIndexRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsIndexRoute
   '/crm/projetos': typeof AuthenticatedCrmProjetosIndexRoute
@@ -578,7 +578,7 @@ export interface FileRouteTypes {
     | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
-    | '/api/v1/auth-check'
+    | '/api/v1/_internal/auth-check'
     | '/crm/clientes/'
     | '/crm/leads/'
     | '/crm/projetos/'
@@ -631,7 +631,7 @@ export interface FileRouteTypes {
     | '/os/comercial/servicos'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
-    | '/api/v1/auth-check'
+    | '/api/v1/_internal/auth-check'
     | '/crm/clientes'
     | '/crm/leads'
     | '/crm/projetos'
@@ -922,8 +922,8 @@ declare module '@tanstack/react-router' {
     }
     '/api/v1/_internal/auth-check': {
       id: '/api/v1/_internal/auth-check'
-      path: '/api/v1/auth-check'
-      fullPath: '/api/v1/auth-check'
+      path: '/api/v1/_internal/auth-check'
+      fullPath: '/api/v1/_internal/auth-check'
       preLoaderRoute: typeof ApiV1InternalAuthCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
