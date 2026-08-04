@@ -136,24 +136,30 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Mostre integralmente o return do componente NewAppDialog.
+          Foi identificada uma causa provável com base na auditoria.
 
-          Não resuma.
+          Implemente somente as seguintes alterações:
 
-          Quero ver exatamente da linha onde começa:
-          return (
-          até o fechamento:
-          );
+          1. Adicione &quot;use client&quot;; na primeira linha de `src/components/os/api/apps/NewAppDialog.tsx`.
 
-          Não explique.
-          Não proponha correções.
-          Mostre somente o código atual do componente.
+          2. Remova o import não utilizado de `DialogTrigger`, caso ele realmente não seja utilizado.
 
-          Confirme se o arquivo começa exatamente com:
-          &quot;use client&quot;;
+          3. Não altere a estrutura do Dialog.
 
-          Se não começa, informe isso explicitamente.
-          Não altere nada.
+          4. Não altere o JSX.
+
+          5. Não altere o backend.
+
+          6. Não altere a lógica do formulário.
+
+          7. Não altere Server Functions.
+
+          Após isso:
+          - Execute o build.
+          - Execute o typecheck.
+          - Valide no Preview se o modal abre ao clicar em &quot;Criar Aplicação&quot;.
+
+          Caso o problema persista, informe exatamente em qual etapa ele persiste, sem aplicar novas correções.
         </div>
         <Scripts />
       </body>
