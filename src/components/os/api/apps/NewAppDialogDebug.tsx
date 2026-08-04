@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export function NewAppDialogDebug() {
   const [open, setOpen] = useState(false);
+  const createApplication = useServerFn(createApplicationFn);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
