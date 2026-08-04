@@ -63,7 +63,7 @@ function OpenApiPage() {
             Contrato YAML
           </h3>
           <Button variant="ghost" size="sm" className="text-xs" onClick={() => {
-            const blob = new Blob([data.content], { type: 'text/yaml' });
+            const blob = new Blob([data?.content as string], { type: 'text/yaml' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -77,7 +77,7 @@ function OpenApiPage() {
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20 pointer-events-none rounded-xl" />
           <pre className="p-6 rounded-xl border bg-muted/50 overflow-x-auto text-[13px] leading-relaxed font-mono">
-            {data.content}
+            {data?.content as string}
           </pre>
         </div>
       </div>

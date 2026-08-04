@@ -43,7 +43,7 @@ function ImplementationStatusPage() {
         </p>
       </div>
 
-      <MarkdownContent content={data.content} />
+      <MarkdownContent content={data?.content as string} />
     </div>
   );
 }
