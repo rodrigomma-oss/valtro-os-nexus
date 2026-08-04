@@ -34,7 +34,7 @@ function ApiDocPage() {
   const { data, error } = useSuspenseQuery({
     queryKey: ["api-docs", slug],
     queryFn: () => getApiDoc({ data: { slug } }),
-    retry: false,
+    retry: 1, // Permite uma tentativa em caso de falha transitória
   });
 
   if (error) {
