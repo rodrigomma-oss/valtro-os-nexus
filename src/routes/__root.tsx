@@ -136,25 +136,53 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Resultado do teste:
+          OPS-API-003D.2-DEBUG — Etapa 2
 
-          Após adicionar apenas
+NÃO implemente nenhuma funcionalidade nova.
 
-          import {"{"} createApplicationFn {"}"} from "@/lib/os/api/apps.functions";
+NÃO altere o NewAppDialog.
 
-          ao NewAppDialogDebug, sem utilizar a função:
+Trabalhe apenas no componente temporário `NewAppDialogDebug.tsx`.
 
-          O botão "Abrir Debug Binary" continua abrindo o modal?
+O teste anterior confirmou que:
 
-          Responder apenas:
+- O Dialog mínimo abre normalmente.
 
-          SIM
+- O simples import de `createApplicationFn` NÃO quebra o modal.
 
-          ou
+Agora execute apenas o seguinte experimento:
 
-          NÃO
+1. Adicione:
 
-          Não faça nenhuma outra modificação no código.
+```ts
+
+const createApplication = useServerFn(createApplicationFn);
+
+```
+
+2. Não utilize essa variável.
+
+3. Não execute a Server Function.
+
+4. Não adicione formulário.
+
+5. Não adicione React Hook Form.
+
+6. Não adicione Zod.
+
+7. Não altere o restante do componente.
+
+Depois responda apenas:
+
+- O botão "Abrir Debug Binary" continua abrindo o modal?
+
+  - SIM
+
+  - NÃO
+
+Se NÃO, informe que o problema ocorre ao inicializar `useServerFn(createApplicationFn)`.
+
+Se SIM, não faça nenhuma outra alteração e aguarde a próxima instrução.
         </div>
         <Scripts />
       </body>
