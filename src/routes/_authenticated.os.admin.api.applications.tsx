@@ -91,6 +91,13 @@ function ApplicationsPage() {
           ? format(new Date(app.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
           : 'Nunca utilizado',
     },
+    {
+      key: 'actions',
+      header: 'Ações',
+      render: (app) => (
+        <EditAppDialog application={app} />
+      ),
+    },
   ];
 
   return (
