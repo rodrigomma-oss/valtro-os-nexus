@@ -102,7 +102,12 @@ export function NewAppDialog() {
         Criar Aplicação
       </Button>
       <DialogContent className="sm:max-w-[500px]">
-        Texto
+        <DialogHeader>
+          <DialogTitle>Criar Nova Aplicação</DialogTitle>
+          <DialogDescription>
+            Configure uma nova aplicação consumidora da API Valtro OS.
+          </DialogDescription>
+        </DialogHeader>
       </DialogContent>
     </Dialog>
   );
