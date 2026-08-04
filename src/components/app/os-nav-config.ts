@@ -12,6 +12,7 @@ import {
   Plug,
   Code2,
   ClipboardList,
+  Server,
   type LucideIcon,
 } from "lucide-react";
 
@@ -69,6 +70,7 @@ export const OS_NAV_GROUPS: NavGroup[] = [
   {
     label: "Administração",
     items: [
+      { label: "API Pública", to: "/os/admin/api", icon: Server, adminOnly: true },
       { label: "Usuários", to: "/os/admin/usuarios", icon: Shield, adminOnly: true },
       { label: "Integrações", to: "/os/admin/integracoes", icon: Plug, adminOnly: true },
     ],
