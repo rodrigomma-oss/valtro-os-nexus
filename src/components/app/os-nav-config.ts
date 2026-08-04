@@ -10,6 +10,7 @@ import {
   FlaskConical,
   Shield,
   Plug,
+  Code2,
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
@@ -79,6 +80,12 @@ export const OS_NAV_GROUPS: NavGroup[] = [
         label: "Portal de Diagnóstico",
         to: "/diagnostico",
         icon: ClipboardList,
+        external: true,
+      },
+      {
+        label: "Portal do Desenvolvedor",
+        to: "/api-docs",
+        icon: Code2,
         external: true,
       },
     ],
