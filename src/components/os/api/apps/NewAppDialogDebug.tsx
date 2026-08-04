@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
 export function NewAppDialogDebug() {
   const [open, setOpen] = useState(false);
