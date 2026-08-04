@@ -13,7 +13,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
 const schema = z.object({
@@ -34,8 +35,6 @@ export function NewAppDialogDebug() {
     },
   });
 
-  console.log("NewAppDialogDebug render - open:", open);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button 
@@ -48,10 +47,9 @@ export function NewAppDialogDebug() {
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Teste de Depuração Binária - Etapa 5</DialogTitle>
+          <DialogTitle>Teste de Depuração Binária - Etapa 6</DialogTitle>
           <DialogDescription>
-            Este é um componente simplificado para isolar o problema.
-            Dependências atuais: useServerFn + react-hook-form + Form + FormField.
+            Dependências atuais: useServerFn + Form + FormField + FormItem + FormControl + Input.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
@@ -59,8 +57,12 @@ export function NewAppDialogDebug() {
             <FormField
               control={form.control}
               name="name"
-              render={() => (
-                <div>Teste Field</div>
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="Nome da aplicação" {...field} />
+                  </FormControl>
+                </FormItem>
               )}
             />
           </Form>
