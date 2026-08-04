@@ -138,17 +138,17 @@ function RootShell({ children }: { children: ReactNode }) {
         <div className="sr-only">
           OPS-API-003D.2-AUD-DIFF-CODE
 
-@@ linha 113 @@
--           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-+           <form className="space-y-4">
+          {"@@ linha 113 @@"}
+          {"-           <form onSubmit={form.handleSubmit(onSubmit)} className=\"space-y-4\">"}
+          {"+           <form className=\"space-y-4\">"}
 
-@@ linha 145 @@
--               <Button type="submit" disabled={createFn.isPending}>
--                 {createFn.isPending ? "Criando..." : "Criar Aplicação"}
--               </Button>
-+               <Button type="submit">
-+                 Criar Aplicação
-+               </Button>
+          {"@@ linha 145 @@"}
+          {"-               <Button type=\"submit\" disabled={createFn.isPending}>"}
+          {"-                 {createFn.isPending ? \"Criando...\" : \"Criar Aplicação\"}"}
+          {"-               </Button>"}
+          {"+               <Button type=\"submit\">"}
+          {"+                 Criar Aplicação"}
+          {"+               </Button>"}
         </div>
         <Scripts />
       </body>
