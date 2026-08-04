@@ -13,7 +13,7 @@ function ApiAdminLayout() {
   const currentTab = pathname.split('/').pop() || 'applications';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <PageHeader
         title="API Pública"
         description="Gerencie as aplicações consumidoras, credenciais de acesso e audite o tráfego da API pública do Valtro OS."
