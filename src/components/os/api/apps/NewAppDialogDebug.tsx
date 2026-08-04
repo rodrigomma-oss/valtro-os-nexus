@@ -90,6 +90,7 @@ export function NewAppDialogDebug() {
                   </Select>
                 </FormItem>
               )}
+            />
           </Form>
         </div>
         <div className="flex justify-end gap-2">
