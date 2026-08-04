@@ -94,6 +94,7 @@ export function NewAppDialog() {
       setOpen(val);
     }}>
       <Button onClick={() => {
+        console.log("BOTAO REAL");
         console.log("[NewAppDialog] Button onClick event");
         setOpen(true);
       }}>
