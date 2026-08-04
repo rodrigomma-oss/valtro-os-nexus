@@ -49,7 +49,6 @@ const ALLOWED_SCOPES = [
 
 const formSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-  
   environment: z.enum(["development", "production"]),
   allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
 });
@@ -65,7 +64,6 @@ export function NewAppDialog() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       displayName: "",
-      description: "",
       environment: "production",
       allowedScopes: ["support:tickets:read"],
     },
@@ -122,19 +120,6 @@ export function NewAppDialog() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição (Opcional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Integração com o CRM externo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -184,7 +169,7 @@ export function NewAppDialog() {
                                   : field.onChange(
                                       field.value?.filter((value) => value !== scope)
                                     );
-                              }}
+                                }}
                             />
                           </FormControl>
                           <FormLabel className="font-normal cursor-pointer text-sm">
