@@ -12,7 +12,7 @@ export const getAuditLogs = createServerFn({ method: "GET" })
     }).optional()
   }).optional())
   .handler(async ({ data }) => {
-    // Manual join to avoid relationship errors between api_audit_logs and api_applications
+    // Manual join to avoid relationship errors between api_audit_logs, api_applications and profiles
     const { data: logs, error: logsError } = await supabaseAdmin
       .from('api_audit_logs')
       .select('*')
@@ -23,19 +23,27 @@ export const getAuditLogs = createServerFn({ method: "GET" })
 
     // Fetch associated applications
     const appIds = [...new Set(logs.map(l => l.application_id).filter((id): id is string => !!id))];
+    const userIds = [...new Set(logs.map(l => l.user_id).filter((id): id is string => !!id))];
+
     let appsMap: Record<string, any> = {};
+    let profilesMap: Record<string, string> = {};
     
-    if (appIds.length > 0) {
-      const { data: apps } = await supabaseAdmin
-        .from('api_applications')
-        .select('id, display_name')
-        .in('id', appIds);
+    const [appsRes, profilesRes] = await Promise.all([
+      appIds.length > 0 
+        ? supabaseAdmin.from('api_applications').select('id, display_name').in('id', appIds)
+        : Promise.resolve({ data: [] }),
+      userIds.length > 0
+        ? supabaseAdmin.from('profiles').select('id, full_name').in('id', userIds)
+        : Promise.resolve({ data: [] })
+    ]);
       
-      appsMap = (apps || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
-    }
+    appsMap = (appsRes.data || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
+    profilesMap = (profilesRes.data || []).reduce((acc, p) => ({ ...acc, [p.id]: p.full_name }), {});
 
     return logs.map(log => ({
       ...log,
-      application: log.application_id ? appsMap[log.application_id] : null
+      application: log.application_id ? appsMap[log.application_id] : null,
+      user_full_name: log.user_id ? profilesMap[log.user_id] : null
     }));
+
   });

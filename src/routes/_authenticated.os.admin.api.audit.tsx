@@ -24,47 +24,57 @@ function AuditLogsPage() {
         format(new Date(log.created_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR }),
     },
     {
-      key: 'method',
-      header: 'Método',
-      render: (log) => (
-        <Badge variant="outline">{log.method}</Badge>
-      ),
-    },
-    {
-      key: 'path',
-      header: 'Path',
-      render: (log) => <code className="text-xs">{log.path}</code>,
+      key: 'event',
+      header: 'Evento',
+      render: (log) => {
+        const isApi = !!log.method;
+        return (
+          <div className="flex flex-col">
+            <span className="font-medium text-xs">
+              {isApi ? `${log.method} ${log.path}` : 'Ação Administrativa'}
+            </span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {log.request_id || 'ID N/A'}
+            </span>
+          </div>
+        );
+      }
     },
     {
       key: 'status',
       header: 'Status',
       render: (log) => {
         const code = log.status_code;
+        if (!code) return <Badge variant="outline">LOG</Badge>;
         const variant = code >= 200 && code < 300 ? 'success' : code >= 400 ? 'destructive' : 'secondary';
         return <Badge variant={variant as any}>{code}</Badge>;
       },
     },
     {
-      key: 'app',
-      header: 'Aplicação',
-      render: (log) => log.application?.display_name || 'Unauthenticated',
+      key: 'actor',
+      header: 'Ator',
+      render: (log) => (
+        <div className="flex flex-col">
+          <span className="text-xs">
+            {log.application?.display_name || log.user_full_name || 'Sistema'}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {log.application ? 'Aplicação' : 'Admin'}
+          </span>
+        </div>
+      ),
     },
     {
-      key: 'request_id',
-      header: 'Request ID',
-      render: (log) => <code className="text-[10px] text-muted-foreground">{log.request_id}</code>,
-    },
-    {
-      key: 'duration',
-      header: 'Duração',
-      render: (log) => `${log.duration_ms}ms`,
-    },
-    {
-      key: 'ip',
-      header: 'IP',
-      render: (log) => log.ip || '-',
+      key: 'details',
+      header: 'Duração / IP',
+      render: (log) => (
+        <div className="text-[10px] text-muted-foreground">
+          {log.duration_ms ? `${log.duration_ms}ms` : '-'} | {log.ip || '-'}
+        </div>
+      ),
     },
   ];
+
 
   return (
     <div className="space-y-4">
