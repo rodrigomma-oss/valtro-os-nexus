@@ -1,27 +1,46 @@
-# Ciclo de Vida e Versionamento
+# Ciclo de vida e versionamento
 
-A API segue uma política rigorosa de versionamento para garantir a estabilidade das integrações.
+## Path versioning
 
-## Path Versioning
+A versão principal integra o path:
 
-A versão principal é incluída no path: `/api/v1/...`.
+```text
+/api/v1/...
+```
 
-## Estados da Versão
+Alterações incompatíveis deverão usar uma nova versão principal, como `/api/v2`.
 
-| Estado | Descrição | Headers |
-| :--- | :--- | :--- |
-| `development` | Versão em desenvolvimento, instável. | - |
-| `stable` | Versão recomendada para produção. | - |
-| `deprecated` | Versão legada, uso desencorajado. | `Deprecation` |
-| `sunset` | Versão com data de desligamento definida. | `Sunset` |
-| `disabled` | Versão desligada. Retorna HTTP 503. | - |
+## Estados persistidos
 
-## Headers de Controle
+| Estado        | Significado                           |
+| ------------- | ------------------------------------- |
+| `development` | Versão ainda instável.                |
+| `stable`      | Versão indicada para uso operacional. |
+| `deprecated`  | Versão legada, ainda disponível.      |
+| `sunset`      | Versão com desligamento programado.   |
+| `disabled`    | Versão indisponível.                  |
 
-- `X-Valtro-API-Version`: Indica a versão que processou a requisição.
-- `Deprecation`: Data UTC indicando quando a versão tornou-se obsoleta.
-- `Sunset`: Data UTC indicando quando a versão deixará de funcionar.
+Esses estados são persistidos em `api_versions`. A v1 é criada pelas migrations com estado inicial `stable`.
 
-## Alterações Breaking
+## Comportamento implementado em `/meta`
 
-Qualquer alteração que quebre a compatibilidade (remover campos, mudar tipos, alterar lógica de auth) resultará no incremento da versão principal (ex: `/api/v2`).
+`GET /api/v1/meta` consulta o registro `v1` e:
+
+- retorna HTTP 200 com os metadados quando a versão está disponível;
+- retorna HTTP 404 com `VERSION_UNAVAILABLE` quando o registro não pode ser localizado;
+- retorna HTTP 503 com `VERSION_UNAVAILABLE` quando o estado é `disabled`;
+- adiciona `Deprecation` e `Sunset` quando as datas correspondentes estão configuradas;
+- retorna `X-Valtro-API-Version` nas respostas de sucesso;
+- retorna `X-Valtro-Request-ID` nas respostas JSON.
+
+## Comportamento planejado
+
+A verificação global de disponibilidade da versão ainda não existe. Portanto, o comportamento de `/meta` não deve ser interpretado como enforcement automático para todas as futuras rotas v1.
+
+O pipeline compartilhado deverá aplicar versionamento, autenticação, autorização, limites e auditoria de maneira uniforme antes da publicação de endpoints de negócio.
+
+## Decisões pendentes
+
+- Política de antecedência para depreciação e sunset.
+- Hostname público definitivo da API.
+- Representação pública de `replacement_version_id` como código de versão ou identificador interno.

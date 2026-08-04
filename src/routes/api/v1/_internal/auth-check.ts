@@ -1,43 +1,48 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { authenticateRequest, authorize } from '@/lib/os/api/auth.server';
-import { logApiRequest, logUnauthorizedAccess } from '@/lib/os/api/audit.server';
+import { createFileRoute } from "@tanstack/react-router";
+import { authenticateRequest } from "@/lib/os/api/auth.server";
+import { logApiRequest, logUnauthorizedAccess } from "@/lib/os/api/audit.server";
+import {
+  apiErrorResponse,
+  apiSuccessResponse,
+  createApiRequestId,
+} from "@/lib/os/api/responses.server";
 
-export const Route = createFileRoute('/api/v1/_internal/auth-check')({
+export const Route = createFileRoute("/api/v1/_internal/auth-check")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         const startTime = Date.now();
-        
+        const requestId = createApiRequestId();
+
         // 1. Bloqueio server-side para produção
         const env = process.env.NODE_ENV;
-        if (env === 'production') {
-          return new Response(JSON.stringify({ error: 'Not Found' }), { 
+        if (env === "production") {
+          return apiErrorResponse({
+            code: "NOT_FOUND",
+            message: "Resource not found.",
             status: 404,
-            headers: { 'Content-Type': 'application/json' }
+            requestId,
           });
         }
 
-        const requestId = crypto.randomUUID();
-
         // 2. Autenticação HMAC
-        const authResult = await authenticateRequest(request);
+        const authResult = await authenticateRequest(request, requestId);
 
-        if ('error' in authResult) {
+        if ("error" in authResult) {
           await logUnauthorizedAccess(
             request.method,
-            '/api/v1/_internal/auth-check',
+            "/api/v1/_internal/auth-check",
             authResult.error.status,
             authResult.error.code,
             requestId,
-            request.headers.get('x-forwarded-for') || undefined
+            request.headers.get("x-forwarded-for") || undefined,
           );
 
-          return new Response(JSON.stringify({ 
-            error: authResult.error.code,
-            message: authResult.error.message
-          }), { 
+          return apiErrorResponse({
+            code: authResult.error.code,
+            message: authResult.error.message,
             status: authResult.error.status,
-            headers: { 'Content-Type': 'application/json' }
+            requestId,
           });
         }
 
@@ -45,34 +50,34 @@ export const Route = createFileRoute('/api/v1/_internal/auth-check')({
 
         // 3. Validação de Escopo (Exemplo técnico)
         // Esta rota não exige escopos operacionais, apenas validação de identidade
-        
+
         const durationMs = Date.now() - startTime;
         await logApiRequest({
           context,
           method: request.method,
-          path: '/api/v1/_internal/auth-check',
+          path: "/api/v1/_internal/auth-check",
           statusCode: 200,
-          durationMs
+          durationMs,
         });
 
-        return new Response(JSON.stringify({
-          status: 'authenticated',
-          identity: {
-            applicationId: context.applicationId,
-            clientId: context.clientId,
-            environment: context.environment,
-            keyId: context.keyId,
-            scopes: context.scopes,
+        return apiSuccessResponse({
+          data: {
+            status: "authenticated",
+            identity: {
+              applicationId: context.applicationId,
+              clientId: context.clientId,
+              environment: context.environment,
+              keyId: context.keyId,
+              scopes: context.scopes,
+            },
+            request: {
+              id: context.requestId,
+              timestamp: context.requestTimestamp,
+            },
           },
-          request: {
-            id: context.requestId,
-            timestamp: context.requestTimestamp,
-          }
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
+          requestId,
         });
-      }
-    }
-  }
+      },
+    },
+  },
 });

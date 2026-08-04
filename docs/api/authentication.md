@@ -1,71 +1,97 @@
-# Autenticação HMAC-SHA256 (VALTRO-HMAC-SHA256-V1)
+# Autenticação HMAC-SHA256 (`VALTRO-HMAC-SHA256-V1`)
 
-Este documento descreve como assinar requisições para a API do Valtro OS.
+Este documento descreve a fundação de autenticação implementada para futuras rotas autenticadas da API v1.
 
-## Segurança
+Atualmente, nenhum endpoint autenticado de negócio está publicado no contrato público. A autenticação HMAC está conectada apenas à rota técnica interna `/api/v1/_internal/auth-check`, indisponível em produção. Sua adoção transversal pertence ao pipeline compartilhado de uma sprint futura.
 
-1. **Backend-only:** A assinatura deve ser gerada exclusivamente no seu servidor. Nunca coloque o `Key Secret` no código frontend.
-2. **Replay Protection:** O uso de `Nonce` e `Timestamp` impede que uma requisição capturada seja reenviada.
-3. **Imutabilidade:** Qualquer alteração no corpo, path ou query da requisição invalidará a assinatura.
+## Credenciais
 
-## Headers Requeridos
-
-| Header | Descrição | Exemplo |
-| :--- | :--- | :--- |
-| `X-Valtro-Key-ID` | ID público da sua credencial. | `key_550e8400...` |
-| `X-Valtro-Timestamp` | Timestamp Unix em milissegundos. | `1722744000000` |
-| `X-Valtro-Nonce` | String aleatória (16-64 chars). | `abc123...xyz` |
-| `X-Valtro-Signature` | Assinatura HMAC-SHA256 calculada. | `a3f...2e1` |
-| `X-Valtro-Request-ID` | (Opcional) Seu identificador de rastreio. | `my_req_001` |
-
-## Passo a Passo para Assinatura
-
-### 1. Criar a String Canônica
-
-A string canônica é composta pelos seguintes campos, separados por `\n` (LF):
+O prefixo implementado no código e exigido pelo banco é:
 
 ```text
-PROTOCOL (VALTRO-HMAC-SHA256-V1)
-TIMESTAMP (em milissegundos)
-NONCE
-HTTP_METHOD (em maiúsculas)
-CANONICAL_PATH (ex: /api/v1/meta)
-CANONICAL_QUERY_STRING (ordenada alfabeticamente)
-CONTENT_TYPE (em minúsculas, sem espaços extras)
-BODY_HASH (SHA-256 do corpo em hexadecimal lowercase)
+vlt_key_
 ```
 
-**Nota sobre o Body Hash:** Se o corpo estiver vazio, use o hash SHA-256 de uma string vazia: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+Exemplo de Key ID válido:
 
-### 2. Calcular o HMAC
+```text
+vlt_key_0123456789abcdef01234567
+```
 
-Use seu `Key Secret` como chave para calcular o HMAC-SHA256 da String Canônica. O resultado deve ser em formato hexadecimal minúsculo.
+O Key Secret deve permanecer exclusivamente no backend seguro do consumidor. Não deve ser enviado ao navegador.
 
-### 3. Pseudocódigo (TypeScript)
+## Headers requeridos
+
+| Header                | Descrição                                 | Exemplo                            |
+| --------------------- | ----------------------------------------- | ---------------------------------- |
+| `X-Valtro-Key-ID`     | Identificador público da credencial.      | `vlt_key_0123456789abcdef01234567` |
+| `X-Valtro-Timestamp`  | Timestamp Unix em milissegundos.          | `1785812400000`                    |
+| `X-Valtro-Nonce`      | Valor aleatório entre 16 e 64 caracteres. | `n_01k1wxyz89abcdef`               |
+| `X-Valtro-Signature`  | HMAC-SHA256 hexadecimal em minúsculas.    | `a3f...2e1`                        |
+| `X-Valtro-Request-ID` | Identificador opcional do consumidor.     | `consumer_req_001`                 |
+
+## Requisição canônica
+
+Os campos são separados por LF (`\n`), nesta ordem:
+
+```text
+VALTRO-HMAC-SHA256-V1
+TIMESTAMP
+NONCE
+HTTP_METHOD
+CANONICAL_PATH
+CANONICAL_QUERY_STRING
+CONTENT_TYPE
+BODY_HASH
+```
+
+- O método é convertido para maiúsculas.
+- O path preserva maiúsculas, minúsculas e barra final.
+- A query é ordenada por nome e depois por valor.
+- O content type é normalizado para minúsculas e sem espaços externos.
+- `BODY_HASH` é o SHA-256 hexadecimal em minúsculas do corpo exato enviado.
+- Para corpo vazio, o hash é `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+
+## Assinatura
 
 ```typescript
-import { createHmac, createHash } from 'node:crypto';
+import { createHash, createHmac } from "node:crypto";
 
-function signRequest(secret: string, params: any) {
-  const { timestamp, nonce, method, path, query, contentType, body } = params;
-  
-  const bodyHash = createHash('sha256')
-    .update(body || '')
-    .digest('hex');
-
+function signRequest(
+  secret: string,
+  params: {
+    timestamp: string;
+    nonce: string;
+    method: string;
+    path: string;
+    canonicalQuery: string;
+    contentType: string;
+    body: string;
+  },
+) {
+  const bodyHash = createHash("sha256").update(params.body).digest("hex");
   const canonical = [
-    'VALTRO-HMAC-SHA256-V1',
-    timestamp,
-    nonce,
-    method.toUpperCase(),
-    path,
-    query, // Ordenada: a=1&b=2
-    contentType.toLowerCase(),
-    bodyHash
-  ].join('\n');
+    "VALTRO-HMAC-SHA256-V1",
+    params.timestamp,
+    params.nonce,
+    params.method.toUpperCase(),
+    params.path,
+    params.canonicalQuery,
+    params.contentType.trim().toLowerCase(),
+    bodyHash,
+  ].join("\n");
 
-  return createHmac('sha256', secret)
-    .update(canonical)
-    .digest('hex');
+  return createHmac("sha256", secret).update(canonical).digest("hex");
 }
 ```
+
+## Controles implementados na fundação
+
+- Janela de timestamp de 15 minutos.
+- Nonce entre 16 e 64 caracteres.
+- Consumo único do nonce por credencial no banco.
+- Comparação da assinatura em tempo constante.
+- Segredo armazenado com AES-256-GCM.
+- Auditoria disponível para handlers que chamem explicitamente o módulo correspondente.
+
+Rate limiting e aplicação automática de autenticação, autorização e auditoria ainda não fazem parte do runtime compartilhado.
