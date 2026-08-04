@@ -135,31 +135,46 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body className="antialiased font-sans">
         <div className="sr-only" aria-hidden="true">
-          ## Funcionalidade: Gerenciamento de Anexos de Arquivos Privados
+          # Definição de View de Segurança
 
-**Descrição:**
+**Funcionalidade:**
 
-Implementar funcionalidades para que um usuário possa interagir com anexos de arquivos privados. As operações permitidas incluem:
-
-1.  **Leitura:** Visualizar ou baixar anexos existentes.
-2.  **Upload:** Enviar novos arquivos como anexos.
-3.  **Exclusão:** Remover anexos existentes.
+Criar uma view SQL chamada `security_definer_view` que será executada com os privilégios do proprietário da view, não do usuário que a consulta.
 
 **Requisitos Técnicos:**
 
-*   Implementar endpoints de API para cada operação (GET para leitura, POST para upload, DELETE para exclusão).
-*   Garantir que os anexos sejam associados a um usuário específico e acessíveis apenas por ele.
-*   Implementar validações para o tipo e tamanho do arquivo durante o upload.
-*   Utilizar um sistema de armazenamento seguro para os arquivos.
+*   A view deve ser criada em um banco de dados SQL compatível (ex: PostgreSQL, MySQL).
+*   A sintaxe exata para definir uma view como `SECURITY DEFINER` pode variar ligeiramente entre os sistemas de gerenciamento de banco de dados.
 
 **Passos Necessários:**
 
-1.  Definir a estrutura do banco de dados para armazenar metadados dos anexos (nome do arquivo, tipo, tamanho, ID do usuário, caminho de armazenamento).
-2.  Desenvolver a lógica de negócio para cada operação (leitura, upload, exclusão).
-3.  Criar os endpoints da API RESTful.
-4.  Implementar a autenticação e autorização para garantir o acesso privado.
-5.  Configurar o armazenamento de arquivos (local ou em nuvem).
-6.  Adicionar testes unitários e de integração.
+1.  **Definir a Consulta Base:** Escreva a consulta SQL que retornará os dados desejados para a view.
+2.  **Criar a View:** Utilize a instrução `CREATE VIEW` com a cláusula `SECURITY DEFINER`.
+
+**Exemplo (PostgreSQL):**
+
+```sql
+CREATE VIEW security_definer_view AS
+SELECT column1, column2
+FROM your_table
+WHERE condition;
+
+ALTER VIEW security_definer_view SECURITY DEFINER;
+```
+
+**Exemplo (MySQL):**
+
+```sql
+CREATE DEFINER = 'owner_user'@'localhost' VIEW security_definer_view AS
+SELECT column1, column2
+FROM your_table
+WHERE condition;
+```
+
+**Observações:**
+
+*   Certifique-se de que o usuário proprietário da view tenha as permissões necessárias para acessar os dados subjacentes.
+*   O uso de `SECURITY DEFINER` deve ser feito com cautela, pois pode introduzir riscos de segurança se não for configurado corretamente.
         </div>
         {children}
         <Scripts />
