@@ -44,6 +44,12 @@ async function enforceAdminAAL2(userId?: string) {
   if (!roleData) throw new Error('Acesso negado: Administradores apenas.');
 }
 
+/** Verificação de papel admin exposta para as Server Functions. */
+export async function assertAdmin(userId?: string) {
+  return enforceAdminAAL2(userId);
+}
+
+
 
 interface CreateAppParams {
   displayName: string;
