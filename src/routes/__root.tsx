@@ -136,11 +136,9 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Etapa 8
+          OPS-API-003D.2-AUD-FINAL
 
-Adicionar somente:
-
-&lt;Checkbox&gt;
+Identificação do componente real em execução.
         </div>
         <Scripts />
       </body>
