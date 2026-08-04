@@ -1,4 +1,4 @@
-import { Instagram } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/logo";
 
@@ -92,7 +92,7 @@ export function Footer() {
                   aria-label="Instagram Valtro Labs (abre em nova aba)"
                   className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
                 >
-                  <Instagram className="h-4 w-4" aria-hidden />
+                  <Camera className="h-4 w-4" aria-hidden />
                   Instagram
                 </a>
               </li>

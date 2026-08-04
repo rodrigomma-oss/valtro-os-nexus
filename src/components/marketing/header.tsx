@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Instagram, Menu, X } from "lucide-react";
+import { Camera, Menu, X } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
@@ -112,7 +112,7 @@ export function Header() {
             aria-label="Instagram da Valtro Labs (abre em nova aba)"
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground/70 hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            <Instagram className="h-4 w-4" aria-hidden />
+            <Camera className="h-4 w-4" aria-hidden />
           </a>
         </div>
 
@@ -183,7 +183,7 @@ export function Header() {
               aria-label="Instagram (abre em nova aba)"
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-muted-foreground"
             >
-              <Instagram className="h-4 w-4" aria-hidden />
+              <Camera className="h-4 w-4" aria-hidden />
             </a>
           </div>
         </div>
