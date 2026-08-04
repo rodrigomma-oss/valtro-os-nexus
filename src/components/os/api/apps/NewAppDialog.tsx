@@ -37,14 +37,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
-const formSchema = z.object({
-  displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-  environment: z.enum(["development", "staging", "production"]),
-  allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 const ALLOWED_SCOPES = [
   'support:tickets:create',
   'support:tickets:read',
@@ -53,6 +45,14 @@ const ALLOWED_SCOPES = [
   'support:suggestions:create',
   'support:attachments:create',
 ];
+
+const formSchema = z.object({
+  displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+  environment: z.enum(["development", "staging", "production"]),
+  allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export function NewAppDialog() {
   const [open, setOpen] = useState(false);
