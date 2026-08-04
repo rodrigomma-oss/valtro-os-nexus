@@ -136,30 +136,89 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Foi identificada uma causa provável com base na auditoria.
+          # OPS-API-003D.2-ISO — Teste de Isolamento
 
-          Implemente somente as seguintes alterações:
+          NÃO corrija o componente existente.
 
-          1. Adicione &quot;use client&quot;; na primeira linha de `src/components/os/api/apps/NewAppDialog.tsx`.
+          NÃO altere NewAppDialog.
 
-          2. Remova o import não utilizado de `DialogTrigger`, caso ele realmente não seja utilizado.
+          NÃO altere Dialog.
 
-          3. Não altere a estrutura do Dialog.
+          NÃO altere backend.
 
-          4. Não altere o JSX.
+          O objetivo é descobrir se o problema está no componente ou na página.
 
-          5. Não altere o backend.
+          --------------------------------------------------
 
-          6. Não altere a lógica do formulário.
+          Crie temporariamente um componente mínimo chamado:
 
-          7. Não altere Server Functions.
+          DialogIsolationTest.tsx
 
-          Após isso:
-          - Execute o build.
-          - Execute o typecheck.
-          - Valide no Preview se o modal abre ao clicar em &quot;Criar Aplicação&quot;.
+          Conteúdo:
 
-          Caso o problema persista, informe exatamente em qual etapa ele persiste, sem aplicar novas correções.
+          - "use client";
+
+          - um botão "Abrir Teste";
+
+          - um Dialog do shadcn;
+
+          - apenas um DialogContent contendo:
+
+          "Teste"
+
+          Nada mais.
+
+          Sem formulário.
+
+          Sem Server Functions.
+
+          Sem React Hook Form.
+
+          Sem TanStack Query.
+
+          Sem useServerFn.
+
+          Sem Zod.
+
+          Sem Checkbox.
+
+          Sem Select.
+
+          Somente:
+
+          useState
+
+          Dialog
+
+          Button
+
+          --------------------------------------------------
+
+          Na página de Aplicações,
+
+          renderize esse componente imediatamente abaixo do PageHeader.
+
+          Não remova NewAppDialog.
+
+          Os dois devem aparecer.
+
+          --------------------------------------------------
+
+          Responder apenas:
+
+          1. O DialogIsolationTest abre?
+
+          SIM ou NÃO.
+
+          2. O NewAppDialog abre?
+
+          SIM ou NÃO.
+
+          3. Se o DialogIsolationTest funcionar e o NewAppDialog não funcionar,
+
+          listar exatamente quais dependências existem apenas no NewAppDialog.
+
+          Não implemente nenhuma outra correção.
         </div>
         <Scripts />
       </body>
