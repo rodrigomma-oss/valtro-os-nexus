@@ -1,5 +1,7 @@
 # Estado de implementação da API
 
+[Início](README.md) · [Roadmap](roadmap.md) · [Changelog](changelog.md) · [OpenAPI](openapi-v1.yaml)
+
 Esta matriz separa o contrato público v1 das rotas internas, operacionais e planejadas.
 
 | Componente                                 | Status       | Contrato público v1 | Observação                                                                                          |
@@ -28,3 +30,5 @@ Esta matriz separa o contrato público v1 das rotas internas, operacionais e pla
 ## Migrations duplicadas
 
 O histórico contém pares duplicados para OPS-API-001E e OPS-API-001G. As migrations posteriores tentam recriar triggers e, no caso de 001G, policy já criada. Elas não foram removidas nem alteradas nesta sprint porque podem fazer parte de histórico publicado. Um plano corretivo deve ser homologado antes de qualquer mudança estrutural.
+
+Para a separação temporal entre capacidades presentes e futuras, consulte o [roadmap](roadmap.md).

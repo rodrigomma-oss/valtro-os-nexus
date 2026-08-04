@@ -16,6 +16,9 @@ info:
   contact:
     name: Valtro Labs Platform Team
     email: platform@valtrolabs.pro
+externalDocs:
+  description: Índice da documentação técnica da API pública
+  url: ./README.md
 
 servers:
   - url: https://valtro-vision-forge.lovable.app/api/v1

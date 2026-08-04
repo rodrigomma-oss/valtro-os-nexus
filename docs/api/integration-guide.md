@@ -1,5 +1,7 @@
 # Guia de integração
 
+[Início](README.md) · [Primeiros passos](getting-started.md) · [Autenticação](authentication.md) · [OpenAPI](openapi-v1.yaml)
+
 ## Estado atual
 
 A API pública v1 possui atualmente um único endpoint contratado:
@@ -47,3 +49,5 @@ A fundação `VALTRO-HMAC-SHA256-V1` e sua integração ao pipeline compartilhad
 | Janela de timestamp HMAC             |          15 minutos | Implementada no autenticador HMAC.                                                                |
 
 O limite de payload mede os bytes reais, mas sem `Content-Length` o framework precisa terminar o buffering antes de rejeitar o corpo; consulte `pipeline.md`. O valor de RPM não é SLA nem garantia contratual enquanto o rate limiter distribuído não for homologado e ativado.
+
+Consulte o [catálogo de erros](errors.md) para tratar respostas e o [estado de implementação](implementation-status.md) para diferenciar capacidades disponíveis e planejadas.

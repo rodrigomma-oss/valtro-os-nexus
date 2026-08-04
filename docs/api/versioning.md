@@ -1,5 +1,7 @@
 # Ciclo de vida e versionamento
 
+[Início](README.md) · [Primeiros passos](getting-started.md) · [OpenAPI](openapi-v1.yaml) · [Changelog](changelog.md)
+
 ## Path versioning
 
 A versão principal integra o path: `/api/v1/...`. Alterações incompatíveis deverão usar uma nova versão principal, como `/api/v2`.
@@ -35,3 +37,5 @@ O pipeline das rotas v1 consulta o registro `v1` e:
 - Política de antecedência para depreciação e sunset.
 - Hostname público definitivo da API.
 - Representação pública de `replacement_version_id` como código de versão ou identificador interno.
+
+A situação dessas decisões acompanha o [roadmap](roadmap.md). O contrato público vigente permanece no [OpenAPI](openapi-v1.yaml).

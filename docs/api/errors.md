@@ -1,5 +1,7 @@
 # Respostas e códigos de erro
 
+[Início](README.md) · [Primeiros passos](getting-started.md) · [OpenAPI](openapi-v1.yaml) · [Pipeline](pipeline.md)
+
 As rotas da API v1 usam um envelope JSON estável:
 
 ```json
@@ -35,3 +37,5 @@ O header `X-Valtro-Request-ID` repete o `requestId` gerado pelo Valtro OS. Detal
 | `RATE_LIMIT_UNAVAILABLE` |        503 | Falha fechada sem enforcement persistente disponível.         |
 
 `NOT_FOUND` é usado para ocultar a rota técnica interna em produção e não integra o catálogo público. `INVALID_KEY_ID` e `CREDENTIAL_REVOKED` continuam consolidados em `INVALID_CREDENTIAL`.
+
+O subconjunto normativo de erros exposto pelo endpoint público atual está no [contrato OpenAPI](openapi-v1.yaml). A disponibilidade das demais etapas está descrita no [estado de implementação](implementation-status.md).

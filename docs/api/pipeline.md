@@ -1,5 +1,7 @@
 # Pipeline compartilhado da API v1
 
+[Início](README.md) · [Primeiros passos](getting-started.md) · [Autenticação](authentication.md) · [Erros](errors.md)
+
 `createApiHandler`, em `src/lib/os/api/pipeline.server.ts`, compõe as etapas comuns sem alterar rotas administrativas, callbacks OAuth, cron, SSR ou endpoints fora de `/api/v1`.
 
 ## Ordem real
@@ -54,3 +56,5 @@ Custo: uma chamada RPC e uma escrita/WAL por requisição autenticada, além da 
 Rollback: desabilitar `rateLimit` nas configurações de rota, remover a RPC e depois remover tabela e índices. Como nenhuma migration foi criada nesta sprint, o estado atual não exige rollback.
 
 Essa migration e a estratégia de limpeza precisam de homologação explícita antes da implementação.
+
+O [estado de implementação](implementation-status.md) registra quais rotas usam o pipeline, e o [roadmap](roadmap.md) mantém o rate limiting persistente como capacidade planejada.

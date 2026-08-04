@@ -1,5 +1,7 @@
 # Autenticação HMAC-SHA256 (`VALTRO-HMAC-SHA256-V1`)
 
+[Início](README.md) · [Primeiros passos](getting-started.md) · [Pipeline](pipeline.md) · [Erros](errors.md)
+
 Nenhum endpoint autenticado de negócio está publicado no contrato público. A autenticação HMAC está conectada ao pipeline compartilhado e à rota técnica interna `/api/v1/_internal/auth-check`, indisponível em produção. Cada rota declara explicitamente se exige HMAC e quais scopes são obrigatórios.
 
 ## Credenciais
@@ -56,3 +58,5 @@ BODY_HASH
 - Auditoria best-effort sem corpo, segredo, assinatura ou ciphertext.
 
 Rate limiting distribuído ainda não está ativo. Uma rota que habilite essa etapa sem provedor persistente falha fechada com `RATE_LIMIT_UNAVAILABLE`.
+
+Consulte o [estado de implementação](implementation-status.md) antes de assumir que uma capacidade do protocolo está exposta por um endpoint público.
