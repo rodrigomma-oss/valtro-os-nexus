@@ -23,27 +23,25 @@ export const getAuditLogs = createServerFn({ method: "GET" })
 
     // Fetch associated applications
     const appIds = [...new Set(logs.map(l => l.application_id).filter((id): id is string => !!id))];
-    const userIds = [...new Set(logs.map(l => l.user_id).filter((id): id is string => !!id))];
-
-    let appsMap: Record<string, any> = {};
-    let profilesMap: Record<string, string> = {};
+    // The logs don't have user_id, they have created_by implicitly or we use only application context
+    // Actually, looking at types.ts, api_audit_logs doesn't have a user_id or created_by.
+    // However, applications have created_by.
     
-    const [appsRes, profilesRes] = await Promise.all([
-      appIds.length > 0 
-        ? supabaseAdmin.from('api_applications').select('id, display_name').in('id', appIds)
-        : Promise.resolve({ data: [] }),
-      userIds.length > 0
-        ? supabaseAdmin.from('profiles').select('id, full_name').in('id', userIds)
-        : Promise.resolve({ data: [] })
-    ]);
+    let appsMap: Record<string, any> = {};
+    
+    if (appIds.length > 0) {
+      const { data: apps } = await supabaseAdmin
+        .from('api_applications')
+        .select('id, display_name')
+        .in('id', appIds);
       
-    appsMap = (appsRes.data || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
-    profilesMap = (profilesRes.data || []).reduce((acc, p) => ({ ...acc, [p.id]: p.full_name }), {});
+      appsMap = (apps || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
+    }
 
     return logs.map(log => ({
       ...log,
       application: log.application_id ? appsMap[log.application_id] : null,
-      user_full_name: log.user_id ? profilesMap[log.user_id] : null
     }));
+
 
   });

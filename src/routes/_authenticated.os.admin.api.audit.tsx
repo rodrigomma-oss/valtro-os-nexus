@@ -56,14 +56,15 @@ function AuditLogsPage() {
       render: (log) => (
         <div className="flex flex-col">
           <span className="text-xs">
-            {log.application?.display_name || log.user_full_name || 'Sistema'}
+            {log.application?.display_name || 'Sistema'}
           </span>
           <span className="text-[10px] text-muted-foreground">
-            {log.application ? 'Aplicação' : 'Admin'}
+            {log.application ? 'Aplicação' : 'Ação Interna'}
           </span>
         </div>
       ),
     },
+
     {
       key: 'details',
       header: 'Duração / IP',
