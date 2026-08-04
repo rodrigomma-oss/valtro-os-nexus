@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormField } from "@/components/ui/form";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
 const schema = z.object({
@@ -48,15 +48,21 @@ export function NewAppDialogDebug() {
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Teste de Depuração Binária - Etapa 4</DialogTitle>
+          <DialogTitle>Teste de Depuração Binária - Etapa 5</DialogTitle>
           <DialogDescription>
             Este é um componente simplificado para isolar o problema.
-            Dependências atuais: useServerFn + react-hook-form + Form wrapper.
+            Dependências atuais: useServerFn + react-hook-form + Form + FormField.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <Form {...form}>
-            <div>Teste Form</div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={() => (
+                <div>Teste Field</div>
+              )}
+            />
           </Form>
         </div>
         <div className="flex justify-end gap-2">
