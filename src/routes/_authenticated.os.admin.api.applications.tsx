@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { getApplications } from '@/lib/os/api/apps.functions';
 import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
+import { EditAppDialog } from '@/components/os/api/apps/EditAppDialog';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -89,6 +90,13 @@ function ApplicationsPage() {
         app.last_used_at 
           ? format(new Date(app.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
           : 'Nunca utilizado',
+    },
+    {
+      key: 'actions',
+      header: 'Ações',
+      render: (app) => (
+        <EditAppDialog application={app} />
+      ),
     },
   ];
 
