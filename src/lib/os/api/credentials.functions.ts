@@ -9,16 +9,31 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const getCredentials = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { data, error } = await supabaseAdmin
+    // Manual join to avoid relationship errors between api_credentials_safe and api_applications
+    const { data: credentials, error: credentialsError } = await supabaseAdmin
       .from('api_credentials_safe')
-      .select(`
-        *,
-        application:api_applications(display_name)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+    if (credentialsError) throw credentialsError;
+
+    // Fetch associated applications
+    const appIds = [...new Set(credentials.map(c => c.application_id).filter((id): id is string => !!id))];
+    let appsMap: Record<string, any> = {};
+
+    if (appIds.length > 0) {
+      const { data: apps } = await supabaseAdmin
+        .from('api_applications')
+        .select('id, display_name')
+        .in('id', appIds);
+
+      appsMap = (apps || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
+    }
+
+    return credentials.map(credential => ({
+      ...credential,
+      application: credential.application_id ? appsMap[credential.application_id] : null
+    }));
   });
 
 export const createCredentialFn = createServerFn({ method: "POST" })
