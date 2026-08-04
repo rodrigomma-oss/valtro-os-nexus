@@ -136,23 +136,25 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          No NewAppDialogDebug:
+          Resultado do teste:
 
-          adicione SOMENTE
+          Após adicionar apenas
 
           import {"{"} createApplicationFn {"}"} from "@/lib/os/api/apps.functions";
 
-          Não utilize.
+          ao NewAppDialogDebug, sem utilizar a função:
 
-          Não chame.
+          O botão "Abrir Debug Binary" continua abrindo o modal?
 
-          Não execute.
+          Responder apenas:
 
-          Apenas importe.
+          SIM
 
-          Se o modal parar de abrir, o problema está no módulo apps.functions.ts ou em alguma dependência dele.
+          ou
 
-          Não faça nenhuma outra alteração.
+          NÃO
+
+          Não faça nenhuma outra modificação no código.
         </div>
         <Scripts />
       </body>
