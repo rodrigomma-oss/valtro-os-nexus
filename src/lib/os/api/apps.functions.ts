@@ -13,11 +13,13 @@ import { API_CAPABILITIES, TechnicalLimitsSchema, FeatureFlagsSchema } from "./t
 
 export const getApplications = createServerFn({ method: "GET" })
   .handler(async () => {
+    // Note: We join with profiles to get creator information since api_applications.created_by 
+    // references auth.users which is typically linked to public.profiles by ID.
     const { data, error } = await supabaseAdmin
       .from('api_applications')
       .select(`
         *,
-        created_by_user:user_roles!inner(user_id)
+        created_by_user:profiles(full_name)
       `)
       .order('created_at', { ascending: false });
 

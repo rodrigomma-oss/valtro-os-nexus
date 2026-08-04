@@ -70,8 +70,14 @@ function ApplicationsPage() {
     {
       key: 'created_at',
       header: 'Criada em',
-      render: (app) => 
-        format(new Date(app.created_at), "dd/MM/yyyy", { locale: ptBR }),
+      render: (app) => (
+        <div className="flex flex-col">
+          <span>{format(new Date(app.created_at), "dd/MM/yyyy", { locale: ptBR })}</span>
+          <span className="text-xs text-muted-foreground">
+            por {app.created_by_user?.full_name || 'Sistema'}
+          </span>
+        </div>
+      ),
     },
     {
       key: 'actions',
