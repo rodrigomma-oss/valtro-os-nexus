@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: Valtro OS API
+  description: |
+    API oficial de integração do Valtro OS para produtos da Valtro Labs.
+    
+    ### Autenticação
+    Todas as requisições autenticadas devem utilizar o protocolo `VALTRO-HMAC-SHA256-V1`.
+    A autenticação é baseada em uma assinatura HMAC-SHA256 calculada no backend seguro do produto consumidor.
+    
+    **Nunca exponha as credenciais (Key Secret) no frontend/navegador.**
+  version: 1.0.0
+  contact:
+    name: Valtro Labs Platform Team
+    email: platform@valtrolabs.pro
+
+servers:
+  - url: https://valtro-vision-forge.lovable.app/api/v1
+    description: Servidor de Produção (Exemplo)
+  - url: http://localhost:8080/api/v1
+    description: Servidor de Desenvolvimento Local
+
+tags:
+  - name: Sistema
+    description: Endpoints de metadados e saúde do sistema.
+  - name: Suporte (Planejado)
+    description: Endpoints para gestão de chamados, bugs e feedback.
+
+paths:
+  /meta:
+    get:
+      tags:
+        - Sistema
+      summary: Metadados da API
+      description: Retorna informações sobre a versão atual da API e seu ciclo de vida.
+      responses:
+        '200':
+          description: Sucesso
+          headers:
+            X-Valtro-API-Version:
+              schema:
+                type: string
+              description: Versão estável da API.
+            X-Valtro-Request-ID:
+              schema:
+                type: string
+              description: Identificador único da requisição.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetaResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /support/tickets:
+    post:
+      tags:
+        - Suporte (Planejado)
+      summary: Criar Chamado
+      security:
+        - hmacAuth: []
+      x-valtro-status: planned
+      description: |
+        Endpoint planejado para criação de novos chamados de suporte.
+        Não disponível na v1 inicial.
+      responses:
+        '201':
+          description: Criado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /support/bugs:
+    post:
+      tags:
+        - Suporte (Planejado)
+      summary: Reportar Bug
+      security:
+        - hmacAuth: []
+      x-valtro-status: planned
+      description: |
+        Endpoint planejado para reportar problemas técnicos.
+        Não disponível na v1 inicial.
+      responses:
+        '201':
+          description: Criado
+
+components:
+  securitySchemes:
+    hmacAuth:
+      type: apiKey
+      in: header
+      name: X-Valtro-Signature
+      description: |
+        Requer assinatura HMAC-SHA256 utilizando o protocolo `VALTRO-HMAC-SHA256-V1`.
+        Veja `docs/api/authentication.md` para detalhes da implementação.
+
+  schemas:
+    RequestID:
+      type: string
+      pattern: '^req_[a-f0-9]{16}$'
+      example: 'req_a1b2c3d4e5f6g7h8'
+
+    SuccessEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: true
+        data:
+          type: object
+        requestId:
+          $ref: '#/components/schemas/RequestID'
+      required:
+        - success
+        - requestId
+
+    ErrorEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            fields:
+              type: object
+              additionalProperties: true
+          required:
+            - code
+            - message
+        requestId:
+          $ref: '#/components/schemas/RequestID'
+      required:
+        - success
+        - error
+        - requestId
+
+    MetaResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                version:
+                  type: string
+                  example: 'v1'
+                status:
+                  type: string
+                  enum: [development, stable, deprecated, sunset, disabled]
+                deprecated:
+                  type: boolean
+                releasedAt:
+                  type: string
+                  format: date-time
+                deprecationAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                sunsetAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                replacementVersion:
+                  type: string
+                  nullable: true
+
+  responses:
+    Unauthorized:
+      description: Autenticação falhou
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Forbidden:
+      description: Acesso negado (escopo insuficiente)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ServiceUnavailable:
+      description: Serviço temporariamente desabilitado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
