@@ -49,7 +49,9 @@ function DevelopersHome() {
           </CardHeader>
           <CardContent>
             <Link 
-              to={"/api-docs/getting-started" as any} 
+              to="/api-docs/$slug"
+              params={{ slug: "getting-started" }}
+
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
               Começar agora
@@ -70,7 +72,9 @@ function DevelopersHome() {
           </CardHeader>
           <CardContent>
             <Link 
-              to={"/api-docs/authentication" as any} 
+              to="/api-docs/$slug"
+              params={{ slug: "authentication" }}
+
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
               Ver protocolo
