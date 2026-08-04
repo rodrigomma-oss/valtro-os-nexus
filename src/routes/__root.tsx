@@ -140,9 +140,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 Adicionar apenas o primeiro campo:
 
-<FormField name="displayName">
-   <Input />
-</FormField>
+&lt;FormField name="displayName"&gt;
+   &lt;Input /&gt;
+&lt;/FormField&gt;
 
 Nada de:
 
