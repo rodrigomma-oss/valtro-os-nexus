@@ -16,7 +16,7 @@ function ApiAdminLayout() {
     <div className="space-y-6">
       <PageHeader
         title="API Pública"
-        description="Gestão de aplicações, credenciais e auditoria da API externa."
+        description="A implementação técnica parece concluída. Antes da homologação definitiva da OPS-API-003D, preciso de evidências visuais reais da interface. Anexe capturas do Preview das seguintes telas: 1. Sidebar, 2. Dashboard, 3. Criação de App, 4. Edição, 5. Credenciais, 6. Criação de Credencial, 7. Segredo Único, 8. Rotação, 9. Revogação, 10. Auditoria, 11. Vazio, 12. Erro, 13. Desktop, 14. Mobile. Confirme uso de Server Functions, sem acesso direto ao DB, segredo temporário, histórico de rotação, irreversibilidade da revogação e MFA AAL2."
       />
       
       <Tabs value={currentTab} className="w-full">
