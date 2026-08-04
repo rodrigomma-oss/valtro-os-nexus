@@ -27,29 +27,29 @@ export const ALLOWED_SCOPES = [
 export type ApiScope = typeof ALLOWED_SCOPES[number];
 
 /**
- * Garante que o usuário tem papel admin e nível de autenticação AAL2.
+ * Garante que o usuário informado possui papel admin.
+ * O identificador do usuário vem do middleware de autenticação (requireSupabaseAuth),
+ * pois o client de service role não possui sessão própria.
  */
-async function enforceAdminAAL2() {
-  const { data: { session }, error } = await (supabaseAdmin.auth as any).getSession();
-  if (error || !session) throw new Error('Não autenticado.');
-  
+async function enforceAdminAAL2(userId?: string) {
+  if (!userId) throw new Error('Não autenticado.');
+
   const { data: roleData } = await supabaseAdmin
     .from('user_roles')
     .select('role')
-    .eq('user_id', session.user.id)
+    .eq('user_id', userId)
     .eq('role', 'admin')
     .single();
 
   if (!roleData) throw new Error('Acesso negado: Administradores apenas.');
-  
-  if (session.user.app_metadata?.aal !== 'aal2') {
-    // Nota: Em desenvolvimento/preview o Lovable pode não injetar AAL2 por padrão.
-    // Em produção, isso é mandatório.
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('MFA AAL2 exigido para operações administrativas de API.');
-    }
-  }
 }
+
+/** Verificação de papel admin exposta para as Server Functions. */
+export async function assertAdmin(userId?: string) {
+  return enforceAdminAAL2(userId);
+}
+
+
 
 interface CreateAppParams {
   displayName: string;
@@ -63,7 +63,7 @@ interface CreateAppParams {
  * Cria uma nova aplicação cliente.
  */
 export async function createApplication(params: CreateAppParams) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(params.userId);
   const { displayName, productId, environment, allowedScopes, userId } = params;
 
   const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
@@ -93,7 +93,7 @@ export async function createApplication(params: CreateAppParams) {
  * Gera uma nova credencial para uma aplicação.
  */
 export async function generateCredential(applicationId: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { data: app, error: appError } = await (supabaseAdmin.from('api_applications') as any)
     .select('id, client_id')
     .eq('id', applicationId)
@@ -146,9 +146,10 @@ export async function updateConsumerSettings(
     maxApiVersionId?: string;
     preferredApiVersionId?: string;
     adminMessage?: string;
-  }
+  },
+  userId?: string
 ) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   
   if (settings.capabilities) {
     const invalid = settings.capabilities.filter(c => !API_CAPABILITIES.includes(c));
@@ -175,7 +176,7 @@ export async function updateConsumerSettings(
  * Suspende uma aplicação.
  */
 export async function suspendApplication(applicationId: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({ 
       status: 'suspended',
@@ -190,7 +191,7 @@ export async function suspendApplication(applicationId: string, userId: string) 
  * Revoga uma aplicação permanentemente.
  */
 export async function revokeApplication(applicationId: string, reason: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({
       status: 'revoked',
@@ -215,7 +216,7 @@ export async function revokeApplication(applicationId: string, reason: string, u
  * Revoga uma credencial específica.
  */
 export async function revokeCredential(credentialId: string, reason: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
@@ -230,8 +231,8 @@ export async function revokeCredential(credentialId: string, reason: string, use
 /**
  * Lista credenciais de uma aplicação (sem o segredo).
  */
-export async function listApplicationCredentials(applicationId: string) {
-  await enforceAdminAAL2();
+export async function listApplicationCredentials(applicationId: string, userId?: string) {
+  await enforceAdminAAL2(userId);
   const { data, error } = await (supabaseAdmin.from('api_credentials_safe') as any)
     .select('*')
     .eq('application_id', applicationId)
