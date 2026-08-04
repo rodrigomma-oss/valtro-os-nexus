@@ -19,7 +19,7 @@ export const getApplications = createServerFn({ method: "GET" })
       .from('api_applications')
       .select(`
         *,
-        created_by_user:profiles(full_name)
+        created_by_user:created_by(full_name)
       `)
       .order('created_at', { ascending: false });
 
