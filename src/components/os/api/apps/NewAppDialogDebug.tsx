@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
 const schema = z.object({
@@ -54,9 +55,9 @@ export function NewAppDialogDebug() {
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Teste de Depuração Binária - Etapa 7</DialogTitle>
+          <DialogTitle>Teste de Depuração Binária - Etapa 8</DialogTitle>
           <DialogDescription>
-            Dependências atuais: useServerFn + Form + FormField + FormItem + FormControl + Input + Select.
+            Dependências atuais: useServerFn + Form + FormField + FormItem + FormControl + Input + Select + Checkbox.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
@@ -88,6 +89,20 @@ export function NewAppDialogDebug() {
                       <SelectItem value="mobile">Mobile</SelectItem>
                     </SelectContent>
                   </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value === "true"}
+                      onCheckedChange={(checked) => field.onChange(checked ? "true" : "false")}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
