@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { DialogIsolationTest } from '@/components/os/api/apps/DialogIsolationTest';
+import { NewAppDialogDebug } from '@/components/os/api/apps/NewAppDialogDebug';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
@@ -108,6 +109,7 @@ function ApplicationsPage() {
   return (
     <div className="space-y-4">
       <DialogIsolationTest />
+      <NewAppDialogDebug />
       
       <div className="flex items-center justify-between gap-2">
         <div className="relative flex-1 max-w-sm">
