@@ -4,7 +4,7 @@ import {
   User,
   Phone,
   Mail,
-  Instagram,
+  Camera,
   MapPin,
   Compass,
   UserCog,
@@ -56,7 +56,7 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
         <InfoRow icon={Building2} label="Empresa" value={lead.company_name} />
         <InfoRow icon={Phone} label="Telefone" value={lead.phone ? formatPhone(lead.phone) : dash} />
         <InfoRow icon={Mail} label="E-mail" value={lead.email ?? dash} />
-        <InfoRow icon={Instagram} label="Instagram" value={lead.instagram ?? dash} />
+        <InfoRow icon={Camera} label="Instagram" value={lead.instagram ?? dash} />
         <InfoRow icon={MapPin} label="Localização" value={location ?? dash} />
         <InfoRow icon={Tag} label="Segmento" value={lead.segment ?? dash} />
         <InfoRow icon={Compass} label="Origem" value={SOURCE_LABEL[lead.source]} />

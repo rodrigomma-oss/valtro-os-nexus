@@ -12,7 +12,7 @@ import {
   Users,
   MoreHorizontal,
   Phone,
-  Instagram,
+  Camera,
   MapPin,
   X,
   SearchX,

@@ -1,4 +1,4 @@
-import { Instagram } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/logo";
 
