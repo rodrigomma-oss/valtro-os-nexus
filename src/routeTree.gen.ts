@@ -18,11 +18,16 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ApiDocsRouteImport } from './routes/api-docs'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
+import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
+import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
+import { Route as ApiDocsOpenapiRouteImport } from './routes/api-docs.openapi'
+import { Route as ApiDocsSlugRouteImport } from './routes/api-docs.$slug'
 import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
@@ -110,6 +115,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDocsRoute = ApiDocsRouteImport.update({
+  id: '/api-docs',
+  path: '/api-docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -124,6 +134,11 @@ const BriefingIndexRoute = BriefingIndexRouteImport.update({
   path: '/briefing/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
 const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
   id: '/onboarding/$token',
   path: '/onboarding/$token',
@@ -133,6 +148,21 @@ const BriefingTokenRoute = BriefingTokenRouteImport.update({
   id: '/briefing/$token',
   path: '/briefing/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDocsStatusRoute = ApiDocsStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const ApiDocsOpenapiRoute = ApiDocsOpenapiRouteImport.update({
+  id: '/openapi',
+  path: '/openapi',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const ApiDocsSlugRoute = ApiDocsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ApiDocsRoute,
 } as any)
 const AuthenticatedOsRoute = AuthenticatedOsRouteImport.update({
   id: '/os',
@@ -375,6 +405,7 @@ const AuthenticatedOsProdutosValtroPricingBetaIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api-docs': typeof ApiDocsRouteWithChildren
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
@@ -386,8 +417,12 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/os': typeof AuthenticatedOsRouteWithChildren
+  '/api-docs/$slug': typeof ApiDocsSlugRoute
+  '/api-docs/openapi': typeof ApiDocsOpenapiRoute
+  '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -441,8 +476,12 @@ export interface FileRoutesByTo {
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api-docs/$slug': typeof ApiDocsSlugRoute
+  '/api-docs/openapi': typeof ApiDocsOpenapiRoute
+  '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/api-docs': typeof ApiDocsIndexRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -485,6 +524,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/api-docs': typeof ApiDocsRouteWithChildren
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
@@ -496,8 +536,12 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/os': typeof AuthenticatedOsRouteWithChildren
+  '/api-docs/$slug': typeof ApiDocsSlugRoute
+  '/api-docs/openapi': typeof ApiDocsOpenapiRoute
+  '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
@@ -543,6 +587,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api-docs'
     | '/auth'
     | '/contato'
     | '/diagnostico'
@@ -554,8 +599,12 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin'
     | '/os'
+    | '/api-docs/$slug'
+    | '/api-docs/openapi'
+    | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/api-docs/'
     | '/briefing/'
     | '/crm/dashboard'
     | '/crm/servicos'
@@ -609,8 +658,12 @@ export interface FileRouteTypes {
     | '/solucoes'
     | '/termos'
     | '/admin'
+    | '/api-docs/$slug'
+    | '/api-docs/openapi'
+    | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/api-docs'
     | '/briefing'
     | '/crm/dashboard'
     | '/crm/servicos'
@@ -652,6 +705,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/api-docs'
     | '/auth'
     | '/contato'
     | '/diagnostico'
@@ -663,8 +717,12 @@ export interface FileRouteTypes {
     | '/termos'
     | '/_authenticated/admin'
     | '/_authenticated/os'
+    | '/api-docs/$slug'
+    | '/api-docs/openapi'
+    | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/api-docs/'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/servicos'
@@ -710,6 +768,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  ApiDocsRoute: typeof ApiDocsRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContatoRoute: typeof ContatoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
@@ -794,6 +853,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api-docs': {
+      id: '/api-docs'
+      path: '/api-docs'
+      fullPath: '/api-docs'
+      preLoaderRoute: typeof ApiDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -815,6 +881,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api-docs/': {
+      id: '/api-docs/'
+      path: '/'
+      fullPath: '/api-docs/'
+      preLoaderRoute: typeof ApiDocsIndexRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
     '/onboarding/$token': {
       id: '/onboarding/$token'
       path: '/onboarding/$token'
@@ -828,6 +901,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/briefing/$token'
       preLoaderRoute: typeof BriefingTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api-docs/status': {
+      id: '/api-docs/status'
+      path: '/status'
+      fullPath: '/api-docs/status'
+      preLoaderRoute: typeof ApiDocsStatusRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
+    '/api-docs/openapi': {
+      id: '/api-docs/openapi'
+      path: '/openapi'
+      fullPath: '/api-docs/openapi'
+      preLoaderRoute: typeof ApiDocsOpenapiRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
+    '/api-docs/$slug': {
+      id: '/api-docs/$slug'
+      path: '/$slug'
+      fullPath: '/api-docs/$slug'
+      preLoaderRoute: typeof ApiDocsSlugRouteImport
+      parentRoute: typeof ApiDocsRoute
     }
     '/_authenticated/os': {
       id: '/_authenticated/os'
@@ -1287,9 +1381,27 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ApiDocsRouteChildren {
+  ApiDocsSlugRoute: typeof ApiDocsSlugRoute
+  ApiDocsOpenapiRoute: typeof ApiDocsOpenapiRoute
+  ApiDocsStatusRoute: typeof ApiDocsStatusRoute
+  ApiDocsIndexRoute: typeof ApiDocsIndexRoute
+}
+
+const ApiDocsRouteChildren: ApiDocsRouteChildren = {
+  ApiDocsSlugRoute: ApiDocsSlugRoute,
+  ApiDocsOpenapiRoute: ApiDocsOpenapiRoute,
+  ApiDocsStatusRoute: ApiDocsStatusRoute,
+  ApiDocsIndexRoute: ApiDocsIndexRoute,
+}
+
+const ApiDocsRouteWithChildren =
+  ApiDocsRoute._addFileChildren(ApiDocsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  ApiDocsRoute: ApiDocsRouteWithChildren,
   AuthRoute: AuthRoute,
   ContatoRoute: ContatoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
@@ -1311,13 +1423,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
