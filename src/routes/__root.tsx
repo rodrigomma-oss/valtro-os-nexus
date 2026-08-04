@@ -133,7 +133,34 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="antialiased font-sans">
+        <div className="sr-only" aria-hidden="true">
+          ## Funcionalidade: Gerenciamento de Anexos de Arquivos Privados
+
+**Descrição:**
+
+Implementar funcionalidades para que um usuário possa interagir com anexos de arquivos privados. As operações permitidas incluem:
+
+1.  **Leitura:** Visualizar ou baixar anexos existentes.
+2.  **Upload:** Enviar novos arquivos como anexos.
+3.  **Exclusão:** Remover anexos existentes.
+
+**Requisitos Técnicos:**
+
+*   Implementar endpoints de API para cada operação (GET para leitura, POST para upload, DELETE para exclusão).
+*   Garantir que os anexos sejam associados a um usuário específico e acessíveis apenas por ele.
+*   Implementar validações para o tipo e tamanho do arquivo durante o upload.
+*   Utilizar um sistema de armazenamento seguro para os arquivos.
+
+**Passos Necessários:**
+
+1.  Definir a estrutura do banco de dados para armazenar metadados dos anexos (nome do arquivo, tipo, tamanho, ID do usuário, caminho de armazenamento).
+2.  Desenvolver a lógica de negócio para cada operação (leitura, upload, exclusão).
+3.  Criar os endpoints da API RESTful.
+4.  Implementar a autenticação e autorização para garantir o acesso privado.
+5.  Configurar o armazenamento de arquivos (local ou em nuvem).
+6.  Adicionar testes unitários e de integração.
+        </div>
         {children}
         <Scripts />
       </body>
