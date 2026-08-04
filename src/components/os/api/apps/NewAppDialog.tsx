@@ -111,6 +111,17 @@ export function NewAppDialog() {
 
         <Form {...form}>
           <form className="space-y-4">
+            <FormField
+              control={form.control}
+              name="displayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="Ex: Dashboard Interno" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </form>
         </Form>
       </DialogContent>
