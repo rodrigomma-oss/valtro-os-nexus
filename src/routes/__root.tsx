@@ -136,9 +136,9 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-DEBUG-R2
+          OPS-API-003D.2-DEBUG-R3
 
-Depuração regressiva no componente original. Passo 2: Header restaurado.
+Depuração regressiva no componente original. Passo 3: Form Providers restaurados.
         </div>
         <Scripts />
       </body>
