@@ -136,33 +136,17 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-DEBUG — Etapa 5
+          Etapa 6
 
-Continuar no NewAppDialogDebug.
+Adicionar:
 
-Adicionar SOMENTE:
+&lt;FormItem&gt;
+&lt;FormControl&gt;
+&lt;Input /&gt;
 
-&lt;FormField
-  control={form.control}
-  name="name"
-  render={() =&gt; (
-    &lt;div&gt;Teste Field&lt;/div&gt;
-  )}
-/&gt;
+Ainda sem Select.
 
-NÃO adicionar:
-
-- FormItem
-
-- FormControl
-
-- Input
-
-- Label
-
-- Message
-
-Se abrir, segue.
+Ainda sem Checkbox.
         </div>
         <Scripts />
       </body>
