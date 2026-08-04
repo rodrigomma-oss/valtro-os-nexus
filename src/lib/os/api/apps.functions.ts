@@ -23,7 +23,7 @@ export const getApplications = createServerFn({ method: "GET" })
     if (appsError) throw appsError;
 
     // Fetch creators profiles separately to avoid invalid relationship join errors
-    const creatorIds = [...new Set(apps.map(app => app.created_by).filter(Boolean))];
+    const creatorIds = [...new Set(apps.map(app => app.created_by).filter((id): id is string => !!id))];
     
     let profilesMap: Record<string, string> = {};
     if (creatorIds.length > 0) {
