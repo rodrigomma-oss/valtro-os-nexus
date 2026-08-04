@@ -57,7 +57,7 @@ interface CreateAppParams {
  * Cria uma nova aplicação cliente.
  */
 export async function createApplication(params: CreateAppParams) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(params.userId);
   const { displayName, productId, environment, allowedScopes, userId } = params;
 
   const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
@@ -87,7 +87,7 @@ export async function createApplication(params: CreateAppParams) {
  * Gera uma nova credencial para uma aplicação.
  */
 export async function generateCredential(applicationId: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { data: app, error: appError } = await (supabaseAdmin.from('api_applications') as any)
     .select('id, client_id')
     .eq('id', applicationId)
@@ -140,9 +140,10 @@ export async function updateConsumerSettings(
     maxApiVersionId?: string;
     preferredApiVersionId?: string;
     adminMessage?: string;
-  }
+  },
+  userId?: string
 ) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   
   if (settings.capabilities) {
     const invalid = settings.capabilities.filter(c => !API_CAPABILITIES.includes(c));
@@ -169,7 +170,7 @@ export async function updateConsumerSettings(
  * Suspende uma aplicação.
  */
 export async function suspendApplication(applicationId: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({ 
       status: 'suspended',
@@ -184,7 +185,7 @@ export async function suspendApplication(applicationId: string, userId: string) 
  * Revoga uma aplicação permanentemente.
  */
 export async function revokeApplication(applicationId: string, reason: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_applications') as any)
     .update({
       status: 'revoked',
@@ -209,7 +210,7 @@ export async function revokeApplication(applicationId: string, reason: string, u
  * Revoga uma credencial específica.
  */
 export async function revokeCredential(credentialId: string, reason: string, userId: string) {
-  await enforceAdminAAL2();
+  await enforceAdminAAL2(userId);
   const { error } = await (supabaseAdmin.from('api_credentials') as any)
     .update({
       status: 'revoked',
@@ -224,8 +225,8 @@ export async function revokeCredential(credentialId: string, reason: string, use
 /**
  * Lista credenciais de uma aplicação (sem o segredo).
  */
-export async function listApplicationCredentials(applicationId: string) {
-  await enforceAdminAAL2();
+export async function listApplicationCredentials(applicationId: string, userId?: string) {
+  await enforceAdminAAL2(userId);
   const { data, error } = await (supabaseAdmin.from('api_credentials_safe') as any)
     .select('*')
     .eq('application_id', applicationId)
