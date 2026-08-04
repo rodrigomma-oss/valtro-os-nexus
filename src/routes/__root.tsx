@@ -136,17 +136,11 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Etapa 6
+          Etapa 7
 
-Adicionar:
+Adicionar somente:
 
-&lt;FormItem&gt;
-&lt;FormControl&gt;
-&lt;Input /&gt;
-
-Ainda sem Select.
-
-Ainda sem Checkbox.
+&lt;Select&gt;
         </div>
         <Scripts />
       </body>

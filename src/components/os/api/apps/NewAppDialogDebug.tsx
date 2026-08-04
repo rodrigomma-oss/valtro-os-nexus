@@ -15,6 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
 const schema = z.object({
@@ -47,9 +54,9 @@ export function NewAppDialogDebug() {
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Teste de Depuração Binária - Etapa 6</DialogTitle>
+          <DialogTitle>Teste de Depuração Binária - Etapa 7</DialogTitle>
           <DialogDescription>
-            Dependências atuais: useServerFn + Form + FormField + FormItem + FormControl + Input.
+            Dependências atuais: useServerFn + Form + FormField + FormItem + FormControl + Input + Select.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
@@ -62,6 +69,25 @@ export function NewAppDialogDebug() {
                   <FormControl>
                     <Input placeholder="Nome da aplicação" {...field} />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="web">Web</SelectItem>
+                      <SelectItem value="mobile">Mobile</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
