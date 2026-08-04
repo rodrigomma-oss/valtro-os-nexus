@@ -136,27 +136,19 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Mostrar integralmente:
+          Mostrar APENAS:
 
-          src/components/ui/dialog.tsx
+          As primeiras 40 linhas de:
+
+          src/components/os/api/apps/NewAppDialog.tsx
+
+          Incluindo:
+          - imports
+          - &quot;use client&quot;
+          - hooks
+          - declaração do componente
 
           Não resumir.
-
-          Mostrar exatamente como estão implementados:
-
-          Dialog
-
-          DialogPortal
-
-          DialogOverlay
-
-          DialogContent
-
-          Sem alterações.
-
-          Sem comentários.
-
-          Somente o código.
         </div>
         <Scripts />
       </body>
