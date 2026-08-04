@@ -136,9 +136,9 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-AUD-DIFF
+          OPS-API-003D.2-DEBUG-R
 
-Comparação estrutural entre componentes original e debug.
+Depuração regressiva no componente original. Passo 1: Limpeza do JSX.
         </div>
         <Scripts />
       </body>
