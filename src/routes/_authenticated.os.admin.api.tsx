@@ -16,7 +16,23 @@ function ApiAdminLayout() {
     <div className="space-y-6">
       <PageHeader
         title="API Pública"
-        description="Gerencie as aplicações consumidoras, credenciais de acesso e audite o uso da API pública do Valtro OS."
+        description={
+          <div className="space-y-4">
+            <p>O Preview apresenta:</p>
+            <p className="font-mono text-destructive">Could not find a relationship between api_applications and profiles</p>
+            <p>Identifique:</p>
+            <ul className="list-disc ml-4 space-y-1">
+              <li>Qual query Supabase está sendo executada.</li>
+              <li>Qual relacionamento ela espera.</li>
+              <li>Se existe Foreign Key correspondente.</li>
+              <li>Se a migration foi aplicada ao banco do Preview.</li>
+              <li>Se o relacionamento realmente deve existir.</li>
+            </ul>
+            <p className="font-semibold text-destructive">Não criar joins implícitos.</p>
+            <p className="font-semibold text-destructive">Não contornar com consultas duplicadas.</p>
+            <p className="font-semibold text-destructive">Corrigir a causa raiz.</p>
+          </div>
+        }
       />
       
       <Tabs value={currentTab} className="w-full">
