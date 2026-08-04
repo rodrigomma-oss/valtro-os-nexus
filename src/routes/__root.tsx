@@ -136,59 +136,33 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-DEBUG — Etapa 3
+          OPS-API-003D.2-DEBUG — Etapa 5
 
-Continuar trabalhando apenas no NewAppDialogDebug.tsx.
+Continuar no NewAppDialogDebug.
 
-Não alterar o NewAppDialog original.
+Adicionar SOMENTE:
 
-Manter exatamente o componente que já abre corretamente.
-
-Adicionar apenas:
-
-1. react-hook-form
-
-2. useForm()
-
-3. zodResolver
-
-4. schema
+&lt;FormField
+  control={form.control}
+  name="name"
+  render={() =&gt; (
+    &lt;div&gt;Teste Field&lt;/div&gt;
+  )}
+/&gt;
 
 NÃO adicionar:
 
-- &lt;Form&gt;
+- FormItem
 
-- &lt;FormField&gt;
+- FormControl
 
-- &lt;Input&gt;
+- Input
 
-- &lt;Checkbox&gt;
+- Label
 
-- &lt;Select&gt;
+- Message
 
-- &lt;useServerFn&gt; (manter como está)
-
-- createApplicationFn (manter como está)
-
-Apenas inicializar o formulário:
-
-const form = useForm(...)
-
-Sem utilizá-lo no JSX.
-
-Depois testar.
-
-Responder somente:
-
-O botão "Abrir Debug Binary" continua abrindo?
-
-SIM
-
-ou
-
-NÃO
-
-Não adicionar nenhuma outra dependência.
+Se abrir, segue.
         </div>
         <Scripts />
       </body>
