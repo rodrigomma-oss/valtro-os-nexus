@@ -136,9 +136,23 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          OPS-API-003D.2-DEBUG-R3
+          Passo 4
 
-Depuração regressiva no componente original. Passo 3: Form Providers restaurados.
+Adicionar apenas o primeiro campo:
+
+&lt;FormField name="displayName"&gt;
+   &lt;Input /&gt;
+&lt;/FormField&gt;
+
+Nada de:
+
+ Select
+
+ Checkbox
+
+ Footer
+
+ map()
         </div>
         <Scripts />
       </body>
