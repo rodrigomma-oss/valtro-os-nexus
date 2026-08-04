@@ -88,12 +88,10 @@ export function NewAppDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Criar Aplicação
-        </Button>
-      </DialogTrigger>
+      <Button onClick={() => setOpen(true)}>
+        <Plus className="mr-2 h-4 w-4" />
+        Criar Aplicação
+      </Button>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Criar Nova Aplicação</DialogTitle>
