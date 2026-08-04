@@ -136,151 +136,23 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          # OPS-API-003D.2-DEBUG
+          No NewAppDialogDebug:
 
-          O teste de isolamento trouxe uma conclusão definitiva.
+          adicione SOMENTE
 
-          Resultado:
+          import { createApplicationFn }
 
-          ✓ DialogIsolationTest abre normalmente.
+          Não utilize.
 
-          ✗ NewAppDialog continua sem abrir.
+          Não chame.
 
-          Portanto:
+          Não execute.
 
-          O problema NÃO está no Dialog.
+          Apenas importe.
 
-          O problema NÃO está no Radix.
+          Se o modal parar de abrir, o problema está no módulo apps.functions.ts ou em alguma dependência dele.
 
-          O problema NÃO está no Layout.
-
-          O problema NÃO está na Página.
-
-          O problema está EXCLUSIVAMENTE dentro do NewAppDialog.
-
-          --------------------------------------------------
-
-          Não quero mais auditorias.
-
-          Quero depuração binária.
-
-          --------------------------------------------------
-
-          PASSO 1
-
-          Faça uma cópia temporária do NewAppDialog.
-
-          --------------------------------------------------
-
-          PASSO 2
-
-          Remova TODAS as dependências abaixo:
-
-          - react-hook-form
-
-          - zod
-
-          - useServerFn
-
-          - useQueryClient
-
-          - toast
-
-          - Form
-
-          - Input
-
-          - Select
-
-          - Checkbox
-
-          - createApplicationFn
-
-          --------------------------------------------------
-
-          Dentro do DialogContent deixe apenas:
-
-          Título
-
-          Descrição
-
-          Texto:
-
-          "Teste"
-
-          Botão:
-
-          Fechar
-
-          Nada mais.
-
-          --------------------------------------------------
-
-          Teste.
-
-          Responder:
-
-          O modal abre?
-
-          SIM ou NÃO.
-
-          --------------------------------------------------
-
-          Se abrir:
-
-          Adicione novamente apenas:
-
-          react-hook-form
-
-          Teste.
-
-          Responder:
-
-          Abre?
-
-          SIM ou NÃO.
-
-          --------------------------------------------------
-
-          Continue adicionando UMA dependência por vez.
-
-          Nesta ordem:
-
-          1 react-hook-form
-
-          2 zod
-
-          3 Form
-
-          4 Input
-
-          5 Select
-
-          6 Checkbox
-
-          7 useQueryClient
-
-          8 toast
-
-          9 useServerFn
-
-          10 createApplicationFn
-
-          Após adicionar cada uma:
-
-          Responder:
-
-          Ainda abre?
-
-          SIM ou NÃO.
-
-          Parar exatamente quando voltar a quebrar.
-
-          Não corrigir.
-
-          Não seguir.
-
-          Apenas informar qual dependência fez o modal deixar de abrir.
+          Não faça nenhuma outra alteração.
         </div>
         <Scripts />
       </body>
