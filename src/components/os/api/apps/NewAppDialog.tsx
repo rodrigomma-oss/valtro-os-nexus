@@ -1,0 +1,193 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { createApplicationFn } from "@/lib/os/api/apps.functions";
+import { ALLOWED_SCOPES } from "@/lib/os/api/services.server";
+
+const formSchema = z.object({
+  displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+  environment: z.enum(["development", "staging", "production"]),
+  allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+export function NewAppDialog() {
+  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createApplicationFn);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      displayName: "",
+      environment: "development",
+      allowedScopes: ["support:tickets:read"],
+    },
+  });
+
+  async function onSubmit(values: FormValues) {
+    try {
+      await createFn({ data: values });
+      toast.success("Aplicação criada com sucesso");
+      queryClient.invalidateQueries({ queryKey: ["api-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["api-audit-logs"] });
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      toast.error("Erro ao criar aplicação");
+      console.error(error);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Criar Aplicação
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Criar Nova Aplicação</DialogTitle>
+          <DialogDescription>
+            Configure uma nova aplicação consumidora da API Valtro OS.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="displayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome da Aplicação</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Dashboard Interno" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Nome identificador para uso administrativo.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="environment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ambiente</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o ambiente" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="development">Desenvolvimento</SelectItem>
+                      <SelectItem value="staging">Staging</SelectItem>
+                      <SelectItem value="production">Produção</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-2">
+              <FormLabel>Escopos de Acesso</FormLabel>
+              <div className="grid grid-cols-1 gap-2 border rounded-md p-3 max-h-[200px] overflow-y-auto">
+                {ALLOWED_SCOPES.map((scope) => (
+                  <FormField
+                    key={scope}
+                    control={form.control}
+                    name="allowedScopes"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={scope}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(scope)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, scope])
+                                  : field.onChange(
+                                      field.value?.filter((value) => value !== scope)
+                                    );
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">
+                            {scope}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              </div>
+              <FormMessage />
+            </div>
+
+            <DialogFooter className="pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Criando..." : "Criar Aplicação"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

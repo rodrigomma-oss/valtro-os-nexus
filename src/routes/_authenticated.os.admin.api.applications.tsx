@@ -4,12 +4,13 @@ import { getApplications } from '@/lib/os/api/apps.functions';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Plus, Power, PowerOff, ShieldAlert } from 'lucide-react';
+import { Eye, Power, PowerOff, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useServerFn } from '@tanstack/react-start';
 import { suspendApplicationFn, revokeApplicationFn } from '@/lib/os/api/apps.functions';
+import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
@@ -146,10 +147,7 @@ function ApplicationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Criar Aplicação
-        </Button>
+        <NewAppDialog />
       </div>
       <DataTable
         columns={columns}
