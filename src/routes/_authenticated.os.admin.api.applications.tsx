@@ -3,20 +3,33 @@ import { getApplications } from '@/lib/os/api/apps.functions';
 import { DataTable, type DataTableColumn } from '@/components/app/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Power, PowerOff, ShieldAlert } from 'lucide-react';
+import { Eye, Power, PowerOff, ShieldAlert, Key } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useServerFn } from '@tanstack/react-start';
 import { suspendApplicationFn, revokeApplicationFn } from '@/lib/os/api/apps.functions';
+import { createCredentialFn } from '@/lib/os/api/credentials.functions';
 import { NewAppDialog } from '@/components/os/api/apps/NewAppDialog';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Copy, Check, ShieldOff } from 'lucide-react';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
 });
 
+
 function ApplicationsPage() {
+  const queryClient = useQueryClient();
   const { data: apps, error, isLoading } = useQuery({
     queryKey: ['api-applications'],
     queryFn: () => getApplications(),
@@ -24,6 +37,18 @@ function ApplicationsPage() {
 
   const suspendFn = useServerFn(suspendApplicationFn);
   const revokeFn = useServerFn(revokeApplicationFn);
+  const createCredFn = useServerFn(createCredentialFn);
+
+  const [newCredential, setNewCredential] = useState<{ key_id: string, secret: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success("Segredo copiado!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
 
   if (isLoading) return <div className="p-8 text-center text-muted-foreground">Carregando aplicações...</div>;
   if (error) return <div className="p-8 text-center text-destructive">Erro ao carregar aplicações.</div>;
