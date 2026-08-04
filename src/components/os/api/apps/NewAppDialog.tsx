@@ -153,7 +153,7 @@ export function NewAppDialog() {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="production">Produção</SelectItem>
-                      <SelectItem value="development">Sandbox (Desenvolvimento)</SelectItem>
+                      <SelectItem value="development">Sandbox</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
