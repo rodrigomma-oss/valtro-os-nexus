@@ -136,11 +136,19 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Passo 7 (último)
+          OPS-API-003D.2-AUD-DIFF-CODE
 
-Adicionar somente:
+@@ linha 113 @@
+-           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
++           <form className="space-y-4">
 
-{"{ALLOWED_SCOPES.map(...)}"}
+@@ linha 145 @@
+-               <Button type="submit" disabled={createFn.isPending}>
+-                 {createFn.isPending ? "Criando..." : "Criar Aplicação"}
+-               </Button>
++               <Button type="submit">
++                 Criar Aplicação
++               </Button>
         </div>
         <Scripts />
       </body>
