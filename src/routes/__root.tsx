@@ -136,19 +136,24 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Mostrar APENAS:
+          Mostre integralmente o return do componente NewAppDialog.
 
-          As primeiras 40 linhas de:
+          Não resuma.
 
-          src/components/os/api/apps/NewAppDialog.tsx
+          Quero ver exatamente da linha onde começa:
+          return (
+          até o fechamento:
+          );
 
-          Incluindo:
-          - imports
-          - &quot;use client&quot;
-          - hooks
-          - declaração do componente
+          Não explique.
+          Não proponha correções.
+          Mostre somente o código atual do componente.
 
-          Não resumir.
+          Confirme se o arquivo começa exatamente com:
+          &quot;use client&quot;;
+
+          Se não começa, informe isso explicitamente.
+          Não altere nada.
         </div>
         <Scripts />
       </body>
