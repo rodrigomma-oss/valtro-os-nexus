@@ -12,33 +12,30 @@ export const getAuditLogs = createServerFn({ method: "GET" })
     }).optional()
   }).optional())
   .handler(async ({ data }) => {
-    let query = supabaseAdmin
+    // Manual join to avoid relationship errors between api_audit_logs and api_applications
+    const { data: logs, error: logsError } = await supabaseAdmin
       .from('api_audit_logs')
-      .select(`
-        *,
-        application:api_applications(display_name)
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(100);
 
-    if (data?.applicationId) {
-      query = query.eq('application_id', data.applicationId);
-    }
+    if (logsError) throw logsError;
+
+    // Fetch associated applications
+    const appIds = [...new Set(logs.map(l => l.application_id).filter((id): id is string => !!id))];
+    let appsMap: Record<string, any> = {};
     
-    if (data?.method) {
-      query = query.eq('method', data.method);
+    if (appIds.length > 0) {
+      const { data: apps } = await supabaseAdmin
+        .from('api_applications')
+        .select('id, display_name')
+        .in('id', appIds);
+      
+      appsMap = (apps || []).reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
     }
 
-    if (data?.period?.from) {
-      query = query.gte('created_at', data.period.from);
-    }
-
-    if (data?.period?.to) {
-      query = query.lte('created_at', data.period.to);
-    }
-
-    const { data: logs, error } = await query;
-
-    if (error) throw error;
-    return logs;
+    return logs.map(log => ({
+      ...log,
+      application: log.application_id ? appsMap[log.application_id] : null
+    }));
   });
