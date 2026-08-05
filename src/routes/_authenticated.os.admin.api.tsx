@@ -21,9 +21,10 @@ function ApiAdminLayout() {
       <PageHeader 
         title="API Pública" 
         description="Gerencie as aplicações consumidoras da API."
+        className="px-6 pt-8 pb-4"
       />
       
-      <div className="flex flex-col flex-1 p-6 space-y-6">
+      <div className="flex flex-col flex-1 px-6 py-4 space-y-6">
 
         <nav className="flex items-center gap-1 border-b pb-px">
           {tabs.map((tab) => {
