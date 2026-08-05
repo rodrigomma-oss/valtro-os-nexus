@@ -138,7 +138,9 @@ export function NewAppDialog() {
               name="allowedScopes"
               render={() => (
                 <FormItem>
-                  <FormLabel>Escopos de Acesso</FormLabel>
+                  <h4 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Escopos de Acesso
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                     {ALLOWED_SCOPES.map((scope) => (
                       <FormField
@@ -174,6 +176,11 @@ export function NewAppDialog() {
                       />
                     ))}
                   </div>
+                  {form.formState.errors.allowedScopes && (
+                    <p className="text-sm font-medium text-destructive mt-2">
+                      {form.formState.errors.allowedScopes.message}
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
