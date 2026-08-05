@@ -218,29 +218,36 @@ function CredentialsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8 max-w-7xl">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight">Gestão de Credenciais</h1>
+        <p className="text-muted-foreground">Gerencie chaves de acesso para integração via API com o Valtro OS.</p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between pt-2">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por Key ID ou Aplicação..."
-            className="pl-10"
+            className="pl-10 h-10 shadow-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button className="w-full sm:w-auto gap-2" onClick={() => setIsNewDialogOpen(true)}>
+        <Button className="w-full sm:w-auto gap-2 h-10 px-6 shadow-sm" onClick={() => setIsNewDialogOpen(true)}>
           <Plus className="h-4 w-4" />
           Nova Credencial
         </Button>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredCredentials}
-        loading={isLoading}
-        emptyState={emptyState}
-      />
+      <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
+        <DataTable
+          columns={columns}
+          data={filteredCredentials}
+          loading={isLoading}
+          emptyState={emptyState}
+        />
+      </div>
 
       {/* Modals */}
       <NewCredentialDialog 
