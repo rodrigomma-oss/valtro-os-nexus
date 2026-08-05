@@ -21,6 +21,7 @@ function ApiAdminLayout() {
       <PageHeader 
         title="API Pública" 
         description="Gerencie as aplicações consumidoras da API."
+        className="px-6 pt-8 pb-4"
       />
       
       <div className="flex flex-col flex-1 p-6 space-y-6">
