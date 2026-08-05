@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Power, PowerOff, Loader2 } from "lucide-react";
 import { suspendApplicationFn, reactivateApplicationFn } from "@/lib/os/api/apps.functions";
-import { supabase } from "@/integrations/supabase/client";
 
 interface SuspendAppDialogProps {
   application: {
@@ -26,24 +27,25 @@ interface SuspendAppDialogProps {
 
 export function SuspendAppDialog({ application }: SuspendAppDialogProps) {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
   const suspendApp = useServerFn(suspendApplicationFn);
   const reactivateApp = useServerFn(reactivateApplicationFn);
 
   const isSuspended = application.status === 'suspended';
-  const actionLabel = isSuspended ? 'Reativar' : 'Suspender';
+  const actionTitle = isSuspended ? 'Reativar Aplicação' : 'Suspender Aplicação';
 
   const handleToggleStatus = async () => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       if (isSuspended) {
         await reactivateApp({ data: { id: application.id } });
+        toast.success("Aplicação reativada com sucesso.");
       } else {
         await suspendApp({ data: { id: application.id } });
+        toast.success("Aplicação suspensa com sucesso.");
       }
 
-      toast.success(`Aplicação ${isSuspended ? 'reativada' : 'suspensa'} com sucesso.`);
       queryClient.invalidateQueries({ queryKey: ['api-applications'] });
       setOpen(false);
     } catch (error: any) {
@@ -51,7 +53,7 @@ export function SuspendAppDialog({ application }: SuspendAppDialogProps) {
       const message = error.message || 'Erro inesperado ao processar solicitação.';
       toast.error(message);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -60,34 +62,62 @@ export function SuspendAppDialog({ application }: SuspendAppDialogProps) {
       <DialogTrigger asChild>
         <Button 
           variant="ghost" 
-          size="icon"
-          title={actionLabel}
-          className={isSuspended ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-amber-600 hover:text-amber-700 hover:bg-amber-50"}
+          size="sm"
+          className={isSuspended 
+            ? "text-green-600 hover:text-green-700 hover:bg-green-50" 
+            : "text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+          }
         >
-          {isSuspended ? <Power className="h-4 w-4" /> : <PowerOff className="h-4 w-4" />}
+          {isSuspended ? (
+            <>
+              <Power className="mr-2 h-4 w-4" />
+              Reativar
+            </>
+          ) : (
+            <>
+              <PowerOff className="mr-2 h-4 w-4" />
+              Suspender
+            </>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{actionLabel} aplicação</DialogTitle>
-          <DialogDescription>
-            {isSuspended 
-              ? "A aplicação voltará a poder autenticar requisições normalmente."
-              : "A aplicação perderá acesso à API imediatamente até ser reativada."
-            }
+          <DialogTitle>{actionTitle}</DialogTitle>
+          <DialogDescription className="space-y-4 pt-2">
+            {isSuspended ? (
+              <p>Tem certeza que deseja reativar esta aplicação?</p>
+            ) : (
+              <>
+                <p>Tem certeza que deseja suspender esta aplicação?</p>
+                <div className="bg-amber-50 p-3 rounded-md border border-amber-100 text-amber-900 text-sm space-y-1">
+                  <p className="font-semibold">Enquanto suspensa:</p>
+                  <ul className="list-disc pl-4 space-y-0.5">
+                    <li>novas autenticações serão recusadas;</li>
+                    <li>credenciais permanecem cadastradas;</li>
+                    <li>a aplicação poderá ser reativada posteriormente.</li>
+                  </ul>
+                </div>
+              </>
+            )}
+            {isSuspended && (
+              <p className="text-sm">
+                Após a confirmação a aplicação voltará a autenticar normalmente.
+              </p>
+            )}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
             Cancelar
           </Button>
           <Button 
             variant={isSuspended ? "default" : "destructive"} 
             onClick={handleToggleStatus} 
-            disabled={isLoading}
+            disabled={isSubmitting}
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Confirmar {actionLabel}
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSuspended ? 'Reativar' : 'Suspender'}
           </Button>
         </DialogFooter>
       </DialogContent>
