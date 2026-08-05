@@ -71,7 +71,8 @@ export function NewAppDialog() {
   async function onSubmit(values: FormValues) {
     try {
       setIsSubmitting(true);
-      await createFn(values);
+      // TanStack Start server functions expect the input in a 'data' object when called
+      await createFn({ data: values });
       toast.success("Aplicação criada com sucesso!");
       await queryClient.invalidateQueries({ queryKey: ['api-applications'] });
       form.reset();
