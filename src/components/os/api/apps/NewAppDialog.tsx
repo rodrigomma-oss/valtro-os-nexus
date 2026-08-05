@@ -181,6 +181,7 @@ export function NewAppDialog() {
                       {form.formState.errors.allowedScopes.message}
                     </p>
                   )}
+                </FormItem>
               )}
             />
             <DialogFooter>
