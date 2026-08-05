@@ -25,10 +25,11 @@ export function RevokeCredentialDialog({ open, onOpenChange, onConfirm, isSubmit
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-destructive">
             <ShieldOff className="h-5 w-5" />
-            Revogar Credencial?
+            Revogar Credencial Permanentemente?
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            A revogação é irreversível. A credencial deixará de autenticar imediatamente.
+          <AlertDialogDescription className="space-y-2">
+            <p className="font-semibold">Esta ação é irreversível e interromperá o acesso imediatamente.</p>
+            <p>A credencial será marcada como revogada e não poderá mais ser utilizada em nenhuma circunstância.</p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -24,12 +24,12 @@ export function RotateCredentialDialog({ open, onOpenChange, onConfirm, isSubmit
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
-            <RefreshCw className="h-5 w-5" />
-            Rotacionar Credencial?
+            <RefreshCw className="h-5 w-5 text-primary" />
+            Confirmar Rotação de Credencial?
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            A credencial atual será revogada imediatamente e uma nova será gerada. 
-            Esta ação preservará o histórico de auditoria associado.
+          <AlertDialogDescription className="space-y-2 text-foreground/80">
+            <p>A credencial atual será <strong>revogada imediatamente</strong> e uma nova será gerada.</p>
+            <p className="text-sm italic">Esta operação é auditada e preservará o histórico de versões.</p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

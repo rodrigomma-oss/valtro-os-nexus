@@ -37,8 +37,8 @@ export function SecretDisplayDialog({ data, onClose, title = "Nova Credencial Ge
             <Key className="h-5 w-5" />
             {title}
           </DialogTitle>
-          <DialogDescription className="text-destructive font-medium">
-            Este segredo será exibido apenas uma única vez. Guarde-o em local seguro.
+          <DialogDescription className="text-destructive font-medium bg-destructive/5 p-2 rounded border border-destructive/10">
+            CUIDADO: Este segredo será exibido apenas uma única vez. Nenhum segredo é armazenado em texto plano ou será exibido novamente após fechar este modal.
           </DialogDescription>
         </DialogHeader>
         
