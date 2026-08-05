@@ -160,7 +160,9 @@ export function EditAppDialog({ application }: EditAppDialogProps) {
             />
 
             <div className="space-y-2">
-              <FormLabel>Escopos de Acesso</FormLabel>
+              <h4 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Escopos de Acesso
+              </h4>
               <div className="grid grid-cols-1 gap-2 border rounded-md p-3 max-h-[200px] overflow-y-auto bg-muted/30">
                 {ALLOWED_SCOPES.map((scope) => (
                   <FormField
