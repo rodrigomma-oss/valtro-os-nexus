@@ -30,7 +30,7 @@ export function PageHeader({
       {breadcrumb && <div className="md:hidden">{breadcrumb}</div>}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-1">
             {title}
           </h1>
           {description && (
