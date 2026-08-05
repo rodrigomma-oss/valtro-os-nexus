@@ -72,20 +72,7 @@ export function NewAppDialog() {
   });
 
   async function onSubmit(values: FormValues) {
-    try {
-      await createFn({ data: values });
-      toast.success("Aplicação criada com sucesso");
-      
-      // Invalida o cache para atualizar as tabelas
-      queryClient.invalidateQueries({ queryKey: ["api-applications"] });
-      queryClient.invalidateQueries({ queryKey: ["api-audit-logs"] });
-      
-      setOpen(false);
-      form.reset();
-    } catch (error) {
-      toast.error("Erro ao criar aplicação");
-      console.error(error);
-    }
+    console.log("submit");
   }
 
   return (
@@ -110,7 +97,7 @@ export function NewAppDialog() {
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="displayName"
