@@ -20,11 +20,9 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,7 +36,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { createApplicationFn } from "@/lib/os/api/apps.functions";
 
-// Definindo os escopos localmente para evitar dependências circulares com .server.ts
 const ALLOWED_SCOPES = [
   'support:tickets:create',
   'support:tickets:read',
@@ -58,7 +55,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function NewAppDialog() {
   const [open, setOpen] = useState(false);
-  console.log("[NewAppDialog] render, open state:", open);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
   const createFn = useServerFn(createApplicationFn);
 
@@ -72,19 +69,25 @@ export function NewAppDialog() {
   });
 
   async function onSubmit(values: FormValues) {
-    console.log("submit");
+    try {
+      setIsSubmitting(true);
+      // TanStack Start server functions expect the input in a 'data' object when called
+      await createFn({ data: values });
+      toast.success("Aplicação criada com sucesso!");
+      await queryClient.invalidateQueries({ queryKey: ['api-applications'] });
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("[NewAppDialog] Error creating application:", error);
+      toast.error("Erro ao criar aplicação. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(val) => {
-      console.log("[NewAppDialog] onOpenChange triggered with:", val);
-      setOpen(val);
-    }}>
-      <Button onClick={() => {
-        console.log("BOTAO REAL");
-        console.log("[NewAppDialog] Button onClick event");
-        setOpen(true);
-      }}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button onClick={() => setOpen(true)}>
         <Plus className="mr-2 h-4 w-4" />
         Criar Aplicação
       </Button>
@@ -103,6 +106,7 @@ export function NewAppDialog() {
               name="displayName"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Nome da Aplicação</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Dashboard Interno" {...field} />
                   </FormControl>
@@ -114,6 +118,7 @@ export function NewAppDialog() {
               name="environment"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Ambiente</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -143,27 +148,27 @@ export function NewAppDialog() {
                         render={({ field }) => {
                           return (
                             <FormItem
-                              key={scope}
-                              className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-2"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(scope)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, scope])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value: string) => value !== scope
+                                key={scope}
+                                className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-2"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(scope)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, scope])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value: string) => value !== scope
+                                            )
                                           )
-                                        )
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="text-xs font-normal cursor-pointer">
-                                {scope}
-                              </FormLabel>
-                            </FormItem>
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-xs font-normal cursor-pointer">
+                                  {scope}
+                                </FormLabel>
+                              </FormItem>
                           )
                         }}
                       />
@@ -173,8 +178,8 @@ export function NewAppDialog() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">
-                Criar Aplicação
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Criando..." : "Criar Aplicação"}
               </Button>
             </DialogFooter>
           </form>
