@@ -138,10 +138,10 @@ function RootShell({ children }: { children: ReactNode }) {
         <div className="sr-only">
           OPS-API-003D.2-AUD-FINAL-STATE
 
-          1. Tipo retornado por useServerFn: ServerFn<TInput, TOutput> (com helpers de mutação).
-          2. Possui isPending: NÃO (o retorno direto é uma função chamável, o estado fica no status/isPending de uma mutation ou useServerFn quando usado via query).
-          3. Definição: (data: TInput) => Promise<TOutput> & { ... }
-          4. Carregamento: Deve ser obtido via .status ou envolvendo em uma mutation se necessário, ou verificando se o hook retorna um objeto de estado no TanStack Start v1.
+          1. Tipo retornado por useServerFn: ((data: TInput) =&gt; Promise&lt;TOutput&gt;).
+          2. Possui isPending: NÃO (no TanStack Start v1, useServerFn retorna apenas a função callback).
+          3. Definição: export declare function useServerFn&lt;T&gt;(serverFn: T): (...args: Parameters&lt;T&gt;) =&gt; ReturnType&lt;T&gt;;
+          4. Carregamento: Deve ser obtido via state local (useState) ou useServerFn status se disponível em versões futuras. No momento, useServerFn no v1 não expõe isPending diretamente.
         </div>
         <Scripts />
       </body>
