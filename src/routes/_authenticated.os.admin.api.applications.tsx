@@ -96,7 +96,7 @@ function ApplicationsPage() {
       key: 'actions',
       header: 'Ações',
       render: (app) => (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <EditAppDialog application={app} />
           <SuspendAppDialog application={app} />
         </div>
