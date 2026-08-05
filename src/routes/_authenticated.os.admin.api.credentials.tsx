@@ -34,6 +34,7 @@ function CredentialsPage() {
   const { data: credentials, isLoading, error } = useQuery({
     queryKey: ['api-credentials'],
     queryFn: () => getCredentials(),
+    refetchOnWindowFocus: false, // Evita refetch ao alternar abas durante cópia de segredo
   });
 
   const rotateFn = useServerFn(rotateCredentialFn);
@@ -124,7 +125,7 @@ function CredentialsPage() {
     },
     {
       key: 'created_at',
-      header: 'Criada em',
+      header: 'Data de Criação',
       render: (cred) => cred.created_at ? format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—',
     },
     {
@@ -139,6 +140,18 @@ function CredentialsPage() {
       key: 'last_ip',
       header: 'Último IP',
       render: (cred) => <span className="text-muted-foreground font-mono text-xs">{cred.last_ip || '—'}</span>,
+    },
+    {
+      key: 'rotation_history',
+      header: 'Histórico',
+      render: (cred) => (
+        <div className="flex flex-col text-[10px] text-muted-foreground italic">
+          <span>Versão: {cred.version || 1}</span>
+          {cred.rotated_at && (
+            <span>Rotacionada em: {format(new Date(cred.rotated_at), "dd/MM/yy")}</span>
+          )}
+        </div>
+      ),
     },
     {
       key: 'actions',
