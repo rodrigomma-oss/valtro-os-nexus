@@ -81,6 +81,58 @@ export function SecretDisplayDialog({ data, onClose, title = "Nova Credencial Ge
           </div>
         </div>
 
+        <div className="space-y-3 pt-2">
+          <h4 className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
+            Exemplos de Implementação
+          </h4>
+          <div className="grid grid-cols-1 gap-2">
+            <div className="bg-black/90 p-3 rounded-md border border-white/10 overflow-hidden group relative">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] text-white/50 font-mono">cURL (Bash)</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 text-white/50 hover:text-white"
+                  onClick={() => {
+                    const ts = Date.now().toString();
+                    const nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    const curl = `# Protocolo: VALTRO-HMAC-SHA256-V1\nTS="${ts}"\nNONCE="${nonce}"\nKEY_ID="${data.key_id}"\nSECRET="${data.secret}"\nCANONICAL="VALTRO-HMAC-SHA256-V1\\n$TS\\n$NONCE\\nGET\\n/api/v1/meta\\n\\napplication/json\\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"\nSIGNATURE=$(echo -n "$CANONICAL" | openssl dgst -sha256 -hmac "$SECRET" -hex | sed 's/.* //')\n\ncurl -X GET "https://valtrolabs.pro/api/v1/meta" \\\n  -H "x-valtro-key-id: $KEY_ID" \\\n  -H "x-valtro-timestamp: $TS" \\\n  -H "x-valtro-nonce: $NONCE" \\\n  -H "x-valtro-signature: $SIGNATURE" \\\n  -H "content-type: application/json"`;
+                    copyToClipboard(curl);
+                  }}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </div>
+              <pre className="text-[10px] text-emerald-400 font-mono overflow-x-auto leading-relaxed">
+                curl -X GET "https://valtrolabs.pro/api/v1/meta" \<br />
+                &nbsp;&nbsp;-H "x-valtro-key-id: {data.key_id.substring(0, 8)}..." \<br />
+                &nbsp;&nbsp;-H "x-valtro-signature: [hmac-sha256]"
+              </pre>
+            </div>
+
+            <div className="bg-black/90 p-3 rounded-md border border-white/10 overflow-hidden group relative">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] text-white/50 font-mono">JavaScript (Node/Fetch)</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 text-white/50 hover:text-white"
+                  onClick={() => {
+                    const js = `const crypto = require('crypto');\n\nconst keyId = '${data.key_id}';\nconst secret = '${data.secret}';\nconst timestamp = Date.now().toString();\nconst nonce = crypto.randomBytes(16).toString('hex');\nconst method = 'GET';\nconst path = '/api/v1/meta';\nconst bodyHash = crypto.createHash('sha256').update('').digest('hex');\n\nconst canonical = [\n  'VALTRO-HMAC-SHA256-V1',\n  timestamp,\n  nonce,\n  method,\n  path,\n  '', // query string\n  'application/json',\n  bodyHash\n].join('\\n');\n\nconst signature = crypto.createHmac('sha256', secret).update(canonical).digest('hex');\n\nfetch('https://valtrolabs.pro/api/v1/meta', {\n  headers: {\n    'x-valtro-key-id': keyId,\n    'x-valtro-timestamp': timestamp,\n    'x-valtro-nonce': nonce,\n    'x-valtro-signature': signature,\n    'content-type': 'application/json'\n  }\n});`;
+                    copyToClipboard(js);
+                  }}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </div>
+              <pre className="text-[10px] text-blue-400 font-mono overflow-x-auto leading-relaxed">
+                const canonical = ['VALTRO-HMAC-SHA256-V1', ts, nonce, 'GET', ...].join('\n');<br />
+                const sig = crypto.createHmac('sha256', secret).update(canonical).digest('hex');
+              </pre>
+            </div>
+          </div>
+        </div>
+
         <DialogFooter>
           <Button className="w-full" onClick={onClose}>Entendi, salvei a chave</Button>
         </DialogFooter>
