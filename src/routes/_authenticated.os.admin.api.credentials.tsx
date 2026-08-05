@@ -34,6 +34,7 @@ function CredentialsPage() {
   const { data: credentials, isLoading, error } = useQuery({
     queryKey: ['api-credentials'],
     queryFn: () => getCredentials(),
+    refetchOnWindowFocus: false, // Evita refetch ao alternar abas durante cópia de segredo
   });
 
   const rotateFn = useServerFn(rotateCredentialFn);
