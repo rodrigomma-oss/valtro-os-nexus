@@ -196,7 +196,11 @@ export function EditAppDialog({ application }: EditAppDialogProps) {
                   />
                 ))}
               </div>
-              <FormMessage />
+              {form.formState.errors.allowedScopes && (
+                <p className="text-sm font-medium text-destructive">
+                  {form.formState.errors.allowedScopes.message}
+                </p>
+              )}
             </div>
 
             <DialogFooter className="pt-4">
