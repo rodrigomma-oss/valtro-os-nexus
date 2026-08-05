@@ -120,9 +120,9 @@ export function SecretDisplayDialog({ data, onClose, title = "Nova Credencial Ge
                       <Copy className="h-3 w-3" />
                     </Button>
                   </div>
-                  <pre className="text-[10px] text-emerald-400 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
-                    curl -X GET "https://valtrolabs.pro/api/v1/meta" \<br />
-                    &nbsp;&nbsp;-H "x-valtro-key-id: {data.key_id.substring(0, 12)}..." \<br />
+                  <pre className="text-[10px] text-emerald-400 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed bg-black/30 p-2 rounded">
+                    curl -X GET "https://valtrolabs.pro/api/v1/meta" \
+                    &nbsp;&nbsp;-H "x-valtro-key-id: {data.key_id.substring(0, 12)}..." \
                     &nbsp;&nbsp;-H "x-valtro-signature: [hmac-sha256]"
                   </pre>
                 </div>
@@ -142,8 +142,8 @@ export function SecretDisplayDialog({ data, onClose, title = "Nova Credencial Ge
                       <Copy className="h-3 w-3" />
                     </Button>
                   </div>
-                  <pre className="text-[10px] text-blue-400 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
-                    const canonical = ['VALTRO-HMAC-SHA256-V1', ts, nonce, 'GET', ...].join('\n');<br />
+                  <pre className="text-[10px] text-blue-400 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed bg-black/30 p-2 rounded">
+                    const canonical = ['VALTRO-HMAC-SHA256-V1', ts, nonce, 'GET', ...].join('\n');
                     const sig = crypto.createHmac('sha256', secret).update(canonical).digest('hex');
                   </pre>
                 </div>
