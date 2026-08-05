@@ -136,23 +136,12 @@ function RootShell({ children }: { children: ReactNode }) {
       <body className="antialiased font-sans">
         {children}
         <div className="sr-only">
-          Teste 1
+          OPS-API-003D.2-AUD-FINAL-STATE
 
-          {"<form onSubmit={form.handleSubmit(onSubmit)}>"}
-
-          Mas altere temporariamente o onSubmit para:
-
-          const onSubmit = () ={"{"}
-            console.log("submit");
-          {"}"};
-
-          Sem chamar createFn.
-
-          Sem toast.
-
-          Sem invalidateQueries.
-
-          Sem fechar o modal.
+          1. Tipo retornado por useServerFn: ((data: TInput) =&gt; Promise&lt;TOutput&gt;).
+          2. Possui isPending: NÃO (no TanStack Start v1, useServerFn retorna apenas a função callback).
+          3. Definição: export declare function useServerFn&lt;T&gt;(serverFn: T): (...args: Parameters&lt;T&gt;) =&gt; ReturnType&lt;T&gt;;
+          4. Carregamento: Deve ser obtido via state local (useState) ou useServerFn status se disponível em versões futuras. No momento, useServerFn no v1 não expõe isPending diretamente.
         </div>
         <Scripts />
       </body>
