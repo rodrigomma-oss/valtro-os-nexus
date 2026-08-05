@@ -94,21 +94,24 @@ function CredentialsPage() {
     {
       key: 'key_id',
       header: 'Key ID',
-      render: (cred) => <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{cred.key_id || '—'}</code>,
+      className: "min-w-[160px]",
+      render: (cred) => <code className="text-xs font-mono bg-muted/60 px-2 py-1 rounded border border-border/50 select-all tracking-tight">{cred.key_id || '—'}</code>,
     },
     {
       key: 'app',
       header: 'Aplicação',
+      className: "w-full min-w-[200px]",
       render: (cred) => (
-        <div className="flex flex-col">
-          <span className="font-medium">{cred.application?.display_name || 'Desconhecida'}</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{cred.application?.environment || '—'}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="font-semibold text-sm">{cred.application?.display_name || 'Desconhecida'}</span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{cred.application?.environment || '—'}</span>
         </div>
       ),
     },
     {
       key: 'status',
       header: 'Status',
+      className: "min-w-[100px]",
       render: (cred) => {
         const status = cred.status;
         const variants: any = {
@@ -117,7 +120,7 @@ function CredentialsPage() {
           expired: 'warning',
         };
         return (
-          <Badge variant={variants[status] || 'outline'} className="capitalize">
+          <Badge variant={variants[status] || 'outline'} className="capitalize px-2.5 py-0.5 font-medium">
             {status === 'active' ? 'Ativa' : status === 'revoked' ? 'Revogada' : status}
           </Badge>
         );
@@ -125,59 +128,70 @@ function CredentialsPage() {
     },
     {
       key: 'created_at',
-      header: 'Data de Criação',
-      render: (cred) => cred.created_at ? format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—',
+      header: 'Criação',
+      className: "min-w-[140px]",
+      render: (cred) => (
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {cred.created_at ? format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—'}
+        </span>
+      ),
     },
     {
       key: 'last_used',
       header: 'Último Uso',
-      render: (cred) => 
-        cred.last_used_at 
-          ? format(new Date(cred.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
-          : <span className="text-muted-foreground italic">Nunca</span>,
+      className: "min-w-[140px]",
+      render: (cred) => (
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {cred.last_used_at 
+            ? format(new Date(cred.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+            : <span className="italic opacity-60">Nunca</span>}
+        </span>
+      ),
     },
     {
       key: 'last_ip',
-      header: 'Último IP',
-      render: (cred) => <span className="text-muted-foreground font-mono text-xs">{cred.last_ip || '—'}</span>,
+      header: 'IP',
+      className: "min-w-[120px]",
+      render: (cred) => <span className="text-muted-foreground font-mono text-[11px] tracking-tighter">{cred.last_ip || '—'}</span>,
     },
     {
       key: 'rotation_history',
-      header: 'Histórico',
+      header: 'Versão',
+      className: "min-w-[80px]",
       render: (cred) => (
-        <div className="flex flex-col text-[10px] text-muted-foreground italic">
-          <span>Versão: {cred.version || 1}</span>
+        <div className="flex flex-col text-[10px] text-muted-foreground leading-tight">
+          <span className="font-mono">v{cred.version || 1}</span>
           {cred.rotated_at && (
-            <span>Rotacionada em: {format(new Date(cred.rotated_at), "dd/MM/yy")}</span>
+            <span className="opacity-70 whitespace-nowrap">Rot: {format(new Date(cred.rotated_at), "dd/MM/yy")}</span>
           )}
         </div>
       ),
     },
     {
       key: 'actions',
-      header: 'Ações',
-      className: "text-right",
+      header: '',
+      className: "text-right w-[180px] min-w-[180px]",
       render: (cred) => {
         if (cred.status !== 'active') return null;
 
         return (
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-2 pr-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-8 gap-2"
+              className="h-8 gap-1.5 text-xs font-medium hover:bg-primary/5 border-border/60"
               onClick={() => setRotateTarget(cred)}
             >
-              <RefreshCw className="h-3.5 w-3.5" />
+              <RefreshCw className="h-3 w-3" />
               Rotacionar
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-8 gap-2 text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/20"
+              className="h-8 gap-1.5 text-xs font-medium text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/20"
               onClick={() => setRevokeTarget(cred)}
             >
-              <ShieldOff className="h-3.5 w-3.5" />
+              <ShieldOff className="h-3 w-3" />
               Revogar
             </Button>
           </div>
