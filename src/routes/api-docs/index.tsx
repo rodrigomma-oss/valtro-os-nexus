@@ -1,17 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { 
   Play, 
   Key, 
   Code2, 
-  Activity, 
   AlertCircle, 
-  Map, 
   GitBranch, 
   ArrowRight,
-  ShieldCheck,
   Zap,
   Cpu
 } from "lucide-react";
@@ -32,7 +27,7 @@ function DevelopersHome() {
           Portal do Desenvolvedor <span className="text-primary">Valtro OS</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-          Bem-vindo à documentação oficial da API do Valtro OS. Construa integrações poderosas com o sistema operacional da Valtro Labs.
+          Bem-vindo à documentação oficial da API do Valtro OS. Integre o Valtro Pricing ao Valtro OS de forma rápida e segura — comece pelos Primeiros Passos, configure a autenticação HMAC e consuma o contrato OpenAPI.
         </p>
       </div>
 
@@ -89,14 +84,12 @@ function DevelopersHome() {
           <Cpu className="h-4 w-4 text-primary" />
           Referências Técnicas
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { title: "OpenAPI Spec", href: "/api-docs/openapi", icon: Code2, desc: "Contrato formal v1.0" },
+            { title: "Autenticação", href: "/api-docs/authentication", icon: Key, desc: "Protocolo HMAC-SHA256" },
             { title: "Erros & Status", href: "/api-docs/errors", icon: AlertCircle, desc: "Catálogo de códigos" },
             { title: "Versionamento", href: "/api-docs/versioning", icon: GitBranch, desc: "Ciclo de vida v1" },
-            { title: "Pipeline", href: "/api-docs/pipeline", icon: Activity, desc: "Fluxo de processamento" },
-            { title: "Roadmap", href: "/api-docs/roadmap", icon: Map, desc: "Próximas capacidades" },
-            { title: "Integration Guide", href: "/api-docs/integration-guide", icon: ShieldCheck, desc: "Limites e ambientes" },
           ].map((item) => (
             <Link
               key={item.href}
@@ -111,18 +104,6 @@ function DevelopersHome() {
             </Link>
           ))}
         </div>
-      </div>
-
-      <div className="bg-muted/30 border rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold tracking-tight">Status da Implementação</h3>
-          <p className="text-sm text-muted-foreground">
-            Acompanhe o que já está operacional e o que está planejado para a API pública.
-          </p>
-        </div>
-        <Button asChild variant="outline" className="shrink-0">
-          <Link to="/api-docs/status">Ver Matriz de Status</Link>
-        </Button>
       </div>
     </div>
   );
