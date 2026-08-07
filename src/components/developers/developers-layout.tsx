@@ -1,15 +1,10 @@
 import React from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { 
-  FileText, 
   Key, 
   Play, 
   GitBranch, 
   AlertCircle, 
-  Map, 
-  History, 
-  Activity, 
-  ShieldCheck, 
   Code2, 
   BookOpen,
   ChevronRight,
@@ -34,15 +29,9 @@ const NAV_ITEMS: NavItem[] = [
   { title: "Introdução", href: "/api-docs", icon: BookOpen },
   { title: "Primeiros Passos", href: "/api-docs/getting-started", icon: Play },
   { title: "Autenticação", href: "/api-docs/authentication", icon: Key },
-  { title: "Versionamento", href: "/api-docs/versioning", icon: GitBranch },
-  { title: "Guia de Integração", href: "/api-docs/integration-guide", icon: ShieldCheck },
-  { title: "OpenAPI Spec", href: "/api-docs/openapi", icon: Code2 },
-  { title: "Pipeline", href: "/api-docs/pipeline", icon: Activity },
+  { title: "OpenAPI", href: "/api-docs/openapi", icon: Code2 },
   { title: "Erros", href: "/api-docs/errors", icon: AlertCircle },
-  { title: "Roadmap", href: "/api-docs/roadmap", icon: Map },
-  { title: "Changelog", href: "/api-docs/changelog", icon: History },
-  { title: "Status", href: "/api-docs/status", icon: ShieldCheck },
-  { title: "Estratégia de SDK", href: "/api-docs/sdk-strategy", icon: Code2, badge: "Futuro" },
+  { title: "Versionamento", href: "/api-docs/versioning", icon: GitBranch },
 ];
 
 export function DevelopersLayout({ children }: { children: React.ReactNode }) {
