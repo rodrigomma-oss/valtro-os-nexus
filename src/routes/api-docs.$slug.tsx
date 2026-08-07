@@ -16,18 +16,17 @@ export const Route = createFileRoute("/api-docs/$slug")({
   },
 });
 
+/**
+ * Rótulos da navegação pública (OPS-API-004A.2).
+ * Páginas internas permanecem acessíveis por URL direta, com rótulo derivado do slug.
+ */
 const SLUG_LABELS: Record<string, string> = {
   "getting-started": "Primeiros Passos",
   "authentication": "Autenticação",
-  "versioning": "Versionamento",
-  "pipeline": "Pipeline",
   "errors": "Erros",
-  "roadmap": "Roadmap",
-  "changelog": "Changelog",
-  "implementation-status": "Status",
-  "sdk-strategy": "Estratégia de SDK",
-  "integration-guide": "Guia de Integração",
+  "versioning": "Versionamento",
 };
+
 
 function ApiDocPage() {
   const { slug } = Route.useParams();
@@ -54,7 +53,7 @@ function ApiDocPage() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/api-docs">Documentação</Link>
+              <Link to="/api-docs">Introdução</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
