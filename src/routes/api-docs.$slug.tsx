@@ -53,7 +53,7 @@ function ApiDocPage() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/api-docs">Documentação</Link>
+              <Link to="/api-docs">Introdução</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
