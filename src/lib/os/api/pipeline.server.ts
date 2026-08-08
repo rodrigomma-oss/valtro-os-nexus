@@ -333,7 +333,8 @@ export function createApiHandler<
       }
 
       const requiredScopes = config.requiredScopes?.map(s => s.replace(/:/g, '.')) ?? [];
-      if (authContext && requiredScopes.some((scope) => !authorize(authContext!, scope))) {
+      const normalizedAuthScopes = authContext?.scopes.map(s => s.replace(/:/g, '.')) ?? [];
+      if (authContext && requiredScopes.some((scope) => !normalizedAuthScopes.includes(scope))) {
         throw new ApiPipelineError(
           "INSUFFICIENT_SCOPE",
           403,
