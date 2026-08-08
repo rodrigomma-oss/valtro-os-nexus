@@ -83,7 +83,6 @@ export async function createBugFromApi(params: {
       title: input.title,
       description: input.description,
       saas_product_id: saasProductId,
-      external_reference: input.external_reference,
       category: mapCategoryToInternal(input.category),
       severity: "normal",
       status: "new",
@@ -93,7 +92,7 @@ export async function createBugFromApi(params: {
       // O campo reported_by interno fica nulo ou associado a um 'API System User' se existisse.
       // Aqui mantemos nulo para indicar origem externa via API sem usuário OS.
     } as any)
-    .select("id, code, status, external_reference, created_at")
+    .select("id, code, status, created_at")
     .single();
 
   if (error) {

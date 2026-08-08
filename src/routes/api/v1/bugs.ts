@@ -34,7 +34,7 @@ export const Route = createFileRoute("/api/v1/bugs")({
                 id: bug.id,
                 code: bug.code,
                 status: bug.status,
-                external_reference: bug.external_reference,
+                external_reference: context.body.external_reference,
                 created_at: bug.created_at,
               },
             };
