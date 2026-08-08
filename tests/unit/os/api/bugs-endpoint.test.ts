@@ -12,7 +12,10 @@ vi.mock("@/integrations/supabase/client.server", () => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       insert: vi.fn(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: { id: "v1", version_code: "v1", status: "stable" }, error: null }),
+      maybeSingle: vi.fn().mockImplementation((...args) => {
+        // Mock loadVersion
+        return Promise.resolve({ data: { id: "v1", version_code: "v1", status: "stable", released_at: new Date().toISOString() }, error: null });
+      }),
       single: vi.fn(),
     })),
   },
