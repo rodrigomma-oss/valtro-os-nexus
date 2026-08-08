@@ -3,18 +3,14 @@ import { acquireIdempotency, commitIdempotency, calculatePayloadHash } from "@/l
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Mock Supabase Admin
-vi.mock("@/integrations/supabase/client.server", () => ({
-  supabaseAdmin: {
-    from: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockReturnThis(),
-    maybeSingle: vi.fn().mockReturnThis(),
-  },
-}));
+vi.mock("@/integrations/supabase/client.server", () => {
+  const mockFrom = vi.fn();
+  return {
+    supabaseAdmin: {
+      from: mockFrom
+    }
+  };
+});
 
 describe("Idempotency Infrastructure", () => {
   const appId = crypto.randomUUID();
@@ -25,15 +21,27 @@ describe("Idempotency Infrastructure", () => {
   const payloadHash = calculatePayloadHash(payload);
   const requestId = "req_123";
 
+  function createMockChain(result: any) {
+    const chain: any = {
+      insert: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      update: vi.fn().mockReturnThis(),
+      delete: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue(result)
+    };
+    chain.single.mockResolvedValue(result);
+    return chain;
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("should allow first use of an idempotency key", async () => {
-    // Mock insert success
-    (supabaseAdmin.from as any)().insert.mockResolvedValueOnce({ data: { id: "1" }, error: null });
-    (supabaseAdmin.from as any)().select.mockReturnThis();
-    (supabaseAdmin.from as any)().maybeSingle.mockResolvedValueOnce({ data: { id: "1" }, error: null });
+    const mockChain = createMockChain({ data: { id: "1" }, error: null });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
     const result = await acquireIdempotency({
       applicationId: appId,
@@ -49,11 +57,9 @@ describe("Idempotency Infrastructure", () => {
   });
 
   it("should return replay data for a valid existing key", async () => {
-    // Mock insert conflict (code 23505)
-    (supabaseAdmin.from as any)().insert.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
-    (supabaseAdmin.from as any)().maybeSingle.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
+    const mockChain = createMockChain({ data: null, error: { code: "23505" } });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
     
-    // Mock select existing record
     const existingRecord = {
       id: "1",
       application_id: appId,
@@ -66,9 +72,9 @@ describe("Idempotency Infrastructure", () => {
       response_body: { success: true },
       response_headers: { "Content-Type": "application/json" }
     };
-    (supabaseAdmin.from as any)().select.mockReturnThis();
-    (supabaseAdmin.from as any)().eq.mockReturnThis();
-    (supabaseAdmin.from as any)().single.mockResolvedValueOnce({ data: existingRecord, error: null });
+    
+    // Configurar o select posterior
+    mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
 
     const result = await acquireIdempotency({
       applicationId: appId,
@@ -86,8 +92,8 @@ describe("Idempotency Infrastructure", () => {
   });
 
   it("should reject same key with different payload (409 Conflict)", async () => {
-    (supabaseAdmin.from as any)().insert.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
-    (supabaseAdmin.from as any)().maybeSingle.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
+    const mockChain = createMockChain({ data: null, error: { code: "23505" } });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
     const existingRecord = {
       id: "1",
@@ -96,7 +102,7 @@ describe("Idempotency Infrastructure", () => {
       payload_hash: "different_hash",
       status: 'completed'
     };
-    (supabaseAdmin.from as any)().single.mockResolvedValueOnce({ data: existingRecord, error: null });
+    mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
 
     await expect(acquireIdempotency({
       applicationId: appId,
@@ -109,8 +115,8 @@ describe("Idempotency Infrastructure", () => {
   });
 
   it("should throw 409 if operation is still processing", async () => {
-    (supabaseAdmin.from as any)().insert.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
-    (supabaseAdmin.from as any)().maybeSingle.mockResolvedValueOnce({ data: null, error: { code: "23505" } });
+    const mockChain = createMockChain({ data: null, error: { code: "23505" } });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
     const existingRecord = {
       id: "1",
@@ -119,7 +125,7 @@ describe("Idempotency Infrastructure", () => {
       payload_hash: payloadHash,
       status: 'processing'
     };
-    (supabaseAdmin.from as any)().single.mockResolvedValueOnce({ data: existingRecord, error: null });
+    mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
 
     await expect(acquireIdempotency({
       applicationId: appId,
