@@ -216,4 +216,3 @@ describe("Idempotency Infrastructure", () => {
     })).rejects.toThrow(/Chave de idempotência inválida/);
   });
 });
-});
