@@ -3,6 +3,11 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { authenticateRequest, authorize, type ApiAuthContext } from "./auth.server";
 import { logApiRequest, logUnauthenticatedApiRequest } from "./audit.server";
 import {
+  acquireIdempotency,
+  commitIdempotency,
+  calculatePayloadHash,
+} from "./idempotency.server";
+import {
   apiErrorResponse,
   apiSuccessResponse,
   createApiRequestId,
@@ -418,6 +423,34 @@ export function createApiHandler<
         }
       }
 
+      // 8. Idempotência de Negócio (Opcional, apenas POST)
+      const idempotencyKey = request.headers.get("x-idempotency-key");
+      const useIdempotency = request.method === "POST" && idempotencyKey && authContext;
+      let payloadHash = "";
+
+      if (useIdempotency) {
+        payloadHash = calculatePayloadHash(body);
+        const replay = await acquireIdempotency({
+          applicationId: authContext!.applicationId,
+          idempotencyKey: idempotencyKey!,
+          method: request.method,
+          path: url.pathname,
+          payloadHash,
+          requestId,
+        });
+
+        if (replay) {
+          return apiSuccessResponse({
+            data: replay.responseBody,
+            status: replay.responseStatus,
+            requestId,
+            headers: mergeHeaders(headers, limiterHeaders, replay.responseHeaders, {
+              "X-Idempotency-Replay": "true",
+            }),
+          });
+        }
+      }
+
       const result = await config.handler({
         request,
         requestId,
@@ -439,6 +472,19 @@ export function createApiHandler<
         requestId,
         headers: mergeHeaders(headers, limiterHeaders, result.headers),
       });
+
+      // Commit Idempotência
+      if (useIdempotency) {
+        const responseData = await response.clone().json();
+        await commitIdempotency({
+          applicationId: authContext!.applicationId,
+          idempotencyKey: idempotencyKey!,
+          status: response.status >= 500 ? "failed" : "completed",
+          responseStatus: response.status,
+          responseBody: responseData.data,
+          responseHeaders: Object.fromEntries(response.headers.entries()),
+        });
+      }
     } catch (error) {
       if (error instanceof ApiPipelineError) {
         errorCode = error.code;
