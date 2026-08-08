@@ -26,10 +26,10 @@ function DevelopersHome() {
           <span>VOS-API v1.0 Stable</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-          Construa integrações de alta performance com <span className="text-primary">Valtro OS</span>
+          Construa integrações para a <span className="text-primary">Plataforma Valtro Labs</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl leading-relaxed">
-          O guia definitivo para integrar o <strong>Valtro Pricing</strong>. Siga nosso Quick Start, configure sua autenticação HMAC e acesse a infraestrutura de precificação do Valtro OS em minutos.
+          Conecte aplicações ao Valtro OS utilizando nossa API pública, autenticação HMAC e documentação oficial.
         </p>
       </div>
 
@@ -43,7 +43,7 @@ function DevelopersHome() {
             <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner">
               <Play className="h-6 w-6 text-primary fill-primary/20" />
             </div>
-            <CardTitle className="text-2xl">Primeiros Passos</CardTitle>
+            <CardTitle className="text-2xl">Aplicações Valtro Labs</CardTitle>
             <CardDescription className="text-base leading-relaxed mt-2">
               Do zero à primeira chamada. Entenda o fluxo de criação de aplicações e a estrutura das respostas JSON.
             </CardDescription>

@@ -1,24 +1,24 @@
 # Introdução
 
-Bem-vindo ao Portal do Desenvolvedor do Valtro OS. Nossa API foi projetada para que você possa integrar o **Valtro Pricing** ao seu sistema de forma simples, segura e em poucos minutos.
+Bem-vindo ao Portal do Desenvolvedor da Valtro Labs. Nossa API foi projetada para que você possa integrar **Aplicações Valtro Labs** ao seu ecossistema de forma simples, segura e escalável.
 
 Esta documentação foca no que você precisa para realizar a integração, priorizando exemplos práticos e uma experiência fluida para o desenvolvedor.
 
-## O que é a API do Valtro OS?
+## O que é a API da Valtro Labs?
 
-A API permite que sistemas externos interajam com o ecossistema Valtro. Atualmente, o foco principal é o fornecimento de metadados e infraestrutura para o **Valtro Pricing**, garantindo que seus cálculos de precificação estejam sempre alinhados com as regras de negócio do OS.
+A API permite que sistemas externos interajam com o ecossistema Valtro Labs. Ela fornece a infraestrutura necessária para conectar produtos como o **Valtro Pricing**, o CRM e futuras aplicações ao seu fluxo de trabalho, garantindo que suas operações estejam sempre alinhadas com as regras de negócio do OS.
 
 ## Como começar
 
 O fluxo de integração segue quatro passos fundamentais:
 
 Passo 1. Criar uma Aplicação
-No Console do Valtro OS, registre seu sistema no [Centro de Operações](/os/admin/api).
+No Console do Valtro OS, registre sua aplicação no [Centro de Operações](/os/admin/api).
 
 ---
 
 Passo 2. Gerar Credenciais
-Obtenha seu `Key ID` e `Key Secret`. Lembre-se que o Secret é exibido apenas uma vez.
+Obtenha seu `Key ID` e `Key Secret` para a aplicação criada. Lembre-se que o Secret é exibido apenas uma vez.
 
 ---
 
@@ -27,8 +27,8 @@ Implemente o protocolo HMAC-SHA256 para assinar suas requisições de forma segu
 
 ---
 
-Passo 4. Executar Chamadas
-Utilize nossos endpoints para sincronizar dados e realizar cálculos de precificação.
+Passo 4. Consumir APIs da Plataforma
+Utilize nossos endpoints para sincronizar dados e interagir com os produtos do ecossistema.
 
 #### Próximo Passo
 
@@ -39,6 +39,6 @@ Utilize nossos endpoints para sincronizar dados e realizar cálculos de precific
 ### Referências Rápidas
 
 *   **[Autenticação](authentication)**: Como assinar requisições com HMAC.
-*   **[OpenAPI](openapi)**: Contrato técnico formal dos endpoints.
+*   **[OpenAPI](openapi)**: Contrato técnico formal da Plataforma.
 *   **[Erros & Status](errors)**: Como interpretar as respostas do servidor.
 *   **[Versionamento](versioning)**: Como tratamos mudanças na API.

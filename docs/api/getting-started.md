@@ -1,8 +1,8 @@
 # Primeiros Passos
 
-Este guia ajudará você a realizar sua primeira chamada à API do Valtro OS. Vamos focar na integração com o **Valtro Pricing**.
+Este guia ajudará você a realizar sua primeira chamada à API da Valtro Labs. Vamos utilizar o **Valtro Pricing** como exemplo prático de integração.
 
-Passo 1. Obter Credenciais
+Passo 1. Criar uma Aplicação
 Antes de qualquer chamada, você precisa de uma aplicação ativa no Console do Valtro OS.
 
 1.  Acesse o **[Centro de Operações](/os/admin/api)**.
@@ -14,11 +14,11 @@ Antes de qualquer chamada, você precisa de uma aplicação ativa no Console do 
 
 ---
 
-Passo 2. A primeira chamada (Pública)
+Passo 2. A primeira chamada (Health Check)
 Para testar se sua conectividade está correta, você pode chamar nosso endpoint de metadados, que não exige autenticação.
 
 ```bash
-curl -i https://valtro-vision-forge.lovable.app/api/v1/meta
+curl -i https://api.valtrolabs.pro/v1/meta
 ```
 
 ### Resultado esperado
@@ -51,7 +51,7 @@ Toda resposta da API segue um padrão previsível para facilitar o tratamento de
 ---
 
 Passo 4. Próximo Nível: Chamadas Autenticadas
-As chamadas de negócio exigem que cada requisição seja assinada usando o protocolo HMAC-SHA256.
+As chamadas de negócio exigem que cada requisição seja assinada usando o protocolo HMAC-SHA256 para garantir a integridade das operações na plataforma.
 
 #### Próximo Passo
 

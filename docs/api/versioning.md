@@ -1,12 +1,12 @@
 # Versionamento
 
-Trabalhamos para que a API do Valtro OS seja estável e previsível, permitindo que sua integração funcione sem interrupções por longos períodos.
+Trabalhamos para que a API da Valtro Labs seja estável e previsível, permitindo que sua integração funcione sem interrupções por longos períodos.
 
 ## Identificação da Versão
 
 A versão da API é explicitada diretamente no caminho da URL:
 
-`https://valtro-vision-forge.lovable.app/api/v1/...`
+`https://api.valtrolabs.pro/v1/...`
 
 ---
 
