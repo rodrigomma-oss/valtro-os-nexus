@@ -8,6 +8,7 @@ export const API_CAPABILITIES = [
   'support.bugs',
   'support.bugs.create', // Novo scope específico
   'support.feedback',
+  'support.feedback.create',
   'support.suggestions',
   'support.attachments',
   'support.ticket_status',
