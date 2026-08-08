@@ -21,7 +21,7 @@ export const Route = createFileRoute("/api/v1/feedback")({
               );
             }
 
-            const result = await createFeedbackFromApi({
+            const feedback = await createFeedbackFromApi({
               input: context.body,
               applicationId: context.auth.applicationId,
               saasProductId: context.auth.saasProductId,
@@ -30,7 +30,13 @@ export const Route = createFileRoute("/api/v1/feedback")({
 
             return {
               status: 201,
-              data: result,
+              data: {
+                id: feedback.id,
+                code: feedback.code,
+                status: feedback.status,
+                external_reference: feedback.external_reference,
+                created_at: feedback.created_at,
+              },
             };
           },
         });

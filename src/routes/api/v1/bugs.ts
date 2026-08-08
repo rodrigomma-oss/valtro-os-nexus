@@ -6,34 +6,30 @@ import { ApiPipelineError } from "@/lib/os/api/pipeline.server";
 export const Route = createFileRoute("/api/v1/bugs")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async (invocation) => {
         const handler = createApiHandler({
           version: "v1",
           authentication: "required",
           requiredScopes: ["support:bugs:create"],
           bodySchema: BugApiSchema,
-          audit: true,
           handler: async (context) => {
-            const { auth, body, requestId } = context;
-
-            // 1. Validar Contexto de Produto
-            if (!auth?.saasProductId) {
+            if (!context.auth?.saasProductId) {
               throw new ApiPipelineError(
                 "INVALID_PRODUCT_CONTEXT",
                 422,
-                "A API Application não possui um saas_product_id associado."
+                "API Application must have an associated SaaS Product."
               );
             }
 
-            // 2. Criar o Bug no domínio
             const bug = await createBugFromApi({
-              input: body,
-              applicationId: auth.applicationId,
-              saasProductId: auth.saasProductId,
-              requestId,
+              input: context.body,
+              applicationId: context.auth.applicationId,
+              saasProductId: context.auth.saasProductId,
+              requestId: context.requestId,
             });
 
             return {
+              status: 201,
               data: {
                 id: bug.id,
                 code: bug.code,
@@ -41,12 +37,10 @@ export const Route = createFileRoute("/api/v1/bugs")({
                 external_reference: bug.external_reference,
                 created_at: bug.created_at,
               },
-              status: 201,
             };
           },
         });
-
-        return handler({ request });
+        return handler(invocation);
       },
     },
   },
