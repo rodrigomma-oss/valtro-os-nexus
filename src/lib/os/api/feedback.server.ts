@@ -74,7 +74,6 @@ export async function createFeedbackFromApi(params: {
       title: input.title,
       description: input.description,
       saas_product_id: saasProductId,
-      external_reference: input.external_reference,
       type: mapCategoryToInternal(input.category),
       status: "new",
       source: "other", // Origem externa genérica
@@ -82,8 +81,9 @@ export async function createFeedbackFromApi(params: {
       participant_email: input.contact?.email || null,
       request_id: requestId,
       metadata: metadata,
+      created_by: '00000000-0000-0000-0000-000000000000', // System/API Placeholder
     } as any)
-    .select("id, code, status, external_reference, created_at")
+    .select("id, code, status, created_at")
     .single();
 
   if (error) {

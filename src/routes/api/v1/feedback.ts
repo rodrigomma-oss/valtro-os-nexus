@@ -34,7 +34,7 @@ export const Route = createFileRoute("/api/v1/feedback")({
                 id: feedback.id,
                 code: feedback.code,
                 status: feedback.status,
-                external_reference: feedback.external_reference,
+                external_reference: context.body.external_reference,
                 created_at: feedback.created_at,
               },
             };
