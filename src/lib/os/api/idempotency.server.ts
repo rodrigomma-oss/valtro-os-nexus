@@ -41,7 +41,7 @@ export async function acquireIdempotency(params: {
 
   // 2. Tentar inserir o registro (Atomicidade via DB)
   // Se já existir, a constraint UNIQUE (application_id, idempotency_key) falhará.
-  const { data: existing, error: insertError } = await supabaseAdmin
+  const { data: inserted, error: insertError } = await supabaseAdmin
     .from("api_idempotency_keys")
     .insert({
       application_id: applicationId,
@@ -91,7 +91,6 @@ export async function acquireIdempotency(params: {
       }
 
       // 6. Se falhou (5xx), permitimos tentar novamente removendo o registro ou resetando
-      // Para o MVP, se falhou a gente deixa tentar de novo limpando o anterior
       if (record.status === 'failed') {
         await supabaseAdmin
           .from("api_idempotency_keys")
@@ -104,8 +103,8 @@ export async function acquireIdempotency(params: {
 
       // 7. Retornar dados para replay
       return {
-        status: record.status,
-        responseStatus: record.response_status,
+        status: record.status as 'completed' | 'failed',
+        responseStatus: record.response_status ?? undefined,
         responseBody: record.response_body,
         responseHeaders: record.response_headers
       };
