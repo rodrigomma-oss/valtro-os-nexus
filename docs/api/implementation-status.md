@@ -12,13 +12,13 @@ Esta matriz separa o contrato público v1 das rotas internas, operacionais e pla
 | `GET /api/public/google-calendar/callback` | Operacional  | Não                 | Callback OAuth com segurança própria.                                                               |
 | `POST /api/public/google-calendar/sync`    | Operacional  | Não                 | Cron autenticado por Bearer secret.                                                                 |
 | Pipeline compartilhado v1                  | Implementado | Infraestrutura      | Ordem comum de versão, HMAC, scopes, validação, limites, handler, auditoria e envelope.             |
-| HMAC `VALTRO-HMAC-SHA256-V1`               | Implementado | Ainda não           | Integrado ao pipeline; nenhum endpoint autenticado de negócio foi publicado.                        |
-| Autorização por scopes                     | Implementado | Ainda não           | Política “todos obrigatórios” disponível; nenhuma rota atual exige scope.                           |
-| Auditoria de API                           | Implementado | Infraestrutura      | Transversal nas duas rotas v1, com persistência best-effort.                                        |
+| HMAC `VALTRO-HMAC-SHA256-V1`               | Implementado | Sim                 | Integrado ao pipeline; suporta autenticação de aplicações oficiais.                                |
+| Autorização por scopes                     | Implementado | Sim                 | Política “todos obrigatórios” disponível; rota de bugs exige `support.bugs.create`.                 |
+| Auditoria de API                           | Implementado | Infraestrutura      | Transversal nas rotas v1, com persistência atômica.                                                 |
 | Rate limiting                              | Parcial      | Não                 | Contrato fail-closed e respostas existem; enforcement distribuído aguarda migration homologada.     |
-| Limite de payload                          | Implementado | Infraestrutura      | Valida bytes reais e limite por aplicação; streaming incremental permanece limitado pelo framework. |
+| Limite de payload                          | Implementado | Infraestrutura      | Valida bytes reais e limite por aplicação.                                                          |
 | `POST /api/v1/support/tickets`             | Planejado    | Não                 | Sem handler; não consta no OpenAPI público.                                                         |
-| `POST /api/v1/support/bugs`                | Planejado    | Não                 | Sem handler; não consta no OpenAPI público.                                                         |
+| `POST /api/v1/bugs`                        | Implementado | Sim                 | Primeiro endpoint de negócio operacional para o ecossistema.                                        |
 | Feedback, sugestões e anexos               | Planejado    | Não                 | Capacidades/scopes existem, endpoints não.                                                          |
 
 ## Infraestrutura pendente
