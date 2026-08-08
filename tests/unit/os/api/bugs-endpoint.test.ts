@@ -11,9 +11,9 @@ vi.mock("@/integrations/supabase/client.server", () => ({
     from: vi.fn(() => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn(),
-      single: vi.fn(),
       insert: vi.fn(),
+      maybeSingle: vi.fn().mockResolvedValue({ data: { id: "v1", version_code: "v1", status: "stable" }, error: null }),
+      single: vi.fn(),
     })),
   },
 }));
