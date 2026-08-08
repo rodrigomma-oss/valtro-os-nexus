@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
@@ -32,7 +33,14 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           blockquote: ({ children }) => {
             const childrenArray = React.Children.toArray(children);
             const firstChild = childrenArray[0];
-            const text = typeof firstChild === 'object' && 'props' in firstChild ? String(firstChild.props.children) : String(firstChild);
+            
+            // Safe extraction of text content from the first child
+            let text = "";
+            if (typeof firstChild === 'string' || typeof firstChild === 'number') {
+              text = String(firstChild);
+            } else if (React.isValidElement(firstChild) && firstChild.props && 'children' in firstChild.props) {
+              text = String(firstChild.props.children);
+            }
             
             const isInfo = text.includes("💡") || text.includes("Dica");
             const isWarning = text.includes("⚠️") || text.includes("Atenção");
@@ -53,7 +61,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
                    isImportant ? <Pin className="h-5 w-5" /> :
                    <Info className="h-5 w-5" />}
                 </div>
-                <div className="flex-1 italic not-prose text-sm leading-relaxed">
+                <div className="flex-1 italic not-prose text-sm leading-relaxed text-muted-foreground">
                   {children}
                 </div>
               </div>
