@@ -291,6 +291,65 @@ export type Database = {
           },
         ]
       }
+      api_idempotency_keys: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          idempotency_key: string
+          locked_at: string | null
+          method: string
+          path: string
+          payload_hash: string
+          request_id: string
+          response_body: Json | null
+          response_headers: Json | null
+          response_status: number | null
+          status: Database["public"]["Enums"]["api_idempotency_status"]
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          idempotency_key: string
+          locked_at?: string | null
+          method: string
+          path: string
+          payload_hash: string
+          request_id: string
+          response_body?: Json | null
+          response_headers?: Json | null
+          response_status?: number | null
+          status?: Database["public"]["Enums"]["api_idempotency_status"]
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          idempotency_key?: string
+          locked_at?: string | null
+          method?: string
+          path?: string
+          payload_hash?: string
+          request_id?: string
+          response_body?: Json | null
+          response_headers?: Json | null
+          response_status?: number | null
+          status?: Database["public"]["Enums"]["api_idempotency_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_idempotency_keys_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "api_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_request_nonces: {
         Row: {
           created_at: string
@@ -2957,6 +3016,7 @@ export type Database = {
       api_application_environment: "development" | "staging" | "production"
       api_application_status: "active" | "suspended" | "revoked"
       api_credential_status: "pending" | "active" | "revoked" | "expired"
+      api_idempotency_status: "processing" | "completed" | "failed"
       api_version_status:
         | "development"
         | "stable"
@@ -3422,6 +3482,7 @@ export const Constants = {
       api_application_environment: ["development", "staging", "production"],
       api_application_status: ["active", "suspended", "revoked"],
       api_credential_status: ["pending", "active", "revoked", "expired"],
+      api_idempotency_status: ["processing", "completed", "failed"],
       api_version_status: [
         "development",
         "stable",
