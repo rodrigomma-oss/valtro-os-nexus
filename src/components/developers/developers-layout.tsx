@@ -32,7 +32,6 @@ const NAV_ITEMS: NavItem[] = [
   { title: "OpenAPI", href: "/api-docs/openapi", icon: Code2 },
   { title: "Erros", href: "/api-docs/errors", icon: AlertCircle },
   { title: "Versionamento", href: "/api-docs/versioning", icon: GitBranch },
-  
 ];
 
 export function DevelopersLayout({ children }: { children: React.ReactNode }) {
