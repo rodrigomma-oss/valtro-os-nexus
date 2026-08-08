@@ -38,8 +38,11 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
             let text = "";
             if (typeof firstChild === 'string' || typeof firstChild === 'number') {
               text = String(firstChild);
-            } else if (React.isValidElement(firstChild) && firstChild.props && 'children' in firstChild.props) {
-              text = String(firstChild.props.children);
+            } else if (React.isValidElement(firstChild)) {
+              const props = firstChild.props as any;
+              if (props && props.children) {
+                text = String(props.children);
+              }
             }
             
             const isInfo = text.includes("💡") || text.includes("Dica");
