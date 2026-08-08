@@ -197,7 +197,13 @@ describe("API v1: POST /bugs", () => {
 
   it("6. should return 422 for invalid payload", async () => {
     vi.mocked(auth.authenticateRequest).mockResolvedValue({ context: mockAuthContext as any });
-    const invalidPayload = { ...validPayload, title: "short" };
+    vi.mocked(idempotency.acquireIdempotency).mockResolvedValue(null);
+    const invalidPayload = { ...validPayload, title: "sh" }; // short title (< 5)
+
+    mockChain.insert.mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: { id: "1" }, error: null }),
+    });
 
     const request = new Request("http://localhost/api/v1/bugs", {
       method: "POST",
