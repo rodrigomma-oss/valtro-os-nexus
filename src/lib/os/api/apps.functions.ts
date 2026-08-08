@@ -97,7 +97,7 @@ export const updateApplicationFn = createServerFn({ method: "POST" })
         display_name: data.displayName,
         environment: data.environment,
         allowed_scopes: data.allowedScopes,
-        saas_product_id: data.saasProductId,
+        saas_product_id: data.saasProductId ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", data.id);
