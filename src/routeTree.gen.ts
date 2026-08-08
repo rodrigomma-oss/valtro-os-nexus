@@ -33,6 +33,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
+import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
 import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
@@ -193,6 +194,11 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
 const ApiV1MetaRoute = ApiV1MetaRouteImport.update({
   id: '/api/v1/meta',
   path: '/api/v1/meta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1FeedbackRoute = ApiV1FeedbackRouteImport.update({
+  id: '/api/v1/feedback',
+  path: '/api/v1/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1BugsRoute = ApiV1BugsRouteImport.update({
@@ -470,6 +476,7 @@ export interface FileRoutesByFullPath {
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
+  '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
@@ -535,6 +542,7 @@ export interface FileRoutesByTo {
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
+  '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
@@ -600,6 +608,7 @@ export interface FileRoutesById {
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
+  '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
@@ -669,6 +678,7 @@ export interface FileRouteTypes {
     | '/os/dashboard'
     | '/api/public/version'
     | '/api/v1/bugs'
+    | '/api/v1/feedback'
     | '/api/v1/meta'
     | '/crm/'
     | '/os/'
@@ -734,6 +744,7 @@ export interface FileRouteTypes {
     | '/os/dashboard'
     | '/api/public/version'
     | '/api/v1/bugs'
+    | '/api/v1/feedback'
     | '/api/v1/meta'
     | '/crm'
     | '/os'
@@ -798,6 +809,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/dashboard'
     | '/api/public/version'
     | '/api/v1/bugs'
+    | '/api/v1/feedback'
     | '/api/v1/meta'
     | '/_authenticated/crm/'
     | '/_authenticated/os/'
@@ -857,6 +869,7 @@ export interface RootRouteChildren {
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
+  ApiV1FeedbackRoute: typeof ApiV1FeedbackRoute
   ApiV1MetaRoute: typeof ApiV1MetaRoute
   ApiPublicGoogleCalendarCallbackRoute: typeof ApiPublicGoogleCalendarCallbackRoute
   ApiPublicGoogleCalendarSyncRoute: typeof ApiPublicGoogleCalendarSyncRoute
@@ -1031,6 +1044,13 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/meta'
       fullPath: '/api/v1/meta'
       preLoaderRoute: typeof ApiV1MetaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/feedback': {
+      id: '/api/v1/feedback'
+      path: '/api/v1/feedback'
+      fullPath: '/api/v1/feedback'
+      preLoaderRoute: typeof ApiV1FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/bugs': {
@@ -1557,6 +1577,7 @@ const rootRouteChildren: RootRouteChildren = {
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
+  ApiV1FeedbackRoute: ApiV1FeedbackRoute,
   ApiV1MetaRoute: ApiV1MetaRoute,
   ApiPublicGoogleCalendarCallbackRoute: ApiPublicGoogleCalendarCallbackRoute,
   ApiPublicGoogleCalendarSyncRoute: ApiPublicGoogleCalendarSyncRoute,
