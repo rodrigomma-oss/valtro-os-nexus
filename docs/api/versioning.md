@@ -1,29 +1,42 @@
 # Versionamento
 
-Trabalhamos para que a API do Valtro OS seja estável e previsível. No entanto, evoluções são necessárias e aqui explicamos como as gerenciamos.
+Trabalhamos para que a API do Valtro OS seja estável e previsível, permitindo que sua integração funcione sem interrupções por longos períodos.
 
-## Como identificar a versão
+## Identificação da Versão
 
-A versão da API está presente diretamente na URL:
+A versão da API é explicitada diretamente no caminho da URL:
+
 `https://valtro-vision-forge.lovable.app/api/v1/...`
 
-## Ciclo de Vida
+---
 
-Cada versão passa pelos seguintes estados:
+## Ciclo de Vida da Versão
 
-1.  **Stable**: Versão atual recomendada para produção (Ex: `v1`).
-2.  **Deprecated**: Uma nova versão principal foi lançada. A versão antiga continua funcionando, mas não recebe novos recursos.
-3.  **Sunset**: Data programada para o desligamento da versão. Avisaremos com antecedência mínima de 6 meses.
+| Estado | Descrição |
+| :--- | :--- |
+| **Stable** | Versão atual recomendada (Ex: `v1`). |
+| **Deprecated** | Nova versão disponível. A antiga funciona, mas sem novos recursos. |
+| **Sunset** | Versão programada para desligamento (aviso prévio de 6 meses). |
 
-## Mudanças que NÃO quebram (Non-breaking)
+---
 
-Poderemos adicionar os seguintes itens à `v1` sem criar uma nova versão:
-*   Novos endpoints.
-*   Novos campos opcionais na resposta.
-*   Novos campos opcionais na requisição.
+## Política de Mudanças
 
-## Mudanças que quebram (Breaking)
+Para evitar quebras no seu sistema, seguimos regras rígidas sobre o que pode mudar em uma versão estável.
 
-Caso precisemos remover campos, alterar tipos de dados existentes ou mudar a lógica de autenticação, lançaremos uma nova versão principal (ex: `v2`).
+### Mudanças Non-breaking (Permitidas em v1)
+*   Adição de novos endpoints.
+*   Adição de novos campos opcionais em respostas ou requisições.
+*   Mudanças na ordem dos campos em objetos JSON.
 
-Consulte o **[Changelog](changelog)** para acompanhar o histórico de evoluções.
+### Mudanças Breaking (Exigem v2)
+*   Remoção de endpoints ou campos existentes.
+*   Alteração de tipos de dados (ex: mudar string para number).
+*   Mudanças obrigatórias na lógica de autenticação.
+
+> 📌 **Importante**
+> Recomendamos que seu parser JSON seja resiliente a novos campos desconhecidos para garantir compatibilidade futura.
+
+#### Próximo Passo
+
+[→ Introdução](index)
