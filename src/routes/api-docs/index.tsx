@@ -27,7 +27,7 @@ function DevelopersHome() {
           Portal do Desenvolvedor <span className="text-primary">Valtro OS</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-          Bem-vindo à documentação oficial da API do Valtro OS. Integre o Valtro Pricing ao Valtro OS de forma rápida e segura — comece pelos Primeiros Passos, configure a autenticação HMAC e consuma o contrato OpenAPI.
+          Integre o <strong>Valtro Pricing</strong> ao seu sistema de forma rápida e eficiente. Aprenda a configurar sua aplicação, gerar credenciais seguras e realizar sua primeira chamada em minutos.
         </p>
       </div>
 

@@ -1,41 +1,29 @@
-# Ciclo de vida e versionamento
+# Versionamento
 
-[Início](README.md) · [Primeiros passos](getting-started.md) · [OpenAPI](openapi-v1.yaml) · [Changelog](changelog.md)
+Trabalhamos para que a API do Valtro OS seja estável e previsível. No entanto, evoluções são necessárias e aqui explicamos como as gerenciamos.
 
-## Path versioning
+## Como identificar a versão
 
-A versão principal integra o path: `/api/v1/...`. Alterações incompatíveis deverão usar uma nova versão principal, como `/api/v2`.
+A versão da API está presente diretamente na URL:
+`https://valtro-vision-forge.lovable.app/api/v1/...`
 
-## Estados persistidos
+## Ciclo de Vida
 
-| Estado        | Significado                           |
-| ------------- | ------------------------------------- |
-| `development` | Versão ainda instável.                |
-| `stable`      | Versão indicada para uso operacional. |
-| `deprecated`  | Versão legada, ainda disponível.      |
-| `sunset`      | Versão com desligamento programado.   |
-| `disabled`    | Versão indisponível.                  |
+Cada versão passa pelos seguintes estados:
 
-Esses estados são persistidos em `api_versions`. A v1 é criada pelas migrations com estado inicial `stable`.
+1.  **Stable**: Versão atual recomendada para produção (Ex: `v1`).
+2.  **Deprecated**: Uma nova versão principal foi lançada. A versão antiga continua funcionando, mas não recebe novos recursos.
+3.  **Sunset**: Data programada para o desligamento da versão. Avisaremos com antecedência mínima de 6 meses.
 
-## Comportamento transversal implementado
+## Mudanças que NÃO quebram (Non-breaking)
 
-O pipeline das rotas v1 consulta o registro `v1` e:
+Poderemos adicionar os seguintes itens à `v1` sem criar uma nova versão:
+*   Novos endpoints.
+*   Novos campos opcionais na resposta.
+*   Novos campos opcionais na requisição.
 
-- prossegue para as demais etapas da rota quando a versão está disponível;
-- retorna HTTP 404 com `VERSION_UNAVAILABLE` quando o registro não pode ser localizado;
-- retorna HTTP 503 com `VERSION_UNAVAILABLE` quando o estado é `disabled`;
-- retorna HTTP 503 com `VERSION_UNAVAILABLE` quando `sunset_at` já passou;
-- adiciona `Deprecation` e `Sunset` quando as datas correspondentes estão configuradas;
-- retorna `X-Valtro-API-Version` quando a versão foi localizada;
-- retorna `X-Valtro-Request-ID` nas respostas JSON.
+## Mudanças que quebram (Breaking)
 
-`GET /api/v1/meta` usa esse mesmo pipeline e reflete o estado carregado por ele. Futuras rotas v1 criadas com `createApiHandler` herdarão a verificação; rotas legadas fora de `/api/v1` não são afetadas.
+Caso precisemos remover campos, alterar tipos de dados existentes ou mudar a lógica de autenticação, lançaremos uma nova versão principal (ex: `v2`).
 
-## Decisões pendentes
-
-- Política de antecedência para depreciação e sunset.
-- Hostname público definitivo da API.
-- Representação pública de `replacement_version_id` como código de versão ou identificador interno.
-
-A situação dessas decisões acompanha o [roadmap](roadmap.md). O contrato público vigente permanece no [OpenAPI](openapi-v1.yaml).
+Consulte o **[Changelog](changelog)** para acompanhar o histórico de evoluções.

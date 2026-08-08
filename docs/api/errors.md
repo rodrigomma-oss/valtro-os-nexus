@@ -1,41 +1,33 @@
-# Respostas e códigos de erro
+# Erros & Status
 
-[Início](README.md) · [Primeiros passos](getting-started.md) · [OpenAPI](openapi-v1.yaml) · [Pipeline](pipeline.md)
+Nossa API utiliza códigos de status HTTP padrão combinados com mensagens de erro claras no corpo da resposta para facilitar o debug.
 
-As rotas da API v1 usam um envelope JSON estável:
+## Formato de Erro
+
+Sempre que algo der errado (`success: false`), você receberá este objeto:
 
 ```json
 {
   "success": false,
   "error": {
     "code": "INVALID_SIGNATURE",
-    "message": "Assinatura HMAC inválida."
+    "message": "A assinatura HMAC enviada não coincide com a esperada pelo servidor."
   },
-  "requestId": "req_a1b2c3d4e5f60708"
+  "requestId": "req_..."
 }
 ```
 
-O header `X-Valtro-Request-ID` repete o `requestId` gerado pelo Valtro OS. Detalhes internos, credenciais, assinaturas, valores de payload e corpos não são incluídos nas mensagens.
+## Códigos Comuns
 
-## Catálogo do runtime compartilhado
+| Código               | HTTP | O que fazer?                                                                  |
+| -------------------- | ---- | ----------------------------------------------------------------------------- |
+| `INVALID_CREDENTIAL` | 401  | Verifique se seu `Key ID` está correto e se a credencial está ativa no Console. |
+| `INVALID_SIGNATURE`  | 401  | Revise sua lógica de geração de HMAC. Verifique a ordem dos campos.            |
+| `INVALID_TIMESTAMP`  | 401  | Sincronize o relógio do seu servidor. A janela máxima é de 15 minutos.         |
+| `REPLAY_ATTACK`      | 401  | Você tentou reutilizar um `nonce`. Gere um novo valor aleatório.               |
+| `INSUFFICIENT_SCOPE` | 403  | Sua aplicação não tem permissão para este recurso. Verifique as configurações. |
+| `VALIDATION_ERROR`   | 422  | O corpo da requisição está fora do formato esperado pelo contrato OpenAPI.     |
 
-| Código                   |       HTTP | Situação                                                      |
-| ------------------------ | ---------: | ------------------------------------------------------------- |
-| `VERSION_UNAVAILABLE`    | 404 ou 503 | Registro ausente, versão desabilitada ou sunset transcorrido. |
-| `INTERNAL_ERROR`         |        500 | Falha inesperada, sem exposição de detalhes.                  |
-| `MISSING_HEADERS`        |        401 | Headers HMAC obrigatórios ausentes.                           |
-| `INVALID_TIMESTAMP`      |        401 | Timestamp inválido ou fora da janela.                         |
-| `INVALID_NONCE`          |        401 | Nonce fora do formato permitido.                              |
-| `INVALID_CREDENTIAL`     |        401 | Credencial ausente, inativa, expirada ou revogada.            |
-| `INVALID_SIGNATURE`      |        401 | Assinatura HMAC inválida.                                     |
-| `REPLAY_ATTACK`          |        401 | Nonce já consumido pela credencial.                           |
-| `APPLICATION_SUSPENDED`  |        403 | Aplicação não está ativa.                                     |
-| `INSUFFICIENT_SCOPE`     |        403 | Falta ao menos um scope obrigatório.                          |
-| `PAYLOAD_TOO_LARGE`      |        413 | Corpo ultrapassa o limite efetivo.                            |
-| `VALIDATION_ERROR`       |        422 | Body, query ou path não atende ao schema.                     |
-| `RATE_LIMITED`           |        429 | Contrato disponível; nenhuma rota atual ativa o limitador.    |
-| `RATE_LIMIT_UNAVAILABLE` |        503 | Falha fechada sem enforcement persistente disponível.         |
+## Como obter ajuda
 
-`NOT_FOUND` é usado para ocultar a rota técnica interna em produção e não integra o catálogo público. `INVALID_KEY_ID` e `CREDENTIAL_REVOKED` continuam consolidados em `INVALID_CREDENTIAL`.
-
-O subconjunto normativo de erros exposto pelo endpoint público atual está no [contrato OpenAPI](openapi-v1.yaml). A disponibilidade das demais etapas está descrita no [estado de implementação](implementation-status.md).
+Ao entrar em contato com o suporte da Valtro Labs, **sempre forneça o `requestId`** da chamada que falhou. Isso nos permite localizar o log exato da sua requisição e resolver o problema muito mais rápido.
