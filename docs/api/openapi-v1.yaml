@@ -1,347 +1,109 @@
 openapi: 3.1.0
 info:
-  title: Valtro OS API
+  title: API Plataforma Valtro Labs
+  description: API oficial para integração de aplicações do ecossistema Valtro Labs.
   version: 1.0.0
-  description: |
-    Contrato público dos endpoints atualmente implementados na API v1 do Valtro OS.
-
-    Neste momento, somente o endpoint de metadados está disponível no contrato
-    público. O pipeline compartilhado de versionamento, request ID, erros e
-    auditoria já atende esta rota. Endpoints de negócio permanecem planejados
-    e não são anunciados como operacionais.
-
-    O hostname definitivo da API ainda não foi homologado. O servidor hospedado
-    abaixo representa o ambiente atual da aplicação, não um domínio definitivo
-    para integrações de produção.
-  contact:
-    name: Valtro Labs Platform Team
-    email: platform@valtrolabs.pro
-externalDocs:
-  description: Índice da documentação técnica da API pública
-  url: ./README.md
-
 servers:
-  - url: https://valtro-vision-forge.lovable.app/api/v1
-    description: Ambiente hospedado atual; hostname definitivo da API pendente de homologação.
-  - url: http://localhost:8080/api/v1
-    description: Ambiente de desenvolvimento local.
-
-tags:
-  - name: Sistema
-    description: Metadados e ciclo de vida da API.
-  - name: Suporte
-    description: Reporte de bugs e feedback de produtos.
-
-paths:
-  /bugs:
-    post:
-      operationId: createBug
-      tags:
-        - Suporte
-      summary: Reportar um bug
-      description: |
-        Cria um novo registro de bug no Valtro OS associado ao produto da aplicação.
-        Requer autenticação HMAC e o header `x-idempotency-key`.
-      security:
-        - HMAC: [support.bugs.create]
-      x-valtro-implementation-status: implemented
-      headers:
-        x-idempotency-key:
-          description: Chave UUID única para garantir processamento único da operação.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BugCreateRequest"
-      responses:
-        "201":
-          description: Bug criado com sucesso.
-          headers:
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BugCreateResponse"
-        "200":
-          description: Replay de uma operação idempotente previamente concluída.
-          headers:
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-            X-Idempotency-Replay:
-              description: Indica que a resposta é um replay.
-              schema:
-                type: string
-                const: "true"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BugCreateResponse"
-        "409":
-          description: Conflito de chave de idempotência ou operação em processamento.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Erro de validação ou contexto de produto inválido.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /meta:
-    get:
-      operationId: getApiMeta
-      tags:
-        - Sistema
-      summary: Consultar metadados da API
-      description: |
-        Retorna a versão v1 e seu estado de ciclo de vida. O controle de
-        disponibilidade é aplicado pelo pipeline compartilhado das rotas v1.
-      x-valtro-implementation-status: implemented
-      responses:
-        "200":
-          description: Metadados retornados com sucesso.
-          headers:
-            X-Valtro-API-Version:
-              $ref: "#/components/headers/ApiVersion"
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-            Deprecation:
-              $ref: "#/components/headers/Deprecation"
-            Sunset:
-              $ref: "#/components/headers/Sunset"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MetaResponse"
-        "404":
-          description: Os metadados da versão v1 não estão disponíveis.
-          headers:
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: Ocorreu um erro interno sem exposição de detalhes sensíveis.
-          headers:
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "503":
-          description: A versão v1 está desabilitada ou sua data de sunset passou.
-          headers:
-            X-Valtro-Request-ID:
-              $ref: "#/components/headers/RequestId"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+  - url: https://api.valtrolabs.pro
+    description: Produção
 
 components:
-  headers:
-    ApiVersion:
-      description: Versão que processou a requisição.
-      schema:
-        type: string
-        example: v1
-    RequestId:
-      description: Identificador de rastreio gerado pelo Valtro OS.
-      schema:
-        $ref: "#/components/schemas/RequestId"
-    Deprecation:
-      description: Data de depreciação, presente quando configurada.
-      schema:
-        type: string
-        format: http-date
-    Sunset:
-      description: Data de desligamento, presente quando configurada.
-      schema:
-        type: string
-        format: http-date
+  securitySchemes:
+    HmacAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Padrão VALTRO-HMAC-SHA256-V1
 
   schemas:
-    RequestId:
-      type: string
-      pattern: "^req_[a-f0-9]{16}$"
-      example: req_a1b2c3d4e5f60708
-
-    MetaData:
+    ErrorResponse:
       type: object
-      additionalProperties: false
       properties:
-        version:
-          type: string
-          example: v1
-        status:
-          type: string
-          enum: [development, stable, deprecated, sunset, disabled]
-        deprecated:
-          type: boolean
-        releasedAt:
-          type: [string, "null"]
-          format: date-time
-        deprecationAt:
-          type: [string, "null"]
-          format: date-time
-        sunsetAt:
-          type: [string, "null"]
-          format: date-time
-        replacementVersion:
-          type: [string, "null"]
-          format: uuid
-      required:
-        - version
-        - status
-        - deprecated
-        - releasedAt
-        - deprecationAt
-        - sunsetAt
-        - replacementVersion
-
-    MetaResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        success:
-          type: boolean
-          const: true
-        data:
-          $ref: "#/components/schemas/MetaData"
-        requestId:
-          $ref: "#/components/schemas/RequestId"
-      required:
-        - success
-        - data
-        - requestId
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            request_id: { type: string }
 
     BugCreateRequest:
       type: object
       required: [external_reference, actor, title, description, category]
       properties:
-        external_reference:
-          type: string
-          format: uuid
+        external_reference: { type: string, format: uuid }
         actor:
           type: object
           required: [source, external_user_id]
           properties:
-            source:
-              type: string
-              const: valtro-pricing
-            external_user_id:
-              type: string
-              format: uuid
+            source: { type: string, enum: [valtro-pricing] }
+            external_user_id: { type: string, format: uuid }
         contact:
           type: object
           properties:
-            name:
-              type: string
-            email:
-              type: string
-              format: email
-        title:
-          type: string
-          minLength: 5
-          maxLength: 200
-        description:
-          type: string
-          minLength: 10
-        category:
-          type: string
-          enum: [calculator, products, promotions, login, signup, mobile, other]
+            name: { type: string }
+            email: { type: string, format: email }
+        title: { type: string, minLength: 5 }
+        description: { type: string, minLength: 10 }
+        category: { type: string, enum: [calculator, products, promotions, login, signup, mobile, other] }
+
+    FeedbackCreateRequest:
+      type: object
+      required: [external_reference, actor, title, description, category]
+      properties:
+        external_reference: { type: string, format: uuid }
+        actor:
+          type: object
+          required: [source, external_user_id]
+          properties:
+            source: { type: string, enum: [valtro-pricing] }
+            external_user_id: { type: string, format: uuid }
+        contact:
+          type: object
+          properties:
+            name: { type: string }
+            email: { type: string, format: email }
+        title: { type: string, minLength: 5 }
+        description: { type: string, minLength: 10 }
+        category: { type: string, enum: [feature, ui_improvement, reports, calculator, products, promotions, other] }
         context:
           type: object
           properties:
-            route:
-              type: string
-            user_agent:
-              type: string
-            viewport:
-              type: object
-              properties:
-                width:
-                  type: integer
-                height:
-                  type: integer
-            plan:
-              type: string
-            app_version:
-              type: string
+            plan: { type: string }
+            app_version: { type: string }
 
-    BugCreateResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          const: true
-        data:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-            code:
-              type: string
-            status:
-              type: string
-            external_reference:
-              type: string
-              format: uuid
-            created_at:
-              type: string
-              format: date-time
-        requestId:
-          $ref: "#/components/schemas/RequestId"
+paths:
+  /api/v1/bugs:
+    post:
+      summary: Reportar um bug
+      security: [{ HmacAuth: [] }]
+      parameters:
+        - in: header
+          name: x-idempotency-key
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BugCreateRequest' }
+      responses:
+        '201': { description: Criado }
+        '200': { description: Replay Idempotente }
 
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-          enum:
-            - VERSION_UNAVAILABLE
-            - INTERNAL_ERROR
-            - VALIDATION_ERROR
-            - AUTHENTICATION_FAILED
-            - SCOPE_FORBIDDEN
-            - IDEMPOTENCY_KEY_CONFLICT
-            - INVALID_PRODUCT_CONTEXT
-            - RATE_LIMITED
-            - NOT_FOUND
-        message:
-          type: string
-        fields:
-          type: object
-          additionalProperties: true
-      required:
-        - code
-        - message
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        success:
-          type: boolean
-          const: false
-        error:
-          $ref: "#/components/schemas/ErrorDetail"
-        requestId:
-          $ref: "#/components/schemas/RequestId"
-      required:
-        - success
-        - error
-        - requestId
+  /api/v1/feedback:
+    post:
+      summary: Enviar feedback
+      security: [{ HmacAuth: [] }]
+      parameters:
+        - in: header
+          name: x-idempotency-key
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FeedbackCreateRequest' }
+      responses:
+        '201': { description: Criado }
+        '200': { description: Replay Idempotente }
