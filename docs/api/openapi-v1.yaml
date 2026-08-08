@@ -29,8 +29,72 @@ servers:
 tags:
   - name: Sistema
     description: Metadados e ciclo de vida da API.
+  - name: Suporte
+    description: Reporte de bugs e feedback de produtos.
 
 paths:
+  /bugs:
+    post:
+      operationId: createBug
+      tags:
+        - Suporte
+      summary: Reportar um bug
+      description: |
+        Cria um novo registro de bug no Valtro OS associado ao produto da aplicação.
+        Requer autenticação HMAC e o header `x-idempotency-key`.
+      security:
+        - HMAC: [support.bugs.create]
+      x-valtro-implementation-status: implemented
+      headers:
+        x-idempotency-key:
+          description: Chave UUID única para garantir processamento único da operação.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BugCreateRequest"
+      responses:
+        "201":
+          description: Bug criado com sucesso.
+          headers:
+            X-Valtro-Request-ID:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BugCreateResponse"
+        "200":
+          description: Replay de uma operação idempotente previamente concluída.
+          headers:
+            X-Valtro-Request-ID:
+              $ref: "#/components/headers/RequestId"
+            X-Idempotency-Replay:
+              description: Indica que a resposta é um replay.
+              schema:
+                type: string
+                const: "true"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BugCreateResponse"
+        "409":
+          description: Conflito de chave de idempotência ou operação em processamento.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Erro de validação ou contexto de produto inválido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /meta:
     get:
       operationId: getApiMeta
@@ -162,6 +226,85 @@ components:
         - data
         - requestId
 
+    BugCreateRequest:
+      type: object
+      required: [external_reference, actor, title, description, category]
+      properties:
+        external_reference:
+          type: string
+          format: uuid
+        actor:
+          type: object
+          required: [source, external_user_id]
+          properties:
+            source:
+              type: string
+              const: valtro-pricing
+            external_user_id:
+              type: string
+              format: uuid
+        contact:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+        title:
+          type: string
+          minLength: 5
+          maxLength: 200
+        description:
+          type: string
+          minLength: 10
+        category:
+          type: string
+          enum: [calculator, products, promotions, login, signup, mobile, other]
+        context:
+          type: object
+          properties:
+            route:
+              type: string
+            user_agent:
+              type: string
+            viewport:
+              type: object
+              properties:
+                width:
+                  type: integer
+                height:
+                  type: integer
+            plan:
+              type: string
+            app_version:
+              type: string
+
+    BugCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: true
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            code:
+              type: string
+            status:
+              type: string
+            external_reference:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+        requestId:
+          $ref: "#/components/schemas/RequestId"
+
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -171,8 +314,18 @@ components:
           enum:
             - VERSION_UNAVAILABLE
             - INTERNAL_ERROR
+            - VALIDATION_ERROR
+            - AUTHENTICATION_FAILED
+            - SCOPE_FORBIDDEN
+            - IDEMPOTENCY_KEY_CONFLICT
+            - INVALID_PRODUCT_CONTEXT
+            - RATE_LIMITED
+            - NOT_FOUND
         message:
           type: string
+        fields:
+          type: object
+          additionalProperties: true
       required:
         - code
         - message
