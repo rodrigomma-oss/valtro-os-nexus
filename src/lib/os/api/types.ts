@@ -6,6 +6,7 @@ import { z } from 'zod';
 export const API_CAPABILITIES = [
   'support.tickets',
   'support.bugs',
+  'support.bugs.create', // Novo scope específico
   'support.feedback',
   'support.suggestions',
   'support.attachments',

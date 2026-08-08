@@ -259,7 +259,8 @@ export function createApiHandler<
         throw new ApiPipelineError("NOT_FOUND", 404, "Resource not found.");
       }
 
-      version = (await dependencies.loadVersion(config.version)) ?? undefined;
+      const versionCode = config.version;
+      version = (await dependencies.loadVersion(versionCode)) ?? undefined;
       if (!version) {
         throw new ApiPipelineError(
           "VERSION_UNAVAILABLE",
@@ -331,7 +332,8 @@ export function createApiHandler<
         authContext = authResult.context;
       }
 
-      if (authContext && config.requiredScopes?.some((scope) => !authorize(authContext!, scope))) {
+      const requiredScopes = config.requiredScopes?.map(s => s.replace(/:/g, '.')) ?? [];
+      if (authContext && requiredScopes.some((scope) => !authorize(authContext!, scope))) {
         throw new ApiPipelineError(
           "INSUFFICIENT_SCOPE",
           403,
