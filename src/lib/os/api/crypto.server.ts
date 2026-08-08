@@ -21,7 +21,7 @@ export interface EncryptedPayload {
  * Obtém a chave mestra de criptografia do ambiente.
  */
 function getMasterKey(): Buffer {
-  const rawKey = process.env.API_MASTER_ENCRYPTION_KEY || process.env.VITE_API_MASTER_ENCRYPTION_KEY;
+  const rawKey = process.env.API_MASTER_ENCRYPTION_KEY;
   if (!rawKey) {
     throw new Error('API_MASTER_ENCRYPTION_KEY não configurada no ambiente.');
   }
