@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Search, Package } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const Route = createFileRoute('/_authenticated/os/admin/api/applications')({
   component: ApplicationsPage,
@@ -23,6 +24,18 @@ function ApplicationsPage() {
     queryKey: ['api-applications'],
     queryFn: () => getApplications(),
   });
+
+  const { data: products } = useQuery({
+    queryKey: ['saas-products'],
+    queryFn: async () => {
+      const { data } = await supabase.from("saas_products").select("id, name");
+      return data || [];
+    }
+  });
+
+  const productMap = useMemo(() => {
+    return (products || []).reduce((acc: any, p: any) => ({ ...acc, [p.id]: p.name }), {});
+  }, [products]);
 
   const filteredApps = useMemo(() => {
     if (!apps) return [];
@@ -70,6 +83,24 @@ function ApplicationsPage() {
         <Badge variant="outline" className="capitalize">
           {app.environment}
         </Badge>
+      ),
+    },
+    {
+      key: 'product',
+      header: 'Produto Associado',
+      render: (app) => (
+        <div className="flex items-center gap-2">
+          {app.saas_product_id ? (
+            <>
+              <Package className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">
+                {productMap[app.saas_product_id] || 'Carregando...'}
+              </span>
+            </>
+          ) : (
+            <span className="text-xs text-muted-foreground italic">Global</span>
+          )}
+        </div>
       ),
     },
     {

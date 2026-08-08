@@ -16,6 +16,7 @@ export interface ApiAuthContext {
   readonly applicationId: string;
   readonly clientId: string;
   readonly productId?: string | null;
+  readonly saasProductId?: string | null;
   readonly environment: ApiApplicationEnvironment;
   readonly credentialId: string;
   readonly keyId: string;
@@ -99,6 +100,7 @@ export async function authenticateRequest(
         id,
         client_id,
         product_id,
+        saas_product_id,
         environment,
         status,
         allowed_scopes,
@@ -233,6 +235,7 @@ export async function authenticateRequest(
       applicationId: app.id,
       clientId: app.client_id,
       productId: app.product_id,
+      saasProductId: app.saas_product_id,
       environment: app.environment,
       credentialId: credential.id,
       keyId: credential.key_id,

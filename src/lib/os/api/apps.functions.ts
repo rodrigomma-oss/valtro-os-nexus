@@ -60,6 +60,7 @@ export const createApplicationFn = createServerFn({ method: "POST" })
     z.object({
       displayName: z.string().min(3),
       productId: z.string().optional(),
+      saasProductId: z.string().uuid().optional().nullable(),
       environment: z.enum(["development", "staging", "production"]),
       allowedScopes: z.array(z.string()),
     }),
@@ -68,6 +69,7 @@ export const createApplicationFn = createServerFn({ method: "POST" })
     const { createApplication } = await import("./services.server");
     return createApplication({
       ...data,
+      saasProductId: data.saasProductId ?? undefined,
       allowedScopes: data.allowedScopes as never,
       userId: context.userId,
     });
@@ -81,6 +83,7 @@ export const updateApplicationFn = createServerFn({ method: "POST" })
       displayName: z.string().min(3),
       environment: z.enum(["development", "staging", "production"]),
       allowedScopes: z.array(z.string()),
+      saasProductId: z.string().uuid().optional().nullable(),
     }),
   )
   .handler(async ({ data, context }) => {
@@ -94,6 +97,7 @@ export const updateApplicationFn = createServerFn({ method: "POST" })
         display_name: data.displayName,
         environment: data.environment,
         allowed_scopes: data.allowedScopes,
+        saas_product_id: data.saasProductId ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", data.id);
@@ -146,6 +150,7 @@ export const updateSettingsFn = createServerFn({ method: "POST" })
         technicalLimits: TechnicalLimitsSchema.optional(),
         featureFlags: FeatureFlagsSchema.optional(),
         adminMessage: z.string().optional(),
+        saasProductId: z.string().uuid().optional().nullable(),
       }),
     }),
   )
@@ -158,6 +163,7 @@ export const updateSettingsFn = createServerFn({ method: "POST" })
         featureFlags?: FeatureFlags;
         technicalLimits?: TechnicalLimits;
         adminMessage?: string;
+        saasProductId?: string;
       }, 
       context.userId
     );

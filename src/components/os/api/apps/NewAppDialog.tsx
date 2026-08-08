@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 
 import {
@@ -49,6 +49,7 @@ const formSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   environment: z.enum(["development", "production"]),
   allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
+  saasProductId: z.string().uuid().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -58,6 +59,16 @@ export function NewAppDialog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
   const createFn = useServerFn(createApplicationFn);
+
+  // Fallback para não quebrar se não houver função de listagem ainda
+  const { data: products } = useQuery({
+    queryKey: ['saas-products'],
+    queryFn: async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.from("saas_products").select("id, name").order("name");
+      return data || [];
+    }
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -128,6 +139,31 @@ export function NewAppDialog() {
                     <SelectContent>
                       <SelectItem value="production">Produção</SelectItem>
                       <SelectItem value="development">Desenvolvimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="saasProductId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Produto SaaS (Opcional)</FormLabel>
+                  <Select 
+                    onValueChange={(val) => field.onChange(val === "none" ? null : val)} 
+                    defaultValue={field.value || "none"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vincular a um produto" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum produto (Geral)</SelectItem>
+                      {products?.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>

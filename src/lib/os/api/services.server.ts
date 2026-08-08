@@ -54,6 +54,7 @@ export async function assertAdmin(userId?: string) {
 interface CreateAppParams {
   displayName: string;
   productId?: string;
+  saasProductId?: string | null;
   environment: ApiApplicationEnvironment;
   allowedScopes: ApiScope[];
   userId: string;
@@ -64,7 +65,7 @@ interface CreateAppParams {
  */
 export async function createApplication(params: CreateAppParams) {
   await enforceAdminAAL2(params.userId);
-  const { displayName, productId, environment, allowedScopes, userId } = params;
+  const { displayName, productId, saasProductId, environment, allowedScopes, userId } = params;
 
   const invalidScopes = allowedScopes.filter(s => !ALLOWED_SCOPES.includes(s as any));
   if (invalidScopes.length > 0) {
@@ -78,6 +79,7 @@ export async function createApplication(params: CreateAppParams) {
       client_id: clientId,
       display_name: displayName,
       product_id: productId,
+      saas_product_id: saasProductId,
       environment,
       allowed_scopes: allowedScopes,
       created_by: userId,
@@ -146,6 +148,7 @@ export async function updateConsumerSettings(
     maxApiVersionId?: string;
     preferredApiVersionId?: string;
     adminMessage?: string;
+    saasProductId?: string | null;
   },
   userId?: string
 ) {
@@ -165,6 +168,7 @@ export async function updateConsumerSettings(
       max_api_version_id: settings.maxApiVersionId,
       preferred_api_version_id: settings.preferredApiVersionId,
       admin_message: settings.adminMessage,
+      saas_product_id: settings.saasProductId,
       updated_at: new Date().toISOString(),
     })
     .eq('id', applicationId);
