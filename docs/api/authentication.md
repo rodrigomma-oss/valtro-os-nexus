@@ -1,6 +1,6 @@
 # Autenticação
 
-Para garantir a integridade e segurança, a API do Valtro OS utiliza o protocolo `VALTRO-HMAC-SHA256-V1`. Todas as requisições de negócio devem ser assinadas.
+Para garantir a integridade e segurança, a API da Valtro Labs utiliza o protocolo `VALTRO-HMAC-SHA256-V1`. Todas as requisições de negócio devem ser assinadas.
 
 ## O que você precisa
 
