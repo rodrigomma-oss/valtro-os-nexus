@@ -69,6 +69,7 @@ export const createApplicationFn = createServerFn({ method: "POST" })
     const { createApplication } = await import("./services.server");
     return createApplication({
       ...data,
+      saasProductId: data.saasProductId ?? undefined,
       allowedScopes: data.allowedScopes as never,
       userId: context.userId,
     });

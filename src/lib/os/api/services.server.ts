@@ -54,7 +54,7 @@ export async function assertAdmin(userId?: string) {
 interface CreateAppParams {
   displayName: string;
   productId?: string;
-  saasProductId?: string;
+  saasProductId?: string | null;
   environment: ApiApplicationEnvironment;
   allowedScopes: ApiScope[];
   userId: string;
@@ -148,7 +148,7 @@ export async function updateConsumerSettings(
     maxApiVersionId?: string;
     preferredApiVersionId?: string;
     adminMessage?: string;
-    saasProductId?: string;
+    saasProductId?: string | null;
   },
   userId?: string
 ) {

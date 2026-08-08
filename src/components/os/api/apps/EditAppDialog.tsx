@@ -52,6 +52,7 @@ const formSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   environment: z.enum(["development", "staging", "production"]),
   allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
+  saasProductId: z.string().uuid().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -62,6 +63,7 @@ interface EditAppDialogProps {
     display_name: string;
     environment: "development" | "staging" | "production";
     allowed_scopes: string[];
+    saas_product_id?: string | null;
   };
 }
 
@@ -76,6 +78,7 @@ export function EditAppDialog({ application }: EditAppDialogProps) {
       displayName: application.display_name,
       environment: application.environment,
       allowedScopes: application.allowed_scopes,
+      saasProductId: application.saas_product_id || null,
     },
   });
 

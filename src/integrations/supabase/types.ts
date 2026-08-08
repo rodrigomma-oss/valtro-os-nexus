@@ -36,6 +36,7 @@ export type Database = {
           rate_limit_config: Json | null
           revocation_reason: string | null
           revoked_at: string | null
+          saas_product_id: string | null
           status: Database["public"]["Enums"]["api_application_status"]
           sunset_at: string | null
           technical_limits: Json
@@ -62,6 +63,7 @@ export type Database = {
           rate_limit_config?: Json | null
           revocation_reason?: string | null
           revoked_at?: string | null
+          saas_product_id?: string | null
           status?: Database["public"]["Enums"]["api_application_status"]
           sunset_at?: string | null
           technical_limits?: Json
@@ -88,6 +90,7 @@ export type Database = {
           rate_limit_config?: Json | null
           revocation_reason?: string | null
           revoked_at?: string | null
+          saas_product_id?: string | null
           status?: Database["public"]["Enums"]["api_application_status"]
           sunset_at?: string | null
           technical_limits?: Json
@@ -118,6 +121,13 @@ export type Database = {
           {
             foreignKeyName: "api_applications_product_id_fkey"
             columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "saas_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_applications_saas_product_id_fkey"
+            columns: ["saas_product_id"]
             isOneToOne: false
             referencedRelation: "saas_products"
             referencedColumns: ["id"]

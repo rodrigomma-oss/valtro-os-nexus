@@ -49,6 +49,7 @@ const formSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   environment: z.enum(["development", "production"]),
   allowedScopes: z.array(z.string()).min(1, "Selecione pelo menos um escopo"),
+  saasProductId: z.string().uuid().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
