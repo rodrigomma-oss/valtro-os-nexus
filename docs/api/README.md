@@ -12,14 +12,27 @@ A API permite que sistemas externos interajam com o ecossistema Valtro. Atualmen
 
 O fluxo de integração segue quatro passos fundamentais:
 
-1.  **Criar uma Aplicação**: No Console do Valtro OS, registre seu sistema.
-2.  **Gerar Credenciais**: Obtenha seu `Key ID` e `Key Secret`.
-3.  **Configurar Autenticação**: Implemente o protocolo HMAC-SHA256 para assinar suas requisições.
-4.  **Executar Chamadas**: Utilize nossos endpoints para sincronizar dados.
+Passo 1. Criar uma Aplicação
+No Console do Valtro OS, registre seu sistema no [Centro de Operações](/os/admin/api).
 
-## Próximos Passos
+---
 
-Para realizar sua primeira chamada em menos de 5 minutos, siga para o nosso guia de **[Primeiros Passos](getting-started)**.
+Passo 2. Gerar Credenciais
+Obtenha seu `Key ID` e `Key Secret`. Lembre-se que o Secret é exibido apenas uma vez.
+
+---
+
+Passo 3. Configurar Autenticação
+Implemente o protocolo HMAC-SHA256 para assinar suas requisições de forma segura.
+
+---
+
+Passo 4. Executar Chamadas
+Utilize nossos endpoints para sincronizar dados e realizar cálculos de precificação.
+
+#### Próximo Passo
+
+[→ Primeiros Passos](getting-started)
 
 ---
 

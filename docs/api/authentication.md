@@ -4,8 +4,13 @@ Para garantir a integridade e segurança, a API do Valtro OS utiliza o protocolo
 
 ## O que você precisa
 
-1.  `Key ID`: Identificador público da sua aplicação.
-2.  `Key Secret`: Sua chave secreta (nunca a envie no header ou no corpo).
+Para assinar uma requisição, você utilizará dois componentes da sua credencial:
+
+1.  `Key ID`: Identificador público da sua aplicação (enviado no header).
+2.  `Key Secret`: Sua chave secreta usada para gerar a assinatura (nunca enviada).
+
+> ⚠️ **Atenção**
+> Nunca exponha seu `Key Secret` em ambientes client-side ou repositórios públicos. Utilize sempre variáveis de ambiente em seu servidor.
 
 ## Como funciona a assinatura
 
@@ -13,12 +18,14 @@ Você deve gerar um código HMAC-SHA256 usando seu `Key Secret` e enviá-lo no h
 
 ### Headers obrigatórios
 
-| Header                | Valor Exemplo              | Descrição                                 |
-| --------------------- | -------------------------- | ----------------------------------------- |
-| `x-valtro-key-id`     | `vlt_key_...`              | ID da sua credencial.                     |
-| `x-valtro-timestamp`  | `1723120000000`            | Unix Timestamp em milissegundos.          |
-| `x-valtro-nonce`      | `a1b2c3d4e5f6g7h8`         | String aleatória (min 16 chars).          |
-| `x-valtro-signature`  | `hash_hexadecimal...`      | O resultado da sua assinatura.            |
+| Header | Valor Exemplo | Descrição |
+| :--- | :--- | :--- |
+| `x-valtro-key-id` | `vlt_key_...` | ID da sua credencial gerada no Console. |
+| `x-valtro-timestamp` | `1723120000000` | Unix Timestamp em milissegundos. |
+| `x-valtro-nonce` | `a1b2c3d4e5f6g...` | String aleatória única para evitar replicação. |
+| `x-valtro-signature` | `hash_hexadecimal...` | O resultado da assinatura HMAC-SHA256. |
+
+---
 
 ## Exemplo de Implementação (Node.js)
 
@@ -44,10 +51,18 @@ function signRequest(secret, method, path, body, timestamp, nonce) {
 }
 ```
 
-## Dicas de Segurança
+> 📌 **Importante**
+> A ordem dos campos na `canonicalString` é vital. Qualquer diferença resultará em `INVALID_SIGNATURE`.
 
-*   **Janela de Tempo**: Requisições com `x-valtro-timestamp` com mais de 15 minutos de diferença do servidor serão rejeitadas.
-*   **Nonce Único**: Cada `x-valtro-nonce` só pode ser usado uma vez. Isso impede ataques de repetição.
-*   **Armazenamento**: Guarde seu Secret em variáveis de ambiente protegidas, nunca no código-fonte ou no frontend.
+---
 
-Para ver os códigos de erro relacionados à autenticação, consulte o **[Catálogo de Erros](errors)**.
+## Regras de Validação
+
+Para que sua requisição seja aceita, o servidor valida:
+
+*   **Janela de Tempo**: O timestamp deve estar dentro de uma janela de 15 minutos em relação ao horário do servidor.
+*   **Nonce Único**: O valor de `x-valtro-nonce` deve ser único para aquele `Key ID`. Se reutilizado, a requisição será bloqueada.
+
+#### Próximo Passo
+
+[→ OpenAPI Spec](openapi)

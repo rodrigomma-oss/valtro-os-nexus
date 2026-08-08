@@ -2,29 +2,26 @@
 
 Este guia ajudará você a realizar sua primeira chamada à API do Valtro OS. Vamos focar na integração com o **Valtro Pricing**.
 
-## 1. Obter Credenciais
-
-Antes de qualquer chamada, você precisa de uma aplicação ativa no Console do Valtro OS:
+Passo 1. Obter Credenciais
+Antes de qualquer chamada, você precisa de uma aplicação ativa no Console do Valtro OS.
 
 1.  Acesse o **[Centro de Operações](/os/admin/api)**.
 2.  Crie uma nova **Aplicação**.
 3.  Gere uma **Credencial**.
-4.  **Importante**: Salve seu `Key Secret` em um local seguro. Ele não será exibido novamente e é fundamental para a segurança da sua integração.
 
-## 2. A primeira chamada (Pública)
+> 🔒 **Segurança**
+> Salve seu `Key Secret` em um local seguro imediatamente. Ele não será exibido novamente e é a única forma de autenticar suas chamadas.
 
-Para testar se sua conectividade está correta, você pode chamar nosso endpoint de metadados, que não exige autenticação:
+---
+
+Passo 2. A primeira chamada (Pública)
+Para testar se sua conectividade está correta, você pode chamar nosso endpoint de metadados, que não exige autenticação.
 
 ```bash
 curl -i https://valtro-vision-forge.lovable.app/api/v1/meta
 ```
 
-**O que esperar:**
-Uma resposta JSON com `success: true` e o status atual da API. Observe o campo `requestId` na resposta; ele é sua chave para suporte técnico caso algo falhe.
-
-## 3. Entendendo a Resposta
-
-Toda resposta da API segue um padrão previsível para reduzir a carga cognitiva do seu código:
+### Resultado esperado
 
 ```json
 {
@@ -33,12 +30,29 @@ Toda resposta da API segue um padrão previsível para reduzir a carga cognitiva
     "version": "v1",
     "status": "stable"
   },
-  "requestId": "req_..."
+  "requestId": "req_123456789"
 }
 ```
 
-## 4. Próximo Nível: Chamadas Autenticadas
+> 💡 **Dica**
+> Observe o campo `requestId` na resposta; ele é sua chave para suporte técnico caso algo falhe.
 
-As chamadas de negócio (como as do Valtro Pricing) exigem que cada requisição seja assinada usando o protocolo HMAC-SHA256. Isso garante que apenas o seu sistema possa falar com a nossa API em seu nome.
+---
 
-**Próximo passo:** Aprenda a assinar suas requisições no guia de **[Autenticação](authentication)**.
+Passo 3. Entendendo a Resposta
+Toda resposta da API segue um padrão previsível para facilitar o tratamento de dados no seu sistema.
+
+| Campo | Tipo | Descrição |
+| :--- | :--- | :--- |
+| `success` | boolean | Indica se a operação foi bem-sucedida. |
+| `data` | object | Contém o corpo da resposta solicitado. |
+| `requestId` | string | Identificador único da requisição para rastreabilidade. |
+
+---
+
+Passo 4. Próximo Nível: Chamadas Autenticadas
+As chamadas de negócio exigem que cada requisição seja assinada usando o protocolo HMAC-SHA256.
+
+#### Próximo Passo
+
+[→ Autenticação](authentication)

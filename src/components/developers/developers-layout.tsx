@@ -112,8 +112,8 @@ export function DevelopersLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 pt-14 md:pt-0 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-10 md:px-12 md:py-16">
+      <main className="flex-1 pt-14 md:pt-0 overflow-y-auto bg-background/50">
+        <div className="max-w-5xl mx-auto px-6 py-10 md:px-16 md:py-20 bg-background min-h-screen">
           {children}
         </div>
       </main>
