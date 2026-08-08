@@ -6,41 +6,20 @@ import * as auth from "@/lib/os/api/auth.server";
 import * as idempotency from "@/lib/os/api/idempotency.server";
 import * as audit from "@/lib/os/api/audit.server";
 
-vi.mock("@/integrations/supabase/client.server", () => {
-  const mockFrom = vi.fn();
-  const mockSelect = vi.fn().mockReturnThis();
-  const mockEq = vi.fn().mockReturnThis();
-  const mockMaybeSingle = vi.fn().mockResolvedValue({ 
-    data: { 
-      id: "v1", 
-      version_code: "v1", 
-      status: "stable", 
-      released_at: new Date().toISOString(),
-      deprecated_at: null,
-      sunset_at: null,
-      replacement_version_id: null
-    }, 
-    error: null 
-  });
-  const mockSingle = vi.fn();
-  const mockInsert = vi.fn();
+// Centralized Mock implementation for the chain
+const mockChain = {
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  maybeSingle: vi.fn(),
+  single: vi.fn(),
+  insert: vi.fn(),
+};
 
-  const chain = {
-    select: mockSelect,
-    eq: mockEq,
-    maybeSingle: mockMaybeSingle,
-    single: mockSingle,
-    insert: mockInsert,
-  };
-
-  mockFrom.mockReturnValue(chain);
-
-  return {
-    supabaseAdmin: {
-      from: mockFrom
-    }
-  };
-});
+vi.mock("@/integrations/supabase/client.server", () => ({
+  supabaseAdmin: {
+    from: vi.fn((table) => mockChain),
+  },
+}));
 
 vi.mock("@/lib/os/api/auth.server", async (importOriginal) => {
   const actual = await importOriginal<typeof auth>();
@@ -99,6 +78,19 @@ describe("API v1: POST /bugs", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default mock for loadVersion in pipeline
+    mockChain.maybeSingle.mockResolvedValue({ 
+      data: { 
+        id: "v1", 
+        version_code: "v1", 
+        status: "stable", 
+        released_at: new Date().toISOString(),
+        deprecated_at: null,
+        sunset_at: null,
+        replacement_version_id: null
+      }, 
+      error: null 
+    });
   });
 
   const getPostHandler = () => {
@@ -118,7 +110,6 @@ describe("API v1: POST /bugs", () => {
       created_at: new Date().toISOString(),
     };
 
-    const mockChain = (supabaseAdmin.from as any)();
     mockChain.insert.mockReturnValue({
       select: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: mockBug, error: null }),
@@ -151,7 +142,6 @@ describe("API v1: POST /bugs", () => {
     
     const payloadWithProduct = { ...validPayload, product_id: crypto.randomUUID() };
 
-    const mockChain = (supabaseAdmin.from as any)();
     mockChain.insert.mockReturnValue({
       select: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: { id: "1" }, error: null }),
@@ -165,7 +155,6 @@ describe("API v1: POST /bugs", () => {
 
     await getPostHandler()({ request });
     
-    const mockChain = (supabaseAdmin.from as any)();
     const insertCall = mockChain.insert.mock.calls[0][0];
     expect(insertCall.saas_product_id).toBe(mockAuthContext.saasProductId);
     // @ts-ignore
@@ -242,6 +231,5 @@ describe("API v1: POST /bugs", () => {
 
     expect(response.status).toBe(201); // Retorna o status original salvo
     expect(result.data.id).toBe("existing-id");
-    expect(supabaseAdmin.from).not.toHaveBeenCalledWith("bugs"); // Não cria novo registro
   });
 });

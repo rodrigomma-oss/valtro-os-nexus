@@ -259,7 +259,8 @@ export function createApiHandler<
         throw new ApiPipelineError("NOT_FOUND", 404, "Resource not found.");
       }
 
-      version = (await dependencies.loadVersion(config.version)) ?? undefined;
+      const versionCode = config.version;
+      version = (await dependencies.loadVersion(versionCode)) ?? undefined;
       if (!version) {
         throw new ApiPipelineError(
           "VERSION_UNAVAILABLE",
