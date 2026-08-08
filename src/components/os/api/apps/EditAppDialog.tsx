@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 
 import {
@@ -71,6 +71,15 @@ export function EditAppDialog({ application }: EditAppDialogProps) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const updateFn = useServerFn(updateApplicationFn);
+
+  const { data: products } = useQuery({
+    queryKey: ['saas-products'],
+    queryFn: async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.from("saas_products").select("id, name").order("name");
+      return data || [];
+    }
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -155,6 +164,33 @@ export function EditAppDialog({ application }: EditAppDialogProps) {
                       <SelectItem value="production">Produção</SelectItem>
                       <SelectItem value="staging">Staging</SelectItem>
                       <SelectItem value="development">Sandbox</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="saasProductId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Produto SaaS (Opcional)</FormLabel>
+                  <Select 
+                    onValueChange={(val) => field.onChange(val === "none" ? null : val)} 
+                    defaultValue={field.value || "none"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vincular a um produto" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum produto (Geral)</SelectItem>
+                      {products?.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
