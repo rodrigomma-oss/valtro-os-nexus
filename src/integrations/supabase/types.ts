@@ -243,7 +243,9 @@ export type Database = {
           master_key_version: string
           revocation_reason: string | null
           revoked_at: string | null
+          rotated_at: string | null
           status: Database["public"]["Enums"]["api_credential_status"]
+          version: number
         }
         Insert: {
           activated_at?: string | null
@@ -261,7 +263,9 @@ export type Database = {
           master_key_version: string
           revocation_reason?: string | null
           revoked_at?: string | null
+          rotated_at?: string | null
           status?: Database["public"]["Enums"]["api_credential_status"]
+          version?: number
         }
         Update: {
           activated_at?: string | null
@@ -279,7 +283,9 @@ export type Database = {
           master_key_version?: string
           revocation_reason?: string | null
           revoked_at?: string | null
+          rotated_at?: string | null
           status?: Database["public"]["Enums"]["api_credential_status"]
+          version?: number
         }
         Relationships: [
           {
@@ -2901,40 +2907,40 @@ export type Database = {
           activated_at: string | null
           application_id: string | null
           created_at: string | null
-          encryption_version: number | null
-          expires_at: string | null
+          created_by: string | null
           id: string | null
           key_id: string | null
-          last_used_at: string | null
-          master_key_version: string | null
+          revocation_reason: string | null
           revoked_at: string | null
+          rotated_at: string | null
           status: Database["public"]["Enums"]["api_credential_status"] | null
+          version: number | null
         }
         Insert: {
           activated_at?: string | null
           application_id?: string | null
           created_at?: string | null
-          encryption_version?: number | null
-          expires_at?: string | null
+          created_by?: string | null
           id?: string | null
           key_id?: string | null
-          last_used_at?: string | null
-          master_key_version?: string | null
+          revocation_reason?: string | null
           revoked_at?: string | null
+          rotated_at?: string | null
           status?: Database["public"]["Enums"]["api_credential_status"] | null
+          version?: number | null
         }
         Update: {
           activated_at?: string | null
           application_id?: string | null
           created_at?: string | null
-          encryption_version?: number | null
-          expires_at?: string | null
+          created_by?: string | null
           id?: string | null
           key_id?: string | null
-          last_used_at?: string | null
-          master_key_version?: string | null
+          revocation_reason?: string | null
           revoked_at?: string | null
+          rotated_at?: string | null
           status?: Database["public"]["Enums"]["api_credential_status"] | null
+          version?: number | null
         }
         Relationships: [
           {
