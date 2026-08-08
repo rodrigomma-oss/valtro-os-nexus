@@ -25,7 +25,6 @@ const SLUG_LABELS: Record<string, string> = {
   "authentication": "Autenticação",
   "errors": "Erros",
   "versioning": "Versionamento",
-  
 };
 
 
