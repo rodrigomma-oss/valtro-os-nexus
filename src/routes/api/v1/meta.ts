@@ -12,6 +12,7 @@ export function createMetaHandler(dependencies: Partial<ApiPipelineDependencies>
       audit: true,
       handler: async ({ version }) => ({
         data: {
+          platform: "Valtro Labs Ecosystem",
           version: version.versionCode,
           status: version.status,
           deprecated: version.status === "deprecated" || version.status === "sunset",
@@ -19,6 +20,13 @@ export function createMetaHandler(dependencies: Partial<ApiPipelineDependencies>
           deprecationAt: version.deprecatedAt,
           sunsetAt: version.sunsetAt,
           replacementVersion: version.replacementVersionId,
+          capabilities: [
+            "support.tickets",
+            "support.bugs",
+            "support.feedback",
+            "support.suggestions",
+            "support.attachments"
+          ],
         },
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
