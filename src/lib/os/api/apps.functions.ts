@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { TechnicalLimitsSchema, FeatureFlagsSchema } from "./types";
+import { TechnicalLimitsSchema, FeatureFlagsSchema, ApiCapability, FeatureFlags, TechnicalLimits } from "./types";
 
 export const getApplications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -151,5 +151,14 @@ export const updateSettingsFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { updateConsumerSettings } = await import("./services.server");
-    return updateConsumerSettings(data.applicationId, data.settings as never, context.userId);
+    return updateConsumerSettings(
+      data.applicationId, 
+      data.settings as {
+        capabilities?: ApiCapability[];
+        featureFlags?: FeatureFlags;
+        technicalLimits?: TechnicalLimits;
+        adminMessage?: string;
+      }, 
+      context.userId
+    );
   });

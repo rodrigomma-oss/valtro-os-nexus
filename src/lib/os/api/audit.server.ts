@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createApiRequestId } from "./responses.server";
 import { ApiAuthContext } from "./auth.server";
 
 export interface AuditLogParams {
@@ -64,7 +65,7 @@ export async function logUnauthenticatedApiRequest(params: UnauthenticatedAuditL
       path: params.path,
       status_code: params.statusCode,
       error_code: params.errorCode,
-      request_id: params.requestId,
+      request_id: params.requestId || createApiRequestId(),
       client_request_id: params.clientRequestId,
       ip: params.ip,
       user_agent: params.userAgent,

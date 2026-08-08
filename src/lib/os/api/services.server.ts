@@ -119,7 +119,7 @@ export async function generateCredential(applicationId: string, userId: string) 
       activated_at: new Date().toISOString(),
       created_by: userId,
     })
-    .select('id, key_id, status, created_at')
+    .select('id, key_id, status, created_at, version')
     .single();
 
   if (credError) throw credError;
