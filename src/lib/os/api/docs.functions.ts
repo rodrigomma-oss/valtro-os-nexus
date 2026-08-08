@@ -22,6 +22,7 @@ const DOC_FILES: Record<string, string> = {
   "implementation-status": "/docs/api/implementation-status.md",
   "sdk-strategy": "/docs/api/sdk-strategy.md",
   "integration-guide": "/docs/api/integration-guide.md",
+  "audit-os": "/docs/api/audit-os.md",
 };
 
 export const getApiDoc = createServerFn({ method: "GET" })
