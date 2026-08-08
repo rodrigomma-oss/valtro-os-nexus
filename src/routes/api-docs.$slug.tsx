@@ -28,6 +28,7 @@ const SLUG_LABELS: Record<string, string> = {
 };
 
 
+
 function ApiDocPage() {
   const { slug } = Route.useParams();
   const { data, error } = useSuspenseQuery({
