@@ -39,7 +39,7 @@ describe("Idempotency Infrastructure", () => {
     vi.clearAllMocks();
   });
 
-  it("should allow first use of an idempotency key", async () => {
+  it("1. should allow first use of an idempotency key", async () => {
     const mockChain = createMockChain({ data: { id: "1" }, error: null });
     (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
@@ -56,7 +56,7 @@ describe("Idempotency Infrastructure", () => {
     expect(supabaseAdmin.from).toHaveBeenCalledWith("api_idempotency_keys");
   });
 
-  it("should return replay data for a valid existing key", async () => {
+  it("2. should return replay data for a valid existing key (replay)", async () => {
     const mockChain = createMockChain({ data: null, error: { code: "23505" } });
     (supabaseAdmin.from as any).mockReturnValue(mockChain);
     
@@ -73,7 +73,6 @@ describe("Idempotency Infrastructure", () => {
       response_headers: { "Content-Type": "application/json" }
     };
     
-    // Configurar o select posterior
     mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
 
     const result = await acquireIdempotency({
@@ -88,10 +87,9 @@ describe("Idempotency Infrastructure", () => {
     expect(result).not.toBeNull();
     expect(result?.status).toBe('completed');
     expect(result?.responseStatus).toBe(201);
-    expect(result?.responseBody).toEqual({ success: true });
   });
 
-  it("should reject same key with different payload (409 Conflict)", async () => {
+  it("3. should reject same key with different payload (409 Conflict)", async () => {
     const mockChain = createMockChain({ data: null, error: { code: "23505" } });
     (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
@@ -114,7 +112,46 @@ describe("Idempotency Infrastructure", () => {
     })).rejects.toThrow(/Chave de idempotência já utilizada/);
   });
 
-  it("should throw 409 if operation is still processing", async () => {
+  it("4. should reject same key with different path (409 Conflict)", async () => {
+    const mockChain = createMockChain({ data: null, error: { code: "23505" } });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
+
+    const existingRecord = {
+      id: "1",
+      method,
+      path: "/api/v1/other-path",
+      payload_hash: payloadHash,
+      status: 'completed'
+    };
+    mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
+
+    await expect(acquireIdempotency({
+      applicationId: appId,
+      idempotencyKey: validKey,
+      method,
+      path,
+      payloadHash,
+      requestId,
+    })).rejects.toThrow(/Chave de idempotência já utilizada/);
+  });
+
+  it("5. should allow same key in different applications", async () => {
+    const mockChain = createMockChain({ data: { id: "2" }, error: null });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
+
+    const result = await acquireIdempotency({
+      applicationId: crypto.randomUUID(), // Different App
+      idempotencyKey: validKey,
+      method,
+      path,
+      payloadHash,
+      requestId,
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it("6. should reject concurrent requests (two processing at once)", async () => {
     const mockChain = createMockChain({ data: null, error: { code: "23505" } });
     (supabaseAdmin.from as any).mockReturnValue(mockChain);
 
@@ -137,7 +174,38 @@ describe("Idempotency Infrastructure", () => {
     })).rejects.toThrow(/operação já está sendo processada/);
   });
 
-  it("should reject invalid idempotency key format", async () => {
+  it("7. should return replay for new nonce + same idempotency key", async () => {
+    const mockChain = createMockChain({ data: null, error: { code: "23505" } });
+    (supabaseAdmin.from as any).mockReturnValue(mockChain);
+    
+    const existingRecord = {
+      id: "1",
+      application_id: appId,
+      idempotency_key: validKey,
+      method,
+      path,
+      payload_hash: payloadHash,
+      status: 'completed',
+      response_status: 200,
+      response_body: { ok: true }
+    };
+    
+    mockChain.single.mockResolvedValueOnce({ data: existingRecord, error: null });
+
+    const result = await acquireIdempotency({
+      applicationId: appId,
+      idempotencyKey: validKey,
+      method,
+      path,
+      payloadHash,
+      requestId: "new_request_id_different_nonce",
+    });
+
+    expect(result).not.toBeNull();
+    expect(result?.responseBody).toEqual({ ok: true });
+  });
+
+  it("8. should reject invalid idempotency key format", async () => {
     await expect(acquireIdempotency({
       applicationId: appId,
       idempotencyKey: "invalid-uuid",
@@ -147,4 +215,5 @@ describe("Idempotency Infrastructure", () => {
       requestId,
     })).rejects.toThrow(/Chave de idempotência inválida/);
   });
+});
 });
