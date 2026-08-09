@@ -75,7 +75,7 @@ paths:
   /api/v1/bugs:
     post:
       summary: Reportar um bug
-      security: [{ HmacAuth: [] }]
+      security: [{ HmacAuth: ["support:bugs:create"] }]
       parameters:
         - in: header
           name: x-idempotency-key
@@ -93,7 +93,7 @@ paths:
   /api/v1/feedback:
     post:
       summary: Enviar feedback
-      security: [{ HmacAuth: [] }]
+      security: [{ HmacAuth: ["support:feedback:create"] }]
       parameters:
         - in: header
           name: x-idempotency-key
