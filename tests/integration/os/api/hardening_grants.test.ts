@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
 describe('Hardening de Grants - Validação Pós-Migration', () => {
+  const saasProductId = '36031f36-31e3-42f1-99f3-c6e37b7bc127'; // Valtro Pricing
   
   it('ANON: não deve ter acesso de SELECT em public.bugs', async () => {
     const { data, error } = await supabase
@@ -10,16 +11,17 @@ describe('Hardening de Grants - Validação Pós-Migration', () => {
       .select('id')
       .limit(1);
     
-    // Deve falhar por RLS ou falta de Grant (anon no backend Lovable geralmente não tem grant se não for explicitado)
-    // Se o grant foi " FULL", ele conseguiria ver se as policies permitissem anon.
-    // Como as policies exigem 'authenticated', o erro esperado é 401 ou vazio.
     expect(error || data?.length === 0).toBeTruthy();
   });
 
   it('ANON: não deve ter acesso de INSERT em public.bugs', async () => {
     const { error } = await supabase
       .from('bugs')
-      .insert({ title: 'Hacker Attempt', description: 'Anon insert' });
+      .insert({ 
+        title: 'Hacker Attempt', 
+        description: 'Anon insert',
+        saas_product_id: saasProductId 
+      });
     
     expect(error).toBeTruthy();
   });
@@ -32,7 +34,8 @@ describe('Hardening de Grants - Validação Pós-Migration', () => {
         description: 'Testing service_role grants',
         severity: 'normal',
         status: 'new',
-        environment: 'production'
+        environment: 'production',
+        saas_product_id: saasProductId
       })
       .select('id')
       .single();
@@ -40,7 +43,6 @@ describe('Hardening de Grants - Validação Pós-Migration', () => {
     expect(error).toBeNull();
     expect(data?.id).toBeDefined();
 
-    // Cleanup
     if (data?.id) {
        await supabaseAdmin.from('bugs').delete().eq('id', data.id);
     }
@@ -54,7 +56,8 @@ describe('Hardening de Grants - Validação Pós-Migration', () => {
         description: 'Testing service_role grants',
         type: 'suggestion',
         status: 'new',
-        source: 'other'
+        source: 'other',
+        saas_product_id: saasProductId
       })
       .select('id')
       .single();
@@ -62,15 +65,12 @@ describe('Hardening de Grants - Validação Pós-Migration', () => {
     expect(error).toBeNull();
     expect(data?.id).toBeDefined();
 
-    // Cleanup
     if (data?.id) {
        await supabaseAdmin.from('feedback').delete().eq('id', data.id);
     }
   });
 
   it('VIEW: api_credentials_safe deve ser acessível via authenticated admin', async () => {
-     // Este teste depende de ter um usuário admin logado, o que é difícil em integração pura sem session.
-     // Mas validamos via supabaseAdmin que o objeto existe e é uma view funcional.
      const { data, error } = await supabaseAdmin
        .from('api_credentials_safe' as any)
        .select('*')
