@@ -69,6 +69,14 @@ describe("migrated API handlers", () => {
         deprecationAt: version.deprecatedAt,
         sunsetAt: version.sunsetAt,
         replacementVersion: version.replacementVersionId,
+        platform: "Valtro Labs Ecosystem",
+        capabilities: [
+          "support.tickets",
+          "support.bugs",
+          "support.feedback",
+          "support.suggestions",
+          "support.attachments",
+        ],
       },
       requestId,
     });
