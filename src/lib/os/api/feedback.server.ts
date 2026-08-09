@@ -83,6 +83,7 @@ export async function createFeedbackFromApi(params: {
       external_reference: input.external_reference,
       metadata: metadata,
       created_by: null, // Origem API não possui usuário OS associado
+    } as any)
     .select("id, code, status, created_at")
     .single();
 
