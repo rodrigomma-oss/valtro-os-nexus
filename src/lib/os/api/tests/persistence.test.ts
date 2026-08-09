@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createBugFromApi, BugApiInput } from './bugs.server';
-import { createFeedbackFromApi, FeedbackApiInput } from './feedback.server';
+import { createBugFromApi, type BugApiInput } from '../bugs.server';
+import { createFeedbackFromApi, type FeedbackApiInput } from '../feedback.server';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
 // Mock Supabase
