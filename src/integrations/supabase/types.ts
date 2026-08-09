@@ -836,8 +836,9 @@ export type Database = {
           fixed_at: string | null
           fixed_version: string | null
           id: string
+          metadata: Json | null
           owner_id: string | null
-          reported_by: string
+          reported_by: string | null
           request_id: string | null
           saas_product_id: string
           severity: Database["public"]["Enums"]["bug_severity"]
@@ -859,8 +860,9 @@ export type Database = {
           fixed_at?: string | null
           fixed_version?: string | null
           id?: string
+          metadata?: Json | null
           owner_id?: string | null
-          reported_by: string
+          reported_by?: string | null
           request_id?: string | null
           saas_product_id: string
           severity?: Database["public"]["Enums"]["bug_severity"]
@@ -882,8 +884,9 @@ export type Database = {
           fixed_at?: string | null
           fixed_version?: string | null
           id?: string
+          metadata?: Json | null
           owner_id?: string | null
-          reported_by?: string
+          reported_by?: string | null
           request_id?: string | null
           saas_product_id?: string
           severity?: Database["public"]["Enums"]["bug_severity"]
@@ -1457,15 +1460,18 @@ export type Database = {
           closed_at: string | null
           code: string
           created_at: string
-          created_by: string
+          created_by: string | null
           description: string
           desired_feature: string | null
+          external_reference: string | null
           id: string
+          metadata: Json | null
           owner_id: string | null
           participant_email: string | null
           participant_name: string | null
           participant_user_id: string | null
           perceived_value: Database["public"]["Enums"]["feedback_perceived_value"]
+          request_id: string | null
           reviewed_at: string | null
           saas_product_id: string
           source: Database["public"]["Enums"]["feedback_source"]
@@ -1481,15 +1487,18 @@ export type Database = {
           closed_at?: string | null
           code: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           description: string
           desired_feature?: string | null
+          external_reference?: string | null
           id?: string
+          metadata?: Json | null
           owner_id?: string | null
           participant_email?: string | null
           participant_name?: string | null
           participant_user_id?: string | null
           perceived_value?: Database["public"]["Enums"]["feedback_perceived_value"]
+          request_id?: string | null
           reviewed_at?: string | null
           saas_product_id: string
           source: Database["public"]["Enums"]["feedback_source"]
@@ -1505,15 +1514,18 @@ export type Database = {
           closed_at?: string | null
           code?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           description?: string
           desired_feature?: string | null
+          external_reference?: string | null
           id?: string
+          metadata?: Json | null
           owner_id?: string | null
           participant_email?: string | null
           participant_name?: string | null
           participant_user_id?: string | null
           perceived_value?: Database["public"]["Enums"]["feedback_perceived_value"]
+          request_id?: string | null
           reviewed_at?: string | null
           saas_product_id?: string
           source?: Database["public"]["Enums"]["feedback_source"]
