@@ -29,6 +29,8 @@ export type BugEventType =
   | "category_changed"
   | "environment_changed"
   | "owner_changed"
+  | "assigned"
+  | "commented"
   | "affected_version_changed"
   | "fixed_version_changed"
   | "request_id_changed"
