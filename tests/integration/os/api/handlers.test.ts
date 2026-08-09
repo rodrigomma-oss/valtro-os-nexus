@@ -62,6 +62,7 @@ describe("migrated API handlers", () => {
     await expect(response.json()).resolves.toEqual({
       success: true,
       data: {
+        platform: "Valtro Labs Ecosystem",
         version: "v1",
         status: "deprecated",
         deprecated: true,
@@ -69,6 +70,13 @@ describe("migrated API handlers", () => {
         deprecationAt: version.deprecatedAt,
         sunsetAt: version.sunsetAt,
         replacementVersion: version.replacementVersionId,
+        capabilities: [
+          "support.tickets",
+          "support.bugs",
+          "support.feedback",
+          "support.suggestions",
+          "support.attachments",
+        ],
       },
       requestId,
     });

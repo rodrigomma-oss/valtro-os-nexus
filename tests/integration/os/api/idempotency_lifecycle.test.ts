@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createApiHandler, ApiPipelineError } from '@/lib/os/api/pipeline.server';
 import * as idempotency from '@/lib/os/api/idempotency.server';
+import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
 // Mocks
 vi.mock('@/integrations/supabase/client.server', () => ({
@@ -173,5 +174,126 @@ describe('Idempotency Lifecycle (Integration)', () => {
     
     expect(idempotency.acquireIdempotency).not.toHaveBeenCalled();
     expect(idempotency.commitIdempotency).not.toHaveBeenCalled();
+  });
+
+  it('C. RETRY APÓS FAILED: nova aquisição permitida e handler re-executa', async () => {
+    vi.mocked(deps.authenticate).mockResolvedValue({ context: authContext as any });
+    
+    const idempotencyKey = '00000000-0000-4000-8000-000000000004';
+    const payload = { title: 'Retry Bug' };
+    const payloadHash = idempotency.calculatePayloadHash(payload);
+
+    // 1. Simula primeiro falha: acquire retorna null (adquirido), handler falha
+    vi.mocked(idempotency.acquireIdempotency).mockResolvedValueOnce(null);
+    vi.mocked(idempotency.commitIdempotency).mockResolvedValue(undefined as any);
+
+    let handlerExecutions = 0;
+    const handler = createApiHandler({
+      version: 'v1',
+      authentication: 'required',
+      handler: async () => {
+        handlerExecutions++;
+        if (handlerExecutions === 1) throw new Error('First try failed');
+        return { data: { ok: true, retry: true } };
+      },
+    }, deps);
+
+    const req1 = new Request('https://api.test/v1/bugs', {
+      method: 'POST',
+      headers: { 'x-idempotency-key': idempotencyKey, 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const res1 = await handler({ request: req1 });
+    expect(res1.status).toBe(500);
+    expect(handlerExecutions).toBe(1);
+    expect(idempotency.commitIdempotency).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'failed',
+      responseStatus: 500
+    }));
+
+    // 2. Simula o retry: 
+    // No comportamento real, acquireIdempotency detectaria o status 'failed', deletaria e chamaria a si mesmo retornando null de novo.
+    // Aqui simulamos o resultado final do acquire no retry.
+    vi.mocked(idempotency.acquireIdempotency).mockResolvedValueOnce(null);
+
+    const req2 = new Request('https://api.test/v1/bugs', {
+      method: 'POST',
+      headers: { 'x-idempotency-key': idempotencyKey, 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const res2 = await handler({ request: req2 });
+    expect(res2.status).toBe(200);
+    expect(handlerExecutions).toBe(2); // Handler executou de novo
+    expect(idempotency.commitIdempotency).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'completed',
+      responseStatus: 200
+    }));
+  });
+
+  it('E & F. RETRY E DOUBLE COMMIT: retry não cria execuções simultâneas e finalização é única', async () => {
+    vi.mocked(deps.authenticate).mockResolvedValue({ context: authContext as any });
+    
+    // Simula bloqueio de concorrência (conforme item D)
+    vi.mocked(idempotency.acquireIdempotency).mockRejectedValueOnce(
+      new ApiPipelineError("PROCESSING", 409, "A operação já está sendo processada.")
+    );
+
+    const handler = createApiHandler({
+      version: 'v1',
+      authentication: 'required',
+      handler: async () => ({ data: { ok: true } }),
+    }, deps);
+
+    const request = new Request('https://api.test/v1/bugs', {
+      method: 'POST',
+      headers: { 'x-idempotency-key': '00000000-0000-4000-8000-000000000005', 'content-type': 'application/json' },
+      body: JSON.stringify({ title: 'Concurrent Bug' }),
+    });
+
+    const response = await handler({ request });
+    expect(response.status).toBe(409);
+    
+    // O handler nem deve ter sido chamado (proteção E)
+    // E commitIdempotency não deve ter sido chamado pela tentativa falha (proteção F)
+    expect(idempotency.commitIdempotency).not.toHaveBeenCalled();
+  });
+
+  it('G. FALHA SECUNDÁRIA: erro ao marcar failed não vaza detalhes e resposta permanece 500', async () => {
+    vi.mocked(deps.authenticate).mockResolvedValue({ context: authContext as any });
+    vi.mocked(idempotency.acquireIdempotency).mockResolvedValue(null);
+    
+    // Simula falha no commitIdempotency (banco fora do ar, etc)
+    vi.mocked(idempotency.commitIdempotency).mockRejectedValue(new Error('DB Connection Lost'));
+
+    const handler = createApiHandler({
+      version: 'v1',
+      authentication: 'required',
+      handler: async () => {
+        throw new Error('Original App Error');
+      },
+    }, deps);
+
+    const request = new Request('https://api.test/v1/bugs', {
+      method: 'POST',
+      headers: { 'x-idempotency-key': '00000000-0000-4000-8000-000000000006', 'content-type': 'application/json' },
+      body: JSON.stringify({ title: 'Failure Cascade' }),
+    });
+
+    // Deve logar no console, mas não explodir o pipeline com 500 sem envelope
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    const response = await handler({ request });
+    expect(response.status).toBe(500);
+    
+    const body = await response.json();
+    // O erro original "Original App Error" não deve vazar no body da resposta 500 (sanitização)
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('INTERNAL_ERROR');
+    expect(body.error.message).not.toContain('Original App Error');
+    expect(body.error.message).not.toContain('DB Connection Lost');
+    
+    consoleSpy.mockRestore();
   });
 });
