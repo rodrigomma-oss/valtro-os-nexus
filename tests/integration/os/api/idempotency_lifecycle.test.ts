@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createApiHandler, ApiPipelineError } from '../pipeline.server';
-import * as idempotency from '../idempotency.server';
+import { createApiHandler, ApiPipelineError } from '@/lib/os/api/pipeline.server';
+import * as idempotency from '@/lib/os/api/idempotency.server';
 
 // Mocks
 vi.mock('@/integrations/supabase/client.server', () => ({
