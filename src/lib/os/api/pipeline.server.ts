@@ -454,39 +454,60 @@ export function createApiHandler<
         }
       }
 
-      const result = await config.handler({
-        request,
-        requestId,
-        method: request.method,
-        pathname: url.pathname,
-        startedAt,
-        version,
-        auth: authContext,
-        scopes: authContext?.scopes ?? [],
-        ip: authContext?.ip ?? request.headers.get("x-forwarded-for") ?? undefined,
-        userAgent: authContext?.userAgent ?? request.headers.get("user-agent") ?? undefined,
-        body: body as never,
-        query: query as never,
-        params: validatedParams as never,
-      });
-      response = apiSuccessResponse({
-        data: result.data,
-        status: result.status,
-        requestId,
-        headers: mergeHeaders(headers, limiterHeaders, result.headers),
-      });
-
-      // Commit Idempotência
-      if (useIdempotency) {
-        const responseData = await response.clone().json();
-        await commitIdempotency({
-          applicationId: authContext!.applicationId,
-          idempotencyKey: idempotencyKey!,
-          status: response.status >= 500 ? "failed" : "completed",
-          responseStatus: response.status,
-          responseBody: responseData.data,
-          responseHeaders: Object.fromEntries(response.headers.entries()),
+      try {
+        const result = await config.handler({
+          request,
+          requestId,
+          method: request.method,
+          pathname: url.pathname,
+          startedAt,
+          version,
+          auth: authContext,
+          scopes: authContext?.scopes ?? [],
+          ip: authContext?.ip ?? request.headers.get("x-forwarded-for") ?? undefined,
+          userAgent: authContext?.userAgent ?? request.headers.get("user-agent") ?? undefined,
+          body: body as never,
+          query: query as never,
+          params: validatedParams as never,
         });
+
+        response = apiSuccessResponse({
+          data: result.data,
+          status: result.status,
+          requestId,
+          headers: mergeHeaders(headers, limiterHeaders, result.headers),
+        });
+
+        // Commit Idempotência (Sucesso ou erro controlado do handler < 500)
+        if (useIdempotency) {
+          const responseData = await response.clone().json();
+          await commitIdempotency({
+            applicationId: authContext!.applicationId,
+            idempotencyKey: idempotencyKey!,
+            status: response.status >= 500 ? "failed" : "completed",
+            responseStatus: response.status,
+            responseBody: responseData.data,
+            responseHeaders: Object.fromEntries(response.headers.entries()),
+          });
+        }
+      } catch (handlerError) {
+        // Se o handler lançou exceção e usamos idempotência, marcamos como failed
+        if (useIdempotency) {
+          try {
+            await commitIdempotency({
+              applicationId: authContext!.applicationId,
+              idempotencyKey: idempotencyKey!,
+              status: "failed",
+              responseStatus: 500,
+              responseBody: { error: "Internal Server Error" },
+              responseHeaders: {},
+            });
+          } catch (idempotencyError) {
+            console.error("[IDEMPOTENCY_FINALIZATION_ERROR]", { requestId, idempotencyError });
+          }
+        }
+        // Repropaga para o catch principal do pipeline
+        throw handlerError;
       }
     } catch (error) {
       if (error instanceof ApiPipelineError) {
