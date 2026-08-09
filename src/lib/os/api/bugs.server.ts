@@ -88,9 +88,9 @@ export async function createBugFromApi(params: {
       status: "new",
       environment: "production",
       request_id: requestId,
+      external_reference: input.external_reference,
       metadata: metadata,
-      // O campo reported_by interno fica nulo ou associado a um 'API System User' se existisse.
-      // Aqui mantemos nulo para indicar origem externa via API sem usuário OS.
+      reported_by: null, // Origem API não possui usuário OS associado
     } as any)
     .select("id, code, status, created_at")
     .single();

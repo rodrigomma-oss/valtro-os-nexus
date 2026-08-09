@@ -80,9 +80,9 @@ export async function createFeedbackFromApi(params: {
       participant_name: input.contact?.name || null,
       participant_email: input.contact?.email || null,
       request_id: requestId,
+      external_reference: input.external_reference,
       metadata: metadata,
-      created_by: '00000000-0000-0000-0000-000000000000', // System/API Placeholder
-    } as any)
+      created_by: null, // Origem API não possui usuário OS associado
     .select("id, code, status, created_at")
     .single();
 
