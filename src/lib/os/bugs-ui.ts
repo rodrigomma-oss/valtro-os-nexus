@@ -173,15 +173,16 @@ export const BUG_EVENT_LABEL: Record<BugEventType, string> = {
   category_changed: "Categoria alterada",
   environment_changed: "Ambiente alterado",
   owner_changed: "Responsável alterado",
+  assigned: "Responsável atribuído",
+  commented: "Comentário registrado",
+  affected_version_changed: "Versão afetada alterada",
   fixed_version_changed: "Versão corrigida alterada",
   request_id_changed: "Request ID alterado",
   linked_to_ticket: "Vinculado a chamado",
-  assigned: "Responsável atribuído",
   fixed: "Marcado como corrigido",
   confirmed: "Bug confirmado",
   reopened: "Bug reaberto",
   rejected: "Bug rejeitado",
-  commented: "Comentário registrado",
   closed: "Bug fechado",
 };
 
