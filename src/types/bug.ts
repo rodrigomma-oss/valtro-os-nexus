@@ -27,18 +27,19 @@ export type BugEventType =
   | "status_changed"
   | "severity_changed"
   | "category_changed"
+  | "environment_changed"
   | "owner_changed"
+  | "assigned"
+  | "commented"
   | "affected_version_changed"
   | "fixed_version_changed"
   | "request_id_changed"
   | "linked_to_ticket"
-  | "assigned"
-  | "fixed"
   | "confirmed"
-  | "reopened"
+  | "fixed"
+  | "closed"
   | "rejected"
-  | "commented"
-  | "closed";
+  | "reopened";
 
 export interface Bug {
   id: string;
@@ -46,9 +47,12 @@ export interface Bug {
   title: string;
   description: string;
   saas_product_id: string;
+  product_name?: string | null;
   ticket_id: string | null;
-  reported_by: string;
+  reported_by: string | null; // Alterado para suportar origem API
+  reported_by_name?: string | null;
   owner_id: string | null;
+  owner_name?: string | null;
   status: BugStatus;
   severity: BugSeverity;
   category: BugCategory;
@@ -62,10 +66,6 @@ export interface Bug {
   confirmed_at: string | null;
   fixed_at: string | null;
   closed_at: string | null;
-  // Hydrated fields
-  product_name?: string | null;
-  reported_by_name?: string | null;
-  owner_name?: string | null;
 }
 
 export interface BugEvent {
@@ -73,9 +73,8 @@ export interface BugEvent {
   bug_id: string;
   type: BugEventType;
   description: string | null;
-  metadata: Record<string, any>;
+  metadata: any;
   created_by: string | null;
-  created_at: string;
-  // Hydrated fields
   created_by_name?: string | null;
+  created_at: string;
 }
