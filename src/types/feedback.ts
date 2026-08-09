@@ -75,7 +75,7 @@ export interface Feedback {
   bug_code?: string | null;
   owner_id: string | null;
   owner_name?: string | null;
-  created_by: string;
+  created_by: string | null; // Alterado de string para string | null para suportar origem API
   created_by_name?: string;
   created_at: string;
   updated_at: string;
