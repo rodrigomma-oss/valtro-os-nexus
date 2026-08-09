@@ -32,7 +32,7 @@ describe('Idempotency Lifecycle (Integration)', () => {
   const mockVersion = {
     id: 'v1-id',
     versionCode: 'v1',
-    status: 'active' as const,
+    status: 'stable' as const,
     releasedAt: mockNow.toISOString(),
     deprecatedAt: null,
     sunsetAt: null,
