@@ -82,7 +82,7 @@ export function betaParticipantNextStatuses(
 }
 
 export interface BetaParticipantAction {
-  kind: "status" | "convert" | "reopen";
+  kind: "status" | "convert" | "reopen" | "invite";
   label: string;
   to: BetaParticipantStatus;
   variant?: "default" | "outline" | "secondary" | "destructive";
@@ -90,14 +90,18 @@ export interface BetaParticipantAction {
 }
 
 export function betaParticipantActionsFor(
-  status: BetaParticipantStatus,
+  participant: { status: BetaParticipantStatus; invited_at?: string | null },
 ): BetaParticipantAction[] {
+  const { status, invited_at } = participant;
   switch (status) {
     case "invited":
-      return [
-        { kind: "status", label: "Registrar aceite", to: "accepted", variant: "default" },
-        { kind: "status", label: "Remover", to: "removed", variant: "destructive", confirm: true },
-      ];
+      const acts: BetaParticipantAction[] = [];
+      if (!invited_at) {
+        acts.push({ kind: "invite", label: "Registrar envio de convite", to: "invited", variant: "default" });
+      }
+      acts.push({ kind: "status", label: "Registrar aceite", to: "accepted", variant: invited_at ? "default" : "outline" });
+      acts.push({ kind: "status", label: "Remover", to: "removed", variant: "destructive", confirm: true });
+      return acts;
     case "accepted":
       return [
         { kind: "status", label: "Ativar", to: "active", variant: "default" },
