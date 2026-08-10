@@ -550,6 +550,7 @@ export type Database = {
           ended_at: string | null
           id: string
           interest_to_subscribe: Database["public"]["Enums"]["beta_participant_interest"]
+          invited_at: string | null
           invited_by: string | null
           name: string
           notes: string | null
@@ -570,6 +571,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           interest_to_subscribe?: Database["public"]["Enums"]["beta_participant_interest"]
+          invited_at?: string | null
           invited_by?: string | null
           name: string
           notes?: string | null
@@ -590,6 +592,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           interest_to_subscribe?: Database["public"]["Enums"]["beta_participant_interest"]
+          invited_at?: string | null
           invited_by?: string | null
           name?: string
           notes?: string | null

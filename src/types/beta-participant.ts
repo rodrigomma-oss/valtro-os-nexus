@@ -40,6 +40,7 @@ export interface BetaParticipant {
   interest_to_subscribe: BetaParticipantInterest;
   invited_by: string | null;
   notes: string | null;
+  invited_at: string | null;
   accepted_at: string | null;
   activated_at: string | null;
   ended_at: string | null;

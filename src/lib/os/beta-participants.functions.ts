@@ -16,7 +16,7 @@ const STATUS = ["invited", "accepted", "active", "inactive", "removed", "convert
 const INTEREST = ["no", "maybe", "yes", "already_customer", "unknown"] as const;
 
 const PARTICIPANT_SELECT =
-  "id, code, beta_program_id, saas_product_id, user_id, email, name, status, interest_to_subscribe, invited_by, notes, accepted_at, activated_at, ended_at, converted_at, created_by, created_at, updated_at";
+  "id, code, beta_program_id, saas_product_id, user_id, email, name, status, interest_to_subscribe, invited_by, notes, invited_at, accepted_at, activated_at, ended_at, converted_at, created_by, created_at, updated_at";
 
 type RawParticipant = Omit<
   BetaParticipant,
@@ -383,3 +383,93 @@ export const listBetaProgramsForParticipants = createServerFn({ method: "GET" })
       }>;
     },
   );
+
+// ---------------------------------------------------------------
+// registerInvitation — registra o envio do convite (invited_at)
+// ---------------------------------------------------------------
+export const registerInvitation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("beta_participants")
+      .update({ invited_at: new Date().toISOString() } as any)
+      .eq("id", data.id);
+
+    if (error) {
+      log("registerInvitation_error", {
+        participant_id: data.id,
+        user_id: context.userId,
+        error: error.message,
+      });
+      throw new Error(error.message);
+    }
+
+    log("registerInvitation", { participant_id: data.id, user_id: context.userId });
+    return { ok: true };
+  });
+
+// ---------------------------------------------------------------
+// listParticipantInteractions — busca bugs e feedback correlacionados
+// ---------------------------------------------------------------
+export const listParticipantInteractions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data) =>
+      z
+        .object({
+          email: z.string().email(),
+          saas_product_id: z.string().uuid(),
+          external_user_id: z.string().uuid().nullable().optional(),
+        })
+        .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { email, saas_product_id, external_user_id } = data;
+    const emailLower = email.toLowerCase();
+
+    // 1. Buscar Bugs
+    // Prioridade 1: external_reference (se for UUID compatível com external_user_id)
+    // Fallback: metadata -> actor_email ou similar, ou busca por external_reference se for o e-mail
+    let bugsQuery = context.supabase
+      .from("bugs")
+      .select("id, code, title, status, severity, created_at")
+      .eq("saas_product_id", saas_product_id);
+
+    if (external_user_id) {
+      bugsQuery = bugsQuery.or(`external_reference.eq.${external_user_id},metadata->>actor_email.eq.${emailLower}`);
+    } else {
+      bugsQuery = bugsQuery.or(`external_reference.eq.${emailLower},metadata->>actor_email.eq.${emailLower}`);
+    }
+
+    // 2. Buscar Feedback
+    // Feedback já tem participant_email nativo
+    let feedbackQuery = context.supabase
+      .from("feedback")
+      .select("id, code, title, status, type, created_at")
+      .eq("saas_product_id", saas_product_id);
+
+    if (external_user_id) {
+       feedbackQuery = feedbackQuery.or(`participant_user_id.eq.${external_user_id},participant_email.ilike.${emailLower},external_reference.eq.${external_user_id}`);
+    } else {
+       feedbackQuery = feedbackQuery.ilike("participant_email", emailLower);
+    }
+
+    const [bugsRes, feedbackRes] = await Promise.all([
+      bugsQuery.order("created_at", { ascending: false }).limit(50),
+      feedbackQuery.order("created_at", { ascending: false }).limit(50),
+    ]);
+
+    log("listParticipantInteractions", {
+      email,
+      saas_product_id,
+      bugs_count: bugsRes.data?.length ?? 0,
+      feedback_count: feedbackRes.data?.length ?? 0,
+      user_id: context.userId,
+    });
+
+    return {
+      bugs: (bugsRes.data ?? []) as any[],
+      feedback: (feedbackRes.data ?? []) as any[],
+    };
+  });

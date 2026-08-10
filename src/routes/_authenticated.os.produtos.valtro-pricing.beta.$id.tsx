@@ -16,6 +16,9 @@ import {
   UserCheck,
   History,
   Clock,
+  Bug,
+  MessageSquare,
+  ExternalLink,
 } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
@@ -42,6 +45,8 @@ import {
   changeParticipantStatus,
   convertParticipant,
   reopenParticipant,
+  registerInvitation,
+  listParticipantInteractions,
 } from "@/lib/os/beta-participants.functions";
 import {
   BETA_PARTICIPANT_INTEREST_LABEL,
@@ -113,6 +118,8 @@ function BetaParticipantDetail() {
   const statusFn = useServerFn(changeParticipantStatus);
   const convertFn = useServerFn(convertParticipant);
   const reopenFn = useServerFn(reopenParticipant);
+  const inviteFn = useServerFn(registerInvitation);
+  const interactionsFn = useServerFn(listParticipantInteractions);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
@@ -126,6 +133,19 @@ function BetaParticipantDetail() {
 
   const participant = detail.data?.participant;
   const events = detail.data?.events ?? [];
+
+  const interactions = useQuery({
+    queryKey: ["beta-participant-interactions", participant?.email, participant?.saas_product_id],
+    queryFn: () =>
+      interactionsFn({
+        data: {
+          email: participant!.email,
+          saas_product_id: participant!.saas_product_id,
+          external_user_id: participant!.user_id,
+        },
+      }),
+    enabled: !!participant,
+  });
 
   useEffect(() => {
     if (participant && !isEditing) {
@@ -181,11 +201,21 @@ function BetaParticipantDetail() {
     onError,
   });
 
+  const inviteMutation = useMutation({
+    mutationFn: inviteFn,
+    onSuccess: () => {
+      toast.success("Envio de convite registrado.");
+      invalidate();
+    },
+    onError,
+  });
+
   const busy =
     updateMutation.isPending ||
     statusMutation.isPending ||
     convertMutation.isPending ||
-    reopenMutation.isPending;
+    reopenMutation.isPending ||
+    inviteMutation.isPending;
 
   if (detail.isLoading) {
     return (
@@ -217,7 +247,7 @@ function BetaParticipantDetail() {
   }
 
   const isTerminal = BETA_PARTICIPANT_TERMINAL_STATUS.includes(participant.status);
-  const actions = betaParticipantActionsFor(participant.status);
+  const actions = betaParticipantActionsFor(participant);
 
   const timelineItems: TimelineItem[] = events.map((e) => ({
     id: e.id,
@@ -231,6 +261,7 @@ function BetaParticipantDetail() {
   const runAction = (kind: string, to: string) => {
     if (kind === "convert") convertMutation.mutate({ data: { id } });
     else if (kind === "reopen") reopenMutation.mutate({ data: { id } });
+    else if (kind === "invite") inviteMutation.mutate({ data: { id } });
     else statusMutation.mutate({ data: { id, status: to as any } });
   };
 
@@ -403,6 +434,98 @@ function BetaParticipantDetail() {
           </Card>
 
           <TimelineCard title="Histórico do participante" items={timelineItems} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-primary" />
+                Interações do Beta
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <Bug className="h-4 w-4 text-destructive" />
+                  Bugs
+                </h4>
+                {interactions.isLoading ? (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" /> Carregando bugs...
+                  </div>
+                ) : interactions.data?.bugs.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhum Bug registrado para este participante.</p>
+                ) : (
+                  <div className="grid gap-2">
+                    {interactions.data?.bugs.map((b) => (
+                      <div key={b.id} className="group flex items-center justify-between rounded-lg border border-border p-2 hover:bg-muted/50 transition-colors">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono font-bold bg-muted px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                              {b.code}
+                            </span>
+                            <p className="text-xs font-medium truncate" title={b.title}>{b.title}</p>
+                          </div>
+                          <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <span>{fmtDateTime(b.created_at)}</span>
+                            <span>•</span>
+                            <span className="capitalize">{b.status}</span>
+                            <span>•</span>
+                            <span className="capitalize">{b.severity}</span>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
+                          <Link to="/os/atendimento/bugs/$id" params={{ id: b.id }}>
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-primary" />
+                  Feedback
+                </h4>
+                {interactions.isLoading ? (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" /> Carregando feedback...
+                  </div>
+                ) : interactions.data?.feedback.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhum Feedback registrado para este participante.</p>
+                ) : (
+                  <div className="grid gap-2">
+                    {interactions.data?.feedback.map((f) => (
+                      <div key={f.id} className="group flex items-center justify-between rounded-lg border border-border p-2 hover:bg-muted/50 transition-colors">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono font-bold bg-muted px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                              {f.code}
+                            </span>
+                            <p className="text-xs font-medium truncate" title={f.title}>{f.title}</p>
+                          </div>
+                          <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <span>{fmtDateTime(f.created_at)}</span>
+                            <span>•</span>
+                            <span className="capitalize">{f.status}</span>
+                            <span>•</span>
+                            <span className="capitalize">{f.type}</span>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
+                          <Link to="/os/atendimento/feedback/$id" params={{ id: f.id }}>
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-6">
@@ -420,6 +543,12 @@ function BetaParticipantDetail() {
               <div className="flex justify-between gap-4">
                 <span>Cadastro</span>
                 <span>{fmtDateTime(participant.created_at)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span>Convite</span>
+                <span>
+                  {participant.invited_at ? fmtDateTime(participant.invited_at) : "Não registrado"}
+                </span>
               </div>
               <div className="flex justify-between gap-4">
                 <span>Aceite</span>
