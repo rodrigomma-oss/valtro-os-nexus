@@ -32,7 +32,7 @@ const BUG_SELECT =
 const FEEDBACK_SELECT =
   "id, code, title, status, owner_id, participant_user_id, participant_email, created_at";
 const PARTICIPANT_SELECT =
-  "id, code, name, email, status, user_id, created_at, accepted_at, activated_at";
+  "id, code, name, email, status, user_id, invited_at, created_at, accepted_at, activated_at";
 
 const EVENT_LIMIT = 15;
 

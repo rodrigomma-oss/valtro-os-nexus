@@ -138,6 +138,7 @@ export interface RawParticipantLite {
   created_at: string;
   accepted_at: string | null;
   activated_at: string | null;
+  invited_at: string | null;
 }
 
 export interface BetaDashboardInput {
@@ -464,7 +465,7 @@ export function buildBetaAttentionQueue(input: BetaDashboardInput): BetaAttentio
   );
 
   for (const p of input.participants) {
-    if (p.status === "invited" && daysSince(p.created_at, now) >= 7) {
+    if (p.status === "invited" && daysSince(p.invited_at ?? p.created_at, now) >= 7) {
       push({
         key: `participante_convite_sem_aceite:${p.id}`,
         kind: "participante_convite_sem_aceite",
@@ -475,7 +476,7 @@ export function buildBetaAttentionQueue(input: BetaDashboardInput): BetaAttentio
         reason: "Convite sem aceite há 7 dias ou mais",
         to: "/os/produtos/valtro-pricing/beta/$id",
         params: { id: p.id },
-        since: p.created_at,
+        since: p.invited_at ?? p.created_at,
       });
       continue;
     }
