@@ -85,6 +85,7 @@ function FeedbackList() {
   const productsFn = useServerFn(listSaasProducts);
   const usersFn = useServerFn(listAssignableUsers);
 
+  /* 
   const debugQuery = useQuery({
     queryKey: ["debug-rls"],
     queryFn: async () => {
@@ -94,6 +95,7 @@ function FeedbackList() {
     },
     enabled: false // Apenas para debug manual se necessário
   });
+  */
 
   const [term, setTerm] = useState("");
   const [status, setStatus] = useState<FeedbackStatus | typeof ALL>(ALL);
