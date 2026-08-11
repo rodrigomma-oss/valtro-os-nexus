@@ -48,6 +48,7 @@ export const listFeedback = createServerFn({ method: "GET" })
     pageSize: z.number().default(20),
   }).parse(data))
   .handler(async ({ data, context }) => {
+    console.log("[SF-listFeedback] User ID:", context.userId);
     let query = context.supabase
       .from("feedback")
 
@@ -74,6 +75,7 @@ export const listFeedback = createServerFn({ method: "GET" })
     const from = (data.page - 1) * data.pageSize;
     const to = from + data.pageSize - 1;
 
+    console.log("[SF-listFeedback] Query Result:", { itemsCount: items?.length, count, error });
     const { data: items, count, error } = await query
       .order("updated_at", { ascending: false })
       .range(from, to);
