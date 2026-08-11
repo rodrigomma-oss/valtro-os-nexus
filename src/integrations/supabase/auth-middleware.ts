@@ -65,14 +65,21 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    // IMPORTANT: Verify the token by calling getUser()
-    // This ensures RLS has the correct identity context
+    // CRITICAL: We MUST establish session state for the client so PostgREST applies auth.uid()
+    // and auth.role() in RLS policies. Manual headers alone are sometimes insufficient 
+    // depending on how the listener is configured.
     const { data: { user }, error } = await supabase.auth.getUser(token);
     
     if (error || !user) {
       console.error(`[AuthMiddleware] Auth validation failed: ${error?.message}`);
       throw new Error('Unauthorized: Invalid session');
     }
+
+    // Force set session for the client instance
+    await supabase.auth.setSession({
+      access_token: token,
+      refresh_token: '',
+    });
 
     return next({
       context: {
