@@ -172,7 +172,10 @@ function FeedbackList() {
   const items = feedbackQuery.data?.items ?? [];
   const total = feedbackQuery.data?.total ?? 0;
   
-  const openFeedback = (id: string) => navigate({ to: "/os/atendimento/feedback/$id", params: { id } });
+  const openFeedback = (id: string) => {
+    console.log(`[UI] Navegando para feedback: ${id}`);
+    navigate({ to: "/os/atendimento/feedback/$id", params: { id } });
+  };
 
   const columns: DataTableColumn<Feedback>[] = [
     {
@@ -182,7 +185,10 @@ function FeedbackList() {
         <Link
           to="/os/atendimento/feedback/$id"
           params={{ id: f.id }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log(`[UI] Link clicado para feedback ID: ${f.id}`);
+          }}
           className="whitespace-nowrap text-sm font-semibold text-primary hover:underline"
         >
           {f.code}

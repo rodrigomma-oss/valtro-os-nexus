@@ -91,6 +91,8 @@ export const getFeedback = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
+    console.log(`[getFeedback] Buscando ID: ${data.id} (User: ${context.userId})`);
+    
     const { data: feedback, error } = await context.supabase
       .from("feedback")
       .select(`
@@ -102,9 +104,17 @@ export const getFeedback = createServerFn({ method: "GET" })
         bugs:bug_id(code)
       `)
       .eq("id", data.id)
-      .single();
+      .maybeSingle();
     
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error(`[getFeedback] Erro DB: ${error.message}`, error);
+      throw new Error(error.message);
+    }
+    
+    if (!feedback) {
+      console.warn(`[getFeedback] Registro não encontrado: ${data.id}`);
+      return { feedback: null, events: [] };
+    }
     
     const { data: events, error: eventsError } = await context.supabase
       .from("feedback_events")
