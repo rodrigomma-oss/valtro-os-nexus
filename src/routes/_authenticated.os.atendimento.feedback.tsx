@@ -185,10 +185,6 @@ function FeedbackList() {
         <Link
           to="/os/atendimento/feedback/$id"
           params={{ id: f.id }}
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log(`[UI] Link clicado para feedback ID: ${f.id}`);
-          }}
           className="whitespace-nowrap text-sm font-semibold text-primary hover:underline"
         >
           {f.code}
@@ -252,10 +248,7 @@ function FeedbackList() {
         <Button
           size="sm"
           variant="ghost"
-          onClick={(e) => {
-            e.stopPropagation();
-            openFeedback(f.id);
-          }}
+          onClick={() => openFeedback(f.id)}
         >
           Abrir
         </Button>

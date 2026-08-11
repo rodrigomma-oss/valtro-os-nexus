@@ -190,23 +190,27 @@ function FeedbackDetail() {
 
   if (feedbackQuery.isLoading) {
     return (
-      <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
+      <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-4 rounded-xl border bg-card p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Carregando feedback...</p>
+        <p className="text-sm text-muted-foreground font-medium">Buscando detalhes do feedback...</p>
       </div>
     );
   }
 
   if (feedbackQuery.isError) {
     return (
-      <div className="p-10 text-center">
-        <AlertCircle className="mx-auto h-10 w-10 text-destructive mb-4" />
-        <h2 className="text-xl font-semibold text-destructive">Erro ao carregar feedback</h2>
-        <p className="text-sm text-muted-foreground mt-2">
-          {translateFeedbackError(feedbackQuery.error.message)}
-        </p>
-        <Button variant="link" asChild className="mt-4">
-          <Link to="/os/atendimento/feedback">Voltar para listagem</Link>
+      <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-4 rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+        <AlertCircle className="h-10 w-10 text-destructive" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold text-destructive">Falha na comunicação</h2>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            {translateFeedbackError(feedbackQuery.error.message)}
+          </p>
+        </div>
+        <Button variant="outline" asChild className="mt-2">
+          <Link to="/os/atendimento/feedback">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Voltar para listagem
+          </Link>
         </Button>
       </div>
     );
@@ -214,14 +218,18 @@ function FeedbackDetail() {
 
   if (!feedback) {
     return (
-      <div className="p-10 text-center">
-        <SearchX className="mx-auto h-10 w-10 text-muted-foreground mb-4" />
-        <h2 className="text-xl font-semibold">Feedback não encontrado</h2>
-        <p className="text-sm text-muted-foreground mt-2">
-          O registro solicitado pode ter sido removido ou você não tem permissão para acessá-lo.
-        </p>
-        <Button variant="link" asChild className="mt-4">
-          <Link to="/os/atendimento/feedback">Voltar para listagem</Link>
+      <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-4 rounded-xl border bg-muted/30 p-8 text-center">
+        <SearchX className="h-10 w-10 text-muted-foreground" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Registro não encontrado</h2>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            O feedback solicitado não existe ou você não tem permissão para visualizá-lo.
+          </p>
+        </div>
+        <Button variant="outline" asChild className="mt-2">
+          <Link to="/os/atendimento/feedback">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Ver todos os feedbacks
+          </Link>
         </Button>
       </div>
     );
