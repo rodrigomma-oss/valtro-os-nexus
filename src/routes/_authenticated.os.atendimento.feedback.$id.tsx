@@ -124,7 +124,12 @@ function FeedbackDetail() {
 
   const feedbackQuery = useQuery({
     queryKey: ["feedback", id],
-    queryFn: () => getFn({ data: { id } }),
+    queryFn: () => {
+      console.log(`[UI] Carregando feedback ID: ${id}`);
+      return getFn({ data: { id } });
+    },
+    retry: 1,
+    staleTime: 0,
   });
 
   const products = useQuery({
