@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { listFeedback } from '../feedback.functions';
+import { listFeedback } from '@/lib/os/feedback.functions';
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
