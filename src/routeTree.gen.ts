@@ -36,7 +36,6 @@ import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
 import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
 import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
-import { Route as ApiPublicHealthCheckDebugRouteImport } from './routes/api/public/health-check-debug'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
 import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
@@ -212,12 +211,6 @@ const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   path: '/api/public/version',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicHealthCheckDebugRoute =
-  ApiPublicHealthCheckDebugRouteImport.update({
-    id: '/api/public/health-check-debug',
-    path: '/api/public/health-check-debug',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthenticatedOsDashboardRoute =
   AuthenticatedOsDashboardRouteImport.update({
     id: '/dashboard',
@@ -481,7 +474,6 @@ export interface FileRoutesByFullPath {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
-  '/api/public/health-check-debug': typeof ApiPublicHealthCheckDebugRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -548,7 +540,6 @@ export interface FileRoutesByTo {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
-  '/api/public/health-check-debug': typeof ApiPublicHealthCheckDebugRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -615,7 +606,6 @@ export interface FileRoutesById {
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/_authenticated/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
-  '/api/public/health-check-debug': typeof ApiPublicHealthCheckDebugRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -686,7 +676,6 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/os/atendimento'
     | '/os/dashboard'
-    | '/api/public/health-check-debug'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -753,7 +742,6 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/os/atendimento'
     | '/os/dashboard'
-    | '/api/public/health-check-debug'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -819,7 +807,6 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/servicos'
     | '/_authenticated/os/atendimento'
     | '/_authenticated/os/dashboard'
-    | '/api/public/health-check-debug'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -880,7 +867,6 @@ export interface RootRouteChildren {
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
-  ApiPublicHealthCheckDebugRoute: typeof ApiPublicHealthCheckDebugRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
   ApiV1FeedbackRoute: typeof ApiV1FeedbackRoute
@@ -1079,13 +1065,6 @@ declare module '@tanstack/react-router' {
       path: '/api/public/version'
       fullPath: '/api/public/version'
       preLoaderRoute: typeof ApiPublicVersionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/health-check-debug': {
-      id: '/api/public/health-check-debug'
-      path: '/api/public/health-check-debug'
-      fullPath: '/api/public/health-check-debug'
-      preLoaderRoute: typeof ApiPublicHealthCheckDebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/os/dashboard': {
@@ -1596,7 +1575,6 @@ const rootRouteChildren: RootRouteChildren = {
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
-  ApiPublicHealthCheckDebugRoute: ApiPublicHealthCheckDebugRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
   ApiV1FeedbackRoute: ApiV1FeedbackRoute,
