@@ -1,45 +1,29 @@
+---
+title: "OPS-INT-003 — R10 — Navegação Feedback"
+description: "Corrigir a falha de navegação entre a listagem e o detalhamento de Feedback no Valtro OS."
+type: "hotfix"
+---
+
 # OPS-INT-003 — R10 — FEEDBACK APARECE NA LISTA, MAS NÃO ABRE AO CLICAR
 
-Estimativa: 30 minutos (Diagnóstico + Fix + Validação).
+**Estimativa:** 15 minutos (Execução imediata).
 
-## 1. Contexto e Diagnóstico
-A listagem de Feedback agora exibe os registros da API (FDB-000003, FDB-000004, FDB-000007), mas a navegação para a rota de detalhe (`/os/atendimento/feedback/$id`) falha ao ser acionada via clique ou botão "Abrir".
+## Causa Raiz
+O componente `Link` na `DataTable` de feedback (`src/routes/_authenticated.os.atendimento.feedback.tsx`) está utilizando o componente `Link` do `@tanstack/react-router` mas o comportamento de clique pode estar sendo interceptado ou falhando devido ao estado de carregamento do TanStack Query no destino. Além disso, a `DataTable` possui um `onClick` no nível da linha ou ação que pode estar entrando em conflito com o `Link` interno, ou o parâmetro `$id` está perdendo a hidratação de auth no loader.
 
-### Causas Prováveis (Hipóteses)
-- **H1: Incompatibilidade de Tipo**: O parâmetro `$id` na rota espera um UUID, mas o `f.id` retornado pela listagem pode estar ausente ou mal formatado.
-- **H2: Blocker de Evento**: `e.stopPropagation()` ou handlers de clique no `DataTable` ou `Link` estão impedindo a propagação correta do evento de navegação.
-- **H3: Rota Inexistente**: A rota `/_authenticated.os.atendimento.feedback.$id.tsx` pode não estar corretamente registrada no `routeTree.gen.ts`.
-- **H4: Loader Failure**: O loader da rota de detalhe falha silenciosamente ao receber o ID.
+## Plano de Ação
 
-## 2. Ações Planejadas
+### 1. Hardening do Link na Listagem
+Simplificar o `render` da coluna "Código" para garantir que o `Link` seja o único responsável pela navegação, removendo `e.stopPropagation()` desnecessários que podem interferir no roteador em certos contextos de renderização.
 
-### Fase 1: Reprodução Técnica (Playwright)
-- Criar script `/tmp/browser/ops_int_003_r10_diag.py` para:
-  - Navegar até `/os/atendimento/feedback`.
-  - Capturar o `href` do link `FDB-000007`.
-  - Tentar clicar e observar a URL final.
-  - Verificar erros de console/rede durante a transição.
+### 2. Otimização do Detail Loader
+Garantir que a rota de detalhe (`src/routes/_authenticated.os.atendimento.feedback.$id.tsx`) trate corretamente o estado de `error` e `isLoading` para evitar a "tela estática" reportada.
 
-### Fase 2: Inspeção de Código
-- Validar `src/routes/_authenticated.os.atendimento.feedback.tsx`:
-  - Verificar a função `openFeedback` e o `render` da coluna `code`.
-  - Garantir que `f.id` está sendo extraído corretamente.
-- Validar `src/routes/_authenticated.os.atendimento.feedback.$id.tsx`:
-  - Confirmar se o parâmetro `id` é extraído via `Route.useParams()`.
-  - Verificar se o loader `getFeedback` é executado com o ID correto.
-
-### Fase 3: Correção Mínima
-- Ajustar handlers de navegação se necessário.
-- Adicionar fallbacks de dados no detalhe para registros de API (NULL `created_by`).
-- Corrigir qualquer desalinhamento entre `protocol/code` vs `id` (UUID).
-
-### Fase 4: Validação
+### 3. Validação
 - Testar clique em `FDB-000007`.
-- Verificar se a rota de detalhe carrega os dados e a timeline.
-- Confirmar retorno seguro para a listagem.
+- Verificar se a URL muda E o conteúdo carrega.
+- Confirmar fallback "Sistema/API" no detalhe.
 
-## 3. Aspectos Técnicos
-- **Frontend**: TanStack Router + React Start Server Functions.
-- **Navegação**: Uso de `Link` com `params` e `useNavigate`.
-- **Backend**: `getFeedback` Server Function.
-- **Dados**: `feedback.id` (UUID) como chave de navegação.
+## Arquivos a serem modificados
+- `src/routes/_authenticated.os.atendimento.feedback.tsx`
+- `src/routes/_authenticated.os.atendimento.feedback.$id.tsx`
