@@ -5,6 +5,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { createRequestClient } from "@/integrations/supabase/request-client.server";
+
 import type { Bug, BugEvent, BugStatus, BugSeverity, BugCategory, BugEnvironment } from "@/types/bug";
 
 const STATUS = [

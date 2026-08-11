@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { createRequestClient } from "@/integrations/supabase/request-client.server";
 import type { Lead, LeadEvent, LeadNote, LeadStatus, NextAction } from "@/types/lead";
+
 import {
   INTEREST_LABEL,
   NEXT_ACTION_LABEL,
@@ -422,6 +424,7 @@ async function insertEvent(
     metadata: metadata ?? null,
   });
 }
+
 
 // Inicia a triagem: seta status=em_triagem e triage_started_at=now(), se ainda não iniciada
 export const startTriage = createServerFn({ method: "POST" })
