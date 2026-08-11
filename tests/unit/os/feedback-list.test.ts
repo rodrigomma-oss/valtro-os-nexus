@@ -1,8 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock TanStack Start storage context
-vi.mock('@tanstack/start-storage-context', () => ({
-  getStartContext: vi.fn().mockReturnValue({}),
+// Mock TanStack Start server functions to call the handler directly
+vi.mock('@tanstack/react-start', () => ({
+  createServerFn: vi.fn().mockReturnValue({
+    validator: vi.fn().mockReturnThis(),
+    handler: (h: any) => {
+      const fn = (args: any) => h(args);
+      fn.handler = h;
+      return fn;
+    },
+  }),
 }));
 
 // Mock Supabase client
@@ -39,7 +46,8 @@ describe('listFeedback', () => {
       range: vi.fn().mockResolvedValue({ data: mockData, count: 1, error: null }),
     });
 
-    const result = await listFeedback({ data: { page: 1, pageSize: 20 } });
+    // Access the raw handler directly to bypass TanStack Start internal context checks
+    const result = await (listFeedback as any).handler({ data: { page: 1, pageSize: 20 } });
     
     expect(result.items[0].created_by_name).toBe('User One');
     expect(result.total).toBe(1);
@@ -62,7 +70,7 @@ describe('listFeedback', () => {
       range: vi.fn().mockResolvedValue({ data: mockData, count: 1, error: null }),
     });
 
-    const result = await listFeedback({ data: { page: 1, pageSize: 20 } });
+    const result = await (listFeedback as any).handler({ data: { page: 1, pageSize: 20 } });
     
     expect(result.items[0].created_by_name).toBeUndefined();
     expect(result.total).toBe(1);
