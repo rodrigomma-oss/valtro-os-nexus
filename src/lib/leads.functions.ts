@@ -416,7 +416,7 @@ async function insertEvent(
   createdBy: string,
   metadata?: Record<string, unknown>,
 ) {
-  await supabase.from("lead_events").insert({
+  await context.supabase.from("lead_events").insert({
     lead_id: leadId,
     type,
     description,

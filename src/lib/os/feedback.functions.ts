@@ -113,7 +113,6 @@ export const getFeedback = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     
     const { data: events, error: eventsError } = await context.supabase
-
       .from("feedback_events")
       .select(`
         *,
@@ -176,7 +175,6 @@ export const updateFeedback = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { id, ...patch } = data;
     const { error } = await context.supabase
-
       .from("feedback")
       .update({
         ...patch,
@@ -200,7 +198,6 @@ export const assignFeedback = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("feedback")
       .update({ owner_id: data.owner_id })
-
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -217,7 +214,6 @@ export const changeFeedbackStatus = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("feedback")
       .update({ status: data.status as FeedbackStatus })
-
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -231,7 +227,6 @@ export const closeFeedback = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("feedback")
       .update({ status: "closed" as FeedbackStatus })
-
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -245,7 +240,6 @@ export const reopenFeedback = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("feedback")
       .update({ status: "under_review" as FeedbackStatus })
-
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
