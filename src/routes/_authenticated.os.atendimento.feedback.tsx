@@ -204,6 +204,13 @@ function FeedbackList() {
     },
     { key: "source", header: "Origem", render: (f) => <FeedbackSourceBadge source={f.source} /> },
     {
+      key: "creator",
+      header: "Criado por",
+      render: (f) => (
+        <span className="text-sm text-muted-foreground">{f.created_by_name ?? "Sistema/API"}</span>
+      ),
+    },
+    {
       key: "owner",
       header: "Responsável",
       render: (f) => (

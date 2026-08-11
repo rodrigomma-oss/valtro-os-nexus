@@ -50,7 +50,7 @@ export const listFeedback = createServerFn({ method: "GET" })
         *,
         saas_products(name),
         profiles:owner_id(full_name),
-        creator:created_by(full_name),
+        creator:created_by!left(full_name),
         tickets:ticket_id(protocol),
         bugs:bug_id(code)
       `, { count: "exact" });
@@ -97,7 +97,7 @@ export const getFeedback = createServerFn({ method: "GET" })
         *,
         saas_products(name),
         profiles:owner_id(full_name),
-        creator:created_by(full_name),
+        creator:created_by!left(full_name),
         tickets:ticket_id(protocol),
         bugs:bug_id(code)
       `)
