@@ -1,6 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createRequestClient } from "@/integrations/supabase/request-client.server";
-
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { 
@@ -11,11 +9,8 @@ import type {
   FeedbackSubscriptionInterest 
 } from "@/types/feedback";
 
-
 /**
  * Módulo de Gestão de Feedback do Beta Fechado (VOS-001E).
- * 
- * Todas as funções utilizam RLS e validam permissões via context.userId.
  */
 
 const feedbackSchema = z.object({
@@ -76,16 +71,11 @@ export const listFeedback = createServerFn({ method: "GET" })
     const { data: items, count, error } = await query
       .order("updated_at", { ascending: false })
       .range(from, to);
-    if (error) {
-      console.error("[SF-listFeedback] ERROR:", error.message);
-      throw new Error(error.message);
-    }
 
-    console.log("[SF-listFeedback] RETURN DATA:", JSON.stringify({ 
-      itemsLength: items?.length, 
-      total: count, 
-      firstItemCode: items?.[0]?.code
-    }));
+    if (error) throw new Error(error.message);
+
+    return {
+      items: (items || []).map(item => ({
         ...item,
         product_name: (item.saas_products as any)?.name,
         owner_name: (item.profiles as any)?.full_name,
@@ -157,7 +147,6 @@ export const createFeedback = createServerFn({ method: "POST" })
       } as any])
       .select()
       .single();
-
 
     if (error) throw new Error(error.message);
     return { feedback };
