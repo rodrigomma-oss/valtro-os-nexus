@@ -76,12 +76,16 @@ export const listFeedback = createServerFn({ method: "GET" })
     const { data: items, count, error } = await query
       .order("updated_at", { ascending: false })
       .range(from, to);
+    if (error) {
+      console.error("[SF-listFeedback] ERROR:", error.message);
+      throw new Error(error.message);
+    }
+
+    console.log("[SF-listFeedback] RETURN DATA:", JSON.stringify({ 
+      itemsLength: items?.length, 
+      total: count, 
+      firstItemCode: items?.[0]?.code
     }));
-
-    if (error) throw new Error(error.message);
-
-    return {
-      items: (items || []).map(item => ({
         ...item,
         product_name: (item.saas_products as any)?.name,
         owner_name: (item.profiles as any)?.full_name,
