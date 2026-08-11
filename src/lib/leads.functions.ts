@@ -416,7 +416,7 @@ async function insertEvent(
   createdBy: string,
   metadata?: Record<string, unknown>,
 ) {
-  await context.supabase.from("lead_events").insert({
+  await supabase.from("lead_events").insert({
     lead_id: leadId,
     type,
     description,
@@ -424,6 +424,7 @@ async function insertEvent(
     metadata: metadata ?? null,
   });
 }
+
 
 // Inicia a triagem: seta status=em_triagem e triage_started_at=now(), se ainda não iniciada
 export const startTriage = createServerFn({ method: "POST" })
