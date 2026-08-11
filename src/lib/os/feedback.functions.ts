@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { 
   FeedbackType, 
   FeedbackSource, 
@@ -8,6 +8,7 @@ import type {
   FeedbackPerceivedValue, 
   FeedbackSubscriptionInterest 
 } from "@/types/feedback";
+
 
 /**
  * Módulo de Gestão de Feedback do Beta Fechado (VOS-001E).
@@ -32,6 +33,7 @@ const feedbackSchema = z.object({
 });
 
 export const listFeedback = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     text: z.string().optional(),
     code: z.string().optional(),
@@ -43,9 +45,10 @@ export const listFeedback = createServerFn({ method: "GET" })
     page: z.number().default(1),
     pageSize: z.number().default(20),
   }).parse(data))
-  .handler(async ({ data }) => {
-    let query = supabase
+  .handler(async ({ data, context }) => {
+    let query = context.supabase
       .from("feedback")
+
       .select(`
         *,
         saas_products(name),
@@ -89,9 +92,10 @@ export const listFeedback = createServerFn({ method: "GET" })
   });
 
 export const getFeedback = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
-    const { data: feedback, error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { data: feedback, error } = await context.supabase
       .from("feedback")
       .select(`
         *,
@@ -103,10 +107,11 @@ export const getFeedback = createServerFn({ method: "GET" })
       `)
       .eq("id", data.id)
       .single();
-
+    
     if (error) throw new Error(error.message);
+    
+    const { data: events, error: eventsError } = await context.supabase
 
-    const { data: events, error: eventsError } = await supabase
       .from("feedback_events")
       .select(`
         *,
@@ -134,27 +139,27 @@ export const getFeedback = createServerFn({ method: "GET" })
   });
 
 export const createFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => feedbackSchema.parse(data))
-  .handler(async ({ data }) => {
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) throw new Error("Unauthorized");
-
-    const { data: feedback, error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { data: feedback, error } = await context.supabase
       .from("feedback")
       .insert([{
         ...data,
-        created_by: userData.user.id,
+        created_by: context.userId,
         status: "new" as FeedbackStatus,
-        code: "AUTO" // Will be replaced by trigger, but needed for type safety if code is required
+        code: "AUTO" 
       } as any])
       .select()
       .single();
+
 
     if (error) throw new Error(error.message);
     return { feedback };
   });
 
 export const updateFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     id: z.string().uuid(),
     title: z.string().min(1).optional(),
@@ -166,9 +171,10 @@ export const updateFeedback = createServerFn({ method: "POST" })
     ticket_id: z.string().uuid().optional().nullable(),
     bug_id: z.string().uuid().optional().nullable(),
   }).parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { id, ...patch } = data;
-    const { error } = await supabase
+    const { error } = await context.supabase
+
       .from("feedback")
       .update({
         ...patch,
@@ -183,14 +189,16 @@ export const updateFeedback = createServerFn({ method: "POST" })
   });
 
 export const assignFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     id: z.string().uuid(),
     owner_id: z.string().uuid().nullable(),
   }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
       .from("feedback")
       .update({ owner_id: data.owner_id })
+
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -198,14 +206,16 @@ export const assignFeedback = createServerFn({ method: "POST" })
   });
 
 export const changeFeedbackStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({
     id: z.string().uuid(),
     status: z.enum(["new", "under_review", "accepted", "planned", "implemented", "dismissed", "closed"]),
   }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
       .from("feedback")
       .update({ status: data.status as FeedbackStatus })
+
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -213,11 +223,13 @@ export const changeFeedbackStatus = createServerFn({ method: "POST" })
   });
 
 export const closeFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
       .from("feedback")
       .update({ status: "closed" as FeedbackStatus })
+
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -225,11 +237,13 @@ export const closeFeedback = createServerFn({ method: "POST" })
   });
 
 export const reopenFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: any) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
       .from("feedback")
       .update({ status: "under_review" as FeedbackStatus })
+
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
