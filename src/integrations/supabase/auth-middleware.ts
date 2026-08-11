@@ -17,7 +17,6 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
       new Headers(init.headers).forEach((value, key) => headers.set(key, value));
     }
 
-    // New Supabase API keys are opaque strings, not bearer JWTs.
     if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
       headers.delete('Authorization');
     }
@@ -29,50 +28,31 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
-    
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-      const missing = [
-        ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-        ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-      ];
-      const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-      console.error(`[Supabase] ${message}`);
-      throw new Error(message);
+      throw new Error('Missing Supabase environment variables.');
     }
     
     const request = getRequest();
-
     if (!request?.headers) {
-      throw new Error('Unauthorized: No request headers available');
+      throw new Error('Unauthorized: No request headers');
     }
 
     const authHeader = request.headers.get('authorization');
-
-    if (!authHeader) {
-      throw new Error('Unauthorized: No authorization header provided');
-    }
-
-    if (!authHeader.startsWith('Bearer ')) {
-      throw new Error('Unauthorized: Only Bearer tokens are supported');
+    if (!authHeader?.startsWith('Bearer ')) {
+      throw new Error('Unauthorized: Missing token');
     }
 
     const token = authHeader.replace('Bearer ', '');
-    if (!token) {
-      throw new Error('Unauthorized: No token provided');
-    }
-
-    // DEBUG: Only log length and type, never the token itself
-    console.log(`[AuthMiddleware] Token received, length: ${token.length}, JWT parts: ${token.split('.').length}`);
 
     const supabase = createClient<Database>(
-      SUPABASE_URL!,
-      SUPABASE_PUBLISHABLE_KEY!,
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
       {
         global: {
-          fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY!),
+          fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -85,37 +65,20 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    let userId: string | undefined;
-    let claims: any;
-
-    if (token.split('.').length === 3) {
-      const { data, error } = await supabase.auth.getClaims(token);
-      if (error || !data?.claims) {
-        console.error(`[AuthMiddleware] getClaims error: ${error?.message}`);
-        throw new Error('Unauthorized: Invalid token');
-      }
-      userId = data.claims.sub;
-      claims = data.claims;
-    } else {
-      // Opaque token fallback - trust Supabase to validate via request
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      if (error || !user) {
-        console.error(`[AuthMiddleware] getUser error: ${error?.message}`);
-        throw new Error('Unauthorized: Invalid token');
-      }
-      userId = user.id;
-      claims = { sub: user.id, role: user.role };
-    }
-
-    if (!userId) {
-      throw new Error('Unauthorized: No user ID found');
+    // IMPORTANT: Verify the token by calling getUser()
+    // This ensures RLS has the correct identity context
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    
+    if (error || !user) {
+      console.error(`[AuthMiddleware] Auth validation failed: ${error?.message}`);
+      throw new Error('Unauthorized: Invalid session');
     }
 
     return next({
       context: {
         supabase,
-        userId,
-        claims,
+        userId: user.id,
+        claims: user,
       },
     });
   },
