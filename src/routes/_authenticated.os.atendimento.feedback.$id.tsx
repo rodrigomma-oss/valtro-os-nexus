@@ -18,7 +18,8 @@ import {
   X,
   RotateCcw,
   Pencil,
-  Loader2
+  Loader2,
+  SearchX
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
@@ -184,8 +185,24 @@ function FeedbackDetail() {
 
   if (feedbackQuery.isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
+      <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Carregando feedback...</p>
+      </div>
+    );
+  }
+
+  if (feedbackQuery.isError) {
+    return (
+      <div className="p-10 text-center">
+        <AlertCircle className="mx-auto h-10 w-10 text-destructive mb-4" />
+        <h2 className="text-xl font-semibold text-destructive">Erro ao carregar feedback</h2>
+        <p className="text-sm text-muted-foreground mt-2">
+          {translateFeedbackError(feedbackQuery.error.message)}
+        </p>
+        <Button variant="link" asChild className="mt-4">
+          <Link to="/os/atendimento/feedback">Voltar para listagem</Link>
+        </Button>
       </div>
     );
   }
@@ -193,7 +210,11 @@ function FeedbackDetail() {
   if (!feedback) {
     return (
       <div className="p-10 text-center">
+        <SearchX className="mx-auto h-10 w-10 text-muted-foreground mb-4" />
         <h2 className="text-xl font-semibold">Feedback não encontrado</h2>
+        <p className="text-sm text-muted-foreground mt-2">
+          O registro solicitado pode ter sido removido ou você não tem permissão para acessá-lo.
+        </p>
         <Button variant="link" asChild className="mt-4">
           <Link to="/os/atendimento/feedback">Voltar para listagem</Link>
         </Button>
