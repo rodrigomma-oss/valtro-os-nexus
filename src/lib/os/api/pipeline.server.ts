@@ -1,5 +1,7 @@
 import type { ZodTypeAny, z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createRequestClient } from "@/integrations/supabase/request-client.server";
+
 import { authenticateRequest, authorize, type ApiAuthContext } from "./auth.server";
 import { logApiRequest, logUnauthenticatedApiRequest } from "./audit.server";
 import {

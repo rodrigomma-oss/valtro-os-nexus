@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { createRequestClient } from "@/integrations/supabase/request-client.server";
+
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { 
