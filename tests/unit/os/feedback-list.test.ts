@@ -1,5 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { listFeedback } from '@/lib/os/feedback.functions';
+
+// Mock TanStack Start storage context
+vi.mock('@tanstack/start-storage-context', () => ({
+  getStartContext: vi.fn().mockReturnValue({}),
+}));
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
@@ -14,6 +18,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
+import { listFeedback } from '@/lib/os/feedback.functions';
 import { supabase } from '@/integrations/supabase/client';
 
 describe('listFeedback', () => {
@@ -59,7 +64,6 @@ describe('listFeedback', () => {
 
     const result = await listFeedback({ data: { page: 1, pageSize: 20 } });
     
-    // In our implementation, item.creator being null leads to created_by_name being undefined
     expect(result.items[0].created_by_name).toBeUndefined();
     expect(result.total).toBe(1);
   });
