@@ -77,7 +77,12 @@ export const listFeedback = createServerFn({ method: "GET" })
       .order("updated_at", { ascending: false })
       .range(from, to);
 
-    console.log("[SF-listFeedback] RETURN DATA:", JSON.stringify({ itemsLength: items?.length, total: count, error: error?.message }).substring(0, 500));
+    console.log("[SF-listFeedback] RETURN DATA:", JSON.stringify({ 
+      itemsLength: items?.length, 
+      total: count, 
+      error: error?.message,
+      firstItemCode: items?.[0]?.code
+    }));
 
     if (error) throw new Error(error.message);
 
