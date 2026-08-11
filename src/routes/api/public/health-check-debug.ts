@@ -9,13 +9,17 @@ export const Route = createFileRoute('/api/public/health-check-debug')({
         const token = authHeader?.replace('Bearer ', '');
         
         const results: any = {
-          grants: {},
-          rls: {},
+          grants: [],
           token_info: token ? 'present' : 'absent'
         };
 
-        // Check grants
-        const { data: grants } = await supabaseAdmin.rpc('get_table_privileges', { t_name: 'feedback' });
+        // Check grants using standard information_schema
+        const { data: grants } = await supabaseAdmin
+          .from('information_schema.role_table_grants' as any)
+          .select('grantee, privilege_type')
+          .eq('table_name', 'feedback')
+          .eq('table_schema', 'public');
+        
         results.grants = grants;
 
         if (token) {
@@ -24,8 +28,8 @@ export const Route = createFileRoute('/api/public/health-check-debug')({
              global: { headers: { Authorization: `Bearer ${token}` } }
            });
            
-           const { data: user } = await sb.auth.getUser();
-           results.user = user;
+           const { data: userData } = await sb.auth.getUser();
+           results.user = userData.user;
            
            const { data: feedback, error } = await sb.from('feedback').select('id').limit(1);
            results.feedback_test = { count: feedback?.length, error };
