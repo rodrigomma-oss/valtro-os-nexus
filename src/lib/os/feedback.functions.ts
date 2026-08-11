@@ -75,6 +75,7 @@ export const listFeedback = createServerFn({ method: "GET" })
 
     const { data: items, count, error } = await query
       .order("updated_at", { ascending: false })
+console.log("[SF-listFeedback] RETURN DATA:", JSON.stringify({ itemsLength: items?.length, total: count }).substring(0, 500));
       .range(from, to);
 
     if (error) throw new Error(error.message);
