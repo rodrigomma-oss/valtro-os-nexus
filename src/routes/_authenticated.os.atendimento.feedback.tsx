@@ -85,6 +85,18 @@ function FeedbackList() {
   const productsFn = useServerFn(listSaasProducts);
   const usersFn = useServerFn(listAssignableUsers);
 
+  /* 
+  const debugQuery = useQuery({
+    queryKey: ["debug-rls"],
+    queryFn: async () => {
+      const { debugRLS } = await import("@/lib/os/debug.functions");
+      const fn = useServerFn(debugRLS);
+      return fn();
+    },
+    enabled: false // Apenas para debug manual se necessário
+  });
+  */
+
   const [term, setTerm] = useState("");
   const [status, setStatus] = useState<FeedbackStatus | typeof ALL>(ALL);
   const [type, setType] = useState<FeedbackType | typeof ALL>(ALL);

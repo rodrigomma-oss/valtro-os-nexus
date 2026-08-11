@@ -1,6 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createRequestClient } from "@/integrations/supabase/request-client.server";
-
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { 
@@ -11,11 +9,8 @@ import type {
   FeedbackSubscriptionInterest 
 } from "@/types/feedback";
 
-
 /**
  * Módulo de Gestão de Feedback do Beta Fechado (VOS-001E).
- * 
- * Todas as funções utilizam RLS e validam permissões via context.userId.
  */
 
 const feedbackSchema = z.object({
@@ -50,7 +45,6 @@ export const listFeedback = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     let query = context.supabase
       .from("feedback")
-
       .select(`
         *,
         saas_products(name),
@@ -153,7 +147,6 @@ export const createFeedback = createServerFn({ method: "POST" })
       } as any])
       .select()
       .single();
-
 
     if (error) throw new Error(error.message);
     return { feedback };

@@ -36,6 +36,7 @@ import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
 import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
 import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
 import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
+import { Route as ApiPublicDebugHeadersRouteImport } from './routes/api/public/debug-headers'
 import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
 import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
 import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
@@ -209,6 +210,11 @@ const ApiV1BugsRoute = ApiV1BugsRouteImport.update({
 const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
   id: '/api/public/version',
   path: '/api/public/version',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDebugHeadersRoute = ApiPublicDebugHeadersRouteImport.update({
+  id: '/api/public/debug-headers',
+  path: '/api/public/debug-headers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedOsDashboardRoute =
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
+  '/api/public/debug-headers': typeof ApiPublicDebugHeadersRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -540,6 +547,7 @@ export interface FileRoutesByTo {
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/os/dashboard': typeof AuthenticatedOsDashboardRoute
+  '/api/public/debug-headers': typeof ApiPublicDebugHeadersRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -606,6 +614,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/_authenticated/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
   '/_authenticated/os/dashboard': typeof AuthenticatedOsDashboardRoute
+  '/api/public/debug-headers': typeof ApiPublicDebugHeadersRoute
   '/api/public/version': typeof ApiPublicVersionRoute
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
@@ -676,6 +685,7 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/os/atendimento'
     | '/os/dashboard'
+    | '/api/public/debug-headers'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -742,6 +752,7 @@ export interface FileRouteTypes {
     | '/crm/servicos'
     | '/os/atendimento'
     | '/os/dashboard'
+    | '/api/public/debug-headers'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -807,6 +818,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/servicos'
     | '/_authenticated/os/atendimento'
     | '/_authenticated/os/dashboard'
+    | '/api/public/debug-headers'
     | '/api/public/version'
     | '/api/v1/bugs'
     | '/api/v1/feedback'
@@ -867,6 +879,7 @@ export interface RootRouteChildren {
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
+  ApiPublicDebugHeadersRoute: typeof ApiPublicDebugHeadersRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
   ApiV1FeedbackRoute: typeof ApiV1FeedbackRoute
@@ -1065,6 +1078,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/version'
       fullPath: '/api/public/version'
       preLoaderRoute: typeof ApiPublicVersionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/debug-headers': {
+      id: '/api/public/debug-headers'
+      path: '/api/public/debug-headers'
+      fullPath: '/api/public/debug-headers'
+      preLoaderRoute: typeof ApiPublicDebugHeadersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/os/dashboard': {
@@ -1575,6 +1595,7 @@ const rootRouteChildren: RootRouteChildren = {
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
+  ApiPublicDebugHeadersRoute: ApiPublicDebugHeadersRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
   ApiV1FeedbackRoute: ApiV1FeedbackRoute,
