@@ -1,7 +1,9 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+// OPS-AUTH-002 — BLOCO 10B: substitui intencionalmente o `attachSupabaseAuth`
+// gerado, que enviava RPCs sem bearer quando a sessão ainda não estava hidratada.
+import { attachRequestScopedSupabaseAuth } from "@/integrations/supabase/auth-bearer";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
