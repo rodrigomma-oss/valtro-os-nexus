@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import { Route as AuthenticatedRoute } from '@/routes/_authenticated';
-import { redirect } from '@tanstack/react-router';
 
 // Mocks
 vi.mock('@/integrations/supabase/client', () => ({
@@ -38,11 +37,12 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
 
     try {
       await (AuthenticatedRoute as any).options.beforeLoad({
-        location: { pathname: '/os/dashboard' },
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
         context,
       });
       throw new Error('Should have redirected');
     } catch (e: any) {
+      // TanStack redirect error object check
       expect(e.to).toBe('/unauthorized');
     }
   });
@@ -58,7 +58,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
       (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles });
 
       const result = await (AuthenticatedRoute as any).options.beforeLoad({
-        location: { pathname: '/os/dashboard' },
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
         context,
       });
 
@@ -75,7 +75,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
 
     try {
       await (AuthenticatedRoute as any).options.beforeLoad({
-        location: { pathname: '/os/dashboard' },
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
         context,
       });
       throw new Error('Should have redirected');
@@ -92,7 +92,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
 
     const result = await (AuthenticatedRoute as any).options.beforeLoad({
-      location: { pathname: '/unauthorized' },
+      location: { pathname: '/unauthorized', href: '/unauthorized' },
       context,
     });
 
