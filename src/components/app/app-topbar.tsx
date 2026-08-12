@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, Search, LogOut, User as UserIcon, Settings, Menu } from "lucide-react";
+import { Bell, Search, LogOut, User as UserIcon, Settings, Menu, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -149,9 +149,9 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
-            <UserIcon className="mr-2 h-4 w-4" strokeWidth={1.75} />
-            Perfil
+          <DropdownMenuItem onSelect={() => navigate({ to: "/os/configuracoes/seguranca" })}>
+            <ShieldCheck className="mr-2 h-4 w-4" strokeWidth={1.75} />
+            Segurança
           </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Settings className="mr-2 h-4 w-4" strokeWidth={1.75} />

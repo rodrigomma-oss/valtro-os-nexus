@@ -48,6 +48,7 @@ import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_aut
 import { Route as ApiV1InternalAuthCheckRouteImport } from './routes/api/v1/[_]internal/auth-check'
 import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
 import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
+import { Route as AuthenticatedOsConfiguracoesSegurancaRouteImport } from './routes/_authenticated.os.configuracoes.seguranca'
 import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
 import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
 import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
@@ -283,6 +284,12 @@ const ApiPublicGoogleCalendarCallbackRoute =
     path: '/api/public/google-calendar/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedOsConfiguracoesSegurancaRoute =
+  AuthenticatedOsConfiguracoesSegurancaRouteImport.update({
+    id: '/configuracoes/seguranca',
+    path: '/configuracoes/seguranca',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 const AuthenticatedOsComercialServicosRoute =
   AuthenticatedOsComercialServicosRouteImport.update({
     id: '/comercial/servicos',
@@ -513,6 +520,7 @@ export interface FileRoutesByFullPath {
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
+  '/os/configuracoes/seguranca': typeof AuthenticatedOsConfiguracoesSegurancaRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/api/v1/_internal/auth-check': typeof ApiV1InternalAuthCheckRoute
@@ -578,6 +586,7 @@ export interface FileRoutesByTo {
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
+  '/os/configuracoes/seguranca': typeof AuthenticatedOsConfiguracoesSegurancaRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/api/v1/_internal/auth-check': typeof ApiV1InternalAuthCheckRoute
@@ -650,6 +659,7 @@ export interface FileRoutesById {
   '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
   '/_authenticated/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
+  '/_authenticated/os/configuracoes/seguranca': typeof AuthenticatedOsConfiguracoesSegurancaRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
   '/api/public/google-calendar/sync': typeof ApiPublicGoogleCalendarSyncRoute
   '/api/v1/_internal/auth-check': typeof ApiV1InternalAuthCheckRoute
@@ -723,6 +733,7 @@ export interface FileRouteTypes {
     | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
     | '/os/comercial/servicos'
+    | '/os/configuracoes/seguranca'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
     | '/api/v1/_internal/auth-check'
@@ -788,6 +799,7 @@ export interface FileRouteTypes {
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
     | '/os/comercial/servicos'
+    | '/os/configuracoes/seguranca'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
     | '/api/v1/_internal/auth-check'
@@ -859,6 +871,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/atendimento/chamados'
     | '/_authenticated/os/atendimento/feedback'
     | '/_authenticated/os/comercial/servicos'
+    | '/_authenticated/os/configuracoes/seguranca'
     | '/api/public/google-calendar/callback'
     | '/api/public/google-calendar/sync'
     | '/api/v1/_internal/auth-check'
@@ -1187,6 +1200,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/google-calendar/callback'
       preLoaderRoute: typeof ApiPublicGoogleCalendarCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/os/configuracoes/seguranca': {
+      id: '/_authenticated/os/configuracoes/seguranca'
+      path: '/configuracoes/seguranca'
+      fullPath: '/os/configuracoes/seguranca'
+      preLoaderRoute: typeof AuthenticatedOsConfiguracoesSegurancaRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
     '/_authenticated/os/comercial/servicos': {
       id: '/_authenticated/os/comercial/servicos'
@@ -1531,6 +1551,7 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
+  AuthenticatedOsConfiguracoesSegurancaRoute: typeof AuthenticatedOsConfiguracoesSegurancaRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
@@ -1548,6 +1569,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
+  AuthenticatedOsConfiguracoesSegurancaRoute:
+    AuthenticatedOsConfiguracoesSegurancaRoute,
   AuthenticatedOsComercialClientesIdRoute:
     AuthenticatedOsComercialClientesIdRoute,
   AuthenticatedOsComercialLeadsIdRoute: AuthenticatedOsComercialLeadsIdRoute,
