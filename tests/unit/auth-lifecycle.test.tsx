@@ -18,7 +18,7 @@ vi.mock("../../src/integrations/supabase/client", () => ({
 }));
 
 // Mock TanStack Router
-const mockUseSearch = vi.fn();
+const { mockUseSearch } = vi.hoisted(() => ({ mockUseSearch: vi.fn() }));
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: (path: string) => () => ({
     useSearch: mockUseSearch,
