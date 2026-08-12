@@ -230,6 +230,27 @@ function ActivityList({ items }: { items: ActivityItemDTO[] }) {
 
 function CrmDashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [showSecurityBanner, setShowSecurityBanner] = useState(false);
+
+  useEffect(() => {
+    const checkSecurity = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Regra P0: O banner só aparece para usuários Google que NÃO confirmaram senha local
+      // A confirmação é feita via metadata persistence (has_local_password)
+      const isGoogle = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
+      const hasConfirmedPassword = user?.user_metadata?.has_local_password === true;
+
+      if (isGoogle && !hasConfirmedPassword) {
+        setShowSecurityBanner(true);
+      } else {
+        setShowSecurityBanner(false);
+      }
+    };
+    checkSecurity();
+  }, []);
+
   const getOverviewFn = useServerFn(getOperationsOverview);
   const getFollowUpsFn = useServerFn(getFollowUpsOverview);
   const { data, isLoading } = useQuery({
