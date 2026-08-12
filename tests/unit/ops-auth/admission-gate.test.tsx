@@ -11,18 +11,20 @@ vi.mock('@tanstack/react-router', () => ({
 }));
 
 // 2. Mock do supabase client
-vi.mock('../../../src/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn(),
-      signOut: vi.fn(),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-    })),
-  }
-}));
+vi.mock('../../../src/integrations/supabase/client', () => {
+  return {
+    supabase: {
+      auth: {
+        getUser: vi.fn(),
+        signOut: vi.fn(),
+      },
+      from: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+      })),
+    }
+  };
+});
 
 // 3. Import do componente alvo via caminho relativo robusto
 import { Route as AuthenticatedRoute } from '../../../src/routes/_authenticated';
