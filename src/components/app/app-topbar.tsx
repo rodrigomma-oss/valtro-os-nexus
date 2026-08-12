@@ -149,9 +149,9 @@ export function AppTopbar({ breadcrumb }: AppTopbarProps) {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
-            <UserIcon className="mr-2 h-4 w-4" strokeWidth={1.75} />
-            Perfil
+          <DropdownMenuItem onSelect={() => navigate({ to: "/os/configuracoes/seguranca" })}>
+            <ShieldCheck className="mr-2 h-4 w-4" strokeWidth={1.75} />
+            Segurança
           </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Settings className="mr-2 h-4 w-4" strokeWidth={1.75} />
