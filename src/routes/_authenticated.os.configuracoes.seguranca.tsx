@@ -38,9 +38,11 @@ function SecurityPage() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password });
-      
-      if (error) throw error;
+      // Atualiza a senha e marca no metadata que o usuário agora possui credencial local
+      const { error } = await supabase.auth.updateUser({ 
+        password,
+        data: { has_local_password: true }
+      });
 
       toast.success("Senha configurada com sucesso!", {
         description: "Agora você pode acessar usando seu e-mail e esta senha.",
