@@ -1,6 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// 1. Mocks de terceiros
+// 1. Mocks de infraestrutura
+const mockSupabase = {
+  auth: {
+    getUser: vi.fn(),
+    signOut: vi.fn(),
+  },
+  from: vi.fn(() => ({
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+  })),
+};
+
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: mockSupabase
+}));
+
+// 2. Mock do TanStack Router
 vi.mock('@tanstack/react-router', () => ({
   createFileRoute: (path: string) => (options: any) => ({
     path,
@@ -10,23 +26,15 @@ vi.mock('@tanstack/react-router', () => ({
   redirect: (args: any) => ({ ...args, isRedirect: true }),
 }));
 
-// 2. Mocks de infraestrutura
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn(),
-      signOut: vi.fn(),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-    })),
-  },
+// Mock do middleware
+vi.mock('@/integrations/supabase/auth-middleware', () => ({
+  requireSupabaseAuth: {
+    server: (fn: any) => fn
+  }
 }));
 
-// 3. Import do componente alvo usando @/ aliasing configurado no Vite
-import { Route as AuthenticatedRoute } from '@/routes/_authenticated';
-import { supabase } from '@/integrations/supabase/client';
+// 3. Import do componente alvo
+import { Route as AuthenticatedRoute } from '../../../src/routes/_authenticated';
 
 const createMockContext = () => ({
   queryClient: {
@@ -41,7 +49,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
 
   it('A. Google novo sem convite (sem role) -> should redirect to /unauthorized', async () => {
     const mockUser = { id: 'new-google-user', email: 'test@gmail.com' };
-    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const context = createMockContext();
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
@@ -62,7 +70,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
     
     for (const roles of rolesToTest) {
       const mockUser = { id: `user-with-${roles[0]}`, email: 'test@valtro.com' };
-      (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
+      mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
       const context = createMockContext();
       (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles });
@@ -78,7 +86,7 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
 
   it('G. Loop redirect prevention -> should not throw if already on /unauthorized', async () => {
     const mockUser = { id: 'user-no-role', email: 'test@gmail.com' };
-    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const context = createMockContext();
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
