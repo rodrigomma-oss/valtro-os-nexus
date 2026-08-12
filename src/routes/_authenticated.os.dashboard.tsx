@@ -469,58 +469,75 @@ function CrmDashboard() {
         </Alert>
       )}
 
-      <BetaRiskBanner
-        counts={
-          beta.data?.counts ?? {
-            total: 0,
-            critica: 0,
-            atencao: 0,
-            normal: 0,
-            byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
-          }
-        }
-      />
-
+      {/* Visão comercial consolidada — primeira leitura do Centro de Operações. */}
       <Section
-        title="Operação do Beta Fechado"
-        description="Indicadores derivados de chamados, bugs, feedback, participantes e usuários internos."
+        title="Visão comercial"
+        description="Leitura consolidada do comercial: base de leads, pipeline de propostas e carteira."
       >
-        <BetaMetricGrid metrics={beta.data?.metrics ?? []} isLoading={beta.isLoading} />
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <MetricCard
+            index={0}
+            label="Leads na base"
+            value={data ? String(data.metrics.total) : isLoading ? "…" : "0"}
+            hint={`${data?.metrics.novos ?? 0} aguardando abordagem`}
+            trend="neutral"
+          />
+          <MetricCard
+            index={1}
+            label="Propostas ativas"
+            value={String(
+              (proposals.data?.em_elaboracao ?? 0) +
+                (proposals.data?.enviadas ?? 0) +
+                (proposals.data?.em_negociacao ?? 0),
+            )}
+            hint={`${proposals.data?.aprovadas ?? 0} aprovada(s)`}
+            trend="neutral"
+          />
+          <MetricCard
+            index={2}
+            label="Pipeline (valor)"
+            value={new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+              maximumFractionDigits: 0,
+            }).format(proposals.data?.pipeline_value ?? 0)}
+            hint="Somatório de propostas ativas"
+            trend="neutral"
+          />
+        </div>
+        <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <FollowUpTile
+            label="Clientes ativos"
+            value={clients.data?.ativos ?? 0}
+            tone="success"
+            icon={Building2}
+            to="/os/comercial/clientes"
+          />
+          <FollowUpTile
+            label="Projetos ativos"
+            value={projects.data?.ativos ?? 0}
+            tone="primary"
+            icon={FolderKanban}
+            to="/os/comercial/projetos"
+          />
+          <FollowUpTile
+            label="Follow-ups vencidos"
+            value={followUps.data?.followUpsVencidos ?? 0}
+            tone="danger"
+            icon={CalendarClock}
+            to="/os/comercial/leads"
+            search={{ view: "followups-vencidos" as const }}
+          />
+          <FollowUpTile
+            label="Leads aguardando contato"
+            value={data?.queue.leadsAguardandoContato ?? 0}
+            tone="info"
+            icon={UserPlus}
+            to="/os/comercial/leads"
+            search={{ view: "novos-do-site" as const }}
+          />
+        </div>
       </Section>
-
-      <Section
-        title="Atenção necessária — Beta"
-        description="Pendências derivadas em tempo real. Cada item abre a entidade de origem."
-      >
-        <BetaAttentionList
-          items={beta.data?.attention ?? []}
-          counts={
-            beta.data?.counts ?? {
-              total: 0,
-              critica: 0,
-              atencao: 0,
-              normal: 0,
-              byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
-            }
-          }
-          isLoading={beta.isLoading}
-        />
-      </Section>
-
-      <Section
-        title="Módulos do beta"
-        description="Situação consolidada por módulo — clique para abrir a lista completa."
-      >
-        <BetaModuleGrid modules={beta.data?.modules ?? []} />
-      </Section>
-
-      <Section
-        title="Últimos eventos do beta"
-        description="Timeline consolidada de chamados, bugs, feedback e participantes."
-      >
-        <BetaTimeline items={beta.data?.timeline ?? []} isLoading={beta.isLoading} />
-      </Section>
-
 
       <Section
         title="Resumo operacional"
@@ -745,6 +762,59 @@ function CrmDashboard() {
           </div>
         </Section>
       )}
+
+      <BetaRiskBanner
+        counts={
+          beta.data?.counts ?? {
+            total: 0,
+            critica: 0,
+            atencao: 0,
+            normal: 0,
+            byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+          }
+        }
+      />
+
+      <Section
+        title="Operação do Beta Fechado"
+        description="Indicadores derivados de chamados, bugs, feedback, participantes e usuários internos."
+      >
+        <BetaMetricGrid metrics={beta.data?.metrics ?? []} isLoading={beta.isLoading} />
+      </Section>
+
+      <Section
+        title="Atenção necessária — Beta"
+        description="Pendências derivadas em tempo real. Cada item abre a entidade de origem."
+      >
+        <BetaAttentionList
+          items={beta.data?.attention ?? []}
+          counts={
+            beta.data?.counts ?? {
+              total: 0,
+              critica: 0,
+              atencao: 0,
+              normal: 0,
+              byModule: { chamados: 0, bugs: 0, feedback: 0, participantes: 0 },
+            }
+          }
+          isLoading={beta.isLoading}
+        />
+      </Section>
+
+      <Section
+        title="Módulos do beta"
+        description="Situação consolidada por módulo — clique para abrir a lista completa."
+      >
+        <BetaModuleGrid modules={beta.data?.modules ?? []} />
+      </Section>
+
+      <Section
+        title="Últimos eventos do beta"
+        description="Timeline consolidada de chamados, bugs, feedback e participantes."
+      >
+        <BetaTimeline items={beta.data?.timeline ?? []} isLoading={beta.isLoading} />
+      </Section>
+
 
 
       <Section title="Inbox operacional" description="Eventos mais recentes na sua base de leads.">
