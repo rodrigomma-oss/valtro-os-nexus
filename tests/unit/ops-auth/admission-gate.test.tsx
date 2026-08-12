@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mocks manuais antes de importar o componente para evitar falhas de resolução de ambiente
+// Mocks manuais antes de importar o componente
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     auth: {
@@ -26,8 +26,9 @@ vi.mock('@tanstack/react-router', async () => {
   };
 });
 
-// Agora importamos o componente usando o caminho relativo correto
+// Importações relativas para o Vitest
 import { Route as AuthenticatedRoute } from '../../src/routes/_authenticated';
+import { supabase } from '../../src/integrations/supabase/client';
 
 const createMockContext = () => ({
   queryClient: {
@@ -41,7 +42,6 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   });
 
   it('A. Google novo sem convite (sem role) -> should redirect to /unauthorized', async () => {
-    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { id: 'new-google-user', email: 'test@gmail.com' };
     (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
@@ -60,7 +60,6 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   });
 
   it('C, D, E. Usuário existente com role -> should allow access', async () => {
-    const { supabase } = await import('@/integrations/supabase/client');
     const rolesToTest = [['viewer'], ['operator'], ['admin']];
     
     for (const roles of rolesToTest) {
@@ -80,7 +79,6 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   });
 
   it('G. Loop redirect prevention -> should not throw if already on /unauthorized', async () => {
-    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { id: 'user-no-role', email: 'test@gmail.com' };
     (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
@@ -96,7 +94,6 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   });
   
   it('H. Metadata arbitrária não cria role no frontend', async () => {
-    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { 
       id: 'hacker-user', 
       email: 'hacker@gmail.com',
