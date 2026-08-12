@@ -360,6 +360,36 @@ function CrmDashboard() {
 
   return (
     <div className="p-6 md:p-10 space-y-12 max-w-[1400px] mx-auto">
+      <AnimatePresence>
+        {showSecurityBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-8"
+          >
+            <Alert className="border-warning/50 bg-warning/5 text-warning-foreground shadow-soft">
+              <ShieldAlert className="h-5 w-5 text-warning" strokeWidth={2} />
+              <AlertTitle className="text-base font-semibold tracking-tight">
+                Proteja sua conta: Credencial Local necessária
+              </AlertTitle>
+              <AlertDescription className="mt-2 text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <span>
+                  Você está acessando via Google. Recomendamos configurar uma senha local para garantir o acesso caso o provedor externo falhe.
+                </span>
+                <Link
+                  to="/os/configuracoes/seguranca"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-warning/10 hover:bg-warning/20 text-warning font-medium rounded-lg transition-colors shrink-0 group"
+                >
+                  Configurar agora
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <PageHeader
         title="Centro de Operações"
         description="O que precisa da sua atenção agora — priorizado pela nossa metodologia consultiva."
