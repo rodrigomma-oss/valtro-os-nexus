@@ -12,10 +12,6 @@ const mockSupabase = {
   })),
 };
 
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: mockSupabase
-}));
-
 // 2. Mock do TanStack Router
 vi.mock('@tanstack/react-router', () => ({
   createFileRoute: (path: string) => (options: any) => ({
@@ -26,14 +22,12 @@ vi.mock('@tanstack/react-router', () => ({
   redirect: (args: any) => ({ ...args, isRedirect: true }),
 }));
 
-// Mock do middleware
-vi.mock('@/integrations/supabase/auth-middleware', () => ({
-  requireSupabaseAuth: {
-    server: (fn: any) => fn
-  }
+// Mock do supabase client
+vi.mock('../../../src/integrations/supabase/client', () => ({
+  supabase: mockSupabase
 }));
 
-// 3. Import do componente alvo
+// 3. Import do componente alvo via caminho relativo robusto
 import { Route as AuthenticatedRoute } from '../../../src/routes/_authenticated';
 
 const createMockContext = () => ({
