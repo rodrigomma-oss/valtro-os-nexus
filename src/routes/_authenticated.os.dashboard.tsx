@@ -251,23 +251,37 @@ function CrmDashboard() {
     checkSecurity();
   }, []);
 
+  /**
+   * OPS-AUTH-002 — BLOCO 10B
+   * As queries operacionais só disparam quando existe sessão hidratada.
+   * Sem isso, a RPC saía sem bearer e o 401 virava "dashboard vazio".
+   */
+  const { status: sessionStatus } = useSupabaseSession();
+  const sessionReady = sessionStatus === "authenticated";
+
   const getOverviewFn = useServerFn(getOperationsOverview);
   const getFollowUpsFn = useServerFn(getFollowUpsOverview);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["operations-overview"],
     queryFn: () => getOverviewFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const followUps = useQuery({
     queryKey: ["follow-ups-overview"],
     queryFn: () => getFollowUpsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const getProposalsFn = useServerFn(getProposalsOverview);
   const proposals = useQuery({
     queryKey: ["proposals-overview"],
     queryFn: () => getProposalsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const getProjectsFn = useServerFn(getProjectsOverview);
   const getClientsFn = useServerFn(getClientsOverview);
@@ -275,11 +289,15 @@ function CrmDashboard() {
     queryKey: ["projects-overview"],
     queryFn: () => getProjectsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const clients = useQuery({
     queryKey: ["clients-overview"],
     queryFn: () => getClientsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
 
   const getAttentionFn = useServerFn(getAttentionOverview);
@@ -287,6 +305,8 @@ function CrmDashboard() {
     queryKey: ["attention-overview"],
     queryFn: () => getAttentionFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
 
   /**
@@ -299,7 +319,28 @@ function CrmDashboard() {
     queryKey: ["beta-operational-overview"],
     queryFn: () => getBetaFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
+
+  const operationalError =
+    isError ||
+    followUps.isError ||
+    proposals.isError ||
+    projects.isError ||
+    clients.isError ||
+    attention.isError;
+
+  const retryOperational = () => {
+    void refetch();
+    void followUps.refetch();
+    void proposals.refetch();
+    void projects.refetch();
+    void clients.refetch();
+    void attention.refetch();
+    void beta.refetch();
+  };
+
 
 
   const heroParts: string[] = [];
