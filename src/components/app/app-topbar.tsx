@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, Search, LogOut, User as UserIcon, Settings, Menu } from "lucide-react";
+import { Bell, Search, LogOut, User as UserIcon, Settings, Menu, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
