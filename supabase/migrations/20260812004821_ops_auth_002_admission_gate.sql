@@ -26,9 +26,7 @@ BEGIN
   IF lower(NEW.email) = lower(_bootstrap_email) THEN
     _assigned_role := 'admin';
   
-  -- Prioridade 2: Metadados de convite administrativo (apenas se vier via API admin/service_role)
-  -- O Supabase Auth injeta raw_user_meta_data no NEW. O trigger SECURITY DEFINER confia
-  -- na origem do inviteUserByEmail que usamos no admin-users.functions.ts.
+  -- Prioridade 2: Metadados de convite administrativo
   ELSE
     _meta_role := NEW.raw_user_meta_data->>'role';
     
@@ -51,5 +49,4 @@ BEGIN
 END;
 $$;
 
--- Grant explícito para garantir que o trigger possa ser executado
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
