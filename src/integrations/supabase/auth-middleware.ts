@@ -65,21 +65,26 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    // CRITICAL: We MUST establish session state for the client so PostgREST applies auth.uid()
-    // and auth.role() in RLS policies. Manual headers alone are sometimes insufficient 
-    // depending on how the listener is configured.
+    // Valida o token da requisição contra o Auth (revalidação real, não decode local).
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    
+
     if (error || !user) {
       console.error(`[AuthMiddleware] Auth validation failed: ${error?.message}`);
       throw new Error('Unauthorized: Invalid session');
     }
 
-    // Force set session for the client instance
-    await supabase.auth.setSession({
-      access_token: token,
-      refresh_token: '',
-    });
+    /**
+     * OPS-AUTH-002 — BLOCO 10B
+     * `setSession({ access_token, refresh_token: '' })` foi removido após
+     * confirmação de redundância: o header global `Authorization: Bearer <token>`
+     * definido acima já é enviado em todas as chamadas PostgREST, e é exatamente
+     * o mecanismo homologado em `request-client.server.ts` (OPS-INT-003 /
+     * feedback, leads, bugs, participantes) — que nunca chamou `setSession` e
+     * aplica `auth.uid()`/`auth.role()` corretamente nas policies de RLS.
+     * Além disso, `refresh_token: ''` fazia o cliente tentar persistir/renovar
+     * uma sessão inválida, podendo transformar um token válido em erro.
+     */
+
 
     return next({
       context: {

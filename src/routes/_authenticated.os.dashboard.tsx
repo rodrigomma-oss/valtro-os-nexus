@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseSession } from "@/hooks/use-supabase-session";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ShieldAlert, ArrowRight } from "lucide-react";
 import {
@@ -251,23 +252,37 @@ function CrmDashboard() {
     checkSecurity();
   }, []);
 
+  /**
+   * OPS-AUTH-002 — BLOCO 10B
+   * As queries operacionais só disparam quando existe sessão hidratada.
+   * Sem isso, a RPC saía sem bearer e o 401 virava "dashboard vazio".
+   */
+  const { status: sessionStatus } = useSupabaseSession();
+  const sessionReady = sessionStatus === "authenticated";
+
   const getOverviewFn = useServerFn(getOperationsOverview);
   const getFollowUpsFn = useServerFn(getFollowUpsOverview);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["operations-overview"],
     queryFn: () => getOverviewFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const followUps = useQuery({
     queryKey: ["follow-ups-overview"],
     queryFn: () => getFollowUpsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const getProposalsFn = useServerFn(getProposalsOverview);
   const proposals = useQuery({
     queryKey: ["proposals-overview"],
     queryFn: () => getProposalsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const getProjectsFn = useServerFn(getProjectsOverview);
   const getClientsFn = useServerFn(getClientsOverview);
@@ -275,11 +290,15 @@ function CrmDashboard() {
     queryKey: ["projects-overview"],
     queryFn: () => getProjectsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
   const clients = useQuery({
     queryKey: ["clients-overview"],
     queryFn: () => getClientsFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
 
   const getAttentionFn = useServerFn(getAttentionOverview);
@@ -287,6 +306,8 @@ function CrmDashboard() {
     queryKey: ["attention-overview"],
     queryFn: () => getAttentionFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
 
   /**
@@ -299,7 +320,28 @@ function CrmDashboard() {
     queryKey: ["beta-operational-overview"],
     queryFn: () => getBetaFn(),
     staleTime: 30_000,
+    enabled: sessionReady,
+    retry: 1,
   });
+
+  const operationalError =
+    isError ||
+    followUps.isError ||
+    proposals.isError ||
+    projects.isError ||
+    clients.isError ||
+    attention.isError;
+
+  const retryOperational = () => {
+    void refetch();
+    void followUps.refetch();
+    void proposals.refetch();
+    void projects.refetch();
+    void clients.refetch();
+    void attention.refetch();
+    void beta.refetch();
+  };
+
 
 
   const heroParts: string[] = [];
@@ -406,6 +448,26 @@ function CrmDashboard() {
       />
 
       <OperationHero parts={heroParts} />
+
+      {operationalError && (
+        <Alert className="border-destructive/50 bg-destructive/5">
+          <AlertTriangleIcon className="h-5 w-5 text-destructive" strokeWidth={2} />
+          <AlertTitle className="text-base font-semibold tracking-tight">
+            Não foi possível carregar os indicadores operacionais
+          </AlertTitle>
+          <AlertDescription className="mt-2 text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <span>Sua sessão pode ter expirado ou a leitura falhou temporariamente.</span>
+            <button
+              type="button"
+              onClick={retryOperational}
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2 font-medium text-destructive transition-colors hover:bg-destructive/20 shrink-0"
+            >
+              Tentar novamente
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <BetaRiskBanner
         counts={

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock Supabase client
-vi.mock('@/integrations/supabase/client', () => ({
+vi.mock('../../../src/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
@@ -48,7 +48,7 @@ const listFeedbackHandler = async ({ data, supabase }: any) => {
   };
 };
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../../../src/integrations/supabase/client';
 
 describe('listFeedback persistence & transformation', () => {
   it('should use !left for creator join to support NULL created_by', async () => {
