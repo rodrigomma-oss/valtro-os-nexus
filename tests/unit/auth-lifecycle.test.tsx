@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { AuthPage } from "@/routes/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthPage } from "../../src/routes/auth";
+import { supabase } from "../../src/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
 
 // Mock Supabase
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock("../../src/integrations/supabase/client", () => ({
   supabase: {
     auth: {
       onAuthStateChange: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // Mock utilities
-vi.mock("@/utils/auth-redirect", () => ({
+vi.mock("../../src/utils/auth-redirect", () => ({
   sanitizeAuthRedirect: (t: any) => t || "/os/dashboard",
 }));
 
@@ -40,7 +40,6 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
   });
 
   it("deve manter loading (checking) enquanto a sessão está sendo hidratada", async () => {
-    // onAuthStateChange não chama o callback imediatamente neste teste
     (supabase.auth.onAuthStateChange as any).mockReturnValue({
       data: { subscription: { unsubscribe: vi.fn() } },
     });
@@ -58,7 +57,6 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    // Simula Supabase terminando a hidratação com usuário
     await waitFor(() => {
       authCallback("INITIAL_SESSION", { user: { id: "123", email: "test@valtro.com" } });
     });
@@ -75,7 +73,6 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    // Simula Supabase terminando a hidratação sem usuário
     authCallback("INITIAL_SESSION", null);
 
     await waitFor(() => {
@@ -93,10 +90,7 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    // Primeiro INITIAL_SESSION nulo (ainda carregando callback)
     authCallback("INITIAL_SESSION", null);
-    
-    // Depois o evento SIGNED_IN do callback bem sucedido
     authCallback("SIGNED_IN", { user: { id: "123" } });
 
     await waitFor(() => {
