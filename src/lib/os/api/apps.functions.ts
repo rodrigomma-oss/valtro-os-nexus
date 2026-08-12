@@ -5,7 +5,10 @@ import { TechnicalLimitsSchema, FeatureFlagsSchema, ApiCapability, FeatureFlags,
 
 export const getApplications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+    const { assertAdmin } = await import("./services.server");
+    await assertAdmin(context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // We use a manual join strategy because api_applications references auth.users(id),
@@ -42,7 +45,10 @@ export const getApplications = createServerFn({ method: "GET" })
 export const getApplicationById = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((id: string) => id)
-  .handler(async ({ data: id }) => {
+  .handler(async ({ data: id, context }) => {
+    const { assertAdmin } = await import("./services.server");
+    await assertAdmin(context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("api_applications")

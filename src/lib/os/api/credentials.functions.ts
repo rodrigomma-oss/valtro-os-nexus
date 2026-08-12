@@ -5,7 +5,10 @@ import { generateSecureId, generateHmacSecret, encryptSecret } from "./crypto.se
 
 export const getCredentials = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+    const { assertAdmin } = await import("./services.server");
+    await assertAdmin(context.userId);
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Manual join to avoid relationship errors between api_credentials_safe and api_applications
