@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SolucoesRouteImport } from './routes/solucoes'
 import { Route as SobreRouteImport } from './routes/sobre'
@@ -79,6 +80,11 @@ import { Route as AuthenticatedOsAdminApiApplicationsRouteImport } from './route
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIdRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.$id'
 
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/os': typeof AuthenticatedOsRouteWithChildren
   '/api-docs/$slug': typeof ApiDocsSlugRoute
@@ -543,6 +550,7 @@ export interface FileRoutesByTo {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/api-docs/$slug': typeof ApiDocsSlugRoute
   '/api-docs/openapi': typeof ApiDocsOpenapiRoute
@@ -609,6 +617,7 @@ export interface FileRoutesById {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/termos': typeof TermosRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/os': typeof AuthenticatedOsRouteWithChildren
   '/api-docs/$slug': typeof ApiDocsSlugRoute
@@ -681,6 +690,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/termos'
+    | '/unauthorized'
     | '/admin'
     | '/os'
     | '/api-docs/$slug'
@@ -750,6 +760,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/termos'
+    | '/unauthorized'
     | '/admin'
     | '/api-docs/$slug'
     | '/api-docs/openapi'
@@ -815,6 +826,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/termos'
+    | '/unauthorized'
     | '/_authenticated/admin'
     | '/_authenticated/os'
     | '/api-docs/$slug'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   SobreRoute: typeof SobreRoute
   SolucoesRoute: typeof SolucoesRoute
   TermosRoute: typeof TermosRoute
+  UnauthorizedRoute: typeof UnauthorizedRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
@@ -902,6 +915,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/termos': {
       id: '/termos'
       path: '/termos'
@@ -1613,6 +1633,7 @@ const rootRouteChildren: RootRouteChildren = {
   SobreRoute: SobreRoute,
   SolucoesRoute: SolucoesRoute,
   TermosRoute: TermosRoute,
+  UnauthorizedRoute: UnauthorizedRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
@@ -1628,13 +1649,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
