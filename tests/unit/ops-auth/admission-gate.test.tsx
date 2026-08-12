@@ -39,6 +39,8 @@ const createMockContext = () => ({
 describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: autenticado
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'some-id' } }, error: null });
   });
 
   it('A. Google novo sem convite (sem role) -> should redirect to /unauthorized', async () => {
@@ -91,5 +93,21 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
     });
 
     expect(result.user.id).toBe(mockUser.id);
+  });
+  
+  it('N. Não autenticado -> should redirect to /auth', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null }, error: new Error('No session') });
+
+    const context = createMockContext();
+
+    try {
+      await (AuthenticatedRoute as any).options.beforeLoad({
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
+        context,
+      });
+      throw new Error('Should have thrown redirect');
+    } catch (e: any) {
+      expect(e.to).toBe('/auth');
+    }
   });
 });
