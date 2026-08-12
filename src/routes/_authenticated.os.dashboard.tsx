@@ -66,7 +66,7 @@ function DashboardPage() {
 
       <div className="rounded-2xl border border-dashed border-border bg-card p-24 text-center">
         <h2 className="text-xl font-semibold mb-2">Painel de Operações</h2>
-        <p className="text-muted-foreground">O dashboard completo está sendo carregado...</p>
+        <p className="text-muted-foreground">Load the security issues from the scan results and fix the selected issues.</p>
       </div>
     </div>
   );
