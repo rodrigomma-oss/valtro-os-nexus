@@ -9,123 +9,79 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as ApiDocsRouteImport } from './routes/api-docs'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ContatoRouteImport } from './routes/contato'
-import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
-import { Route as PrivacidadeRouteImport } from './routes/privacidade'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SobreRouteImport } from './routes/sobre'
-import { Route as SolucoesRouteImport } from './routes/solucoes'
 import { Route as TermosRouteImport } from './routes/termos'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
-import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
-import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
-import { Route as ApiDocsSlugRouteImport } from './routes/api-docs.$slug'
-import { Route as ApiDocsOpenapiRouteImport } from './routes/api-docs.openapi'
-import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
+import { Route as SolucoesRouteImport } from './routes/solucoes'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ApiDocsRouteImport } from './routes/api-docs'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
-import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
+import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
-import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
-import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
-import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
+import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
+import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
+import { Route as ApiDocsOpenapiRouteImport } from './routes/api-docs.openapi'
+import { Route as ApiDocsSlugRouteImport } from './routes/api-docs.$slug'
+import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
-import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
-import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
-import { Route as ApiPublicDebugHeadersRouteImport } from './routes/api/public/debug-headers'
-import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
-import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
-import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
 import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
-import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_authenticated.crm.admin.integracoes'
-import { Route as AuthenticatedCrmAdminUsuariosRouteImport } from './routes/_authenticated.crm.admin.usuarios'
-import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
-import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
-import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
-import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
+import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
+import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
+import { Route as ApiPublicVersionRouteImport } from './routes/api/public/version'
+import { Route as ApiPublicDebugHeadersRouteImport } from './routes/api/public/debug-headers'
+import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenticated.os.dashboard'
+import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
+import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
+import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
-import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
-import { Route as AuthenticatedOsAdminApiRouteImport } from './routes/_authenticated.os.admin.api'
-import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
-import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
-import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
-import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
-import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
-import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
-import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
-import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
+import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
+import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
 import { Route as ApiV1InternalAuthCheckRouteImport } from './routes/api/v1/[_]internal/auth-check'
-import { Route as AuthenticatedOsAdminApiIndexRouteImport } from './routes/_authenticated.os.admin.api.index'
-import { Route as AuthenticatedOsAdminApiApplicationsRouteImport } from './routes/_authenticated.os.admin.api.applications'
-import { Route as AuthenticatedOsAdminApiAuditRouteImport } from './routes/_authenticated.os.admin.api.audit'
-import { Route as AuthenticatedOsAdminApiCredentialsRouteImport } from './routes/_authenticated.os.admin.api.credentials'
-import { Route as AuthenticatedOsAtendimentoBugsIndexRouteImport } from './routes/_authenticated.os.atendimento.bugs.index'
-import { Route as AuthenticatedOsAtendimentoBugsIdRouteImport } from './routes/_authenticated.os.atendimento.bugs.$id'
-import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
-import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
-import { Route as AuthenticatedOsAtendimentoFeedbackIndexRouteImport } from './routes/_authenticated.os.atendimento.feedback.index'
-import { Route as AuthenticatedOsAtendimentoFeedbackIdRouteImport } from './routes/_authenticated.os.atendimento.feedback.$id'
-import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
-import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
-import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
-import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
+import { Route as ApiPublicGoogleCalendarSyncRouteImport } from './routes/api/public/google-calendar/sync'
+import { Route as ApiPublicGoogleCalendarCallbackRouteImport } from './routes/api/public/google-calendar/callback'
+import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_authenticated.os.comercial.servicos'
+import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
+import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
+import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
+import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
+import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
+import { Route as AuthenticatedOsAdminApiRouteImport } from './routes/_authenticated.os.admin.api'
+import { Route as AuthenticatedCrmProjetosIdRouteImport } from './routes/_authenticated.crm.projetos.$id'
+import { Route as AuthenticatedCrmLeadsIdRouteImport } from './routes/_authenticated.crm.leads.$id'
+import { Route as AuthenticatedCrmClientesIdRouteImport } from './routes/_authenticated.crm.clientes.$id'
+import { Route as AuthenticatedCrmAdminUsuariosRouteImport } from './routes/_authenticated.crm.admin.usuarios'
+import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_authenticated.crm.admin.integracoes'
 import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
-import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
+import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
+import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
+import { Route as AuthenticatedOsAtendimentoFeedbackIndexRouteImport } from './routes/_authenticated.os.atendimento.feedback.index'
+import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
+import { Route as AuthenticatedOsAtendimentoBugsIndexRouteImport } from './routes/_authenticated.os.atendimento.bugs.index'
+import { Route as AuthenticatedOsAdminApiIndexRouteImport } from './routes/_authenticated.os.admin.api.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta'
+import { Route as AuthenticatedOsComercialProjetosIdRouteImport } from './routes/_authenticated.os.comercial.projetos.$id'
+import { Route as AuthenticatedOsComercialLeadsIdRouteImport } from './routes/_authenticated.os.comercial.leads.$id'
+import { Route as AuthenticatedOsComercialClientesIdRouteImport } from './routes/_authenticated.os.comercial.clientes.$id'
+import { Route as AuthenticatedOsAtendimentoFeedbackIdRouteImport } from './routes/_authenticated.os.atendimento.feedback.$id'
+import { Route as AuthenticatedOsAtendimentoChamadosIdRouteImport } from './routes/_authenticated.os.atendimento.chamados.$id'
+import { Route as AuthenticatedOsAtendimentoBugsIdRouteImport } from './routes/_authenticated.os.atendimento.bugs.$id'
+import { Route as AuthenticatedOsAdminApiCredentialsRouteImport } from './routes/_authenticated.os.admin.api.credentials'
+import { Route as AuthenticatedOsAdminApiAuditRouteImport } from './routes/_authenticated.os.admin.api.audit'
+import { Route as AuthenticatedOsAdminApiApplicationsRouteImport } from './routes/_authenticated.os.admin.api.applications'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.index'
 import { Route as AuthenticatedOsProdutosValtroPricingBetaIdRouteImport } from './routes/_authenticated.os.produtos.valtro-pricing.beta.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDocsRoute = ApiDocsRouteImport.update({
-  id: '/api-docs',
-  path: '/api-docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContatoRoute = ContatoRouteImport.update({
-  id: '/contato',
-  path: '/contato',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiagnosticoRoute = DiagnosticoRouteImport.update({
-  id: '/diagnostico',
-  path: '/diagnostico',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacidadeRoute = PrivacidadeRouteImport.update({
-  id: '/privacidade',
-  path: '/privacidade',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SobreRoute = SobreRouteImport.update({
-  id: '/sobre',
-  path: '/sobre',
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SolucoesRoute = SolucoesRouteImport.update({
@@ -133,44 +89,68 @@ const SolucoesRoute = SolucoesRouteImport.update({
   path: '/solucoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermosRoute = TermosRouteImport.update({
-  id: '/termos',
-  path: '/termos',
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRoute,
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedOsRoute = AuthenticatedOsRouteImport.update({
-  id: '/os',
-  path: '/os',
-  getParentRoute: () => AuthenticatedRoute,
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDocsRoute = ApiDocsRouteImport.update({
+  id: '/api-docs',
+  path: '/api-docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BriefingIndexRoute = BriefingIndexRouteImport.update({
+  id: '/briefing/',
+  path: '/briefing/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ApiDocsRoute,
 } as any)
-const ApiDocsSlugRoute = ApiDocsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ApiDocsRoute,
-} as any)
-const ApiDocsOpenapiRoute = ApiDocsOpenapiRouteImport.update({
-  id: '/openapi',
-  path: '/openapi',
-  getParentRoute: () => ApiDocsRoute,
-} as any)
-const ApiDocsStatusRoute = ApiDocsStatusRouteImport.update({
-  id: '/status',
-  path: '/status',
-  getParentRoute: () => ApiDocsRoute,
-} as any)
-const BriefingIndexRoute = BriefingIndexRouteImport.update({
-  id: '/briefing/',
-  path: '/briefing/',
+const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
+  id: '/onboarding/$token',
+  path: '/onboarding/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BriefingTokenRoute = BriefingTokenRouteImport.update({
@@ -178,58 +158,44 @@ const BriefingTokenRoute = BriefingTokenRouteImport.update({
   path: '/briefing/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
-  id: '/onboarding/$token',
-  path: '/onboarding/$token',
-  getParentRoute: () => rootRouteImport,
+const ApiDocsStatusRoute = ApiDocsStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const ApiDocsOpenapiRoute = ApiDocsOpenapiRouteImport.update({
+  id: '/openapi',
+  path: '/openapi',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const ApiDocsSlugRoute = ApiDocsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const AuthenticatedOsRoute = AuthenticatedOsRouteImport.update({
+  id: '/os',
+  path: '/os',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedOsRoute,
 } as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/crm/',
   path: '/crm/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCrmDashboardRoute =
-  AuthenticatedCrmDashboardRouteImport.update({
-    id: '/crm/dashboard',
-    path: '/crm/dashboard',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedCrmServicosRoute =
-  AuthenticatedCrmServicosRouteImport.update({
-    id: '/crm/servicos',
-    path: '/crm/servicos',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedOsIndexRoute = AuthenticatedOsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedOsRoute,
-} as any)
-const AuthenticatedOsAtendimentoRoute =
-  AuthenticatedOsAtendimentoRouteImport.update({
-    id: '/atendimento',
-    path: '/atendimento',
-    getParentRoute: () => AuthenticatedOsRoute,
-  } as any)
-const AuthenticatedOsDashboardRoute =
-  AuthenticatedOsDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => AuthenticatedOsRoute,
-  } as any)
-const ApiPublicDebugHeadersRoute = ApiPublicDebugHeadersRouteImport.update({
-  id: '/api/public/debug-headers',
-  path: '/api/public/debug-headers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
-  id: '/api/public/version',
-  path: '/api/public/version',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1BugsRoute = ApiV1BugsRouteImport.update({
-  id: '/api/v1/bugs',
-  path: '/api/v1/bugs',
+const ApiV1MetaRoute = ApiV1MetaRouteImport.update({
+  id: '/api/v1/meta',
+  path: '/api/v1/meta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1FeedbackRoute = ApiV1FeedbackRouteImport.update({
@@ -237,33 +203,49 @@ const ApiV1FeedbackRoute = ApiV1FeedbackRouteImport.update({
   path: '/api/v1/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiV1MetaRoute = ApiV1MetaRouteImport.update({
-  id: '/api/v1/meta',
-  path: '/api/v1/meta',
+const ApiV1BugsRoute = ApiV1BugsRouteImport.update({
+  id: '/api/v1/bugs',
+  path: '/api/v1/bugs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCrmAdminIntegracoesRoute =
-  AuthenticatedCrmAdminIntegracoesRouteImport.update({
-    id: '/crm/admin/integracoes',
-    path: '/crm/admin/integracoes',
+const ApiPublicVersionRoute = ApiPublicVersionRouteImport.update({
+  id: '/api/public/version',
+  path: '/api/public/version',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDebugHeadersRoute = ApiPublicDebugHeadersRouteImport.update({
+  id: '/api/public/debug-headers',
+  path: '/api/public/debug-headers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedOsDashboardRoute =
+  AuthenticatedOsDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsAtendimentoRoute =
+  AuthenticatedOsAtendimentoRouteImport.update({
+    id: '/atendimento',
+    path: '/atendimento',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedCrmServicosRoute =
+  AuthenticatedCrmServicosRouteImport.update({
+    id: '/crm/servicos',
+    path: '/crm/servicos',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedCrmAdminUsuariosRoute =
-  AuthenticatedCrmAdminUsuariosRouteImport.update({
-    id: '/crm/admin/usuarios',
-    path: '/crm/admin/usuarios',
+const AuthenticatedCrmDashboardRoute =
+  AuthenticatedCrmDashboardRouteImport.update({
+    id: '/crm/dashboard',
+    path: '/crm/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedCrmClientesIndexRoute =
-  AuthenticatedCrmClientesIndexRouteImport.update({
-    id: '/crm/clientes/',
-    path: '/crm/clientes/',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedCrmClientesIdRoute =
-  AuthenticatedCrmClientesIdRouteImport.update({
-    id: '/crm/clientes/$id',
-    path: '/crm/clientes/$id',
+const AuthenticatedCrmProjetosIndexRoute =
+  AuthenticatedCrmProjetosIndexRouteImport.update({
+    id: '/crm/projetos/',
+    path: '/crm/projetos/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCrmLeadsIndexRoute =
@@ -272,44 +254,39 @@ const AuthenticatedCrmLeadsIndexRoute =
     path: '/crm/leads/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
-  id: '/crm/leads/$id',
-  path: '/crm/leads/$id',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedCrmProjetosIndexRoute =
-  AuthenticatedCrmProjetosIndexRouteImport.update({
-    id: '/crm/projetos/',
-    path: '/crm/projetos/',
+const AuthenticatedCrmClientesIndexRoute =
+  AuthenticatedCrmClientesIndexRouteImport.update({
+    id: '/crm/clientes/',
+    path: '/crm/clientes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedCrmProjetosIdRoute =
-  AuthenticatedCrmProjetosIdRouteImport.update({
-    id: '/crm/projetos/$id',
-    path: '/crm/projetos/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedOsAdminApiRoute = AuthenticatedOsAdminApiRouteImport.update({
-  id: '/admin/api',
-  path: '/admin/api',
-  getParentRoute: () => AuthenticatedOsRoute,
+const ApiV1InternalAuthCheckRoute = ApiV1InternalAuthCheckRouteImport.update({
+  id: '/api/v1/_internal/auth-check',
+  path: '/api/v1/_internal/auth-check',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedOsAdminIntegracoesRoute =
-  AuthenticatedOsAdminIntegracoesRouteImport.update({
-    id: '/admin/integracoes',
-    path: '/admin/integracoes',
+const ApiPublicGoogleCalendarSyncRoute =
+  ApiPublicGoogleCalendarSyncRouteImport.update({
+    id: '/api/public/google-calendar/sync',
+    path: '/api/public/google-calendar/sync',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicGoogleCalendarCallbackRoute =
+  ApiPublicGoogleCalendarCallbackRouteImport.update({
+    id: '/api/public/google-calendar/callback',
+    path: '/api/public/google-calendar/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOsComercialServicosRoute =
+  AuthenticatedOsComercialServicosRouteImport.update({
+    id: '/comercial/servicos',
+    path: '/comercial/servicos',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedOsAdminUsuariosRoute =
-  AuthenticatedOsAdminUsuariosRouteImport.update({
-    id: '/admin/usuarios',
-    path: '/admin/usuarios',
-    getParentRoute: () => AuthenticatedOsRoute,
-  } as any)
-const AuthenticatedOsAtendimentoBugsRoute =
-  AuthenticatedOsAtendimentoBugsRouteImport.update({
-    id: '/bugs',
-    path: '/bugs',
+const AuthenticatedOsAtendimentoFeedbackRoute =
+  AuthenticatedOsAtendimentoFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
 const AuthenticatedOsAtendimentoChamadosRoute =
@@ -318,105 +295,62 @@ const AuthenticatedOsAtendimentoChamadosRoute =
     path: '/chamados',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
-const AuthenticatedOsAtendimentoFeedbackRoute =
-  AuthenticatedOsAtendimentoFeedbackRouteImport.update({
-    id: '/feedback',
-    path: '/feedback',
+const AuthenticatedOsAtendimentoBugsRoute =
+  AuthenticatedOsAtendimentoBugsRouteImport.update({
+    id: '/bugs',
+    path: '/bugs',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
-const AuthenticatedOsComercialServicosRoute =
-  AuthenticatedOsComercialServicosRouteImport.update({
-    id: '/comercial/servicos',
-    path: '/comercial/servicos',
+const AuthenticatedOsAdminUsuariosRoute =
+  AuthenticatedOsAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const ApiPublicGoogleCalendarCallbackRoute =
-  ApiPublicGoogleCalendarCallbackRouteImport.update({
-    id: '/api/public/google-calendar/callback',
-    path: '/api/public/google-calendar/callback',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedOsAdminIntegracoesRoute =
+  AuthenticatedOsAdminIntegracoesRouteImport.update({
+    id: '/admin/integracoes',
+    path: '/admin/integracoes',
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const ApiPublicGoogleCalendarSyncRoute =
-  ApiPublicGoogleCalendarSyncRouteImport.update({
-    id: '/api/public/google-calendar/sync',
-    path: '/api/public/google-calendar/sync',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiV1InternalAuthCheckRoute = ApiV1InternalAuthCheckRouteImport.update({
-  id: '/api/v1/_internal/auth-check',
-  path: '/api/v1/_internal/auth-check',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedOsAdminApiRoute = AuthenticatedOsAdminApiRouteImport.update({
+  id: '/admin/api',
+  path: '/admin/api',
+  getParentRoute: () => AuthenticatedOsRoute,
 } as any)
-const AuthenticatedOsAdminApiIndexRoute =
-  AuthenticatedOsAdminApiIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+const AuthenticatedCrmProjetosIdRoute =
+  AuthenticatedCrmProjetosIdRouteImport.update({
+    id: '/crm/projetos/$id',
+    path: '/crm/projetos/$id',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedOsAdminApiApplicationsRoute =
-  AuthenticatedOsAdminApiApplicationsRouteImport.update({
-    id: '/applications',
-    path: '/applications',
-    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+const AuthenticatedCrmLeadsIdRoute = AuthenticatedCrmLeadsIdRouteImport.update({
+  id: '/crm/leads/$id',
+  path: '/crm/leads/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCrmClientesIdRoute =
+  AuthenticatedCrmClientesIdRouteImport.update({
+    id: '/crm/clientes/$id',
+    path: '/crm/clientes/$id',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedOsAdminApiAuditRoute =
-  AuthenticatedOsAdminApiAuditRouteImport.update({
-    id: '/audit',
-    path: '/audit',
-    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+const AuthenticatedCrmAdminUsuariosRoute =
+  AuthenticatedCrmAdminUsuariosRouteImport.update({
+    id: '/crm/admin/usuarios',
+    path: '/crm/admin/usuarios',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedOsAdminApiCredentialsRoute =
-  AuthenticatedOsAdminApiCredentialsRouteImport.update({
-    id: '/credentials',
-    path: '/credentials',
-    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+const AuthenticatedCrmAdminIntegracoesRoute =
+  AuthenticatedCrmAdminIntegracoesRouteImport.update({
+    id: '/crm/admin/integracoes',
+    path: '/crm/admin/integracoes',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedOsAtendimentoBugsIndexRoute =
-  AuthenticatedOsAtendimentoBugsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
-  } as any)
-const AuthenticatedOsAtendimentoBugsIdRoute =
-  AuthenticatedOsAtendimentoBugsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
-  } as any)
-const AuthenticatedOsAtendimentoChamadosIndexRoute =
-  AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
-  } as any)
-const AuthenticatedOsAtendimentoChamadosIdRoute =
-  AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
-  } as any)
-const AuthenticatedOsAtendimentoFeedbackIndexRoute =
-  AuthenticatedOsAtendimentoFeedbackIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedOsAtendimentoFeedbackRoute,
-  } as any)
-const AuthenticatedOsAtendimentoFeedbackIdRoute =
-  AuthenticatedOsAtendimentoFeedbackIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedOsAtendimentoFeedbackRoute,
-  } as any)
-const AuthenticatedOsComercialClientesIndexRoute =
-  AuthenticatedOsComercialClientesIndexRouteImport.update({
-    id: '/comercial/clientes/',
-    path: '/comercial/clientes/',
-    getParentRoute: () => AuthenticatedOsRoute,
-  } as any)
-const AuthenticatedOsComercialClientesIdRoute =
-  AuthenticatedOsComercialClientesIdRouteImport.update({
-    id: '/comercial/clientes/$id',
-    path: '/comercial/clientes/$id',
+const AuthenticatedOsComercialProjetosIndexRoute =
+  AuthenticatedOsComercialProjetosIndexRouteImport.update({
+    id: '/comercial/projetos/',
+    path: '/comercial/projetos/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 const AuthenticatedOsComercialLeadsIndexRoute =
@@ -425,16 +359,40 @@ const AuthenticatedOsComercialLeadsIndexRoute =
     path: '/comercial/leads/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedOsComercialLeadsIdRoute =
-  AuthenticatedOsComercialLeadsIdRouteImport.update({
-    id: '/comercial/leads/$id',
-    path: '/comercial/leads/$id',
+const AuthenticatedOsComercialClientesIndexRoute =
+  AuthenticatedOsComercialClientesIndexRouteImport.update({
+    id: '/comercial/clientes/',
+    path: '/comercial/clientes/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedOsComercialProjetosIndexRoute =
-  AuthenticatedOsComercialProjetosIndexRouteImport.update({
-    id: '/comercial/projetos/',
-    path: '/comercial/projetos/',
+const AuthenticatedOsAtendimentoFeedbackIndexRoute =
+  AuthenticatedOsAtendimentoFeedbackIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAtendimentoFeedbackRoute,
+  } as any)
+const AuthenticatedOsAtendimentoChamadosIndexRoute =
+  AuthenticatedOsAtendimentoChamadosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
+  } as any)
+const AuthenticatedOsAtendimentoBugsIndexRoute =
+  AuthenticatedOsAtendimentoBugsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
+  } as any)
+const AuthenticatedOsAdminApiIndexRoute =
+  AuthenticatedOsAdminApiIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
+const AuthenticatedOsProdutosValtroPricingBetaRoute =
+  AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
+    id: '/produtos/valtro-pricing/beta',
+    path: '/produtos/valtro-pricing/beta',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 const AuthenticatedOsComercialProjetosIdRoute =
@@ -443,11 +401,53 @@ const AuthenticatedOsComercialProjetosIdRoute =
     path: '/comercial/projetos/$id',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
-const AuthenticatedOsProdutosValtroPricingBetaRoute =
-  AuthenticatedOsProdutosValtroPricingBetaRouteImport.update({
-    id: '/produtos/valtro-pricing/beta',
-    path: '/produtos/valtro-pricing/beta',
+const AuthenticatedOsComercialLeadsIdRoute =
+  AuthenticatedOsComercialLeadsIdRouteImport.update({
+    id: '/comercial/leads/$id',
+    path: '/comercial/leads/$id',
     getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialClientesIdRoute =
+  AuthenticatedOsComercialClientesIdRouteImport.update({
+    id: '/comercial/clientes/$id',
+    path: '/comercial/clientes/$id',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsAtendimentoFeedbackIdRoute =
+  AuthenticatedOsAtendimentoFeedbackIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoFeedbackRoute,
+  } as any)
+const AuthenticatedOsAtendimentoChamadosIdRoute =
+  AuthenticatedOsAtendimentoChamadosIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoChamadosRoute,
+  } as any)
+const AuthenticatedOsAtendimentoBugsIdRoute =
+  AuthenticatedOsAtendimentoBugsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedOsAtendimentoBugsRoute,
+  } as any)
+const AuthenticatedOsAdminApiCredentialsRoute =
+  AuthenticatedOsAdminApiCredentialsRouteImport.update({
+    id: '/credentials',
+    path: '/credentials',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
+const AuthenticatedOsAdminApiAuditRoute =
+  AuthenticatedOsAdminApiAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
+  } as any)
+const AuthenticatedOsAdminApiApplicationsRoute =
+  AuthenticatedOsAdminApiApplicationsRouteImport.update({
+    id: '/applications',
+    path: '/applications',
+    getParentRoute: () => AuthenticatedOsAdminApiRoute,
   } as any)
 const AuthenticatedOsProdutosValtroPricingBetaIndexRoute =
   AuthenticatedOsProdutosValtroPricingBetaIndexRouteImport.update({
@@ -902,74 +902,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api-docs': {
-      id: '/api-docs'
-      path: '/api-docs'
-      fullPath: '/api-docs'
-      preLoaderRoute: typeof ApiDocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contato': {
-      id: '/contato'
-      path: '/contato'
-      fullPath: '/contato'
-      preLoaderRoute: typeof ContatoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diagnostico': {
-      id: '/diagnostico'
-      path: '/diagnostico'
-      fullPath: '/diagnostico'
-      preLoaderRoute: typeof DiagnosticoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacidade': {
-      id: '/privacidade'
-      path: '/privacidade'
-      fullPath: '/privacidade'
-      preLoaderRoute: typeof PrivacidadeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sobre': {
-      id: '/sobre'
-      path: '/sobre'
-      fullPath: '/sobre'
-      preLoaderRoute: typeof SobreRouteImport
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/solucoes': {
@@ -979,26 +916,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolucoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/termos': {
-      id: '/termos'
-      path: '/termos'
-      fullPath: '/termos'
-      preLoaderRoute: typeof TermosRouteImport
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/os': {
-      id: '/_authenticated/os'
-      path: '/os'
-      fullPath: '/os'
-      preLoaderRoute: typeof AuthenticatedOsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api-docs': {
+      id: '/api-docs'
+      path: '/api-docs'
+      fullPath: '/api-docs'
+      preLoaderRoute: typeof ApiDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/briefing/': {
+      id: '/briefing/'
+      path: '/briefing'
+      fullPath: '/briefing/'
+      preLoaderRoute: typeof BriefingIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api-docs/': {
       id: '/api-docs/'
@@ -1007,32 +1000,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDocsIndexRouteImport
       parentRoute: typeof ApiDocsRoute
     }
-    '/api-docs/$slug': {
-      id: '/api-docs/$slug'
-      path: '/$slug'
-      fullPath: '/api-docs/$slug'
-      preLoaderRoute: typeof ApiDocsSlugRouteImport
-      parentRoute: typeof ApiDocsRoute
-    }
-    '/api-docs/openapi': {
-      id: '/api-docs/openapi'
-      path: '/openapi'
-      fullPath: '/api-docs/openapi'
-      preLoaderRoute: typeof ApiDocsOpenapiRouteImport
-      parentRoute: typeof ApiDocsRoute
-    }
-    '/api-docs/status': {
-      id: '/api-docs/status'
-      path: '/status'
-      fullPath: '/api-docs/status'
-      preLoaderRoute: typeof ApiDocsStatusRouteImport
-      parentRoute: typeof ApiDocsRoute
-    }
-    '/briefing/': {
-      id: '/briefing/'
-      path: '/briefing'
-      fullPath: '/briefing/'
-      preLoaderRoute: typeof BriefingIndexRouteImport
+    '/onboarding/$token': {
+      id: '/onboarding/$token'
+      path: '/onboarding/$token'
+      fullPath: '/onboarding/$token'
+      preLoaderRoute: typeof OnboardingTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/briefing/$token': {
@@ -1042,32 +1014,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/onboarding/$token': {
-      id: '/onboarding/$token'
-      path: '/onboarding/$token'
-      fullPath: '/onboarding/$token'
-      preLoaderRoute: typeof OnboardingTokenRouteImport
-      parentRoute: typeof rootRouteImport
+    '/api-docs/status': {
+      id: '/api-docs/status'
+      path: '/status'
+      fullPath: '/api-docs/status'
+      preLoaderRoute: typeof ApiDocsStatusRouteImport
+      parentRoute: typeof ApiDocsRoute
     }
-    '/_authenticated/crm/': {
-      id: '/_authenticated/crm/'
-      path: '/crm'
-      fullPath: '/crm/'
-      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+    '/api-docs/openapi': {
+      id: '/api-docs/openapi'
+      path: '/openapi'
+      fullPath: '/api-docs/openapi'
+      preLoaderRoute: typeof ApiDocsOpenapiRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
+    '/api-docs/$slug': {
+      id: '/api-docs/$slug'
+      path: '/$slug'
+      fullPath: '/api-docs/$slug'
+      preLoaderRoute: typeof ApiDocsSlugRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
+    '/_authenticated/os': {
+      id: '/_authenticated/os'
+      path: '/os'
+      fullPath: '/os'
+      preLoaderRoute: typeof AuthenticatedOsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/crm/dashboard': {
-      id: '/_authenticated/crm/dashboard'
-      path: '/crm/dashboard'
-      fullPath: '/crm/dashboard'
-      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/crm/servicos': {
-      id: '/_authenticated/crm/servicos'
-      path: '/crm/servicos'
-      fullPath: '/crm/servicos'
-      preLoaderRoute: typeof AuthenticatedCrmServicosRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/os/': {
@@ -1077,39 +1056,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/atendimento': {
-      id: '/_authenticated/os/atendimento'
-      path: '/atendimento'
-      fullPath: '/os/atendimento'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
+      path: '/crm'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/os/dashboard': {
-      id: '/_authenticated/os/dashboard'
-      path: '/dashboard'
-      fullPath: '/os/dashboard'
-      preLoaderRoute: typeof AuthenticatedOsDashboardRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
-    }
-    '/api/public/debug-headers': {
-      id: '/api/public/debug-headers'
-      path: '/api/public/debug-headers'
-      fullPath: '/api/public/debug-headers'
-      preLoaderRoute: typeof ApiPublicDebugHeadersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/version': {
-      id: '/api/public/version'
-      path: '/api/public/version'
-      fullPath: '/api/public/version'
-      preLoaderRoute: typeof ApiPublicVersionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/bugs': {
-      id: '/api/v1/bugs'
-      path: '/api/v1/bugs'
-      fullPath: '/api/v1/bugs'
-      preLoaderRoute: typeof ApiV1BugsRouteImport
+    '/api/v1/meta': {
+      id: '/api/v1/meta'
+      path: '/api/v1/meta'
+      fullPath: '/api/v1/meta'
+      preLoaderRoute: typeof ApiV1MetaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/feedback': {
@@ -1119,53 +1077,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/meta': {
-      id: '/api/v1/meta'
-      path: '/api/v1/meta'
-      fullPath: '/api/v1/meta'
-      preLoaderRoute: typeof ApiV1MetaRouteImport
+    '/api/v1/bugs': {
+      id: '/api/v1/bugs'
+      path: '/api/v1/bugs'
+      fullPath: '/api/v1/bugs'
+      preLoaderRoute: typeof ApiV1BugsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/crm/admin/integracoes': {
-      id: '/_authenticated/crm/admin/integracoes'
-      path: '/crm/admin/integracoes'
-      fullPath: '/crm/admin/integracoes'
-      preLoaderRoute: typeof AuthenticatedCrmAdminIntegracoesRouteImport
+    '/api/public/version': {
+      id: '/api/public/version'
+      path: '/api/public/version'
+      fullPath: '/api/public/version'
+      preLoaderRoute: typeof ApiPublicVersionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/debug-headers': {
+      id: '/api/public/debug-headers'
+      path: '/api/public/debug-headers'
+      fullPath: '/api/public/debug-headers'
+      preLoaderRoute: typeof ApiPublicDebugHeadersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/os/dashboard': {
+      id: '/_authenticated/os/dashboard'
+      path: '/dashboard'
+      fullPath: '/os/dashboard'
+      preLoaderRoute: typeof AuthenticatedOsDashboardRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/atendimento': {
+      id: '/_authenticated/os/atendimento'
+      path: '/atendimento'
+      fullPath: '/os/atendimento'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/crm/servicos': {
+      id: '/_authenticated/crm/servicos'
+      path: '/crm/servicos'
+      fullPath: '/crm/servicos'
+      preLoaderRoute: typeof AuthenticatedCrmServicosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/crm/admin/usuarios': {
-      id: '/_authenticated/crm/admin/usuarios'
-      path: '/crm/admin/usuarios'
-      fullPath: '/crm/admin/usuarios'
-      preLoaderRoute: typeof AuthenticatedCrmAdminUsuariosRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/crm/clientes/': {
-      id: '/_authenticated/crm/clientes/'
-      path: '/crm/clientes'
-      fullPath: '/crm/clientes/'
-      preLoaderRoute: typeof AuthenticatedCrmClientesIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/crm/clientes/$id': {
-      id: '/_authenticated/crm/clientes/$id'
-      path: '/crm/clientes/$id'
-      fullPath: '/crm/clientes/$id'
-      preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/crm/leads/': {
-      id: '/_authenticated/crm/leads/'
-      path: '/crm/leads'
-      fullPath: '/crm/leads/'
-      preLoaderRoute: typeof AuthenticatedCrmLeadsIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/crm/leads/$id': {
-      id: '/_authenticated/crm/leads/$id'
-      path: '/crm/leads/$id'
-      fullPath: '/crm/leads/$id'
-      preLoaderRoute: typeof AuthenticatedCrmLeadsIdRouteImport
+    '/_authenticated/crm/dashboard': {
+      id: '/_authenticated/crm/dashboard'
+      path: '/crm/dashboard'
+      fullPath: '/crm/dashboard'
+      preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/crm/projetos/': {
@@ -1175,67 +1133,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmProjetosIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/crm/projetos/$id': {
-      id: '/_authenticated/crm/projetos/$id'
-      path: '/crm/projetos/$id'
-      fullPath: '/crm/projetos/$id'
-      preLoaderRoute: typeof AuthenticatedCrmProjetosIdRouteImport
+    '/_authenticated/crm/leads/': {
+      id: '/_authenticated/crm/leads/'
+      path: '/crm/leads'
+      fullPath: '/crm/leads/'
+      preLoaderRoute: typeof AuthenticatedCrmLeadsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/os/admin/api': {
-      id: '/_authenticated/os/admin/api'
-      path: '/admin/api'
-      fullPath: '/os/admin/api'
-      preLoaderRoute: typeof AuthenticatedOsAdminApiRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
+    '/_authenticated/crm/clientes/': {
+      id: '/_authenticated/crm/clientes/'
+      path: '/crm/clientes'
+      fullPath: '/crm/clientes/'
+      preLoaderRoute: typeof AuthenticatedCrmClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/os/admin/integracoes': {
-      id: '/_authenticated/os/admin/integracoes'
-      path: '/admin/integracoes'
-      fullPath: '/os/admin/integracoes'
-      preLoaderRoute: typeof AuthenticatedOsAdminIntegracoesRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
-    }
-    '/_authenticated/os/admin/usuarios': {
-      id: '/_authenticated/os/admin/usuarios'
-      path: '/admin/usuarios'
-      fullPath: '/os/admin/usuarios'
-      preLoaderRoute: typeof AuthenticatedOsAdminUsuariosRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
-    }
-    '/_authenticated/os/atendimento/bugs': {
-      id: '/_authenticated/os/atendimento/bugs'
-      path: '/bugs'
-      fullPath: '/os/atendimento/bugs'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
-    }
-    '/_authenticated/os/atendimento/chamados': {
-      id: '/_authenticated/os/atendimento/chamados'
-      path: '/chamados'
-      fullPath: '/os/atendimento/chamados'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
-    }
-    '/_authenticated/os/atendimento/feedback': {
-      id: '/_authenticated/os/atendimento/feedback'
-      path: '/feedback'
-      fullPath: '/os/atendimento/feedback'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoRoute
-    }
-    '/_authenticated/os/comercial/servicos': {
-      id: '/_authenticated/os/comercial/servicos'
-      path: '/comercial/servicos'
-      fullPath: '/os/comercial/servicos'
-      preLoaderRoute: typeof AuthenticatedOsComercialServicosRouteImport
-      parentRoute: typeof AuthenticatedOsRoute
-    }
-    '/api/public/google-calendar/callback': {
-      id: '/api/public/google-calendar/callback'
-      path: '/api/public/google-calendar/callback'
-      fullPath: '/api/public/google-calendar/callback'
-      preLoaderRoute: typeof ApiPublicGoogleCalendarCallbackRouteImport
+    '/api/v1/_internal/auth-check': {
+      id: '/api/v1/_internal/auth-check'
+      path: '/api/v1/_internal/auth-check'
+      fullPath: '/api/v1/_internal/auth-check'
+      preLoaderRoute: typeof ApiV1InternalAuthCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/google-calendar/sync': {
@@ -1245,95 +1161,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGoogleCalendarSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/_internal/auth-check': {
-      id: '/api/v1/_internal/auth-check'
-      path: '/api/v1/_internal/auth-check'
-      fullPath: '/api/v1/_internal/auth-check'
-      preLoaderRoute: typeof ApiV1InternalAuthCheckRouteImport
+    '/api/public/google-calendar/callback': {
+      id: '/api/public/google-calendar/callback'
+      path: '/api/public/google-calendar/callback'
+      fullPath: '/api/public/google-calendar/callback'
+      preLoaderRoute: typeof ApiPublicGoogleCalendarCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/os/admin/api/': {
-      id: '/_authenticated/os/admin/api/'
-      path: '/'
-      fullPath: '/os/admin/api/'
-      preLoaderRoute: typeof AuthenticatedOsAdminApiIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAdminApiRoute
-    }
-    '/_authenticated/os/admin/api/applications': {
-      id: '/_authenticated/os/admin/api/applications'
-      path: '/applications'
-      fullPath: '/os/admin/api/applications'
-      preLoaderRoute: typeof AuthenticatedOsAdminApiApplicationsRouteImport
-      parentRoute: typeof AuthenticatedOsAdminApiRoute
-    }
-    '/_authenticated/os/admin/api/audit': {
-      id: '/_authenticated/os/admin/api/audit'
-      path: '/audit'
-      fullPath: '/os/admin/api/audit'
-      preLoaderRoute: typeof AuthenticatedOsAdminApiAuditRouteImport
-      parentRoute: typeof AuthenticatedOsAdminApiRoute
-    }
-    '/_authenticated/os/admin/api/credentials': {
-      id: '/_authenticated/os/admin/api/credentials'
-      path: '/credentials'
-      fullPath: '/os/admin/api/credentials'
-      preLoaderRoute: typeof AuthenticatedOsAdminApiCredentialsRouteImport
-      parentRoute: typeof AuthenticatedOsAdminApiRoute
-    }
-    '/_authenticated/os/atendimento/bugs/': {
-      id: '/_authenticated/os/atendimento/bugs/'
-      path: '/'
-      fullPath: '/os/atendimento/bugs/'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
-    }
-    '/_authenticated/os/atendimento/bugs/$id': {
-      id: '/_authenticated/os/atendimento/bugs/$id'
-      path: '/$id'
-      fullPath: '/os/atendimento/bugs/$id'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIdRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
-    }
-    '/_authenticated/os/atendimento/chamados/': {
-      id: '/_authenticated/os/atendimento/chamados/'
-      path: '/'
-      fullPath: '/os/atendimento/chamados/'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
-    }
-    '/_authenticated/os/atendimento/chamados/$id': {
-      id: '/_authenticated/os/atendimento/chamados/$id'
-      path: '/$id'
-      fullPath: '/os/atendimento/chamados/$id'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
-    }
-    '/_authenticated/os/atendimento/feedback/': {
-      id: '/_authenticated/os/atendimento/feedback/'
-      path: '/'
-      fullPath: '/os/atendimento/feedback/'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackIndexRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
-    }
-    '/_authenticated/os/atendimento/feedback/$id': {
-      id: '/_authenticated/os/atendimento/feedback/$id'
-      path: '/$id'
-      fullPath: '/os/atendimento/feedback/$id'
-      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackIdRouteImport
-      parentRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
-    }
-    '/_authenticated/os/comercial/clientes/': {
-      id: '/_authenticated/os/comercial/clientes/'
-      path: '/comercial/clientes'
-      fullPath: '/os/comercial/clientes/'
-      preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
+    '/_authenticated/os/comercial/servicos': {
+      id: '/_authenticated/os/comercial/servicos'
+      path: '/comercial/servicos'
+      fullPath: '/os/comercial/servicos'
+      preLoaderRoute: typeof AuthenticatedOsComercialServicosRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/comercial/clientes/$id': {
-      id: '/_authenticated/os/comercial/clientes/$id'
-      path: '/comercial/clientes/$id'
-      fullPath: '/os/comercial/clientes/$id'
-      preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
+    '/_authenticated/os/atendimento/feedback': {
+      id: '/_authenticated/os/atendimento/feedback'
+      path: '/feedback'
+      fullPath: '/os/atendimento/feedback'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
+    '/_authenticated/os/atendimento/chamados': {
+      id: '/_authenticated/os/atendimento/chamados'
+      path: '/chamados'
+      fullPath: '/os/atendimento/chamados'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
+    '/_authenticated/os/atendimento/bugs': {
+      id: '/_authenticated/os/atendimento/bugs'
+      path: '/bugs'
+      fullPath: '/os/atendimento/bugs'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
+    '/_authenticated/os/admin/usuarios': {
+      id: '/_authenticated/os/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/os/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedOsAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/admin/integracoes': {
+      id: '/_authenticated/os/admin/integracoes'
+      path: '/admin/integracoes'
+      fullPath: '/os/admin/integracoes'
+      preLoaderRoute: typeof AuthenticatedOsAdminIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/admin/api': {
+      id: '/_authenticated/os/admin/api'
+      path: '/admin/api'
+      fullPath: '/os/admin/api'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/crm/projetos/$id': {
+      id: '/_authenticated/crm/projetos/$id'
+      path: '/crm/projetos/$id'
+      fullPath: '/crm/projetos/$id'
+      preLoaderRoute: typeof AuthenticatedCrmProjetosIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm/leads/$id': {
+      id: '/_authenticated/crm/leads/$id'
+      path: '/crm/leads/$id'
+      fullPath: '/crm/leads/$id'
+      preLoaderRoute: typeof AuthenticatedCrmLeadsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm/clientes/$id': {
+      id: '/_authenticated/crm/clientes/$id'
+      path: '/crm/clientes/$id'
+      fullPath: '/crm/clientes/$id'
+      preLoaderRoute: typeof AuthenticatedCrmClientesIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm/admin/usuarios': {
+      id: '/_authenticated/crm/admin/usuarios'
+      path: '/crm/admin/usuarios'
+      fullPath: '/crm/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedCrmAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm/admin/integracoes': {
+      id: '/_authenticated/crm/admin/integracoes'
+      path: '/crm/admin/integracoes'
+      fullPath: '/crm/admin/integracoes'
+      preLoaderRoute: typeof AuthenticatedCrmAdminIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/os/comercial/projetos/': {
+      id: '/_authenticated/os/comercial/projetos/'
+      path: '/comercial/projetos'
+      fullPath: '/os/comercial/projetos/'
+      preLoaderRoute: typeof AuthenticatedOsComercialProjetosIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
     '/_authenticated/os/comercial/leads/': {
@@ -1343,18 +1266,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialLeadsIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/comercial/leads/$id': {
-      id: '/_authenticated/os/comercial/leads/$id'
-      path: '/comercial/leads/$id'
-      fullPath: '/os/comercial/leads/$id'
-      preLoaderRoute: typeof AuthenticatedOsComercialLeadsIdRouteImport
+    '/_authenticated/os/comercial/clientes/': {
+      id: '/_authenticated/os/comercial/clientes/'
+      path: '/comercial/clientes'
+      fullPath: '/os/comercial/clientes/'
+      preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/comercial/projetos/': {
-      id: '/_authenticated/os/comercial/projetos/'
-      path: '/comercial/projetos'
-      fullPath: '/os/comercial/projetos/'
-      preLoaderRoute: typeof AuthenticatedOsComercialProjetosIndexRouteImport
+    '/_authenticated/os/atendimento/feedback/': {
+      id: '/_authenticated/os/atendimento/feedback/'
+      path: '/'
+      fullPath: '/os/atendimento/feedback/'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackIndexRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+    }
+    '/_authenticated/os/atendimento/chamados/': {
+      id: '/_authenticated/os/atendimento/chamados/'
+      path: '/'
+      fullPath: '/os/atendimento/chamados/'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIndexRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
+    }
+    '/_authenticated/os/atendimento/bugs/': {
+      id: '/_authenticated/os/atendimento/bugs/'
+      path: '/'
+      fullPath: '/os/atendimento/bugs/'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIndexRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
+    }
+    '/_authenticated/os/admin/api/': {
+      id: '/_authenticated/os/admin/api/'
+      path: '/'
+      fullPath: '/os/admin/api/'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiIndexRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
+    '/_authenticated/os/produtos/valtro-pricing/beta': {
+      id: '/_authenticated/os/produtos/valtro-pricing/beta'
+      path: '/produtos/valtro-pricing/beta'
+      fullPath: '/os/produtos/valtro-pricing/beta'
+      preLoaderRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
     '/_authenticated/os/comercial/projetos/$id': {
@@ -1364,12 +1315,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsComercialProjetosIdRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
-    '/_authenticated/os/produtos/valtro-pricing/beta': {
-      id: '/_authenticated/os/produtos/valtro-pricing/beta'
-      path: '/produtos/valtro-pricing/beta'
-      fullPath: '/os/produtos/valtro-pricing/beta'
-      preLoaderRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRouteImport
+    '/_authenticated/os/comercial/leads/$id': {
+      id: '/_authenticated/os/comercial/leads/$id'
+      path: '/comercial/leads/$id'
+      fullPath: '/os/comercial/leads/$id'
+      preLoaderRoute: typeof AuthenticatedOsComercialLeadsIdRouteImport
       parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/clientes/$id': {
+      id: '/_authenticated/os/comercial/clientes/$id'
+      path: '/comercial/clientes/$id'
+      fullPath: '/os/comercial/clientes/$id'
+      preLoaderRoute: typeof AuthenticatedOsComercialClientesIdRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/atendimento/feedback/$id': {
+      id: '/_authenticated/os/atendimento/feedback/$id'
+      path: '/$id'
+      fullPath: '/os/atendimento/feedback/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoFeedbackIdRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoFeedbackRoute
+    }
+    '/_authenticated/os/atendimento/chamados/$id': {
+      id: '/_authenticated/os/atendimento/chamados/$id'
+      path: '/$id'
+      fullPath: '/os/atendimento/chamados/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoChamadosIdRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoChamadosRoute
+    }
+    '/_authenticated/os/atendimento/bugs/$id': {
+      id: '/_authenticated/os/atendimento/bugs/$id'
+      path: '/$id'
+      fullPath: '/os/atendimento/bugs/$id'
+      preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsIdRouteImport
+      parentRoute: typeof AuthenticatedOsAtendimentoBugsRoute
+    }
+    '/_authenticated/os/admin/api/credentials': {
+      id: '/_authenticated/os/admin/api/credentials'
+      path: '/credentials'
+      fullPath: '/os/admin/api/credentials'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiCredentialsRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
+    '/_authenticated/os/admin/api/audit': {
+      id: '/_authenticated/os/admin/api/audit'
+      path: '/audit'
+      fullPath: '/os/admin/api/audit'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiAuditRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
+    }
+    '/_authenticated/os/admin/api/applications': {
+      id: '/_authenticated/os/admin/api/applications'
+      path: '/applications'
+      fullPath: '/os/admin/api/applications'
+      preLoaderRoute: typeof AuthenticatedOsAdminApiApplicationsRouteImport
+      parentRoute: typeof AuthenticatedOsAdminApiRoute
     }
     '/_authenticated/os/produtos/valtro-pricing/beta/': {
       id: '/_authenticated/os/produtos/valtro-pricing/beta/'
