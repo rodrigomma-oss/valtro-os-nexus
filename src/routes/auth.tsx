@@ -41,16 +41,32 @@ function AuthPage() {
   const safeRedirect = sanitizeAuthRedirect(redirect);
 
   useEffect(() => {
-    // Usa getUser() (revalida com o Auth server) em vez de getSession() (só lê localStorage).
-    // Sessão stale + gate autenticado usando getUser() causava loop de redirect entre
-    // /auth e /_authenticated, resultando em tela em branco com spinner infinito.
-    supabase.auth.getUser().then(({ data, error }) => {
-      if (!error && data.user) {
-        navigate({ to: safeRedirect, replace: true });
-      } else {
+    let mounted = true;
+
+    // Listener reativo para lidar com a hidratação da sessão e eventos de auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      console.log(`[Auth] Event: ${event}`, session?.user?.email);
+
+      if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        if (session?.user) {
+          navigate({ to: safeRedirect, replace: true });
+          return;
+        }
+      }
+
+      // Se chegarmos aqui no INITIAL_SESSION e não houver usuário,
+      // ou se for SIGNED_OUT, paramos o checking para mostrar o form.
+      if (event === "INITIAL_SESSION" || event === "SIGNED_OUT") {
         setChecking(false);
       }
     });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate, safeRedirect]);
 
 
@@ -76,7 +92,13 @@ function AuthPage() {
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          // Sanitização de erro para e-mail/senha
+          if (error.message === "Invalid login credentials") {
+            throw new Error("E-mail ou senha inválidos.");
+          }
+          throw error;
+        }
         navigate({ to: safeRedirect, replace: true });
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -99,7 +121,7 @@ function AuthPage() {
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <Loader2 data-testid="loader" className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
