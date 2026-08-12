@@ -38,19 +38,32 @@ function SecurityPage() {
 
     setLoading(true);
     try {
-      // Atualiza a senha e marca no metadata que o usuário agora possui credencial local
-      const { error } = await supabase.auth.updateUser({ 
+      // P1: Tratar explicitamente o erro e atualizar o estado local com o usuário retornado
+      const { data, error } = await supabase.auth.updateUser({ 
         password,
         data: { has_local_password: true }
       });
 
+      if (error) {
+        toast.error("Erro ao configurar senha", {
+          description: error.message || "O Supabase retornou um erro inesperado.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Sucesso confirmado
       toast.success("Senha configurada com sucesso!", {
-        description: "Agora você pode acessar usando seu e-mail e esta senha.",
+        description: "Sua credencial local está ativa. O banner de aviso será removido.",
       });
+      
       setPassword("");
       setConfirm("");
+      
+      // A atualização do metadata deve refletir no próximo reload do Dashboard.
+      // Opcional: forçar um refresh do session ou apenas deixar que o usuário navegue.
     } catch (err: any) {
-      toast.error("Erro ao configurar senha", {
+      toast.error("Falha na comunicação", {
         description: err.message || "Tente novamente mais tarde.",
       });
     } finally {
