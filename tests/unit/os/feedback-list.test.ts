@@ -48,7 +48,7 @@ const listFeedbackHandler = async ({ data, supabase }: any) => {
   };
 };
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../../../src/integrations/supabase/client';
 
 describe('listFeedback persistence & transformation', () => {
   it('should use !left for creator join to support NULL created_by', async () => {
