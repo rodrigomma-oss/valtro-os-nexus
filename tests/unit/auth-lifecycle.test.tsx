@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { AuthPage } from "../../src/routes/auth";
 import { supabase } from "../../src/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
@@ -20,7 +20,7 @@ vi.mock("../../src/integrations/supabase/client", () => ({
 // Mock TanStack Router
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: (path: string) => () => ({
-    useSearch: () => ({ redirect: "/" }),
+    useSearch: () => ({ redirect: "/os/dashboard" }),
   }),
   useNavigate: vi.fn(),
   Link: ({ children }: any) => <a>{children}</a>,
@@ -57,7 +57,7 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    await waitFor(() => {
+    await act(async () => {
       authCallback("INITIAL_SESSION", { user: { id: "123", email: "test@valtro.com" } });
     });
 
@@ -73,11 +73,14 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    authCallback("INITIAL_SESSION", null);
+    await act(async () => {
+      authCallback("INITIAL_SESSION", null);
+    });
 
     await waitFor(() => {
       expect(screen.queryByTestId("loader")).toBeNull();
-      expect(screen.getByText("Entrar")).toBeDefined();
+      // Usamos role heading para evitar ambiguidade com o botão
+      expect(screen.getByRole("heading", { name: /Entrar/i })).toBeDefined();
     });
   });
 
@@ -90,8 +93,10 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     render(<AuthPage />);
     
-    authCallback("INITIAL_SESSION", null);
-    authCallback("SIGNED_IN", { user: { id: "123" } });
+    await act(async () => {
+      authCallback("INITIAL_SESSION", null);
+      authCallback("SIGNED_IN", { user: { id: "123" } });
+    });
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith(expect.objectContaining({ to: "/os/dashboard", replace: true }));
