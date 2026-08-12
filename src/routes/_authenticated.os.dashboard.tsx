@@ -449,6 +449,26 @@ function CrmDashboard() {
 
       <OperationHero parts={heroParts} />
 
+      {operationalError && (
+        <Alert className="border-destructive/50 bg-destructive/5">
+          <AlertTriangleIcon className="h-5 w-5 text-destructive" strokeWidth={2} />
+          <AlertTitle className="text-base font-semibold tracking-tight">
+            Não foi possível carregar os indicadores operacionais
+          </AlertTitle>
+          <AlertDescription className="mt-2 text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <span>Sua sessão pode ter expirado ou a leitura falhou temporariamente.</span>
+            <button
+              type="button"
+              onClick={retryOperational}
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-2 font-medium text-destructive transition-colors hover:bg-destructive/20 shrink-0"
+            >
+              Tentar novamente
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <BetaRiskBanner
         counts={
           beta.data?.counts ?? {
