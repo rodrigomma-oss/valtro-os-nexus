@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock Supabase client
-vi.mock('@/integrations/supabase/client', () => ({
+vi.mock('../../../src/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
