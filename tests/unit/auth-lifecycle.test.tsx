@@ -18,9 +18,10 @@ vi.mock("../../src/integrations/supabase/client", () => ({
 }));
 
 // Mock TanStack Router
+const mockUseSearch = vi.fn();
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: (path: string) => () => ({
-    useSearch: () => ({ redirect: "/os/dashboard" }),
+    useSearch: mockUseSearch,
   }),
   useNavigate: vi.fn(),
   Link: ({ children }: any) => <a>{children}</a>,
@@ -37,6 +38,7 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useNavigate as any).mockReturnValue(mockNavigate);
+    mockUseSearch.mockReturnValue({ redirect: "/os/dashboard" });
   });
 
   it("deve manter loading (checking) enquanto a sessão está sendo hidratada", async () => {
@@ -79,8 +81,8 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
 
     await waitFor(() => {
       expect(screen.queryByTestId("loader")).toBeNull();
-      // Usamos role heading para evitar ambiguidade com o botão
-      expect(screen.getByRole("heading", { name: /Entrar/i })).toBeDefined();
+      // Usamos getByRole heading para evitar ambiguidade
+      expect(screen.getByRole("heading", { name: "Entrar" })).toBeDefined();
     });
   });
 
@@ -95,6 +97,9 @@ describe("AuthPage - Google OAuth Lifecycle", () => {
     
     await act(async () => {
       authCallback("INITIAL_SESSION", null);
+    });
+    
+    await act(async () => {
       authCallback("SIGNED_IN", { user: { id: "123" } });
     });
 
