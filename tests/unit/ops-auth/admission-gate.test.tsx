@@ -16,15 +16,18 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 // Mock do TanStack Router
 vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual('@tanstack/react-router');
   return {
-    ...actual,
-    redirect: (args: any) => args, // Simplesmente retorna o objeto para validação
+    createFileRoute: (path: string) => (options: any) => ({
+      path,
+      options,
+    }),
+    Outlet: () => null,
+    redirect: (args: any) => ({ ...args, isRedirect: true }),
   };
 });
 
-// Agora importamos o componente
-import { Route as AuthenticatedRoute } from '../../../src/routes/_authenticated';
+// Agora importamos o componente usando o caminho relativo correto
+import { Route as AuthenticatedRoute } from '../../src/routes/_authenticated';
 
 const createMockContext = () => ({
   queryClient: {
@@ -35,37 +38,34 @@ const createMockContext = () => ({
 describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Resetando os mocks do supabase importado
-    const { supabase } = require('@/integrations/supabase/client');
-    supabase.auth.getUser.mockReset();
-    supabase.auth.signOut.mockReset();
-    supabase.from().select().eq.mockReset();
   });
 
   it('A. Google novo sem convite (sem role) -> should redirect to /unauthorized', async () => {
-    const { supabase } = require('@/integrations/supabase/client');
+    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { id: 'new-google-user', email: 'test@gmail.com' };
-    supabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const context = createMockContext();
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
 
-    const result = await (AuthenticatedRoute as any).options.beforeLoad({
-      location: { pathname: '/os/dashboard', href: '/os/dashboard' },
-      context,
-    });
-    
-    // Como mockamos redirect para retornar o objeto
-    expect(result.to).toBe('/unauthorized');
+    try {
+      await (AuthenticatedRoute as any).options.beforeLoad({
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
+        context,
+      });
+      throw new Error('Should have thrown redirect');
+    } catch (e: any) {
+      expect(e.to).toBe('/unauthorized');
+    }
   });
 
   it('C, D, E. Usuário existente com role -> should allow access', async () => {
-    const { supabase } = require('@/integrations/supabase/client');
+    const { supabase } = await import('@/integrations/supabase/client');
     const rolesToTest = [['viewer'], ['operator'], ['admin']];
     
     for (const roles of rolesToTest) {
       const mockUser = { id: `user-with-${roles[0]}`, email: 'test@valtro.com' };
-      supabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+      (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
       const context = createMockContext();
       (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles });
@@ -80,9 +80,9 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
   });
 
   it('G. Loop redirect prevention -> should not throw if already on /unauthorized', async () => {
-    const { supabase } = require('@/integrations/supabase/client');
+    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { id: 'user-no-role', email: 'test@gmail.com' };
-    supabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const context = createMockContext();
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
@@ -95,26 +95,26 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
     expect(result.user.id).toBe(mockUser.id);
   });
   
-  it('H. Metadata arbitrária não cria role no frontend -> visual verification', async () => {
-    // A role no frontend vem de user_roles no banco, não do metadado do JWT
-    // Este teste garante que a lógica de query é executada e não depende do user object
-    const { supabase } = require('@/integrations/supabase/client');
+  it('H. Metadata arbitrária não cria role no frontend', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
     const mockUser = { 
       id: 'hacker-user', 
       email: 'hacker@gmail.com',
-      user_metadata: { role: 'admin' } // Tentativa de injeção no metadado
+      user_metadata: { role: 'admin' }
     };
-    supabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const context = createMockContext();
-    // O banco retorna vazio apesar do metadado no objeto user
     (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
 
-    const result = await (AuthenticatedRoute as any).options.beforeLoad({
-      location: { pathname: '/os/dashboard', href: '/os/dashboard' },
-      context,
-    });
-
-    expect(result.to).toBe('/unauthorized');
+    try {
+      await (AuthenticatedRoute as any).options.beforeLoad({
+        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
+        context,
+      });
+      throw new Error('Should have thrown redirect');
+    } catch (e: any) {
+      expect(e.to).toBe('/unauthorized');
+    }
   });
 });
