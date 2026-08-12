@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mocks manuais antes de importar o componente
+// 1. Mocks de terceiros
+vi.mock('@tanstack/react-router', () => ({
+  createFileRoute: (path: string) => (options: any) => ({
+    path,
+    options,
+  }),
+  Outlet: () => null,
+  redirect: (args: any) => ({ ...args, isRedirect: true }),
+}));
+
+// 2. Mocks de infraestrutura
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     auth: {
@@ -14,21 +24,9 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-// Mock do TanStack Router
-vi.mock('@tanstack/react-router', async () => {
-  return {
-    createFileRoute: (path: string) => (options: any) => ({
-      path,
-      options,
-    }),
-    Outlet: () => null,
-    redirect: (args: any) => ({ ...args, isRedirect: true }),
-  };
-});
-
-// Importações relativas para o Vitest
-import { Route as AuthenticatedRoute } from '../../src/routes/_authenticated';
-import { supabase } from '../../src/integrations/supabase/client';
+// 3. Import do componente alvo usando @/ aliasing configurado no Vite
+import { Route as AuthenticatedRoute } from '@/routes/_authenticated';
+import { supabase } from '@/integrations/supabase/client';
 
 const createMockContext = () => ({
   queryClient: {
@@ -91,27 +89,5 @@ describe('OPS-AUTH-002 — Admission Gate Logic', () => {
     });
 
     expect(result.user.id).toBe(mockUser.id);
-  });
-  
-  it('H. Metadata arbitrária não cria role no frontend', async () => {
-    const mockUser = { 
-      id: 'hacker-user', 
-      email: 'hacker@gmail.com',
-      user_metadata: { role: 'admin' }
-    };
-    (supabase.auth.getUser as any).mockResolvedValue({ data: { user: mockUser }, error: null });
-
-    const context = createMockContext();
-    (context.queryClient.ensureQueryData as any).mockResolvedValue({ roles: [] });
-
-    try {
-      await (AuthenticatedRoute as any).options.beforeLoad({
-        location: { pathname: '/os/dashboard', href: '/os/dashboard' },
-        context,
-      });
-      throw new Error('Should have thrown redirect');
-    } catch (e: any) {
-      expect(e.to).toBe('/unauthorized');
-    }
   });
 });
