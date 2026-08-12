@@ -22,8 +22,18 @@ function DashboardPage() {
   useEffect(() => {
     const checkSecurity = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google')) {
+      
+      // Se o usuário entrou via Google e ainda não marcou que tem senha local
+      const isGoogleUser = user?.app_metadata?.provider === 'google' || 
+                          user?.app_metadata?.providers?.includes('google') ||
+                          user?.identities?.some(id => id.provider === 'google');
+      
+      const hasLocalPassword = user?.user_metadata?.has_local_password === true;
+
+      if (isGoogleUser && !hasLocalPassword) {
         setShowSecurityWarning(true);
+      } else {
+        setShowSecurityWarning(false);
       }
     };
     checkSecurity();
