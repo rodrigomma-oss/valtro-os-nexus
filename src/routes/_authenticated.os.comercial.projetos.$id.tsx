@@ -24,6 +24,7 @@ import { ProjectStatusBadge } from "@/components/app/project-status-badge";
 import { TimelineCard, type TimelineItem } from "@/components/app/timeline-card";
 import { ProjectOverviewCard } from "@/components/app/project-overview-card";
 import { TrackedProductsCard } from "@/components/app/tracked-products-card";
+import { ProjectMeetingsCard } from "@/components/app/project-meetings-card";
 import {
   Select,
   SelectContent,
