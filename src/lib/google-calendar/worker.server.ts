@@ -353,7 +353,7 @@ export async function runCalendarSyncWorker(crmOrigin: string): Promise<SyncResu
 
   const { data: links, error } = await admin
     .from("calendar_sync_links")
-    .select("id, entity_id, external_event_id, sync_attempts, sync_status")
+    .select("id, entity_type, entity_id, external_event_id, sync_attempts, sync_status")
     .in("sync_status", ["pendente", "falha"])
     .lte("next_attempt_at", new Date().toISOString())
     .lt("sync_attempts", MAX_ATTEMPTS)
