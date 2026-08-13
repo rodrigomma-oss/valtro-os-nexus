@@ -234,19 +234,12 @@ async function processLink(
 ): Promise<"synced" | "removed"> {
   const calendarId = integration.calendar_id!;
 
-  const { data: fu, error } = await admin
-    .from("follow_ups")
-    .select(
-      "id, scheduled_at, duration_minutes, timezone, reason, status, outcome_notes, cancel_reason, rescheduled_from, rescheduled_to, lead_id, lead:leads!follow_ups_lead_id_fkey(company_name, contact_name)",
-    )
-    .eq("id", link.entity_id)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
+  const entity = await loadEntity(admin, link, crmOrigin);
 
   const now = new Date().toISOString();
 
-  // Follow-up removido do CRM → remove o evento e encerra o link.
-  if (!fu) {
+  // Entidade removida do CRM → remove o evento e encerra o link.
+  if (!entity) {
     if (link.external_event_id) await deleteEvent(accessToken, calendarId, link.external_event_id);
     await admin
       .from("calendar_sync_links")
@@ -255,11 +248,9 @@ async function processLink(
     return "removed";
   }
 
-  const followUp = fu as unknown as FollowUpRow;
-
   // ---- Encerramento: cancelado, ou reagendado com sucessor ----
-  if (followUp.status === "cancelado" || followUp.status === "reagendado") {
-    const transfersEvent = followUp.status === "reagendado" && followUp.rescheduled_to !== null;
+  if (entity.status === "cancelado" || entity.status === "reagendado") {
+    const transfersEvent = entity.status === "reagendado" && entity.rescheduled_to !== null;
     if (link.external_event_id && !transfersEvent) {
       await deleteEvent(accessToken, calendarId, link.external_event_id);
     }
@@ -279,17 +270,19 @@ async function processLink(
 
   // ---- Herança do evento em reagendamentos (mesmo evento é atualizado) ----
   let eventId = link.external_event_id;
-  if (!eventId && followUp.rescheduled_from) {
+  if (!eventId && entity.rescheduled_from) {
     const { data: parent } = await admin
       .from("calendar_sync_links")
       .select("external_event_id")
-      .eq("entity_type", "follow_up")
-      .eq("entity_id", followUp.rescheduled_from)
+      .eq("entity_type", link.entity_type)
+      .eq("entity_id", entity.rescheduled_from)
       .maybeSingle();
     eventId = (parent as { external_event_id: string | null } | null)?.external_event_id ?? null;
   }
 
-  const body = buildEvent(followUp, crmOrigin);
+  const followUp = entity;
+  const body = entity.event;
+
   let result: { id: string; htmlLink: string | null };
 
   if (eventId) {
