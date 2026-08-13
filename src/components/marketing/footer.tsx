@@ -101,7 +101,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground" suppressHydrationWarning>
             © {CURRENT_YEAR} Valtro Labs. Todos os direitos reservados.
           </p>
           <nav aria-label="Legal" className="flex items-center gap-4 text-xs text-muted-foreground">
