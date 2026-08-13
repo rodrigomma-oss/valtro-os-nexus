@@ -39,6 +39,7 @@ export interface SyncResult {
 
 interface LinkRow {
   id: string;
+  entity_type: string;
   entity_id: string;
   external_event_id: string | null;
   sync_attempts: number;
@@ -60,21 +61,65 @@ interface FollowUpRow {
   lead?: { company_name: string | null; contact_name: string | null } | null;
 }
 
+interface ProjectMeetingRow {
+  id: string;
+  scheduled_at: string;
+  duration_minutes: number;
+  timezone: string;
+  agenda: string | null;
+  status: "agendado" | "concluido" | "cancelado" | "reagendado";
+  outcome_notes: string | null;
+  cancel_reason: string | null;
+  rescheduled_from: string | null;
+  rescheduled_to: string | null;
+  project_id: string;
+  project?: {
+    name: string | null;
+    code: string | null;
+    client?: { company_name: string | null } | null;
+  } | null;
+}
+
+/**
+ * Recorte normalizado usado pela projeção: o worker só precisa do estado da
+ * transição e do corpo do evento, independentemente da entidade de origem.
+ */
+interface SyncEntity {
+  id: string;
+  status: "agendado" | "concluido" | "cancelado" | "reagendado";
+  rescheduled_from: string | null;
+  rescheduled_to: string | null;
+  event: {
+    summary: string;
+    description: string;
+    start: { dateTime: string; timeZone: string };
+    end: { dateTime: string; timeZone: string };
+    status: "confirmed";
+  };
+}
+
 type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
 
-/** Id determinístico no Google (charset base32hex) derivado do follow-up. */
-function deterministicEventId(followUpId: string): string {
-  return `vl${followUpId.replace(/-/g, "").toLowerCase()}`;
+/** Id determinístico no Google (charset base32hex) derivado da entidade. */
+function deterministicEventId(entityId: string): string {
+  return `vl${entityId.replace(/-/g, "").toLowerCase()}`;
 }
 
 function backoffMinutes(attempts: number): number {
   return Math.min(2 ** attempts, 60);
 }
 
+function window(scheduledAt: string, durationMinutes: number, timezone: string) {
+  const start = new Date(scheduledAt);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
+  return {
+    start: { dateTime: start.toISOString(), timeZone: timezone },
+    end: { dateTime: end.toISOString(), timeZone: timezone },
+  };
+}
+
 function buildEvent(fu: FollowUpRow, crmOrigin: string) {
   const who = fu.lead?.company_name || fu.lead?.contact_name || "Lead";
-  const start = new Date(fu.scheduled_at);
-  const end = new Date(start.getTime() + fu.duration_minutes * 60_000);
   const done = fu.status === "concluido";
 
   const lines = [
@@ -90,11 +135,79 @@ function buildEvent(fu: FollowUpRow, crmOrigin: string) {
   return {
     summary: `${done ? "✓ " : ""}Follow-up · ${who}`,
     description: lines.join("\n"),
-    start: { dateTime: start.toISOString(), timeZone: fu.timezone },
-    end: { dateTime: end.toISOString(), timeZone: fu.timezone },
+    ...window(fu.scheduled_at, fu.duration_minutes, fu.timezone),
     status: "confirmed" as const,
   };
 }
+
+function buildMeetingEvent(mt: ProjectMeetingRow, crmOrigin: string) {
+  const who =
+    mt.project?.client?.company_name || mt.project?.name || mt.project?.code || "Projeto";
+  const done = mt.status === "concluido";
+
+  const lines = [
+    `Status no CRM: ${done ? "Concluída" : "Agendada"}`,
+    mt.project?.name ? `Projeto: ${mt.project.name}` : null,
+    mt.agenda ? `Pauta: ${mt.agenda}` : null,
+    done && mt.outcome_notes ? `Resultado: ${mt.outcome_notes}` : null,
+    `Projeto no CRM: ${crmOrigin}/os/comercial/projetos/${mt.project_id}`,
+    "",
+    "Evento gerado pelo CRM Valtro Labs. O CRM é a fonte de verdade — edite a reunião no CRM.",
+  ].filter(Boolean) as string[];
+
+  return {
+    summary: `${done ? "✓ " : ""}Reunião · ${who}`,
+    description: lines.join("\n"),
+    ...window(mt.scheduled_at, mt.duration_minutes, mt.timezone),
+    status: "confirmed" as const,
+  };
+}
+
+/** Carrega a entidade do link e normaliza para a projeção. */
+async function loadEntity(
+  admin: Admin,
+  link: LinkRow,
+  crmOrigin: string,
+): Promise<SyncEntity | null> {
+  if (link.entity_type === "project_meeting") {
+    const { data, error } = await admin
+      .from("project_meetings")
+      .select(
+        "id, scheduled_at, duration_minutes, timezone, agenda, status, outcome_notes, cancel_reason, rescheduled_from, rescheduled_to, project_id, project:projects!project_meetings_project_id_fkey(name, code, client:clients!projects_client_id_fkey(company_name))",
+      )
+      .eq("id", link.entity_id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) return null;
+    const row = data as unknown as ProjectMeetingRow;
+    return {
+      id: row.id,
+      status: row.status,
+      rescheduled_from: row.rescheduled_from,
+      rescheduled_to: row.rescheduled_to,
+      event: buildMeetingEvent(row, crmOrigin),
+    };
+  }
+
+  const { data, error } = await admin
+    .from("follow_ups")
+    .select(
+      "id, scheduled_at, duration_minutes, timezone, reason, status, outcome_notes, cancel_reason, rescheduled_from, rescheduled_to, lead_id, lead:leads!follow_ups_lead_id_fkey(company_name, contact_name)",
+    )
+    .eq("id", link.entity_id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  const row = data as unknown as FollowUpRow;
+  return {
+    id: row.id,
+    status: row.status,
+    rescheduled_from: row.rescheduled_from,
+    rescheduled_to: row.rescheduled_to,
+    event: buildEvent(row, crmOrigin),
+  };
+}
+
 
 async function markFailure(admin: Admin, link: LinkRow, message: string) {
   const attempts = link.sync_attempts + 1;
