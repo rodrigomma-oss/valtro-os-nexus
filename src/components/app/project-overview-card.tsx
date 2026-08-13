@@ -37,15 +37,6 @@ function date(iso: string | null | undefined) {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-function dateTime(iso: string | null | undefined) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -221,13 +212,6 @@ export function ProjectOverviewCard({
               </Field>
               <Field label="Preferência de reunião">
                 {meetingPreference ?? <span className="text-muted-foreground">Não informada</span>}
-              </Field>
-              <Field label="Próxima reunião">
-                {ops?.next_meeting_at ? (
-                  dateTime(ops.next_meeting_at)
-                ) : (
-                  <span className="text-muted-foreground">Não agendada</span>
-                )}
               </Field>
               <div className="sm:col-span-2">
                 <Field label="Objetivo atual">
