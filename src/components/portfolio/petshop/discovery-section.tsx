@@ -1,11 +1,11 @@
-import { Facebook, Instagram, MapPin, MessageCircle, Search, Users } from "lucide-react";
+import { AtSign, MapPin, MessageCircle, Search, ThumbsUp, Users } from "lucide-react";
 import { PresentationSection, Reveal } from "./motion";
 
 const CHANNELS = [
   { icon: Search, label: "Google" },
   { icon: MapPin, label: "Google Maps" },
-  { icon: Instagram, label: "Instagram" },
-  { icon: Facebook, label: "Facebook" },
+  { icon: AtSign, label: "Instagram" },
+  { icon: ThumbsUp, label: "Facebook" },
   { icon: Users, label: "Indicação" },
   { icon: MessageCircle, label: "WhatsApp" },
 ] as const;
