@@ -24,6 +24,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
 import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
+import { Route as PortfolioPetshopRouteImport } from './routes/portfolio.petshop'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
@@ -153,6 +154,11 @@ const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ApiDocsRoute,
+} as any)
+const PortfolioPetshopRoute = PortfolioPetshopRouteImport.update({
+  id: '/portfolio/petshop',
+  path: '/portfolio/petshop',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
   id: '/onboarding/$token',
@@ -489,6 +495,7 @@ export interface FileRoutesByFullPath {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -558,6 +565,7 @@ export interface FileRoutesByTo {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs': typeof ApiDocsIndexRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -626,6 +634,7 @@ export interface FileRoutesById {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
+  '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -699,6 +708,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/portfolio/petshop'
     | '/api-docs/'
     | '/briefing/'
     | '/crm/dashboard'
@@ -768,6 +778,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/portfolio/petshop'
     | '/api-docs'
     | '/briefing'
     | '/crm/dashboard'
@@ -835,6 +846,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/briefing/$token'
     | '/onboarding/$token'
+    | '/portfolio/petshop'
     | '/api-docs/'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
@@ -903,6 +915,7 @@ export interface RootRouteChildren {
   UnauthorizedRoute: typeof UnauthorizedRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
+  PortfolioPetshopRoute: typeof PortfolioPetshopRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
@@ -1019,6 +1032,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api-docs/'
       preLoaderRoute: typeof ApiDocsIndexRouteImport
       parentRoute: typeof ApiDocsRoute
+    }
+    '/portfolio/petshop': {
+      id: '/portfolio/petshop'
+      path: '/portfolio/petshop'
+      fullPath: '/portfolio/petshop'
+      preLoaderRoute: typeof PortfolioPetshopRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/onboarding/$token': {
       id: '/onboarding/$token'
@@ -1639,6 +1659,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedRoute: UnauthorizedRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
+  PortfolioPetshopRoute: PortfolioPetshopRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
