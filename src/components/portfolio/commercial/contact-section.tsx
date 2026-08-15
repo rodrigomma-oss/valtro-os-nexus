@@ -19,21 +19,9 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
-
-  const formatWhatsApp = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-  };
-
-  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatWhatsApp(e.target.value);
-    setValue("whatsapp", formatted, { shouldValidate: true });
-  };
 
   const onSubmit = async (data: FormValues) => {
     // Simulando integração com CRM
