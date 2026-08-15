@@ -28,6 +28,7 @@ import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
 import { Route as PortfolioPetshopRouteImport } from './routes/portfolio.petshop'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
+import { Route as ApresentacaoViewerNichoRouteImport } from './routes/apresentacao-viewer.$nicho'
 import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
 import { Route as ApiDocsOpenapiRouteImport } from './routes/api-docs.openapi'
 import { Route as ApiDocsSlugRouteImport } from './routes/api-docs.$slug'
@@ -43,7 +44,6 @@ import { Route as AuthenticatedOsDashboardRouteImport } from './routes/_authenti
 import { Route as AuthenticatedOsAtendimentoRouteImport } from './routes/_authenticated.os.atendimento'
 import { Route as AuthenticatedCrmServicosRouteImport } from './routes/_authenticated.crm.servicos'
 import { Route as AuthenticatedCrmDashboardRouteImport } from './routes/_authenticated.crm.dashboard'
-import { Route as AuthenticatedApresentacaoViewerNichoRouteImport } from './routes/_authenticated.apresentacao-viewer.$nicho'
 import { Route as AuthenticatedCrmProjetosIndexRouteImport } from './routes/_authenticated.crm.projetos.index'
 import { Route as AuthenticatedCrmLeadsIndexRouteImport } from './routes/_authenticated.crm.leads.index'
 import { Route as AuthenticatedCrmClientesIndexRouteImport } from './routes/_authenticated.crm.clientes.index'
@@ -178,6 +178,11 @@ const BriefingTokenRoute = BriefingTokenRouteImport.update({
   path: '/briefing/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApresentacaoViewerNichoRoute = ApresentacaoViewerNichoRouteImport.update({
+  id: '/apresentacao-viewer/$nicho',
+  path: '/apresentacao-viewer/$nicho',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDocsStatusRoute = ApiDocsStatusRouteImport.update({
   id: '/status',
   path: '/status',
@@ -255,12 +260,6 @@ const AuthenticatedCrmDashboardRoute =
   AuthenticatedCrmDashboardRouteImport.update({
     id: '/crm/dashboard',
     path: '/crm/dashboard',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedApresentacaoViewerNichoRoute =
-  AuthenticatedApresentacaoViewerNichoRouteImport.update({
-    id: '/apresentacao-viewer/$nicho',
-    path: '/apresentacao-viewer/$nicho',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCrmProjetosIndexRoute =
@@ -514,12 +513,12 @@ export interface FileRoutesByFullPath {
   '/api-docs/$slug': typeof ApiDocsSlugRoute
   '/api-docs/openapi': typeof ApiDocsOpenapiRoute
   '/api-docs/status': typeof ApiDocsStatusRoute
+  '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
-  '/apresentacao-viewer/$nicho': typeof AuthenticatedApresentacaoViewerNichoRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
@@ -587,12 +586,12 @@ export interface FileRoutesByTo {
   '/api-docs/$slug': typeof ApiDocsSlugRoute
   '/api-docs/openapi': typeof ApiDocsOpenapiRoute
   '/api-docs/status': typeof ApiDocsStatusRoute
+  '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs': typeof ApiDocsIndexRoute
   '/briefing': typeof BriefingIndexRoute
-  '/apresentacao-viewer/$nicho': typeof AuthenticatedApresentacaoViewerNichoRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
@@ -659,12 +658,12 @@ export interface FileRoutesById {
   '/api-docs/$slug': typeof ApiDocsSlugRoute
   '/api-docs/openapi': typeof ApiDocsOpenapiRoute
   '/api-docs/status': typeof ApiDocsStatusRoute
+  '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
-  '/_authenticated/apresentacao-viewer/$nicho': typeof AuthenticatedApresentacaoViewerNichoRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
   '/_authenticated/crm/servicos': typeof AuthenticatedCrmServicosRoute
   '/_authenticated/os/atendimento': typeof AuthenticatedOsAtendimentoRouteWithChildren
@@ -736,12 +735,12 @@ export interface FileRouteTypes {
     | '/api-docs/$slug'
     | '/api-docs/openapi'
     | '/api-docs/status'
+    | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
     | '/api-docs/'
     | '/briefing/'
-    | '/apresentacao-viewer/$nicho'
     | '/crm/dashboard'
     | '/crm/servicos'
     | '/os/atendimento'
@@ -809,12 +808,12 @@ export interface FileRouteTypes {
     | '/api-docs/$slug'
     | '/api-docs/openapi'
     | '/api-docs/status'
+    | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
     | '/api-docs'
     | '/briefing'
-    | '/apresentacao-viewer/$nicho'
     | '/crm/dashboard'
     | '/crm/servicos'
     | '/os/atendimento'
@@ -880,12 +879,12 @@ export interface FileRouteTypes {
     | '/api-docs/$slug'
     | '/api-docs/openapi'
     | '/api-docs/status'
+    | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
     | '/api-docs/'
     | '/briefing/'
-    | '/_authenticated/apresentacao-viewer/$nicho'
     | '/_authenticated/crm/dashboard'
     | '/_authenticated/crm/servicos'
     | '/_authenticated/os/atendimento'
@@ -952,6 +951,7 @@ export interface RootRouteChildren {
   SolucoesRoute: typeof SolucoesRoute
   TermosRoute: typeof TermosRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
+  ApresentacaoViewerNichoRoute: typeof ApresentacaoViewerNichoRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
@@ -1099,6 +1099,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apresentacao-viewer/$nicho': {
+      id: '/apresentacao-viewer/$nicho'
+      path: '/apresentacao-viewer/$nicho'
+      fullPath: '/apresentacao-viewer/$nicho'
+      preLoaderRoute: typeof ApresentacaoViewerNichoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api-docs/status': {
       id: '/api-docs/status'
       path: '/status'
@@ -1202,13 +1209,6 @@ declare module '@tanstack/react-router' {
       path: '/crm/dashboard'
       fullPath: '/crm/dashboard'
       preLoaderRoute: typeof AuthenticatedCrmDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/apresentacao-viewer/$nicho': {
-      id: '/_authenticated/apresentacao-viewer/$nicho'
-      path: '/apresentacao-viewer/$nicho'
-      fullPath: '/apresentacao-viewer/$nicho'
-      preLoaderRoute: typeof AuthenticatedApresentacaoViewerNichoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/crm/projetos/': {
@@ -1655,7 +1655,6 @@ const AuthenticatedOsRouteWithChildren = AuthenticatedOsRoute._addFileChildren(
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedOsRoute: typeof AuthenticatedOsRouteWithChildren
-  AuthenticatedApresentacaoViewerNichoRoute: typeof AuthenticatedApresentacaoViewerNichoRoute
   AuthenticatedCrmDashboardRoute: typeof AuthenticatedCrmDashboardRoute
   AuthenticatedCrmServicosRoute: typeof AuthenticatedCrmServicosRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
@@ -1672,8 +1671,6 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedOsRoute: AuthenticatedOsRouteWithChildren,
-  AuthenticatedApresentacaoViewerNichoRoute:
-    AuthenticatedApresentacaoViewerNichoRoute,
   AuthenticatedCrmDashboardRoute: AuthenticatedCrmDashboardRoute,
   AuthenticatedCrmServicosRoute: AuthenticatedCrmServicosRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
@@ -1735,6 +1732,7 @@ const rootRouteChildren: RootRouteChildren = {
   SolucoesRoute: SolucoesRoute,
   TermosRoute: TermosRoute,
   UnauthorizedRoute: UnauthorizedRoute,
+  ApresentacaoViewerNichoRoute: ApresentacaoViewerNichoRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
