@@ -88,21 +88,90 @@ export function BarbeariaDemo() {
       {/* Serviços */}
       <Section id="servicos" className="bg-[#1a1a1a]">
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-serif text-white">Serviços</h2>
+          <h2 className="text-4xl md:text-5xl font-serif text-white uppercase tracking-tighter">O Ofício</h2>
+          <div className="w-24 h-px bg-[#A67C00] mx-auto" />
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { title: "Corte de Cabelo", price: "R$ 90" },
-            { title: "Barba Real", price: "R$ 70" },
-            { title: "Experiência Nobre (Corte + Barba)", price: "R$ 150" }
+            { title: "Corte Clássico", price: "R$ 90", desc: "Técnica em tesoura e máquina para um visual atemporal." },
+            { title: "Barba Real", price: "R$ 70", desc: "Toalha quente, navalha e óleos essenciais." },
+            { title: "Nobre Combo", price: "R$ 145", desc: "A experiência completa para o homem moderno." },
+            { title: "Pigmentação", price: "R$ 60", desc: "Correção e definição de barba e cabelo." }
           ].map((s, i) => (
-            <div key={i} className="p-8 border border-white/10 hover:border-[#A67C00] transition-colors group">
-              <h3 className="text-2xl font-serif text-white mb-4">{s.title}</h3>
-              <p className="text-[#A67C00] font-bold tracking-widest">{s.price}</p>
+            <motion.div 
+              key={i} 
+              whileHover={{ y: -5 }}
+              className="p-8 border border-white/5 bg-[#121212] transition-all hover:border-[#A67C00]/50 group flex flex-col justify-between h-full"
+            >
+              <div>
+                <Scissors className="w-6 h-6 text-[#A67C00] mb-6 opacity-50 group-hover:opacity-100 transition-opacity" />
+                <h3 className="text-xl font-serif text-white mb-2 uppercase tracking-wide">{s.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6">{s.desc}</p>
+              </div>
+              <p className="text-[#A67C00] font-bold tracking-widest text-lg">{s.price}</p>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Profissionais */}
+      <Section id="profissionais" className="bg-[#121212]">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="order-2 lg:order-1 grid grid-cols-2 gap-4">
+            {[
+              { name: "Ricardo 'Nobre'", role: "Master Barber", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop" },
+              { name: "Marco Silva", role: "Specialist", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop" }
+            ].map((p, i) => (
+              <div key={i} className="space-y-4 group">
+                <div className="aspect-[3/4] overflow-hidden bg-white/5">
+                  <img src={p.img} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500 group-hover:scale-105" />
+                </div>
+                <div>
+                  <h4 className="text-white font-bold uppercase tracking-widest text-sm">{p.name}</h4>
+                  <p className="text-[#A67C00] text-[10px] font-bold uppercase tracking-[0.2em]">{p.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="order-1 lg:order-2 space-y-8">
+            <h2 className="text-4xl md:text-6xl font-serif text-white uppercase leading-[0.9]">Mãos que <br /><span className="text-[#A67C00]">Esculpem.</span></h2>
+            <p className="text-lg text-gray-400 leading-relaxed">
+              Nossa equipe é formada por especialistas dedicados à arte da barbearia. Cada profissional traz consigo anos de técnica e um olhar apurado para a estética masculina.
+            </p>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-3xl font-serif text-white">+15</p>
+                <p className="text-[10px] text-[#A67C00] font-bold uppercase tracking-widest">Anos de Ofício</p>
+              </div>
+              <div className="w-px h-10 bg-white/10" />
+              <div className="text-center">
+                <p className="text-3xl font-serif text-white">100%</p>
+                <p className="text-[10px] text-[#A67C00] font-bold uppercase tracking-widest">Foco no Detalhe</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Galeria / Estilo */}
+      <Section id="estilo" className="bg-[#1a1a1a] p-0">
+        <div className="grid grid-cols-2 md:grid-cols-4 aspect-[21/9]">
+          {[
+            "https://images.unsplash.com/photo-1512690196222-7c7d29900279?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1593702288056-7927b442d0fa?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1621605815841-aa3396568d8c?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"
+          ].map((img, i) => (
+            <div key={i} className="relative overflow-hidden group">
+              <img src={img} alt="Galeria" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-[#A67C00]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Scissors className="w-8 h-8 text-white" />
+              </div>
             </div>
           ))}
         </div>
       </Section>
+
 
       {/* Localização e CTA */}
       <Section id="contato" className="bg-[#121212]">
