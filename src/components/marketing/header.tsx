@@ -15,6 +15,7 @@ const NAV: readonly NavItem[] = [
   { label: "Home", href: "/", match: "/" },
   { label: "Sobre", href: "/sobre", match: "/sobre" },
   { label: "Soluções", href: "/solucoes", match: "/solucoes" },
+  { label: "Portfólio", href: "/portfolio", match: "/portfolio" },
   { label: "Contato", href: "/contato", match: "/contato" },
   { label: "Área Restrita", href: "/auth", match: "/auth" },
 ] as const;
