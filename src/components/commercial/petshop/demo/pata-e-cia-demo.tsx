@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 const Section = ({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) => (
   <section id={id} className={cn("py-20 px-6 md:px-12", className)}>
     <div className="max-w-7xl mx-auto w-full">
-      {children} section
+      {children}
     </div>
   </section>
 );
