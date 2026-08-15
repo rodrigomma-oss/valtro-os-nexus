@@ -23,20 +23,15 @@ export function ContactSection() {
     resolver: zodResolver(formSchema),
   });
 
-  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const formatWhatsApp = (value: string) => {
     const digits = value.replace(/\D/g, "");
-    let formatted = "";
-    
-    if (digits.length <= 2) {
-      formatted = digits;
-    } else if (digits.length <= 7) {
-      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    } else {
-      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-    }
-    
-    e.target.value = formatted;
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value = formatWhatsApp(e.target.value);
   };
 
   const onSubmit = async (data: FormValues) => {
