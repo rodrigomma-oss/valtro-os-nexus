@@ -58,7 +58,7 @@ export function CTA() {
                 to="/portfolio"
                 className="group inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 text-white px-8 py-4 text-sm font-semibold hover:bg-white/20 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
-                Ver Portfólio
+                Conhecer Trabalho
                 <Sparkles className="h-4 w-4" aria-hidden />
               </Link>
             </div>

@@ -58,7 +58,7 @@ export function Hero() {
                 to="/portfolio"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-6 py-3.5 text-sm font-medium text-foreground hover:border-primary/40 hover:text-primary hover:bg-accent/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Ver Portfólio
+                Ver Apresentação
               </Link>
             </div>
 
