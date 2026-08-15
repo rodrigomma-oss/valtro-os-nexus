@@ -28,6 +28,7 @@ import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
 import { Route as PortfolioPetshopRouteImport } from './routes/portfolio.petshop'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as DemoPetshopRouteImport } from './routes/demo.petshop'
+import { Route as DemoBarbeariaRouteImport } from './routes/demo.barbearia'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
 import { Route as ApresentacaoViewerNichoRouteImport } from './routes/apresentacao-viewer.$nicho'
 import { Route as ApiDocsStatusRouteImport } from './routes/api-docs.status'
@@ -177,6 +178,11 @@ const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
 const DemoPetshopRoute = DemoPetshopRouteImport.update({
   id: '/demo/petshop',
   path: '/demo/petshop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoBarbeariaRoute = DemoBarbeariaRouteImport.update({
+  id: '/demo/barbearia',
+  path: '/demo/barbearia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BriefingTokenRoute = BriefingTokenRouteImport.update({
@@ -521,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
+  '/demo/barbearia': typeof DemoBarbeariaRoute
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
@@ -595,6 +602,7 @@ export interface FileRoutesByTo {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
+  '/demo/barbearia': typeof DemoBarbeariaRoute
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
@@ -668,6 +676,7 @@ export interface FileRoutesById {
   '/api-docs/status': typeof ApiDocsStatusRoute
   '/apresentacao-viewer/$nicho': typeof ApresentacaoViewerNichoRoute
   '/briefing/$token': typeof BriefingTokenRoute
+  '/demo/barbearia': typeof DemoBarbeariaRoute
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
@@ -746,6 +755,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
+    | '/demo/barbearia'
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
@@ -820,6 +830,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
+    | '/demo/barbearia'
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
@@ -892,6 +903,7 @@ export interface FileRouteTypes {
     | '/api-docs/status'
     | '/apresentacao-viewer/$nicho'
     | '/briefing/$token'
+    | '/demo/barbearia'
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
@@ -965,6 +977,7 @@ export interface RootRouteChildren {
   UnauthorizedRoute: typeof UnauthorizedRoute
   ApresentacaoViewerNichoRoute: typeof ApresentacaoViewerNichoRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
+  DemoBarbeariaRoute: typeof DemoBarbeariaRoute
   DemoPetshopRoute: typeof DemoPetshopRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
@@ -1110,6 +1123,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/petshop'
       fullPath: '/demo/petshop'
       preLoaderRoute: typeof DemoPetshopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/barbearia': {
+      id: '/demo/barbearia'
+      path: '/demo/barbearia'
+      fullPath: '/demo/barbearia'
+      preLoaderRoute: typeof DemoBarbeariaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/briefing/$token': {
@@ -1754,6 +1774,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedRoute: UnauthorizedRoute,
   ApresentacaoViewerNichoRoute: ApresentacaoViewerNichoRoute,
   BriefingTokenRoute: BriefingTokenRoute,
+  DemoBarbeariaRoute: DemoBarbeariaRoute,
   DemoPetshopRoute: DemoPetshopRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
   BriefingIndexRoute: BriefingIndexRoute,
