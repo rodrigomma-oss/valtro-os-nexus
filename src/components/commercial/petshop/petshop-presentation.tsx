@@ -178,10 +178,12 @@ export function PetShopPresentation() {
             <DynamicText template="Veja um exemplo de como uma experiência como essa poderia funcionar para a {{empresa}}." />
           </p>
           <div className="pt-8">
-            <Button size="lg" variant="secondary" className="h-16 px-12 text-lg rounded-full gap-3 group">
-              VER DEMONSTRAÇÃO
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/demo/petshop" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="secondary" className="h-16 px-12 text-lg rounded-full gap-3 group">
+                VER DEMONSTRAÇÃO
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <p className="mt-4 text-sm opacity-60 italic">(Protótipo interativo em fase de homologação)</p>
           </div>
         </div>
