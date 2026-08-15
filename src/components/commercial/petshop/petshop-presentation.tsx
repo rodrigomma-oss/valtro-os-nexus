@@ -18,8 +18,10 @@ const Section = ({ children, className, id }: { children: React.ReactNode; class
 export function PetShopPresentation() {
   const { empresa, cidade } = usePresentationContext();
   const [activeSection, setActiveSection] = useState(0);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    setIsHydrated(true);
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -29,7 +31,10 @@ export function PetShopPresentation() {
           }
         });
       },
-      { threshold: 0.5 }
+      { 
+        threshold: 0.5,
+        rootMargin: "-10% 0px -10% 0px"
+      }
     );
 
     document.querySelectorAll("section[data-index]").forEach((s) => observer.observe(s));
