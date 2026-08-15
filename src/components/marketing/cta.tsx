@@ -42,10 +42,10 @@ export function CTA() {
               inteligente, regras automatizadas e visão de performance em tempo real —
               a base para as próximas soluções que estão por vir.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
               <a
                 href="https://pricing.valtrolabs.pro"
-                className="group inline-flex items-center gap-2 rounded-lg bg-white text-brand-deep px-6 py-3.5 text-sm font-semibold hover:bg-white/95 transition-all duration-200 shadow-elevated hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                className="group inline-flex items-center gap-2 rounded-lg bg-white text-brand-deep px-8 py-4 text-sm font-semibold hover:bg-white/95 transition-all duration-200 shadow-elevated hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 Acessar gratuitamente
                 <ArrowRight
