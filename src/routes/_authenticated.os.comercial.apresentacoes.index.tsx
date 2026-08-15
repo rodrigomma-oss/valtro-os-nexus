@@ -24,13 +24,13 @@ function AdminPresentationPage() {
     if (!nicho || !empresa) return;
 
     navigate({
-      to: "/os/apresentacao-viewer/$nicho",
+      to: "/_authenticated/apresentacao-viewer/$nicho",
       params: { nicho },
       search: {
         company: empresa,
         city: cidade || undefined,
       },
-    });
+    } as any);
   };
 
   return (
