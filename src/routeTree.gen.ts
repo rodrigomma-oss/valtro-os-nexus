@@ -35,7 +35,6 @@ import { Route as AuthenticatedOsRouteImport } from './routes/_authenticated.os'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedOsIndexRouteImport } from './routes/_authenticated.os.index'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated.crm.index'
-import { Route as PublicApresentacaoViewerNichoRouteImport } from './routes/public.apresentacao-viewer.$nicho'
 import { Route as ApiV1MetaRouteImport } from './routes/api/v1/meta'
 import { Route as ApiV1FeedbackRouteImport } from './routes/api/v1/feedback'
 import { Route as ApiV1BugsRouteImport } from './routes/api/v1/bugs'
@@ -55,6 +54,7 @@ import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_
 import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
 import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
 import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
+import { Route as AuthenticatedOsApresentacaoViewerNichoRouteImport } from './routes/_authenticated.os.apresentacao-viewer.$nicho'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
 import { Route as AuthenticatedOsAdminApiRouteImport } from './routes/_authenticated.os.admin.api'
@@ -213,12 +213,6 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   path: '/crm/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const PublicApresentacaoViewerNichoRoute =
-  PublicApresentacaoViewerNichoRouteImport.update({
-    id: '/public/apresentacao-viewer/$nicho',
-    path: '/public/apresentacao-viewer/$nicho',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiV1MetaRoute = ApiV1MetaRouteImport.update({
   id: '/api/v1/meta',
   path: '/api/v1/meta',
@@ -327,6 +321,12 @@ const AuthenticatedOsAtendimentoBugsRoute =
     id: '/bugs',
     path: '/bugs',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
+  } as any)
+const AuthenticatedOsApresentacaoViewerNichoRoute =
+  AuthenticatedOsApresentacaoViewerNichoRouteImport.update({
+    id: '/apresentacao-viewer/$nicho',
+    path: '/apresentacao-viewer/$nicho',
+    getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 const AuthenticatedOsAdminUsuariosRoute =
   AuthenticatedOsAdminUsuariosRouteImport.update({
@@ -527,7 +527,6 @@ export interface FileRoutesByFullPath {
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
-  '/public/apresentacao-viewer/$nicho': typeof PublicApresentacaoViewerNichoRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/os/': typeof AuthenticatedOsIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -538,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
@@ -600,7 +600,6 @@ export interface FileRoutesByTo {
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
-  '/public/apresentacao-viewer/$nicho': typeof PublicApresentacaoViewerNichoRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/os': typeof AuthenticatedOsIndexRoute
   '/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -610,6 +609,7 @@ export interface FileRoutesByTo {
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/os/configuracoes/seguranca': typeof AuthenticatedOsConfiguracoesSegurancaRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -672,7 +672,6 @@ export interface FileRoutesById {
   '/api/v1/bugs': typeof ApiV1BugsRoute
   '/api/v1/feedback': typeof ApiV1FeedbackRoute
   '/api/v1/meta': typeof ApiV1MetaRoute
-  '/public/apresentacao-viewer/$nicho': typeof PublicApresentacaoViewerNichoRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/os/': typeof AuthenticatedOsIndexRoute
   '/_authenticated/crm/admin/integracoes': typeof AuthenticatedCrmAdminIntegracoesRoute
@@ -683,6 +682,7 @@ export interface FileRoutesById {
   '/_authenticated/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/_authenticated/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
@@ -749,7 +749,6 @@ export interface FileRouteTypes {
     | '/api/v1/bugs'
     | '/api/v1/feedback'
     | '/api/v1/meta'
-    | '/public/apresentacao-viewer/$nicho'
     | '/crm/'
     | '/os/'
     | '/crm/admin/integracoes'
@@ -760,6 +759,7 @@ export interface FileRouteTypes {
     | '/os/admin/api'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
+    | '/os/apresentacao-viewer/$nicho'
     | '/os/atendimento/bugs'
     | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
@@ -822,7 +822,6 @@ export interface FileRouteTypes {
     | '/api/v1/bugs'
     | '/api/v1/feedback'
     | '/api/v1/meta'
-    | '/public/apresentacao-viewer/$nicho'
     | '/crm'
     | '/os'
     | '/crm/admin/integracoes'
@@ -832,6 +831,7 @@ export interface FileRouteTypes {
     | '/crm/projetos/$id'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
+    | '/os/apresentacao-viewer/$nicho'
     | '/os/comercial/servicos'
     | '/os/configuracoes/seguranca'
     | '/api/public/google-calendar/callback'
@@ -893,7 +893,6 @@ export interface FileRouteTypes {
     | '/api/v1/bugs'
     | '/api/v1/feedback'
     | '/api/v1/meta'
-    | '/public/apresentacao-viewer/$nicho'
     | '/_authenticated/crm/'
     | '/_authenticated/os/'
     | '/_authenticated/crm/admin/integracoes'
@@ -904,6 +903,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/admin/api'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
+    | '/_authenticated/os/apresentacao-viewer/$nicho'
     | '/_authenticated/os/atendimento/bugs'
     | '/_authenticated/os/atendimento/chamados'
     | '/_authenticated/os/atendimento/feedback'
@@ -959,7 +959,6 @@ export interface RootRouteChildren {
   ApiV1BugsRoute: typeof ApiV1BugsRoute
   ApiV1FeedbackRoute: typeof ApiV1FeedbackRoute
   ApiV1MetaRoute: typeof ApiV1MetaRoute
-  PublicApresentacaoViewerNichoRoute: typeof PublicApresentacaoViewerNichoRoute
   ApiPublicGoogleCalendarCallbackRoute: typeof ApiPublicGoogleCalendarCallbackRoute
   ApiPublicGoogleCalendarSyncRoute: typeof ApiPublicGoogleCalendarSyncRoute
   ApiV1InternalAuthCheckRoute: typeof ApiV1InternalAuthCheckRoute
@@ -1149,13 +1148,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/public/apresentacao-viewer/$nicho': {
-      id: '/public/apresentacao-viewer/$nicho'
-      path: '/public/apresentacao-viewer/$nicho'
-      fullPath: '/public/apresentacao-viewer/$nicho'
-      preLoaderRoute: typeof PublicApresentacaoViewerNichoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/v1/meta': {
       id: '/api/v1/meta'
       path: '/api/v1/meta'
@@ -1288,6 +1280,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/os/atendimento/bugs'
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsRouteImport
       parentRoute: typeof AuthenticatedOsAtendimentoRoute
+    }
+    '/_authenticated/os/apresentacao-viewer/$nicho': {
+      id: '/_authenticated/os/apresentacao-viewer/$nicho'
+      path: '/apresentacao-viewer/$nicho'
+      fullPath: '/os/apresentacao-viewer/$nicho'
+      preLoaderRoute: typeof AuthenticatedOsApresentacaoViewerNichoRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
     }
     '/_authenticated/os/admin/usuarios': {
       id: '/_authenticated/os/admin/usuarios'
@@ -1610,6 +1609,7 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAdminApiRoute: typeof AuthenticatedOsAdminApiRouteWithChildren
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
+  AuthenticatedOsApresentacaoViewerNichoRoute: typeof AuthenticatedOsApresentacaoViewerNichoRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
   AuthenticatedOsConfiguracoesSegurancaRoute: typeof AuthenticatedOsConfiguracoesSegurancaRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
@@ -1629,6 +1629,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAdminApiRoute: AuthenticatedOsAdminApiRouteWithChildren,
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
+  AuthenticatedOsApresentacaoViewerNichoRoute:
+    AuthenticatedOsApresentacaoViewerNichoRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
   AuthenticatedOsConfiguracoesSegurancaRoute:
     AuthenticatedOsConfiguracoesSegurancaRoute,
@@ -1740,7 +1742,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1BugsRoute: ApiV1BugsRoute,
   ApiV1FeedbackRoute: ApiV1FeedbackRoute,
   ApiV1MetaRoute: ApiV1MetaRoute,
-  PublicApresentacaoViewerNichoRoute: PublicApresentacaoViewerNichoRoute,
   ApiPublicGoogleCalendarCallbackRoute: ApiPublicGoogleCalendarCallbackRoute,
   ApiPublicGoogleCalendarSyncRoute: ApiPublicGoogleCalendarSyncRoute,
   ApiV1InternalAuthCheckRoute: ApiV1InternalAuthCheckRoute,
