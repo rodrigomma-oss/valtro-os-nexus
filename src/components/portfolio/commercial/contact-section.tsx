@@ -106,10 +106,6 @@ export function ContactSection() {
                     <label className="text-sm font-medium">WhatsApp</label>
                     <input
                       {...register("whatsapp")}
-                      onChange={(e) => {
-                        e.target.value = formatWhatsApp(e.target.value);
-                        register("whatsapp").onChange(e);
-                      }}
                       placeholder="(00) 00000-0000"
                       maxLength={15}
                       className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none"
