@@ -197,11 +197,29 @@ export function PetShopPresentation() {
       {/* SEÇÃO 06 — PRESENÇA LOCAL */}
       <Section data-index="5" className="bg-background">
         <div className="max-w-5xl w-full grid md:grid-cols-2 gap-16 items-center">
-          <div className="relative aspect-square rounded-3xl overflow-hidden bg-muted">
-             {/* Simulação de mapa ou presença local visual */}
-             <div className="absolute inset-0 flex items-center justify-center">
-               <MapPin className="w-24 h-24 text-accent animate-pulse" />
-             </div>
+          <div className="relative w-full flex justify-center items-center">
+            {/* Mockup de Celular */}
+            <div className="relative w-[280px] h-[580px] bg-zinc-900 rounded-[3rem] border-[8px] border-zinc-800 shadow-2xl overflow-hidden ring-1 ring-white/10">
+              {/* Speaker/Camera Area */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-zinc-800 rounded-b-2xl z-20" />
+              
+              {/* Tela com Google Maps */}
+              <div className="absolute inset-0 z-10 bg-muted">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809c6c8f4459%3A0xb10ed6d9b5050fa5!2sTwitter%20HQ!5e0!3m2!1sen!2sbr!4v1633000000000!5m2!1sen!2sbr"
+                  className="w-full h-full border-0 grayscale-[0.2] contrast-[1.1]"
+                  allowFullScreen
+                  loading="lazy"
+                  title="Localização do Pet Shop"
+                />
+                
+                {/* Overlay de interface de celular simulada */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-20" />
+              </div>
+            </div>
+
+            {/* Fundo Decorativo */}
+            <div className="absolute -z-10 w-[120%] h-[120%] bg-accent/5 rounded-full blur-3xl" />
           </div>
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
