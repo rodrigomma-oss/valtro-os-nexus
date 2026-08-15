@@ -98,11 +98,20 @@ export function ContactSection() {
                   <div className="space-y-1">
                     <label className="text-sm font-medium">WhatsApp</label>
                     <input
-                      {...register("whatsapp")}
-                      onChange={handleWhatsAppChange}
                       placeholder="(00) 00000-0000"
                       maxLength={15}
                       className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none"
+                      {...register("whatsapp")}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        let formatted = "";
+                        if (digits.length <= 2) formatted = digits;
+                        else if (digits.length <= 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                        else formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+                        
+                        e.target.value = formatted;
+                        register("whatsapp").onChange(e);
+                      }}
                     />
                     {errors.whatsapp && <span className="text-xs text-red-500">{errors.whatsapp.message}</span>}
                   </div>
