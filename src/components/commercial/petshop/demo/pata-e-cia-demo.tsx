@@ -170,7 +170,7 @@ export function PataECiaDemo() {
                 <img src="https://images.unsplash.com/photo-1548191265-cc70d3d45ba1?q=80&w=2070&auto=format&fit=crop" alt="Brincadeira pet" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-square rounded-3xl overflow-hidden bg-muted">
-                <img src="https://images.unsplash.com/photo-1591768793355-74d7af236c1f?q=80&w=2070&auto=format&fit=crop" alt="Gato no pet shop" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=2043&auto=format&fit=crop" alt="Gato no pet shop" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
