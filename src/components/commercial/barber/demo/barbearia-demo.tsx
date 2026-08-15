@@ -225,15 +225,26 @@ export function BarbeariaDemo() {
 
 
       {/* Personalização */}
-      <Section className="bg-[#1a1a1a] border-t border-white/5">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          <Sparkles className="w-10 h-10 text-[#A67C00] mx-auto" />
-          <h2 className="text-3xl font-serif text-white">Este é apenas um exemplo.</h2>
-          <p className="text-gray-400">
-            A presença digital da sua barbearia será desenhada de forma exclusiva, com a sua identidade visual e a estrutura que o seu negócio precisa.
-          </p>
+      <Section className="bg-[#131313] border-t border-white/5">
+        <div className="max-w-4xl mx-auto text-center space-y-10">
+          <div className="w-16 h-16 bg-[#A67C00]/10 rounded-full flex items-center justify-center mx-auto border border-[#A67C00]/20">
+            <Sparkles className="w-8 h-8 text-[#A67C00]" />
+          </div>
+          <h2 className="text-4xl md:text-6xl font-serif text-white uppercase tracking-tighter">Sua Identidade, <br />Nossa Técnica.</h2>
+          <div className="space-y-6 text-xl text-gray-400 leading-relaxed font-light italic">
+            <p>
+              Esta experiência da <span className="text-white font-bold tracking-widest uppercase">Nobre Barbearia</span> foi concebida para demonstrar o potencial da sua marca.
+            </p>
+            <p className="text-sm not-italic uppercase tracking-[0.2em] font-bold text-gray-500 max-w-2xl mx-auto">
+              O projeto final da sua presença digital será esculpido sob medida, respeitando seu estilo, sua localização e o perfil exclusivo dos seus clientes.
+            </p>
+          </div>
+          <div className="pt-8">
+            <div className="w-24 h-px bg-[#A67C00]/30 mx-auto" />
+          </div>
         </div>
       </Section>
+
 
       {/* Rodapé */}
       <footer className="py-12 text-center text-xs text-gray-600 uppercase tracking-widest">
