@@ -39,7 +39,7 @@ export function PataECiaDemo() {
 
       {/* Header */}
       <header className="sticky top-8 mx-auto max-w-7xl z-50 px-6 mt-4">
-        <nav className="bg-white/80 backdrop-blur-md border border-black/5 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+        <nav className="bg-white/80 backdrop-blur-md border border-black/5 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-[#8E9775] rounded-xl flex items-center justify-center">
               <Heart className="w-6 h-6 text-white" />
