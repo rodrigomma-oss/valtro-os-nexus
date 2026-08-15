@@ -24,7 +24,7 @@ function AdminPresentationPage() {
     if (!nicho || !empresa) return;
 
     navigate({
-      to: "/apresentacao-viewer/$nicho",
+      to: "/_authenticated/apresentacao-viewer/$nicho",
       params: { nicho },
       search: {
         company: empresa,

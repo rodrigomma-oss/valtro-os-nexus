@@ -5,16 +5,17 @@ import { PresentationLayout } from "@/layouts/presentation-layout";
 import { PresentationProvider } from "@/modules/commercial/presentation-context";
 import { NICHO_COMPONENTS } from "@/modules/commercial/presentation-registry";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2, X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const presentationSearchSchema = z.object({
   company: z.string(),
   city: z.string().optional(),
 });
 
-export const Route = createFileRoute("/apresentacao-viewer/$nicho")({
+export const Route = createFileRoute("/_authenticated/apresentacao-viewer/$nicho")({
   validateSearch: (search) => presentationSearchSchema.parse(search),
   component: PresentationViewerPage,
 });
@@ -73,11 +74,3 @@ function PresentationViewerPage() {
     </PresentationProvider>
   );
 }
-
-// Utility to merge class names safely (if not already globally available in routes)
-function cn(...inputs: any[]) {
-  const { clsx, twMerge } = require("tailwind-merge");
-  const { clsx: clsxLite } = require("clsx");
-  return twMerge(clsxLite(inputs));
-}
-
