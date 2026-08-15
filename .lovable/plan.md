@@ -5,7 +5,7 @@ Implementação da primeira apresentação comercial nichada, focada no segmento
 ## 1. Definição Visual (Temas e Estilos)
 Configurar a identidade visual do nicho Pet Shop no `src/styles.css` e `src/modules/commercial/config.ts`.
 
-- **Cores:** Areia, Verde Sálvia, Azul Petróleo Profundo, Terracota Suave.
+- **Cores:** Areia (#F5F5F4), Verde Sálvia (#86A789), Azul Petróleo (#1B3C58), Terracota (#C46647).
 - **Tipografia:** Serif (headlines) + Sans-serif (body).
 - **Isolamento:** Uso de classes CSS scoped ao tema `.theme-petshop`.
 
