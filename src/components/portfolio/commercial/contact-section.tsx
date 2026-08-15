@@ -1,5 +1,5 @@
 import { Reveal, PresentationSection } from "@/components/portfolio/commercial/motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowUp, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
