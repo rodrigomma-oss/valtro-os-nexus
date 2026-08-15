@@ -9,12 +9,6 @@ export interface NichoConfig {
 
 export const NICHOS: NichoConfig[] = [
   {
-    id: "placeholder",
-    label: "Placeholder Técnico (AC-001.1)",
-    themeClass: "theme-neutral",
-    placeholder: true,
-  },
-  {
     id: "petshop",
     label: "Pet Shop",
     themeClass: "theme-petshop",
@@ -23,5 +17,11 @@ export const NICHOS: NichoConfig[] = [
     id: "barbearia",
     label: "Barbearia",
     themeClass: "theme-barbearia",
+  },
+  {
+    id: "placeholder",
+    label: "Placeholder Técnico (AC-001.1)",
+    themeClass: "theme-neutral",
+    placeholder: true,
   },
 ];
