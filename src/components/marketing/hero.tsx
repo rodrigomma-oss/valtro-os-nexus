@@ -1,4 +1,5 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { HeroVisual } from "./hero-visual";
 
 const MARKETPLACES = ["Shopee", "Mercado Livre", "Amazon", "Magalu", "Shopify"] as const;
