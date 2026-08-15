@@ -25,6 +25,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
 import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
+import { Route as PublicPresentationNichoRouteImport } from './routes/public-presentation.$nicho'
 import { Route as PortfolioPetshopRouteImport } from './routes/portfolio.petshop'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as BriefingTokenRouteImport } from './routes/briefing.$token'
@@ -162,6 +163,11 @@ const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ApiDocsRoute,
+} as any)
+const PublicPresentationNichoRoute = PublicPresentationNichoRouteImport.update({
+  id: '/public-presentation/$nicho',
+  path: '/public-presentation/$nicho',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioPetshopRoute = PortfolioPetshopRouteImport.update({
   id: '/petshop',
@@ -517,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/public-presentation/$nicho': typeof PublicPresentationNichoRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -590,6 +597,7 @@ export interface FileRoutesByTo {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/public-presentation/$nicho': typeof PublicPresentationNichoRoute
   '/api-docs': typeof ApiDocsIndexRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -662,6 +670,7 @@ export interface FileRoutesById {
   '/briefing/$token': typeof BriefingTokenRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/public-presentation/$nicho': typeof PublicPresentationNichoRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -739,6 +748,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/public-presentation/$nicho'
     | '/api-docs/'
     | '/briefing/'
     | '/crm/dashboard'
@@ -812,6 +822,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/public-presentation/$nicho'
     | '/api-docs'
     | '/briefing'
     | '/crm/dashboard'
@@ -883,6 +894,7 @@ export interface FileRouteTypes {
     | '/briefing/$token'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/public-presentation/$nicho'
     | '/api-docs/'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
@@ -954,6 +966,7 @@ export interface RootRouteChildren {
   ApresentacaoViewerNichoRoute: typeof ApresentacaoViewerNichoRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
+  PublicPresentationNichoRoute: typeof PublicPresentationNichoRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
@@ -1077,6 +1090,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api-docs/'
       preLoaderRoute: typeof ApiDocsIndexRouteImport
       parentRoute: typeof ApiDocsRoute
+    }
+    '/public-presentation/$nicho': {
+      id: '/public-presentation/$nicho'
+      path: '/public-presentation/$nicho'
+      fullPath: '/public-presentation/$nicho'
+      preLoaderRoute: typeof PublicPresentationNichoRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/petshop': {
       id: '/portfolio/petshop'
@@ -1735,6 +1755,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApresentacaoViewerNichoRoute: ApresentacaoViewerNichoRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
+  PublicPresentationNichoRoute: PublicPresentationNichoRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
