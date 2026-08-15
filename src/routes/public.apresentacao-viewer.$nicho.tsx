@@ -15,7 +15,7 @@ const presentationSearchSchema = z.object({
   city: z.string().optional(),
 });
 
-export const Route = createFileRoute("/_authenticated/apresentacao-viewer/$nicho")({
+export const Route = createFileRoute("/public/apresentacao-viewer/$nicho")({
   validateSearch: (search) => presentationSearchSchema.parse(search),
   component: PresentationViewerPage,
 });
