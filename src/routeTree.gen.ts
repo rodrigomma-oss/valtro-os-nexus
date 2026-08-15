@@ -16,6 +16,7 @@ import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -116,6 +117,11 @@ const PrivacidadeRoute = PrivacidadeRouteImport.update({
   path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
   id: '/diagnostico',
   path: '/diagnostico',
@@ -156,9 +162,9 @@ const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
   getParentRoute: () => ApiDocsRoute,
 } as any)
 const PortfolioPetshopRoute = PortfolioPetshopRouteImport.update({
-  id: '/portfolio/petshop',
-  path: '/portfolio/petshop',
-  getParentRoute: () => rootRouteImport,
+  id: '/petshop',
+  path: '/petshop',
+  getParentRoute: () => PortfolioRoute,
 } as any)
 const OnboardingTokenRoute = OnboardingTokenRouteImport.update({
   id: '/onboarding/$token',
@@ -481,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -552,6 +559,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -620,6 +628,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contato': typeof ContatoRoute
   '/diagnostico': typeof DiagnosticoRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -694,6 +703,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/portfolio'
     | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
@@ -765,6 +775,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/portfolio'
     | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contato'
     | '/diagnostico'
+    | '/portfolio'
     | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
@@ -906,6 +918,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContatoRoute: typeof ContatoRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
+  PortfolioRoute: typeof PortfolioRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -915,7 +928,6 @@ export interface RootRouteChildren {
   UnauthorizedRoute: typeof UnauthorizedRoute
   BriefingTokenRoute: typeof BriefingTokenRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
-  PortfolioPetshopRoute: typeof PortfolioPetshopRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
@@ -977,6 +989,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/diagnostico': {
       id: '/diagnostico'
       path: '/diagnostico'
@@ -1035,10 +1054,10 @@ declare module '@tanstack/react-router' {
     }
     '/portfolio/petshop': {
       id: '/portfolio/petshop'
-      path: '/portfolio/petshop'
+      path: '/petshop'
       fullPath: '/portfolio/petshop'
       preLoaderRoute: typeof PortfolioPetshopRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PortfolioRoute
     }
     '/onboarding/$token': {
       id: '/onboarding/$token'
@@ -1643,6 +1662,18 @@ const ApiDocsRouteChildren: ApiDocsRouteChildren = {
 const ApiDocsRouteWithChildren =
   ApiDocsRoute._addFileChildren(ApiDocsRouteChildren)
 
+interface PortfolioRouteChildren {
+  PortfolioPetshopRoute: typeof PortfolioPetshopRoute
+}
+
+const PortfolioRouteChildren: PortfolioRouteChildren = {
+  PortfolioPetshopRoute: PortfolioPetshopRoute,
+}
+
+const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
+  PortfolioRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -1650,6 +1681,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContatoRoute: ContatoRoute,
   DiagnosticoRoute: DiagnosticoRoute,
+  PortfolioRoute: PortfolioRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -1659,7 +1691,6 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedRoute: UnauthorizedRoute,
   BriefingTokenRoute: BriefingTokenRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
-  PortfolioPetshopRoute: PortfolioPetshopRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
