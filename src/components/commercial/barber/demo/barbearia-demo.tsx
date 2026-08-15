@@ -176,21 +176,50 @@ export function BarbeariaDemo() {
       {/* Localização e CTA */}
       <Section id="contato" className="bg-[#121212]">
         <div className="grid lg:grid-cols-2 gap-16">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-serif text-white">Localização</h2>
-            <div className="space-y-4 text-gray-400">
-              <p>Rua da Precisão, 456 — Centro</p>
-              <p>(83) 99999-0000</p>
+          <div className="space-y-12">
+            <h2 className="text-4xl font-serif text-white uppercase tracking-tighter">O QG</h2>
+            <div className="space-y-8">
+              <div className="flex items-start gap-4">
+                <MapPin className="w-6 h-6 text-[#A67C00] mt-1" />
+                <div>
+                  <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Endereço</h4>
+                  <p className="text-gray-400">Rua da Precisão, 456 — Centro</p>
+                  <p className="text-gray-400">Campina Grande, PB</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Clock className="w-6 h-6 text-[#A67C00] mt-1" />
+                <div>
+                  <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Horários</h4>
+                  <p className="text-gray-400">Seg — Sex: 09:00 - 20:00</p>
+                  <p className="text-gray-400">Sáb: 09:00 - 18:00</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Phone className="w-6 h-6 text-[#A67C00] mt-1" />
+                <div>
+                  <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Contato</h4>
+                  <p className="text-gray-400">(83) 99999-0000</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="p-10 border-t-4 border-[#A67C00] bg-white/5 space-y-6">
-            <h3 className="text-2xl font-serif text-white">Agende sua visita</h3>
-            <Button className="w-full bg-[#A67C00] text-black h-14 font-bold uppercase tracking-widest">
-              Reservar Horário
+          <div className="p-10 border-t-4 border-[#A67C00] bg-[#1a1a1a] shadow-2xl space-y-8 flex flex-col justify-center">
+            <div className="space-y-4">
+              <h3 className="text-3xl font-serif text-white uppercase tracking-tight">Ocupe a Cadeira</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">Não deixe seu estilo para depois. Reserve seu horário agora e garanta a excelência que seu visual exige.</p>
+            </div>
+            <Button size="lg" className="w-full bg-white text-black hover:bg-gray-200 h-16 font-bold uppercase tracking-widest rounded-none group">
+              Agendar Experiência
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform ml-2" />
             </Button>
+            <p className="text-[10px] text-center text-gray-600 uppercase tracking-[0.2em]">
+              * Interface demonstrativa • Valtro Labs
+            </p>
           </div>
         </div>
       </Section>
+
 
       {/* Personalização */}
       <Section className="bg-[#1a1a1a] border-t border-white/5">
