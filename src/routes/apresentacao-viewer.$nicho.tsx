@@ -18,6 +18,50 @@ const presentationSearchSchema = z.object({
 
 export const Route = createFileRoute("/apresentacao-viewer/$nicho")({
   validateSearch: (search) => presentationSearchSchema.parse(search),
+  beforeLoad: async ({ location, context }) => {
+    // 1. Validar autenticação (existência de sessão)
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      throw redirect({
+        to: "/auth",
+        search: { redirect: location.href },
+      });
+    }
+
+    // 2. Validar autorização (existência de role no CRM)
+    try {
+      const roles = await context.queryClient.ensureQueryData({
+        queryKey: ["my-roles", data.user.id],
+        queryFn: async () => {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.user.id);
+          
+          if (rolesError) throw rolesError;
+          return {
+            roles: (rolesData ?? []).map(r => r.role),
+          };
+        },
+        staleTime: 60_000,
+      });
+
+      if (!roles.roles || roles.roles.length === 0) {
+        if (location.pathname !== "/unauthorized") {
+          throw redirect({ to: "/unauthorized" });
+        }
+      }
+    } catch (e: any) {
+      if (e?.isRedirect || e?.status === 301 || e?.status === 302 || e?.name === 'RedirectError') {
+        throw e;
+      }
+      if (location.pathname !== "/unauthorized") {
+        throw redirect({ to: "/unauthorized" });
+      }
+    }
+
+    return { user: data.user };
+  },
   component: PresentationViewerPage,
 });
 
