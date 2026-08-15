@@ -1,4 +1,4 @@
-import { React } from "react";
+import React from "react";
 import { PetShopPresentation } from "@/components/commercial/petshop/petshop-presentation";
 import { BarbeariaPresentation } from "@/components/commercial/barber/barbearia-presentation";
 
