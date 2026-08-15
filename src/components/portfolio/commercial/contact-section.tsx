@@ -89,17 +89,24 @@ export function ContactSection() {
                       placeholder="(00) 00000-0000"
                       maxLength={15}
                       className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none"
-                      {...register("whatsapp", {
-                        onChange: (e) => {
-                          const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
-                          let formatted = "";
-                          if (digits.length <= 2) formatted = digits;
-                          else if (digits.length <= 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-                          else formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-                          
-                          e.target.value = formatted;
+                      {...register("whatsapp")}
+                      onInput={(e) => {
+                        const input = e.target as HTMLInputElement;
+                        let value = input.value.replace(/\D/g, "");
+                        if (value.length > 11) value = value.slice(0, 11);
+                        
+                        let formatted = "";
+                        if (value.length > 0) {
+                          formatted = "(" + value.slice(0, 2);
+                          if (value.length > 2) {
+                            formatted += ") " + value.slice(2, 7);
+                            if (value.length > 7) {
+                              formatted += "-" + value.slice(7, 11);
+                            }
+                          }
                         }
-                      })}
+                        input.value = formatted;
+                      }}
                     />
                     {errors.whatsapp && <span className="text-xs text-red-500">{errors.whatsapp.message}</span>}
                   </div>
