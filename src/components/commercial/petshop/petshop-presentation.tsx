@@ -6,9 +6,10 @@ import { ArrowRight, MapPin, Clock, Phone, ShieldCheck, Heart, Sparkles, Chevron
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-const Section = ({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) => (
+const Section = ({ children, className, id, "data-index": dataIndex }: { children: React.ReactNode; className?: string; id?: string; "data-index"?: string }) => (
   <section 
     id={id}
+    data-index={dataIndex}
     className={cn("min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-12 snap-start relative overflow-hidden", className)}
   >
     {children}
