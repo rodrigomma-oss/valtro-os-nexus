@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, MapPin, Presentation, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 
-export const Route = createFileRoute("/_authenticated/os/comercial/apresentacoes/index")({
+export const Route = createFileRoute("/_authenticated/os/comercial/apresentacoes/")({
   component: AdminPresentationPage,
 });
 

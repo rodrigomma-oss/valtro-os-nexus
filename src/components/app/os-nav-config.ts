@@ -13,6 +13,7 @@ import {
   Code2,
   ClipboardList,
   Server,
+  Presentation,
   type LucideIcon,
 } from "lucide-react";
 
