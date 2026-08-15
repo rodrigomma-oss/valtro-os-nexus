@@ -159,7 +159,7 @@ export function PataECiaDemo() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4 pt-8">
               <div className="aspect-square rounded-3xl overflow-hidden bg-muted">
-                <img src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?q=80&w=1974&auto=format&fit=crop" alt="Cuidado pet" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=2071&auto=format&fit=crop" alt="Cuidado pet" className="w-full h-full object-cover" />
               </div>
               <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-muted">
                 <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1964&auto=format&fit=crop" alt="Cão no banho" className="w-full h-full object-cover" />
