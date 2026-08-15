@@ -34,7 +34,7 @@ export function ProcessSection() {
                 <div className={`pl-12 md:w-1/2 md:pl-0 ${i % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12 md:text-left'}`}>
                   <span className="font-mono text-sm text-primary">Passo 0{i + 1}</span>
                   <h3 className="mt-2 text-2xl font-semibold text-foreground">{step.title}</h3>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{step.text}</p>
+                  <p className="mt-3 text-muted-foreground leading-relaxed text-balance">{step.text}</p>
                 </div>
                 <div className="hidden md:block md:w-1/2" />
               </div>
