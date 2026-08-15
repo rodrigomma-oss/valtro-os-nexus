@@ -30,7 +30,7 @@ function AdminPresentationPage() {
         company: empresa,
         city: cidade || undefined,
       },
-    });
+    } as any);
   };
 
   return (
