@@ -216,7 +216,9 @@ export function PetShopPresentation() {
       {/* SEÇÃO 07 — CONVERSÃO */}
       <Section data-index="6" className="bg-foreground text-background">
         <div className="max-w-4xl text-center space-y-12">
-          <h2 className="text-5xl md:text-7xl font-serif leading-tight">Facilitando o caminho do cliente até a {{empresa}}</h2>
+          <h2 className="text-5xl md:text-7xl font-serif leading-tight">
+            <DynamicText template="Facilitando o caminho do cliente até a {{empresa}}" />
+          </h2>
           <div className="bg-background/5 p-12 rounded-[3rem] border border-background/10 space-y-8">
             <p className="text-xl text-background/80">
               Menos cliques, mais conexão. Transformamos interesse em realidade através de uma experiência intuitiva e direta.
