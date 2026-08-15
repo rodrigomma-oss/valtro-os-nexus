@@ -1,4 +1,5 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { HeroVisual } from "./hero-visual";
 
 const MARKETPLACES = ["Shopee", "Mercado Livre", "Amazon", "Magalu", "Shopify"] as const;
@@ -53,12 +54,12 @@ export function Hero() {
                   aria-hidden
                 />
               </a>
-              <a
-                href="#solucoes"
+              <Link
+                to="/portfolio"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-6 py-3.5 text-sm font-medium text-foreground hover:border-primary/40 hover:text-primary hover:bg-accent/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Ver o ecossistema
-              </a>
+                Ver Portfólio
+              </Link>
             </div>
 
             <div className="mt-10 flex flex-col gap-3">
