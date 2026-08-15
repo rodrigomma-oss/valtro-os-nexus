@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "./styles/themes/petshop.css";
+@import "./styles/themes/barbearia.css";
 @source "../src";
 @import "tw-animate-css";
 

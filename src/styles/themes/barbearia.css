@@ -1,0 +1,12 @@
+@layer utilities {
+  .theme-barbearia {
+    --background: #121212; /* Preto Profundo */
+    --foreground: #F4F4F4; /* Off-White */
+    --primary: #A67C00;   /* Dourado Fosco */
+    --primary-foreground: #121212;
+    --muted: #1A1A1A;
+    --border: #333333;
+    --card: #1A1A1A;
+    --accent: #D4AF37;    /* Dourado Brilhante */
+  }
+}
