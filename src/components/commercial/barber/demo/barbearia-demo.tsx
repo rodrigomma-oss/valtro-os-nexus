@@ -36,7 +36,9 @@ export function BarbeariaDemo() {
       <header className="sticky top-12 mx-auto max-w-7xl z-50 px-6">
         <nav className="bg-[#1a1a1a]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-white uppercase">Nobre</span>
+            <span className="text-xl font-bold tracking-tight text-white uppercase italic">Nobre</span>
+            <span className="text-[10px] font-bold tracking-[0.3em] text-[#A67C00] uppercase -ml-1 mt-1">Barbearia</span>
+
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#inicio" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Início</a>
