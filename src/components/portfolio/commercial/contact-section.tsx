@@ -90,15 +90,15 @@ export function ContactSection() {
                       maxLength={15}
                       className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none"
                       {...register("whatsapp")}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      onInput={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        const digits = target.value.replace(/\D/g, "").slice(0, 11);
                         let formatted = "";
                         if (digits.length <= 2) formatted = digits;
                         else if (digits.length <= 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
                         else formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
                         
-                        e.target.value = formatted;
-                        register("whatsapp").onChange(e);
+                        target.value = formatted;
                       }}
                     />
                     {errors.whatsapp && <span className="text-xs text-red-500">{errors.whatsapp.message}</span>}
