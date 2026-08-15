@@ -44,7 +44,10 @@ export function BarbeariaDemo() {
             <a href="#inicio" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Início</a>
             <a href="#servicos" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Serviços</a>
             <a href="#sobre" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">A Marca</a>
+            <a href="#profissionais" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Time</a>
+            <a href="#estilo" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Estilo</a>
             <a href="#contato" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Local</a>
+
           </div>
           <Button className="bg-[#A67C00] hover:bg-[#856300] text-black font-bold uppercase tracking-wider rounded-none px-6">
             Agendar
