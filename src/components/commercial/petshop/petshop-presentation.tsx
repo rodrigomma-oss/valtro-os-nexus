@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { DynamicText, usePresentationContext } from "@/modules/commercial/presentation-context";
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin, Clock, Phone, ShieldCheck, Heart, Sparkles, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
