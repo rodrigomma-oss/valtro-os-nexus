@@ -4,30 +4,85 @@ import { ArrowUp, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useServerFn } from "@tanstack/react-start";
+import { capturePublicLead } from "@/lib/leads.functions";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nome é obrigatório"),
   business: z.string().min(2, "Nome do negócio é obrigatório"),
   whatsapp: z.string().min(10, "WhatsApp é obrigatório"),
   email: z.string().email("E-mail inválido"),
+  instagram: z.string().optional(),
   segment: z.string().min(2, "Segmento é obrigatório"),
   city: z.string().min(2, "Cidade é obrigatória"),
+  state: z.string().length(2, "Estado (UF) é obrigatório"),
   message: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
+const BRAZIL_STATES = [
+  { value: "AC", label: "Acre" },
+  { value: "AL", label: "Alagoas" },
+  { value: "AP", label: "Amapá" },
+  { value: "AM", label: "Amazonas" },
+  { value: "BA", label: "Bahia" },
+  { value: "CE", label: "Ceará" },
+  { value: "DF", label: "Distrito Federal" },
+  { value: "ES", label: "Espírito Santo" },
+  { value: "GO", label: "Goiás" },
+  { value: "MA", label: "Maranhão" },
+  { value: "MT", label: "Mato Grosso" },
+  { value: "MS", label: "Mato Grosso do Sul" },
+  { value: "MG", label: "Minas Gerais" },
+  { value: "PA", label: "Pará" },
+  { value: "PB", label: "Paraíba" },
+  { value: "PR", label: "Paraná" },
+  { value: "PE", label: "Pernambuco" },
+  { value: "PI", label: "Piauí" },
+  { value: "RJ", label: "Rio de Janeiro" },
+  { value: "RN", label: "Rio Grande do Norte" },
+  { value: "RS", label: "Rio Grande do Sul" },
+  { value: "RO", label: "Rondônia" },
+  { value: "RR", label: "Roraima" },
+  { value: "SC", label: "Santa Catarina" },
+  { value: "SP", label: "São Paulo" },
+  { value: "SE", label: "Sergipe" },
+  { value: "TO", label: "Tocantins" },
+];
+
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const capturePublicLeadFn = useServerFn(capturePublicLead);
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      state: "",
+    }
   });
 
   const onSubmit = async (data: FormValues) => {
-    // Simulando integração com CRM
-    console.log("Lead captured:", data);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSubmitted(true);
+    try {
+      await capturePublicLeadFn({
+        data: {
+          name: data.name,
+          business: data.business,
+          phone: data.whatsapp,
+          email: data.email,
+          instagram: data.instagram,
+          segment: data.segment,
+          city: data.city,
+          state: data.state,
+          message: data.message,
+        },
+      });
+      setSubmitted(true);
+      reset();
+    } catch (error) {
+      console.error("Error capturing lead:", error);
+      toast.error("Houve um problema ao enviar seus dados. Por favor, tente novamente.");
+    }
   };
 
   return (
@@ -131,6 +186,17 @@ export function ContactSection() {
                     {errors.segment && <span className="text-xs text-red-500">{errors.segment.message}</span>}
                   </div>
                   <div className="space-y-1">
+                    <label className="text-sm font-medium">Instagram (opcional)</label>
+                    <input
+                      {...register("instagram")}
+                      placeholder="@seuusuario"
+                      className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-1">
                     <label className="text-sm font-medium">Cidade</label>
                     <input
                       {...register("city")}
@@ -138,6 +204,28 @@ export function ContactSection() {
                     />
                     {errors.city && <span className="text-xs text-red-500">{errors.city.message}</span>}
                   </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Estado</label>
+                    <select
+                      {...register("state")}
+                      className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none appearance-none"
+                    >
+                      <option value="" disabled>Selecione</option>
+                      {BRAZIL_STATES.map((uf) => (
+                        <option key={uf.value} value={uf.value}>{uf.label}</option>
+                      ))}
+                    </select>
+                    {errors.state && <span className="text-xs text-red-500">{errors.state.message}</span>}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">Mensagem (opcional)</label>
+                  <textarea
+                    {...register("message")}
+                    rows={3}
+                    className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:border-primary focus:outline-none resize-none"
+                  />
                 </div>
 
                 <button

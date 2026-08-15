@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createRequestClient } from "@/integrations/supabase/request-client.server";
+import { onlyDigits } from "./formatters";
 import type { Lead, LeadEvent, LeadNote, LeadStatus, NextAction } from "@/types/lead";
 
 import {
@@ -272,6 +273,60 @@ export const createLead = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     return { id: row?.id ?? null };
+  });
+
+// =============================================================
+// capturePublicLead
+// =============================================================
+export const capturePublicLead = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({
+        name: z.string().trim().min(1, "Nome é obrigatório"),
+        business: z.string().trim().min(1, "Nome do negócio é obrigatório"),
+        phone: z.string().trim().min(1, "WhatsApp é obrigatório"),
+        email: z.string().trim().email("E-mail inválido"),
+        instagram: z.string().trim().optional().nullable(),
+        segment: z.string().trim().min(1, "Segmento é obrigatório"),
+        city: z.string().trim().min(1, "Cidade é obrigatória"),
+        state: z.string().trim().min(1, "Estado é obrigatório"),
+        message: z.string().trim().optional().nullable(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    // Import admin client only on server
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Normalização e valores controlados pelo sistema
+    const insert = {
+      contact_name: data.name,
+      company_name: data.business,
+      phone: onlyDigits(data.phone),
+      email: data.email,
+      instagram: data.instagram || null,
+      segment: data.segment,
+      city: data.city,
+      state: data.state,
+      triage_notes: data.message ? `Mensagem do site: ${data.message}` : null,
+      // System controlled values
+      service_type: "desenvolvimento_projeto" as const,
+      source: "site" as const,
+      status: "novo" as const,
+    };
+
+    const { data: row, error } = await supabaseAdmin
+      .from("leads")
+      .insert(insert)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      console.error("[capturePublicLead] Database error:", error.message);
+      throw new Error("Não foi possível processar sua solicitação no momento.");
+    }
+
+    return { id: row?.id ?? null, success: true };
   });
 
 // =============================================================
