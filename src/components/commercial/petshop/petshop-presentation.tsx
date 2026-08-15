@@ -50,7 +50,7 @@ export function PetShopPresentation() {
             key={i} 
             className={cn(
               "w-1.5 h-1.5 rounded-full transition-all duration-300",
-              activeSection === i ? "bg-accent h-6" : "bg-foreground/20"
+              isHydrated && activeSection === i ? "bg-accent h-6" : "bg-foreground/20"
             )}
           />
         ))}
