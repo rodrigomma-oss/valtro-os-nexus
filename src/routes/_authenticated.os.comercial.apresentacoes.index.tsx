@@ -76,7 +76,7 @@ function AdminPresentationPage() {
                     <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="empresa"
-                      placeholder="Ex: Villa Pet"
+                      placeholder="Nome da empresa"
                       className="pl-9 h-11"
                       value={empresa}
                       onChange={(e) => setEmpresa(e.target.value)}

@@ -184,7 +184,7 @@ export function PetShopPresentation() {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <p className="mt-4 text-sm opacity-60 italic">(Protótipo interativo em fase de homologação)</p>
+            <p className="mt-4 text-sm opacity-60 italic">(Protótipo interativo para demonstração de conceitos)</p>
           </div>
         </div>
       </Section>
