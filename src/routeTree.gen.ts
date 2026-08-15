@@ -54,6 +54,7 @@ import { Route as AuthenticatedOsComercialServicosRouteImport } from './routes/_
 import { Route as AuthenticatedOsAtendimentoFeedbackRouteImport } from './routes/_authenticated.os.atendimento.feedback'
 import { Route as AuthenticatedOsAtendimentoChamadosRouteImport } from './routes/_authenticated.os.atendimento.chamados'
 import { Route as AuthenticatedOsAtendimentoBugsRouteImport } from './routes/_authenticated.os.atendimento.bugs'
+import { Route as AuthenticatedOsApresentacaoViewerNichoRouteImport } from './routes/_authenticated.os.apresentacao-viewer.$nicho'
 import { Route as AuthenticatedOsAdminUsuariosRouteImport } from './routes/_authenticated.os.admin.usuarios'
 import { Route as AuthenticatedOsAdminIntegracoesRouteImport } from './routes/_authenticated.os.admin.integracoes'
 import { Route as AuthenticatedOsAdminApiRouteImport } from './routes/_authenticated.os.admin.api'
@@ -65,6 +66,7 @@ import { Route as AuthenticatedCrmAdminIntegracoesRouteImport } from './routes/_
 import { Route as AuthenticatedOsComercialProjetosIndexRouteImport } from './routes/_authenticated.os.comercial.projetos.index'
 import { Route as AuthenticatedOsComercialLeadsIndexRouteImport } from './routes/_authenticated.os.comercial.leads.index'
 import { Route as AuthenticatedOsComercialClientesIndexRouteImport } from './routes/_authenticated.os.comercial.clientes.index'
+import { Route as AuthenticatedOsComercialApresentacoesIndexRouteImport } from './routes/_authenticated.os.comercial.apresentacoes.index'
 import { Route as AuthenticatedOsAtendimentoFeedbackIndexRouteImport } from './routes/_authenticated.os.atendimento.feedback.index'
 import { Route as AuthenticatedOsAtendimentoChamadosIndexRouteImport } from './routes/_authenticated.os.atendimento.chamados.index'
 import { Route as AuthenticatedOsAtendimentoBugsIndexRouteImport } from './routes/_authenticated.os.atendimento.bugs.index'
@@ -320,6 +322,12 @@ const AuthenticatedOsAtendimentoBugsRoute =
     path: '/bugs',
     getParentRoute: () => AuthenticatedOsAtendimentoRoute,
   } as any)
+const AuthenticatedOsApresentacaoViewerNichoRoute =
+  AuthenticatedOsApresentacaoViewerNichoRouteImport.update({
+    id: '/apresentacao-viewer/$nicho',
+    path: '/apresentacao-viewer/$nicho',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
 const AuthenticatedOsAdminUsuariosRoute =
   AuthenticatedOsAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
@@ -382,6 +390,12 @@ const AuthenticatedOsComercialClientesIndexRoute =
   AuthenticatedOsComercialClientesIndexRouteImport.update({
     id: '/comercial/clientes/',
     path: '/comercial/clientes/',
+    getParentRoute: () => AuthenticatedOsRoute,
+  } as any)
+const AuthenticatedOsComercialApresentacoesIndexRoute =
+  AuthenticatedOsComercialApresentacoesIndexRouteImport.update({
+    id: '/comercial/apresentacoes/',
+    path: '/comercial/apresentacoes/',
     getParentRoute: () => AuthenticatedOsRoute,
   } as any)
 const AuthenticatedOsAtendimentoFeedbackIndexRoute =
@@ -523,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
@@ -548,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/os/atendimento/bugs/': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/atendimento/feedback/': typeof AuthenticatedOsAtendimentoFeedbackIndexRoute
+  '/os/comercial/apresentacoes/': typeof AuthenticatedOsComercialApresentacoesIndexRoute
   '/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -593,6 +609,7 @@ export interface FileRoutesByTo {
   '/crm/projetos/$id': typeof AuthenticatedCrmProjetosIdRoute
   '/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/os/comercial/servicos': typeof AuthenticatedOsComercialServicosRoute
   '/os/configuracoes/seguranca': typeof AuthenticatedOsConfiguracoesSegurancaRoute
   '/api/public/google-calendar/callback': typeof ApiPublicGoogleCalendarCallbackRoute
@@ -614,6 +631,7 @@ export interface FileRoutesByTo {
   '/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackIndexRoute
+  '/os/comercial/apresentacoes': typeof AuthenticatedOsComercialApresentacoesIndexRoute
   '/os/comercial/clientes': typeof AuthenticatedOsComercialClientesIndexRoute
   '/os/comercial/leads': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/os/comercial/projetos': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -664,6 +682,7 @@ export interface FileRoutesById {
   '/_authenticated/os/admin/api': typeof AuthenticatedOsAdminApiRouteWithChildren
   '/_authenticated/os/admin/integracoes': typeof AuthenticatedOsAdminIntegracoesRoute
   '/_authenticated/os/admin/usuarios': typeof AuthenticatedOsAdminUsuariosRoute
+  '/_authenticated/os/apresentacao-viewer/$nicho': typeof AuthenticatedOsApresentacaoViewerNichoRoute
   '/_authenticated/os/atendimento/bugs': typeof AuthenticatedOsAtendimentoBugsRouteWithChildren
   '/_authenticated/os/atendimento/chamados': typeof AuthenticatedOsAtendimentoChamadosRouteWithChildren
   '/_authenticated/os/atendimento/feedback': typeof AuthenticatedOsAtendimentoFeedbackRouteWithChildren
@@ -689,6 +708,7 @@ export interface FileRoutesById {
   '/_authenticated/os/atendimento/bugs/': typeof AuthenticatedOsAtendimentoBugsIndexRoute
   '/_authenticated/os/atendimento/chamados/': typeof AuthenticatedOsAtendimentoChamadosIndexRoute
   '/_authenticated/os/atendimento/feedback/': typeof AuthenticatedOsAtendimentoFeedbackIndexRoute
+  '/_authenticated/os/comercial/apresentacoes/': typeof AuthenticatedOsComercialApresentacoesIndexRoute
   '/_authenticated/os/comercial/clientes/': typeof AuthenticatedOsComercialClientesIndexRoute
   '/_authenticated/os/comercial/leads/': typeof AuthenticatedOsComercialLeadsIndexRoute
   '/_authenticated/os/comercial/projetos/': typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -739,6 +759,7 @@ export interface FileRouteTypes {
     | '/os/admin/api'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
+    | '/os/apresentacao-viewer/$nicho'
     | '/os/atendimento/bugs'
     | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
@@ -764,6 +785,7 @@ export interface FileRouteTypes {
     | '/os/atendimento/bugs/'
     | '/os/atendimento/chamados/'
     | '/os/atendimento/feedback/'
+    | '/os/comercial/apresentacoes/'
     | '/os/comercial/clientes/'
     | '/os/comercial/leads/'
     | '/os/comercial/projetos/'
@@ -809,6 +831,7 @@ export interface FileRouteTypes {
     | '/crm/projetos/$id'
     | '/os/admin/integracoes'
     | '/os/admin/usuarios'
+    | '/os/apresentacao-viewer/$nicho'
     | '/os/comercial/servicos'
     | '/os/configuracoes/seguranca'
     | '/api/public/google-calendar/callback'
@@ -830,6 +853,7 @@ export interface FileRouteTypes {
     | '/os/atendimento/bugs'
     | '/os/atendimento/chamados'
     | '/os/atendimento/feedback'
+    | '/os/comercial/apresentacoes'
     | '/os/comercial/clientes'
     | '/os/comercial/leads'
     | '/os/comercial/projetos'
@@ -879,6 +903,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/admin/api'
     | '/_authenticated/os/admin/integracoes'
     | '/_authenticated/os/admin/usuarios'
+    | '/_authenticated/os/apresentacao-viewer/$nicho'
     | '/_authenticated/os/atendimento/bugs'
     | '/_authenticated/os/atendimento/chamados'
     | '/_authenticated/os/atendimento/feedback'
@@ -904,6 +929,7 @@ export interface FileRouteTypes {
     | '/_authenticated/os/atendimento/bugs/'
     | '/_authenticated/os/atendimento/chamados/'
     | '/_authenticated/os/atendimento/feedback/'
+    | '/_authenticated/os/comercial/apresentacoes/'
     | '/_authenticated/os/comercial/clientes/'
     | '/_authenticated/os/comercial/leads/'
     | '/_authenticated/os/comercial/projetos/'
@@ -1255,6 +1281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOsAtendimentoBugsRouteImport
       parentRoute: typeof AuthenticatedOsAtendimentoRoute
     }
+    '/_authenticated/os/apresentacao-viewer/$nicho': {
+      id: '/_authenticated/os/apresentacao-viewer/$nicho'
+      path: '/apresentacao-viewer/$nicho'
+      fullPath: '/os/apresentacao-viewer/$nicho'
+      preLoaderRoute: typeof AuthenticatedOsApresentacaoViewerNichoRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
     '/_authenticated/os/admin/usuarios': {
       id: '/_authenticated/os/admin/usuarios'
       path: '/admin/usuarios'
@@ -1330,6 +1363,13 @@ declare module '@tanstack/react-router' {
       path: '/comercial/clientes'
       fullPath: '/os/comercial/clientes/'
       preLoaderRoute: typeof AuthenticatedOsComercialClientesIndexRouteImport
+      parentRoute: typeof AuthenticatedOsRoute
+    }
+    '/_authenticated/os/comercial/apresentacoes/': {
+      id: '/_authenticated/os/comercial/apresentacoes/'
+      path: '/comercial/apresentacoes'
+      fullPath: '/os/comercial/apresentacoes/'
+      preLoaderRoute: typeof AuthenticatedOsComercialApresentacoesIndexRouteImport
       parentRoute: typeof AuthenticatedOsRoute
     }
     '/_authenticated/os/atendimento/feedback/': {
@@ -1569,12 +1609,14 @@ interface AuthenticatedOsRouteChildren {
   AuthenticatedOsAdminApiRoute: typeof AuthenticatedOsAdminApiRouteWithChildren
   AuthenticatedOsAdminIntegracoesRoute: typeof AuthenticatedOsAdminIntegracoesRoute
   AuthenticatedOsAdminUsuariosRoute: typeof AuthenticatedOsAdminUsuariosRoute
+  AuthenticatedOsApresentacaoViewerNichoRoute: typeof AuthenticatedOsApresentacaoViewerNichoRoute
   AuthenticatedOsComercialServicosRoute: typeof AuthenticatedOsComercialServicosRoute
   AuthenticatedOsConfiguracoesSegurancaRoute: typeof AuthenticatedOsConfiguracoesSegurancaRoute
   AuthenticatedOsComercialClientesIdRoute: typeof AuthenticatedOsComercialClientesIdRoute
   AuthenticatedOsComercialLeadsIdRoute: typeof AuthenticatedOsComercialLeadsIdRoute
   AuthenticatedOsComercialProjetosIdRoute: typeof AuthenticatedOsComercialProjetosIdRoute
   AuthenticatedOsProdutosValtroPricingBetaRoute: typeof AuthenticatedOsProdutosValtroPricingBetaRouteWithChildren
+  AuthenticatedOsComercialApresentacoesIndexRoute: typeof AuthenticatedOsComercialApresentacoesIndexRoute
   AuthenticatedOsComercialClientesIndexRoute: typeof AuthenticatedOsComercialClientesIndexRoute
   AuthenticatedOsComercialLeadsIndexRoute: typeof AuthenticatedOsComercialLeadsIndexRoute
   AuthenticatedOsComercialProjetosIndexRoute: typeof AuthenticatedOsComercialProjetosIndexRoute
@@ -1587,6 +1629,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
   AuthenticatedOsAdminApiRoute: AuthenticatedOsAdminApiRouteWithChildren,
   AuthenticatedOsAdminIntegracoesRoute: AuthenticatedOsAdminIntegracoesRoute,
   AuthenticatedOsAdminUsuariosRoute: AuthenticatedOsAdminUsuariosRoute,
+  AuthenticatedOsApresentacaoViewerNichoRoute:
+    AuthenticatedOsApresentacaoViewerNichoRoute,
   AuthenticatedOsComercialServicosRoute: AuthenticatedOsComercialServicosRoute,
   AuthenticatedOsConfiguracoesSegurancaRoute:
     AuthenticatedOsConfiguracoesSegurancaRoute,
@@ -1597,6 +1641,8 @@ const AuthenticatedOsRouteChildren: AuthenticatedOsRouteChildren = {
     AuthenticatedOsComercialProjetosIdRoute,
   AuthenticatedOsProdutosValtroPricingBetaRoute:
     AuthenticatedOsProdutosValtroPricingBetaRouteWithChildren,
+  AuthenticatedOsComercialApresentacoesIndexRoute:
+    AuthenticatedOsComercialApresentacoesIndexRoute,
   AuthenticatedOsComercialClientesIndexRoute:
     AuthenticatedOsComercialClientesIndexRoute,
   AuthenticatedOsComercialLeadsIndexRoute:

@@ -13,6 +13,7 @@ import {
   Code2,
   ClipboardList,
   Server,
+  Presentation,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +46,7 @@ export const OS_NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Leads", to: "/os/comercial/leads", icon: Users },
       { label: "Clientes", to: "/os/comercial/clientes", icon: Building2 },
+      { label: "Apresentação Comercial", to: "/os/comercial/apresentacoes", icon: Presentation },
       { label: "Projetos", to: "/os/comercial/projetos", icon: FolderKanban },
       { label: "Serviços", to: "/os/comercial/servicos", icon: Layers },
     ],
