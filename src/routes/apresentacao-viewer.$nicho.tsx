@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 import { NICHOS } from "@/modules/commercial/config";
 import { PresentationLayout } from "@/layouts/presentation-layout";
@@ -9,6 +9,7 @@ import { ArrowLeft, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const presentationSearchSchema = z.object({
   company: z.string(),
