@@ -316,7 +316,7 @@ export function PataECiaDemo() {
                   <p className="text-[#2D2D2D]/70">(83) 99999-0000</p>
                   <div className="flex gap-4 mt-4">
                     <Button variant="outline" size="icon" className="rounded-xl border-black/10">
-                      <Instagram className="w-4 h-4" />
+                      <span className="text-[10px] font-bold">IG</span>
                     </Button>
                     <Button variant="outline" className="rounded-xl border-black/10 gap-2">
                       WhatsApp
