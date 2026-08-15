@@ -6,13 +6,13 @@ import {
   Clock, 
   MapPin, 
   Phone, 
-  Instagram, 
   ChevronRight, 
   CheckCircle2, 
   Scissors, 
   ShoppingBag,
   Star,
-  Info
+  Info,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
