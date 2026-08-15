@@ -31,8 +31,19 @@ export function ContactSection() {
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatWhatsApp(e.target.value);
-    setValue("whatsapp", formatted, { shouldValidate: true });
+    const value = e.target.value;
+    const digits = value.replace(/\D/g, "");
+    let formatted = "";
+    
+    if (digits.length <= 2) {
+      formatted = digits;
+    } else if (digits.length <= 7) {
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else {
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+    
+    e.target.value = formatted;
   };
 
   const onSubmit = async (data: FormValues) => {
