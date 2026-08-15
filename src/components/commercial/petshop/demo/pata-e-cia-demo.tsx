@@ -56,7 +56,7 @@ export function PataECiaDemo() {
 
           <Button 
             onClick={scrollToContact}
-            className="bg-[#D4A373] hover:bg-[#C29262] text-white rounded-xl px-6"
+            className="bg-[#D4A373] hover:bg-[#C29262] text-white rounded-xl px-6 w-full md:w-auto"
           >
             Agendar Atendimento
           </Button>
