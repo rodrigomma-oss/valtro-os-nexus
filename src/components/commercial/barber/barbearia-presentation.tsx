@@ -185,10 +185,16 @@ export function BarbeariaPresentation() {
             <DynamicText template="Até aqui eu te mostrei a ideia. Agora quero colocar isso na tela para a {{empresa}}." />
           </p>
           <div className="pt-8">
-            <Button size="lg" variant="secondary" className="h-16 px-12 text-lg rounded-full gap-3 group pointer-events-none opacity-80 border-2 border-primary-foreground/20">
-              VER DEMONSTRAÇÃO
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link 
+              to="/demo/barbearia" 
+              target="_blank"
+              className="no-underline inline-block"
+            >
+              <Button size="lg" variant="secondary" className="h-16 px-12 text-lg rounded-full gap-3 group border-2 border-primary-foreground/20">
+                VER DEMONSTRAÇÃO
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <p className="mt-6 text-sm opacity-80 italic font-medium tracking-wide">(Experiência em desenvolvimento • 100% personalizável)</p>
           </div>
         </div>
