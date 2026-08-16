@@ -56,7 +56,7 @@ export function BarbeariaDemo() {
 
       {/* Hero */}
       <section id="inicio" className="pt-32 pb-20 px-6 md:px-12 relative min-h-[90vh] flex items-center">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503951914875-452162b09f6f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
         <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-16">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-8">
             <h1 className="text-6xl md:text-8xl font-serif font-medium leading-[0.9] text-white">
@@ -82,7 +82,7 @@ export function BarbeariaDemo() {
             </p>
           </div>
           <div className="aspect-[4/5] rounded-none overflow-hidden bg-white/5 relative">
-            <img src="https://images.unsplash.com/photo-1503951914875-452162b09f6f?q=80&w=2070&auto=format&fit=crop" alt="Barbearia" className="w-full h-full object-cover opacity-80" />
+            <img src="https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?q=80&w=2070&auto=format&fit=crop" alt="Barbearia" className="w-full h-full object-cover opacity-80" />
           </div>
         </div>
       </Section>
@@ -159,9 +159,9 @@ export function BarbeariaDemo() {
       <Section id="estilo" className="bg-[#1a1a1a] p-0">
         <div className="grid grid-cols-2 md:grid-cols-4 aspect-[21/9]">
           {[
-            "https://images.unsplash.com/photo-1512690196222-7c7d29900279?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1521444477879-1ffd7712b6f8?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1593702288056-7927b442d0fa?q=80&w=2070&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1621605815841-aa3396568d8c?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1599351431247-f507fdfe3844?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"
           ].map((img, i) => (
             <div key={i} className="relative overflow-hidden group">
