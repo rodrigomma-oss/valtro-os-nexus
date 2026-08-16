@@ -63,7 +63,8 @@ export const Route = createFileRoute("/_authenticated")({
       };
     } catch (e: any) {
       // Se for um redirect do TanStack, relançamos
-      if (e?.isRedirect || e?.status === 301 || e?.status === 302 || e?.name === 'RedirectError') {
+      // TanStack Router redirects can be instances of a class or special objects
+      if (e?.isRedirect || e?.status === 301 || e?.status === 302 || e?.name === 'RedirectError' || (typeof e === 'object' && e !== null && 'to' in e)) {
         throw e;
       }
       
