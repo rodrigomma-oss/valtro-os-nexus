@@ -1,3 +1,4 @@
+import barbeariaGaleria3 from "@/assets/demo/barbearia-galeria-3.jpg";
 import barbeariaSobre from "@/assets/demo/barbearia-sobre.jpg";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
