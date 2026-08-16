@@ -74,20 +74,7 @@ const ACTION_LABEL: Record<string, string> = {
 
 export const Route = createFileRoute("/_authenticated/os/admin/usuarios")({
   beforeLoad: async ({ context }) => {
-    // A role check is already performed in getMyRoles query inside the component,
-    // but we enforce it here to prevent the UI shell from rendering for non-admins.
-    const supabase = (context as any).supabase;
-    if (!supabase) return;
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: "/auth" });
-
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id);
-
-    const isAdmin = roles?.some((r: any) => r.role === "admin");
+    const isAdmin = (context as any).isAdmin;
     if (!isAdmin) {
       throw redirect({ to: "/os" });
     }
@@ -107,7 +94,8 @@ function UsersAdminPage() {
   const changeRoleFn = useServerFn(changeUserRole);
   const toggleBlockFn = useServerFn(toggleUserBlock);
   const auditFn = useServerFn(listAuditEvents);
-  const rolesFn = useServerFn(getMyRoles);
+  
+  const { isAdmin } = Route.useRouteContext();
 
   const [term, setTerm] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -115,22 +103,18 @@ function UsersAdminPage() {
     { type: "role"; user: AdminUser; role: AppRole } | { type: "block"; user: AdminUser } | null
   >(null);
 
-  const rolesQuery = useQuery({
-    queryKey: ["my-roles"],
-    queryFn: () => rolesFn(),
-    staleTime: 60_000,
-  });
-  const isAdmin = rolesQuery.data?.isAdmin ?? false;
-
   const usersQuery = useQuery({
     queryKey: ["admin-users"],
     queryFn: () => listFn(),
+    retry: false,
+    enabled: isAdmin,
   });
 
   const auditQuery = useQuery({
     queryKey: ["admin-audit-events"],
     queryFn: () => auditFn(),
     enabled: isAdmin,
+    retry: false,
   });
 
   const changeRoleMut = useMutation({

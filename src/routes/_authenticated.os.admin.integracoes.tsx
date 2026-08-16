@@ -52,18 +52,7 @@ const CALLBACK_MESSAGES: Record<string, { tone: "ok" | "warn" | "error"; text: s
 
 export const Route = createFileRoute("/_authenticated/os/admin/integracoes")({
   beforeLoad: async ({ context }) => {
-    const supabase = (context as any).supabase;
-    if (!supabase) return;
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: "/auth" });
-
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id);
-
-    const isAdmin = roles?.some((r: any) => r.role === "admin");
+    const isAdmin = (context as any).isAdmin;
     if (!isAdmin) {
       throw redirect({ to: "/os" });
     }
@@ -107,8 +96,8 @@ function StatusPill({ status }: { status: string }) {
 
 function IntegracoesPage() {
   const qc = useQueryClient();
-  const rolesFn = useServerFn(getMyRoles);
   const search = useSearch({ from: "/_authenticated/os/admin/integracoes" });
+  const { isAdmin } = Route.useRouteContext();
 
   const statusFn = useServerFn(getCalendarIntegrationStatus);
   const connectFn = useServerFn(startGoogleCalendarConnect);
@@ -124,6 +113,8 @@ function IntegracoesPage() {
     queryKey: ["calendar-integration"],
     queryFn: () => statusFn(),
     refetchInterval: 30_000,
+    retry: false,
+    enabled: isAdmin,
   });
 
   useEffect(() => {
@@ -209,13 +200,6 @@ function IntegracoesPage() {
         : [],
     [data],
   );
-
-  const rolesQuery = useQuery({
-    queryKey: ["my-roles"],
-    queryFn: () => rolesFn(),
-    staleTime: 60_000,
-  });
-  const isAdmin = rolesQuery.data?.isAdmin ?? false;
 
   return (
     <div className="p-6 md:p-10 space-y-6">
