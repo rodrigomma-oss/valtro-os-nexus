@@ -280,7 +280,7 @@ function CrmLeads() {
     },
     {
       key: "contato",
-      header: "Contato",
+      header: "Nome do responsável",
       sortable: true,
       render: (row) => (
         <span className="text-sm text-foreground">{row.contact_name}</span>

@@ -52,7 +52,7 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
         <CardTitle className="text-base">Informações da empresa</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <InfoRow icon={User} label="Contato" value={lead.contact_name} />
+        <InfoRow icon={User} label="Nome do responsável" value={lead.contact_name} />
         <InfoRow icon={Building2} label="Empresa" value={lead.company_name} />
         <InfoRow icon={Phone} label="Telefone" value={lead.phone ? formatPhone(lead.phone) : dash} />
         <InfoRow icon={Mail} label="E-mail" value={lead.email ?? dash} />
