@@ -161,7 +161,7 @@ export function BarbeariaDemo() {
           {[
             "https://images.unsplash.com/photo-1599351431247-f507fdfe3844?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1593702288056-7927b442d0fa?q=80&w=2070&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1512690196222-7c7d29900279?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1521444477879-1ffd7712b6f8?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"
           ].map((img, i) => (
             <div key={i} className="relative overflow-hidden group">
