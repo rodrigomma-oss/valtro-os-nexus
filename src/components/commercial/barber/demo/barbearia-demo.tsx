@@ -159,9 +159,9 @@ export function BarbeariaDemo() {
       <Section id="estilo" className="bg-[#1a1a1a] p-0">
         <div className="grid grid-cols-2 md:grid-cols-4 aspect-[21/9]">
           {[
-            "https://images.unsplash.com/photo-1521444477879-1ffd7712b6f8?q=80&w=2070&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1593702288056-7927b442d0fa?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1599351431247-f507fdfe3844?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1593702288056-7927b442d0fa?q=80&w=2070&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1532715088550-62f09305f77d?q=80&w=2070&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"
           ].map((img, i) => (
             <div key={i} className="relative overflow-hidden group">
