@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated")({
     // 2. Validar autorização (existência de role no CRM)
     try {
       // Usamos o queryClient do contexto para buscar as roles de forma eficiente.
-      const roles = await context.queryClient.ensureQueryData({
+      const rolesResult = await context.queryClient.ensureQueryData({
         queryKey: ["my-roles", data.user.id],
         queryFn: async () => {
           const { data: rolesData, error: rolesError } = await supabase
@@ -30,20 +30,37 @@ export const Route = createFileRoute("/_authenticated")({
             .eq("user_id", data.user.id);
           
           if (rolesError) throw rolesError;
+          const roles = (rolesData ?? []).map(r => r.role);
           return {
-            roles: (rolesData ?? []).map(r => r.role),
+            roles,
+            isAdmin: roles.includes("admin"),
+            isOperator: roles.includes("operator"),
+            isViewer: roles.includes("viewer"),
           };
         },
         staleTime: 60_000,
       });
 
-      if (!roles.roles || roles.roles.length === 0) {
+      if (!rolesResult.roles || rolesResult.roles.length === 0) {
         // Usuário autenticado mas sem role = Acesso Negado
-        // Evitamos redirect se já estivermos no unauthorized
         if (location.pathname !== "/unauthorized") {
           throw redirect({ to: "/unauthorized" });
         }
       }
+
+      // 3. Proteção adicional para rotas administrativas
+      if (location.pathname.includes("/admin/")) {
+        if (!rolesResult.isAdmin) {
+          console.warn(`[AuthGate] Unauthorized access attempt to ${location.pathname} by user ${data.user.id}`);
+          throw redirect({ to: "/os" });
+        }
+      }
+
+      return { 
+        user: data.user,
+        roles: rolesResult.roles,
+        isAdmin: rolesResult.isAdmin
+      };
     } catch (e: any) {
       // Se for um redirect do TanStack, relançamos
       if (e?.isRedirect || e?.status === 301 || e?.status === 302 || e?.name === 'RedirectError') {
