@@ -57,7 +57,7 @@ export function BarbeariaDemo() {
 
       {/* Hero */}
       <section id="inicio" className="pt-32 pb-20 px-6 md:px-12 relative min-h-[90vh] flex items-center">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${barbeariaSobre})` }} />
         <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-16">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-8">
             <h1 className="text-6xl md:text-8xl font-serif font-medium leading-[0.9] text-white">
