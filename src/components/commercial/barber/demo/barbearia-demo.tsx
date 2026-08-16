@@ -1,3 +1,4 @@
+import barbeariaSobre from "@/assets/demo/barbearia-sobre.jpg";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { 
@@ -82,7 +83,14 @@ export function BarbeariaDemo() {
             </p>
           </div>
           <div className="aspect-[4/5] rounded-none overflow-hidden bg-white/5 relative">
-            <img src="https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?q=80&w=2070&auto=format&fit=crop" alt="Barbearia" className="w-full h-full object-cover opacity-80" />
+            <img 
+              src={barbeariaSobre} 
+              alt="Ambiente sofisticado da Nobre Barbearia com cadeira de couro, detalhes em latão e ferramentas premium sobre mármore" 
+              className="w-full h-full object-cover opacity-90" 
+              loading="lazy"
+              width={1024}
+              height={1280}
+            />
           </div>
         </div>
       </Section>
