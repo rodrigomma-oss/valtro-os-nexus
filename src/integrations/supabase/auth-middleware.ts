@@ -69,8 +69,11 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     const { data: { user }, error } = await supabase.auth.getUser(token);
 
     if (error || !user) {
-      console.error(`[AuthMiddleware] Auth validation failed: ${error?.message}`);
-      throw new Error('Unauthorized: Invalid session');
+      console.error(`[AuthMiddleware] Auth validation failed: ${error?.message} (Code: ${error?.status || 'unknown'})`);
+      
+      // Se o token for inválido/expirado, retornamos 401 explícito.
+      // O stack trace da mensagem de erro informada pelo usuário aponta para aqui.
+      throw new Error(`Unauthorized: ${error?.message || 'Invalid session'}`);
     }
 
     /**
