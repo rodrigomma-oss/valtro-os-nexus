@@ -35,10 +35,9 @@ export function BarbeariaDemo() {
       {/* Header */}
       <header className="sticky top-12 mx-auto max-w-7xl z-50 px-6">
         <nav className="bg-[#1a1a1a]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-xl font-bold tracking-tight text-white uppercase italic">Nobre</span>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-[#A67C00] uppercase -ml-1 mt-1">Barbearia</span>
-
+            <span className="text-[10px] font-bold tracking-[0.3em] text-[#A67C00] uppercase mt-1">Barbearia</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#inicio" className="text-xs font-bold uppercase tracking-widest hover:text-[#A67C00] transition-colors">Início</a>
@@ -83,7 +82,7 @@ export function BarbeariaDemo() {
             </p>
           </div>
           <div className="aspect-[4/5] rounded-none overflow-hidden bg-white/5 relative">
-            <img src="https://images.unsplash.com/photo-1599351431202-180f0b484589?q=80&w=2070&auto=format&fit=crop" alt="Barbearia" className="w-full h-full object-cover opacity-80" />
+            <img src="https://images.unsplash.com/photo-1503951914875-452162b09f6f?q=80&w=2070&auto=format&fit=crop" alt="Barbearia" className="w-full h-full object-cover opacity-80" />
           </div>
         </div>
       </Section>
