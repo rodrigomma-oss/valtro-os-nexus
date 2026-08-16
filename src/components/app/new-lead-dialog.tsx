@@ -109,7 +109,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.company_name.trim() || !form.contact_name.trim()) {
-      toast.error("Empresa e contato são obrigatórios.");
+      toast.error("Empresa e nome do responsável são obrigatórios.");
       return;
     }
     if (!form.service_type) {
@@ -141,7 +141,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               />
             </div>
             <div className="col-span-2 space-y-1.5">
-              <Label htmlFor="contact_name">Contato *</Label>
+              <Label htmlFor="contact_name">Nome do responsável *</Label>
               <Input
                 id="contact_name"
                 value={form.contact_name}
