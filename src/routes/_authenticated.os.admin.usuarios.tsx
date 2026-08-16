@@ -10,7 +10,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -73,6 +73,25 @@ const ACTION_LABEL: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/_authenticated/os/admin/usuarios")({
+  beforeLoad: async ({ context }) => {
+    // A role check is already performed in getMyRoles query inside the component,
+    // but we enforce it here to prevent the UI shell from rendering for non-admins.
+    const supabase = (context as any).supabase;
+    if (!supabase) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw redirect({ to: "/auth" });
+
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+
+    const isAdmin = roles?.some((r: any) => r.role === "admin");
+    if (!isAdmin) {
+      throw redirect({ to: "/os" });
+    }
+  },
   component: UsersAdminPage,
   head: () => ({
     meta: [
