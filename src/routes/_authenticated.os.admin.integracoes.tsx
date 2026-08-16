@@ -5,7 +5,7 @@
  * apenas metadados: nunca tokens, client id/secret ou payloads do Google.
  */
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { createFileRoute, redirect, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -50,6 +50,23 @@ const CALLBACK_MESSAGES: Record<string, { tone: "ok" | "warn" | "error"; text: s
 };
 
 export const Route = createFileRoute("/_authenticated/os/admin/integracoes")({
+  beforeLoad: async ({ context }) => {
+    const supabase = (context as any).supabase;
+    if (!supabase) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw redirect({ to: "/auth" });
+
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+
+    const isAdmin = roles?.some((r: any) => r.role === "admin");
+    if (!isAdmin) {
+      throw redirect({ to: "/os" });
+    }
+  },
   component: IntegracoesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     google: typeof search.google === "string" ? search.google : undefined,
