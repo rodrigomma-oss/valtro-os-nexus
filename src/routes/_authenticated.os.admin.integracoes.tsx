@@ -35,6 +35,7 @@ import {
   selectGoogleCalendar,
   startGoogleCalendarConnect,
 } from "@/lib/calendar-integration.functions";
+import { getMyRoles } from "@/lib/leads.functions";
 
 const CALLBACK_MESSAGES: Record<string, { tone: "ok" | "warn" | "error"; text: string }> = {
   conectado: { tone: "ok", text: "Conta Google conectada e agenda selecionada." },
@@ -106,6 +107,7 @@ function StatusPill({ status }: { status: string }) {
 
 function IntegracoesPage() {
   const qc = useQueryClient();
+  const rolesFn = useServerFn(getMyRoles);
   const search = useSearch({ from: "/_authenticated/os/admin/integracoes" });
 
   const statusFn = useServerFn(getCalendarIntegrationStatus);
@@ -208,12 +210,28 @@ function IntegracoesPage() {
     [data],
   );
 
+  const rolesQuery = useQuery({
+    queryKey: ["my-roles"],
+    queryFn: () => rolesFn(),
+    staleTime: 60_000,
+  });
+  const isAdmin = rolesQuery.data?.isAdmin ?? false;
+
   return (
     <div className="p-6 md:p-10 space-y-6">
       <PageHeader
         title="Integrações"
         description="Conexões externas do CRM. O CRM continua sendo a fonte de verdade — a agenda é apenas uma projeção."
       />
+
+      {!isAdmin ? (
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            <span>Acesso restrito a administradores.</span>
+          </div>
+        </div>
+      ) : null}
 
       {statusQuery.isError ? (
         <Card className="shadow-soft border-destructive/30">
