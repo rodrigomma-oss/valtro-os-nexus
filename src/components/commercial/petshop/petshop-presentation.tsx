@@ -151,7 +151,7 @@ export function PetShopPresentation() {
               whileInView={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-7xl font-serif leading-tight"
             >
-              Uma vitrine que transmite <span className="text-primary italic">cuidado</span>
+              Uma vitrine que transmite <span className="text-primary italic font-bold">cuidado</span>
             </motion.h2>
             <div className="space-y-10">
               {[
