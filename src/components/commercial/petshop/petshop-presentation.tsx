@@ -81,7 +81,7 @@ export function PetShopPresentation() {
           <h1 className="text-6xl md:text-8xl font-serif leading-[1.1] tracking-tight">
             <DynamicText template="O próximo passo digital da {{empresa}}" />
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-foreground font-medium max-w-2xl mx-auto leading-relaxed">
             Elevando o padrão de cuidado e conexão através de uma presença digital premium e acolhedora.
           </p>
           <div className="pt-12 animate-bounce opacity-40">
@@ -162,7 +162,7 @@ export function PetShopPresentation() {
                 <div key={i} className="space-y-4">
                   <div className="w-12 h-1 bg-accent rounded-full" />
                   <h3 className="text-2xl font-semibold">{card.title}</h3>
-                  <p className="text-foreground/60 text-lg leading-relaxed">{card.desc}</p>
+                  <p className="text-foreground/80 text-lg leading-relaxed font-medium">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -206,7 +206,7 @@ export function PetShopPresentation() {
       <Section data-index="4" className="bg-primary text-primary-foreground">
         <div className="max-w-4xl text-center space-y-10">
           <h2 className="text-5xl md:text-7xl font-serif">Agora, vamos colocar essa ideia na tela.</h2>
-          <p className="text-xl opacity-90">
+          <p className="text-xl text-primary-foreground font-medium">
             <DynamicText template="Veja um exemplo de como uma experiência como essa poderia funcionar para a {{empresa}}." />
           </p>
           <div className="pt-8">
