@@ -105,7 +105,7 @@ export function PetShopPresentation() {
             whileInView={{ opacity: 1, x: 0 }}
             className="space-y-8"
           >
-            <h2 className="text-4xl md:text-5xl font-serif leading-tight">
+            <h2 className="text-4xl md:text-5xl font-serif leading-tight text-background">
               <DynamicText template="Quando alguém busca por Pet Shop em {{cidade}}, o que encontra sobre a {{empresa}}?" />
             </h2>
             <p className="text-lg text-background/90 leading-relaxed font-medium">
