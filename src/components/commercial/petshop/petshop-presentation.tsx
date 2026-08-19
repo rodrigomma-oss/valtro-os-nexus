@@ -59,26 +59,33 @@ export function PetShopPresentation() {
 
       {/* SEÇÃO 01 — ABERTURA */}
       <Section data-index="0" className="bg-background">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary rounded-full blur-[120px] -mr-48 -mt-48" />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent rounded-full blur-[120px] -ml-48 -mb-48" />
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?q=80&w=2086&auto=format&fit=crop"
+            className="w-full h-full object-cover opacity-20 scale-105"
+            alt=""
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         </div>
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center z-10 space-y-8 max-w-4xl"
+          className="text-center z-10 space-y-8 max-w-5xl"
         >
-          <span className="text-accent font-medium tracking-[0.2em] uppercase text-sm">Experiência Digital Premium</span>
-          <h1 className="text-6xl md:text-8xl font-serif leading-tight">
-            <DynamicText template="Uma nova experiência digital para a {{empresa}}" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            Experiência Digital Especializada
+          </div>
+          <h1 className="text-6xl md:text-8xl font-serif leading-[1.1] tracking-tight">
+            <DynamicText template="O próximo passo digital da {{empresa}}" />
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto">
-            Elevando o padrão de cuidado e conexão entre você e seus clientes.
+          <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
+            Elevando o padrão de cuidado e conexão através de uma presença digital premium e acolhedora.
           </p>
-          <div className="pt-12 animate-bounce">
-            <ChevronDown className="w-8 h-8 mx-auto text-foreground/30" />
+          <div className="pt-12 animate-bounce opacity-40">
+            <ChevronDown className="w-8 h-8 mx-auto" />
           </div>
         </motion.div>
       </Section>
