@@ -258,7 +258,7 @@ export function PetShopPresentation() {
                 fallbackCidade="na sua região"
               />
             </h2>
-            <p className="text-xl text-foreground/70 leading-relaxed">
+            <p className="text-xl text-foreground/80 leading-relaxed font-medium">
               Facilitamos o encontro entre quem ama seus pets e quem tem o melhor cuidado para oferecer. Um posicionamento profissional onde seus clientes estão.
             </p>
             <div className="flex items-center gap-4 text-primary font-medium">
@@ -305,7 +305,7 @@ export function PetShopPresentation() {
           <h2 className="text-5xl md:text-8xl font-serif leading-tight">
             <DynamicText template="Vamos construir o futuro da {{empresa}} juntos?" />
           </h2>
-          <p className="text-2xl opacity-90 font-light max-w-2xl mx-auto">
+          <p className="text-2xl text-primary-foreground font-medium max-w-2xl mx-auto">
             O próximo capítulo da sua história digital começa aqui. Com cuidado, tecnologia e amor pelos animais.
           </p>
           <div className="pt-8 flex flex-col items-center gap-6">
