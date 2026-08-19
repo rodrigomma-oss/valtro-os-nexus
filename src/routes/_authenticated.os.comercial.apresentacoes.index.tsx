@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, MapPin, Presentation, ArrowRight } from "lucide-react";
+import { Building2, MapPin, Presentation, ArrowRight, Share2 } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/os/comercial/apresentacoes/")({
   component: AdminPresentationPage,
@@ -31,6 +32,28 @@ function AdminPresentationPage() {
         city: cidade || undefined,
       },
     } as any);
+  };
+
+  const handleShare = () => {
+    if (!nicho || !empresa) return;
+
+    const baseUrl = window.location.origin;
+    const shareUrl = new URL(`/share/${nicho}`, baseUrl);
+    shareUrl.searchParams.set("company", empresa);
+    if (cidade) {
+      shareUrl.searchParams.set("city", cidade);
+    }
+
+    const fullUrl = shareUrl.toString();
+    
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      toast.success("Link público copiado!", {
+        description: "O link da apresentação foi copiado para sua área de transferência.",
+      });
+    }).catch((err) => {
+      console.error("Erro ao copiar link:", err);
+      toast.error("Erro ao copiar link");
+    });
   };
 
   return (
@@ -100,10 +123,20 @@ function AdminPresentationPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="bg-muted/30 border-t py-4">
+            <CardFooter className="bg-muted/30 border-t py-4 flex flex-wrap gap-3 sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={!nicho || !empresa}
+                onClick={handleShare}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Compartilhar Link
+              </Button>
               <Button 
                 type="submit" 
-                className="w-full sm:w-auto ml-auto" 
+                className="w-full sm:w-auto" 
                 disabled={!nicho || !empresa}
                 size="lg"
               >
