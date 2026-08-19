@@ -276,12 +276,12 @@ export function PetShopPresentation() {
             <DynamicText template="Facilitando o caminho do tutor até a {{empresa}}" />
           </h2>
           <div className="bg-background/5 p-12 rounded-[3.5rem] border border-background/10 space-y-10 backdrop-blur-sm">
-            <p className="text-2xl text-background/80 font-light leading-relaxed">
+            <p className="text-2xl text-background font-medium leading-relaxed">
               Transformamos o interesse digital em agendamentos reais através de uma experiência intuitiva, acolhedora e eficiente.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               {["Informação Acolhedora", "Agendamento Ágil", "Localização Clara", "Confiança Total"].map((tag) => (
-                <span key={tag} className="px-8 py-3 rounded-full border border-background/20 text-sm font-medium hover:bg-background/10 transition-colors cursor-default">{tag}</span>
+                <span key={tag} className="px-8 py-3 rounded-full border border-background/40 text-sm font-bold bg-background/10 hover:bg-background/20 transition-colors cursor-default text-background">{tag}</span>
               ))}
             </div>
           </div>
