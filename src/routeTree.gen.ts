@@ -25,6 +25,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BriefingIndexRouteImport } from './routes/briefing.index'
 import { Route as ApiDocsIndexRouteImport } from './routes/api-docs/index'
+import { Route as ShareNichoRouteImport } from './routes/share.$nicho'
 import { Route as PortfolioPetshopRouteImport } from './routes/portfolio.petshop'
 import { Route as OnboardingTokenRouteImport } from './routes/onboarding.$token'
 import { Route as DemoPetshopRouteImport } from './routes/demo.petshop'
@@ -164,6 +165,11 @@ const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ApiDocsRoute,
+} as any)
+const ShareNichoRoute = ShareNichoRouteImport.update({
+  id: '/share/$nicho',
+  path: '/share/$nicho',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioPetshopRoute = PortfolioPetshopRouteImport.update({
   id: '/petshop',
@@ -531,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/share/$nicho': typeof ShareNichoRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -606,6 +613,7 @@ export interface FileRoutesByTo {
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/share/$nicho': typeof ShareNichoRoute
   '/api-docs': typeof ApiDocsIndexRoute
   '/briefing': typeof BriefingIndexRoute
   '/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -680,6 +688,7 @@ export interface FileRoutesById {
   '/demo/petshop': typeof DemoPetshopRoute
   '/onboarding/$token': typeof OnboardingTokenRoute
   '/portfolio/petshop': typeof PortfolioPetshopRoute
+  '/share/$nicho': typeof ShareNichoRoute
   '/api-docs/': typeof ApiDocsIndexRoute
   '/briefing/': typeof BriefingIndexRoute
   '/_authenticated/crm/dashboard': typeof AuthenticatedCrmDashboardRoute
@@ -759,6 +768,7 @@ export interface FileRouteTypes {
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/share/$nicho'
     | '/api-docs/'
     | '/briefing/'
     | '/crm/dashboard'
@@ -834,6 +844,7 @@ export interface FileRouteTypes {
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/share/$nicho'
     | '/api-docs'
     | '/briefing'
     | '/crm/dashboard'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/demo/petshop'
     | '/onboarding/$token'
     | '/portfolio/petshop'
+    | '/share/$nicho'
     | '/api-docs/'
     | '/briefing/'
     | '/_authenticated/crm/dashboard'
@@ -980,6 +992,7 @@ export interface RootRouteChildren {
   DemoBarbeariaRoute: typeof DemoBarbeariaRoute
   DemoPetshopRoute: typeof DemoPetshopRoute
   OnboardingTokenRoute: typeof OnboardingTokenRoute
+  ShareNichoRoute: typeof ShareNichoRoute
   BriefingIndexRoute: typeof BriefingIndexRoute
   ApiPublicVersionRoute: typeof ApiPublicVersionRoute
   ApiV1BugsRoute: typeof ApiV1BugsRoute
@@ -1103,6 +1116,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api-docs/'
       preLoaderRoute: typeof ApiDocsIndexRouteImport
       parentRoute: typeof ApiDocsRoute
+    }
+    '/share/$nicho': {
+      id: '/share/$nicho'
+      path: '/share/$nicho'
+      fullPath: '/share/$nicho'
+      preLoaderRoute: typeof ShareNichoRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/petshop': {
       id: '/portfolio/petshop'
@@ -1777,6 +1797,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoBarbeariaRoute: DemoBarbeariaRoute,
   DemoPetshopRoute: DemoPetshopRoute,
   OnboardingTokenRoute: OnboardingTokenRoute,
+  ShareNichoRoute: ShareNichoRoute,
   BriefingIndexRoute: BriefingIndexRoute,
   ApiPublicVersionRoute: ApiPublicVersionRoute,
   ApiV1BugsRoute: ApiV1BugsRoute,
