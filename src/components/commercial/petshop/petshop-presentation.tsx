@@ -205,7 +205,7 @@ export function PetShopPresentation() {
       {/* SEÇÃO 05 — DEMONSTRAÇÃO */}
       <Section data-index="4" className="bg-primary text-primary-foreground">
         <div className="max-w-4xl text-center space-y-10">
-          <h2 className="text-5xl md:text-7xl font-serif">Agora, vamos colocar essa ideia na tela.</h2>
+          <h2 className="text-5xl md:text-7xl font-serif text-primary-foreground">Agora, vamos colocar essa ideia na tela.</h2>
           <p className="text-xl text-primary-foreground font-medium">
             <DynamicText template="Veja um exemplo de como uma experiência como essa poderia funcionar para a {{empresa}}." />
           </p>
@@ -272,7 +272,7 @@ export function PetShopPresentation() {
       {/* SEÇÃO 07 — CONVERSÃO */}
       <Section data-index="6" className="bg-foreground text-background">
         <div className="max-w-4xl text-center space-y-12">
-          <h2 className="text-5xl md:text-7xl font-serif leading-tight">
+          <h2 className="text-5xl md:text-7xl font-serif leading-tight text-background">
             <DynamicText template="Facilitando o caminho do tutor até a {{empresa}}" />
           </h2>
           <div className="bg-background/5 p-12 rounded-[3.5rem] border border-background/10 space-y-10 backdrop-blur-sm">
@@ -302,7 +302,7 @@ export function PetShopPresentation() {
           whileInView={{ opacity: 1, scale: 1 }}
           className="text-center space-y-12 max-w-5xl z-10"
         >
-          <h2 className="text-5xl md:text-8xl font-serif leading-tight">
+          <h2 className="text-5xl md:text-8xl font-serif leading-tight text-primary-foreground">
             <DynamicText template="Vamos construir o futuro da {{empresa}} juntos?" />
           </h2>
           <p className="text-2xl text-primary-foreground font-medium max-w-2xl mx-auto">
