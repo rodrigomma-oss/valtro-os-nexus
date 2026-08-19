@@ -223,30 +223,29 @@ export function PetShopPresentation() {
 
       {/* SEÇÃO 06 — PRESENÇA LOCAL */}
       <Section data-index="5" className="bg-background">
-        <div className="max-w-5xl w-full grid md:grid-cols-2 gap-16 items-center">
+        <div className="max-w-6xl w-full grid md:grid-cols-2 gap-20 items-center">
           <div className="relative w-full flex justify-center items-center">
+            {/* Contexto Pet Shop ao redor do celular */}
+            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-3xl overflow-hidden shadow-xl rotate-[-12deg] z-0 hidden lg:block">
+              <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=400&fit=crop" className="w-full h-full object-cover" alt="" />
+            </div>
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-[2rem] overflow-hidden shadow-xl rotate-[8deg] z-0 hidden lg:block">
+              <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=400&fit=crop" className="w-full h-full object-cover" alt="" />
+            </div>
+
             {/* Mockup de Celular */}
-            <div className="relative w-[280px] h-[580px] bg-zinc-900 rounded-[3rem] border-[8px] border-zinc-800 shadow-2xl overflow-hidden ring-1 ring-white/10">
-              {/* Speaker/Camera Area */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-zinc-800 rounded-b-2xl z-20" />
-              
-              {/* Tela com Google Maps */}
+            <div className="relative w-[280px] h-[580px] bg-zinc-900 rounded-[3.5rem] border-[10px] border-zinc-800 shadow-2xl overflow-hidden ring-1 ring-white/10 z-10">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-7 bg-zinc-800 rounded-b-3xl z-20" />
               <div className="absolute inset-0 z-10 bg-muted">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809c6c8f4459%3A0xb10ed6d9b5050fa5!2sTwitter%20HQ!5e0!3m2!1sen!2sbr!4v1633000000000!5m2!1sen!2sbr"
-                  className="w-full h-full border-0 grayscale-[0.2] contrast-[1.1]"
+                  className="w-full h-full border-0 grayscale-[0.2]"
                   allowFullScreen
                   loading="lazy"
-                  title="Localização do Pet Shop"
+                  title="Localização"
                 />
-                
-                {/* Overlay de interface de celular simulada */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-20" />
               </div>
             </div>
-
-            {/* Fundo Decorativo */}
-            <div className="absolute -z-10 w-[120%] h-[120%] bg-accent/5 rounded-full blur-3xl" />
           </div>
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
@@ -255,13 +254,17 @@ export function PetShopPresentation() {
           >
             <h2 className="text-4xl md:text-6xl font-serif leading-tight">
               <DynamicText 
-                template="Fortalecendo a presença da {{empresa}} em {{cidade}}" 
+                template="Fortalecendo a {{empresa}} em {{cidade}}" 
                 fallbackCidade="na sua região"
               />
             </h2>
-            <p className="text-lg text-foreground/70">
-              Facilitamos o encontro entre quem ama seus pets e quem tem o melhor serviço para oferecer. Posicionamento claro sobre quem é você e onde te encontrar.
+            <p className="text-xl text-foreground/70 leading-relaxed">
+              Facilitamos o encontro entre quem ama seus pets e quem tem o melhor cuidado para oferecer. Um posicionamento profissional onde seus clientes estão.
             </p>
+            <div className="flex items-center gap-4 text-primary font-medium">
+               <div className="w-12 h-px bg-primary" />
+               <span>Presença local estratégica</span>
+            </div>
           </motion.div>
         </div>
       </Section>
@@ -270,15 +273,15 @@ export function PetShopPresentation() {
       <Section data-index="6" className="bg-foreground text-background">
         <div className="max-w-4xl text-center space-y-12">
           <h2 className="text-5xl md:text-7xl font-serif leading-tight">
-            <DynamicText template="Facilitando o caminho do cliente até a {{empresa}}" />
+            <DynamicText template="Facilitando o caminho do tutor até a {{empresa}}" />
           </h2>
-          <div className="bg-background/5 p-12 rounded-[3rem] border border-background/10 space-y-8">
-            <p className="text-xl text-background/80">
-              Menos cliques, mais conexão. Transformamos interesse em realidade através de uma experiência intuitiva e direta.
+          <div className="bg-background/5 p-12 rounded-[3.5rem] border border-background/10 space-y-10 backdrop-blur-sm">
+            <p className="text-2xl text-background/80 font-light leading-relaxed">
+              Transformamos o interesse digital em agendamentos reais através de uma experiência intuitiva, acolhedora e eficiente.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              {["Informação Clara", "Agendamento", "Localização", "Confiança"].map((tag) => (
-                <span key={tag} className="px-6 py-2 rounded-full border border-background/20 text-sm">{tag}</span>
+              {["Informação Acolhedora", "Agendamento Ágil", "Localização Clara", "Confiança Total"].map((tag) => (
+                <span key={tag} className="px-8 py-3 rounded-full border border-background/20 text-sm font-medium hover:bg-background/10 transition-colors cursor-default">{tag}</span>
               ))}
             </div>
           </div>
