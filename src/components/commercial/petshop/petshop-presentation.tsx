@@ -92,24 +92,31 @@ export function PetShopPresentation() {
 
       {/* SEÇÃO 02 — OPORTUNIDADE */}
       <Section data-index="1" className="bg-foreground text-background">
-        <div className="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img 
+            src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1964&auto=format&fit=crop"
+            className="w-full h-full object-cover"
+            alt=""
+          />
+        </div>
+        <div className="max-w-6xl w-full grid md:grid-cols-2 gap-16 items-center z-10">
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             className="space-y-8"
           >
             <h2 className="text-4xl md:text-5xl font-serif leading-tight">
-              <DynamicText template="Quando um novo cliente procura pela {{empresa}}, o que ele encontra?" />
+              <DynamicText template="Quando alguém busca por Pet Shop em {{cidade}}, o que encontra sobre a {{empresa}}?" />
             </h2>
             <p className="text-lg text-background/70 leading-relaxed">
-              Hoje, a jornada do cliente começa muito antes da visita física. A primeira impressão é construída em segundos, no mundo digital.
+              A jornada do tutor começa no digital. A primeira impressão é construída em segundos, e ela precisa transmitir o mesmo carinho que você dedica aos animais.
             </p>
           </motion.div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             {[
-              { icon: Heart, label: "Confiança" },
+              { icon: Heart, label: "Acolhimento" },
               { icon: ShieldCheck, label: "Segurança" },
-              { icon: Clock, label: "Agilidade" },
+              { icon: Clock, label: "Praticidade" },
               { icon: Sparkles, label: "Excelência" }
             ].map((item, i) => (
               <motion.div 
@@ -117,10 +124,10 @@ export function PetShopPresentation() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-2xl bg-background/5 border border-background/10 flex flex-col items-center gap-3 text-center"
+                className="p-8 rounded-[2.5rem] bg-background/5 border border-background/10 flex flex-col items-center gap-4 text-center backdrop-blur-sm"
               >
-                <item.icon className="w-8 h-8 text-primary" />
-                <span className="text-sm font-medium">{item.label}</span>
+                <item.icon className="w-10 h-10 text-primary" />
+                <span className="text-base font-medium">{item.label}</span>
               </motion.div>
             ))}
           </div>
@@ -129,26 +136,36 @@ export function PetShopPresentation() {
 
       {/* SEÇÃO 03 — VALOR */}
       <Section data-index="2" className="bg-background">
-        <div className="max-w-4xl text-center space-y-12">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-serif"
-          >
-            Uma vitrine digital que transmite cuidado e confiança
-          </motion.h2>
-          <div className="grid md:grid-cols-3 gap-8 text-left">
-            {[
-              { title: "Identidade", desc: "Refletindo a essência única da sua marca em cada pixel." },
-              { title: "Profissionalismo", desc: "Posicionando seu negócio no topo do mercado pet." },
-              { title: "Qualidade", desc: "Comunicando o valor real dos seus serviços e produtos." }
-            ].map((card, i) => (
-              <div key={i} className="space-y-4">
-                <div className="w-12 h-px bg-accent" />
-                <h3 className="text-xl font-semibold">{card.title}</h3>
-                <p className="text-foreground/60">{card.desc}</p>
-              </div>
-            ))}
+        <div className="max-w-6xl w-full grid md:grid-cols-2 gap-16 items-center">
+          <div className="relative rounded-[3rem] overflow-hidden aspect-[4/5] shadow-2xl order-2 md:order-1">
+             <img 
+              src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=2071&auto=format&fit=crop"
+              className="w-full h-full object-cover"
+              alt="Cuidado e carinho com pet"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
+          <div className="space-y-12 order-1 md:order-2">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="text-5xl md:text-7xl font-serif leading-tight"
+            >
+              Uma vitrine que transmite <span className="text-primary italic">cuidado</span>
+            </motion.h2>
+            <div className="space-y-10">
+              {[
+                { title: "Identidade Visual", desc: "Refletindo a essência e o amor pelos animais em cada detalhe." },
+                { title: "Autoridade no Nicho", desc: "Posicionando seu negócio como a principal referência da região." },
+                { title: "Percepção de Valor", desc: "Comunicando a qualidade superior dos seus serviços." }
+              ].map((card, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="w-12 h-1 bg-accent rounded-full" />
+                  <h3 className="text-2xl font-semibold">{card.title}</h3>
+                  <p className="text-foreground/60 text-lg leading-relaxed">{card.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Section>
@@ -158,24 +175,26 @@ export function PetShopPresentation() {
         <div className="max-w-6xl w-full space-y-16">
           <div className="text-center space-y-4">
             <h2 className="text-4xl md:text-6xl font-serif">
-              <DynamicText template="O que não pode faltar na presença digital da {{empresa}}" />
+              <DynamicText template="O que não pode faltar no site da {{empresa}}" />
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: Sparkles, label: "Serviços & Preços", color: "bg-primary/10" },
-              { icon: MapPin, label: "Onde Estamos", color: "bg-accent/10" },
-              { icon: Clock, label: "Horários de Atendimento", color: "bg-foreground/5" },
-              { icon: Phone, label: "Contato Facilitado", color: "bg-primary/10" }
+              { icon: Sparkles, label: "Serviços & Banho", color: "bg-primary/10", img: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=200&h=200&fit=crop" },
+              { icon: MapPin, label: "Onde Estamos", color: "bg-accent/10", img: "https://images.unsplash.com/photo-1548191265-cc70d3d45ba1?q=80&w=200&h=200&fit=crop" },
+              { icon: Clock, label: "Horários", color: "bg-foreground/5", img: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=200&h=200&fit=crop" },
+              { icon: Phone, label: "WhatsApp Direto", color: "bg-primary/10", img: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=200&h=200&fit=crop" }
             ].map((item, i) => (
               <motion.div 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className={cn("p-8 rounded-3xl flex flex-col gap-6 items-start transition-transform hover:-translate-y-2", item.color)}
+                className={cn("p-6 rounded-[2.5rem] flex flex-col gap-6 items-center text-center transition-transform hover:-translate-y-2 bg-white shadow-sm border border-black/5", "")}
               >
-                <item.icon className="w-10 h-10 text-foreground" />
+                <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-muted">
+                  <img src={item.img} className="w-full h-full object-cover" alt="" />
+                </div>
                 <span className="text-lg font-medium leading-tight">{item.label}</span>
               </motion.div>
             ))}
@@ -267,21 +286,28 @@ export function PetShopPresentation() {
       </Section>
 
       {/* SEÇÃO 08 — FECHAMENTO */}
-      <Section data-index="7" className="bg-accent text-white">
+      <Section data-index="7" className="bg-primary text-primary-foreground">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=2000&auto=format&fit=crop"
+            className="w-full h-full object-cover opacity-10"
+            alt=""
+          />
+        </div>
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-12 max-w-4xl"
+          className="text-center space-y-12 max-w-5xl z-10"
         >
           <h2 className="text-5xl md:text-8xl font-serif leading-tight">
-            <DynamicText template="Vamos transformar essa ideia em um projeto para a {{empresa}}?" />
+            <DynamicText template="Vamos construir o futuro da {{empresa}} juntos?" />
           </h2>
-          <p className="text-2xl opacity-90 font-light">
-            O próximo passo para a evolução digital do seu negócio começa agora.
+          <p className="text-2xl opacity-90 font-light max-w-2xl mx-auto">
+            O próximo capítulo da sua história digital começa aqui. Com cuidado, tecnologia e amor pelos animais.
           </p>
           <div className="pt-8 flex flex-col items-center gap-6">
-             <div className="w-16 h-px bg-white/30" />
-             <span className="text-sm tracking-widest uppercase opacity-70">Apresentação Exclusiva Valtro Labs</span>
+             <div className="w-24 h-px bg-white/30" />
+             <span className="text-sm tracking-[0.3em] uppercase opacity-70 font-bold">Apresentação Exclusiva · Valtro Labs</span>
           </div>
         </motion.div>
       </Section>
