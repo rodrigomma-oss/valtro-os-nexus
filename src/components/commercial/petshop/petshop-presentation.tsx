@@ -81,7 +81,7 @@ export function PetShopPresentation() {
           <h1 className="text-6xl md:text-8xl font-serif leading-[1.1] tracking-tight">
             <DynamicText template="O próximo passo digital da {{empresa}}" />
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/70 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-foreground font-medium max-w-2xl mx-auto leading-relaxed">
             Elevando o padrão de cuidado e conexão através de uma presença digital premium e acolhedora.
           </p>
           <div className="pt-12 animate-bounce opacity-40">
@@ -108,7 +108,7 @@ export function PetShopPresentation() {
             <h2 className="text-4xl md:text-5xl font-serif leading-tight">
               <DynamicText template="Quando alguém busca por Pet Shop em {{cidade}}, o que encontra sobre a {{empresa}}?" />
             </h2>
-            <p className="text-lg text-background/70 leading-relaxed">
+            <p className="text-lg text-background/90 leading-relaxed font-medium">
               A jornada do tutor começa no digital. A primeira impressão é construída em segundos, e ela precisa transmitir o mesmo carinho que você dedica aos animais.
             </p>
           </motion.div>
@@ -127,7 +127,7 @@ export function PetShopPresentation() {
                 className="p-8 rounded-[2.5rem] bg-background/5 border border-background/10 flex flex-col items-center gap-4 text-center backdrop-blur-sm"
               >
                 <item.icon className="w-10 h-10 text-primary" />
-                <span className="text-base font-medium">{item.label}</span>
+                <span className="text-base font-semibold text-background">{item.label}</span>
               </motion.div>
             ))}
           </div>
@@ -162,7 +162,7 @@ export function PetShopPresentation() {
                 <div key={i} className="space-y-4">
                   <div className="w-12 h-1 bg-accent rounded-full" />
                   <h3 className="text-2xl font-semibold">{card.title}</h3>
-                  <p className="text-foreground/60 text-lg leading-relaxed">{card.desc}</p>
+                  <p className="text-foreground/80 text-lg leading-relaxed font-medium">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -206,7 +206,7 @@ export function PetShopPresentation() {
       <Section data-index="4" className="bg-primary text-primary-foreground">
         <div className="max-w-4xl text-center space-y-10">
           <h2 className="text-5xl md:text-7xl font-serif">Agora, vamos colocar essa ideia na tela.</h2>
-          <p className="text-xl opacity-90">
+          <p className="text-xl text-primary-foreground font-medium">
             <DynamicText template="Veja um exemplo de como uma experiência como essa poderia funcionar para a {{empresa}}." />
           </p>
           <div className="pt-8">
@@ -258,7 +258,7 @@ export function PetShopPresentation() {
                 fallbackCidade="na sua região"
               />
             </h2>
-            <p className="text-xl text-foreground/70 leading-relaxed">
+            <p className="text-xl text-foreground/80 leading-relaxed font-medium">
               Facilitamos o encontro entre quem ama seus pets e quem tem o melhor cuidado para oferecer. Um posicionamento profissional onde seus clientes estão.
             </p>
             <div className="flex items-center gap-4 text-primary font-medium">
@@ -276,12 +276,12 @@ export function PetShopPresentation() {
             <DynamicText template="Facilitando o caminho do tutor até a {{empresa}}" />
           </h2>
           <div className="bg-background/5 p-12 rounded-[3.5rem] border border-background/10 space-y-10 backdrop-blur-sm">
-            <p className="text-2xl text-background/80 font-light leading-relaxed">
+            <p className="text-2xl text-background font-medium leading-relaxed">
               Transformamos o interesse digital em agendamentos reais através de uma experiência intuitiva, acolhedora e eficiente.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               {["Informação Acolhedora", "Agendamento Ágil", "Localização Clara", "Confiança Total"].map((tag) => (
-                <span key={tag} className="px-8 py-3 rounded-full border border-background/20 text-sm font-medium hover:bg-background/10 transition-colors cursor-default">{tag}</span>
+                <span key={tag} className="px-8 py-3 rounded-full border border-background/40 text-sm font-bold bg-background/10 hover:bg-background/20 transition-colors cursor-default text-background">{tag}</span>
               ))}
             </div>
           </div>
@@ -305,7 +305,7 @@ export function PetShopPresentation() {
           <h2 className="text-5xl md:text-8xl font-serif leading-tight">
             <DynamicText template="Vamos construir o futuro da {{empresa}} juntos?" />
           </h2>
-          <p className="text-2xl opacity-90 font-light max-w-2xl mx-auto">
+          <p className="text-2xl text-primary-foreground font-medium max-w-2xl mx-auto">
             O próximo capítulo da sua história digital começa aqui. Com cuidado, tecnologia e amor pelos animais.
           </p>
           <div className="pt-8 flex flex-col items-center gap-6">
