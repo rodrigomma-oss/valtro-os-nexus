@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 interface PresentationLayoutProps {
   children: ReactNode;
   themeClass?: string;
+  isPublic?: boolean;
 }
 
 /**
