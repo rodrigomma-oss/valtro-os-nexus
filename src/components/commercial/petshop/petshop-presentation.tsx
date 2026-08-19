@@ -108,7 +108,7 @@ export function PetShopPresentation() {
             <h2 className="text-4xl md:text-5xl font-serif leading-tight">
               <DynamicText template="Quando alguém busca por Pet Shop em {{cidade}}, o que encontra sobre a {{empresa}}?" />
             </h2>
-            <p className="text-lg text-background/70 leading-relaxed">
+            <p className="text-lg text-background/90 leading-relaxed font-medium">
               A jornada do tutor começa no digital. A primeira impressão é construída em segundos, e ela precisa transmitir o mesmo carinho que você dedica aos animais.
             </p>
           </motion.div>
@@ -127,7 +127,7 @@ export function PetShopPresentation() {
                 className="p-8 rounded-[2.5rem] bg-background/5 border border-background/10 flex flex-col items-center gap-4 text-center backdrop-blur-sm"
               >
                 <item.icon className="w-10 h-10 text-primary" />
-                <span className="text-base font-medium">{item.label}</span>
+                <span className="text-base font-semibold text-background">{item.label}</span>
               </motion.div>
             ))}
           </div>
