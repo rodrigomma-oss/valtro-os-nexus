@@ -1,12 +1,12 @@
 @layer utilities {
   .theme-petshop {
-    --background: #F5F5F4; /* Areia */
-    --foreground: #1B3C58; /* Azul Petróleo */
-    --primary: #86A789;   /* Verde Sálvia */
+    --background: #FDFCFB;
+    --foreground: #1F2937;
+    --primary: #0D9488;
     --primary-foreground: #FFFFFF;
-    --muted: #E7E5E4;
-    --border: #D6D3D1;
+    --muted: #F3F4F6;
+    --border: #E5E7EB;
     --card: #FFFFFF;
-    --accent: #C46647;    /* Terracota */
+    --accent: #F97316;
   }
 }
