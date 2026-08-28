@@ -304,10 +304,11 @@ export const createLead = createServerFn({ method: "POST" })
           );
         }
 
-        // Papel existe, mas o banco não reconheceu a identidade da requisição.
+        // Papel válido, mas o banco recusou a operação: erro de autorização.
         throw new Error(
-          "Não foi possível validar sua sessão no banco de dados. Recarregue a página e entre novamente.",
+          "O banco recusou a criação do lead por regra de autorização. Avise um administrador.",
         );
+
       }
 
       throw new Error(error.message);
