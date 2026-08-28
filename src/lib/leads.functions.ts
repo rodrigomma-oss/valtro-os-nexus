@@ -271,9 +271,51 @@ export const createLead = createServerFn({ method: "POST" })
       .insert(insert)
       .select("id")
       .maybeSingle();
-    if (error) throw new Error(error.message);
+
+    if (error) {
+      // Diagnóstico determinístico da causa do RLS (identidade x papel).
+      const isRls =
+        (error as { code?: string }).code === "42501" ||
+        /row-level security/i.test(error.message);
+
+      if (isRls) {
+        const { data: roles, error: rolesError } = await context.supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", context.userId);
+
+        const roleList = (roles ?? []).map((r) => r.role);
+        console.error(
+          "[createLead] RLS denied insert",
+          JSON.stringify({
+            userId: context.userId,
+            roles: roleList,
+            rolesError: rolesError?.message ?? null,
+            ownerId: insert.owner_id,
+          }),
+        );
+
+        const canWrite =
+          roleList.includes("admin") || roleList.includes("operator");
+
+        if (!canWrite && !rolesError) {
+          throw new Error(
+            "Seu perfil não tem permissão para criar leads. Solicite o papel de Operador a um administrador.",
+          );
+        }
+
+        // Papel existe, mas o banco não reconheceu a identidade da requisição.
+        throw new Error(
+          "Não foi possível validar sua sessão no banco de dados. Recarregue a página e entre novamente.",
+        );
+      }
+
+      throw new Error(error.message);
+    }
+
     return { id: row?.id ?? null };
   });
+
 
 // =============================================================
 // capturePublicLead
