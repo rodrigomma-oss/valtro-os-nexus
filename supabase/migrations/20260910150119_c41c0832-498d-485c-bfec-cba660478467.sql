@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.client_service_transition_allowed(public.client_service_status, public.client_service_status) TO authenticated;
