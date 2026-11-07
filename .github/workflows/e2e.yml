@@ -1,0 +1,96 @@
+name: E2E Tests
+
+# Executa apenas em push para main enquanto o Lovable não oferecer
+# preview isolado por branch/commit. PRs não disparam o workflow para
+# evitar rodar contra uma URL de preview que não reflete o código do PR.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Playwright E2E (bun run test:e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # ---- Ambiente DEV isolado (valtro-vision-forge-dev) --------------
+      # URL pública do projeto Lovable dev. NUNCA apontar para produção.
+      PLAYWRIGHT_BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+
+      # Supabase — credenciais PÚBLICAS do projeto DEV (publishable key).
+      # A service role NÃO é cadastrada no GitHub; permanece exclusiva do
+      # runtime gerenciado pelo Lovable.
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      # Lead permanente do CRM dev (seed idempotente).
+      TEST_LEAD_ID: ${{ vars.TEST_LEAD_ID }}
+
+      # Credenciais do usuário E2E dedicado no ambiente DEV.
+      # Login fresco a cada execução — NUNCA impressos em logs.
+      E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL_DEV }}
+      E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD_DEV }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      # Guard de versão: garante que o preview dev alvo já publicou o
+      # commit que estamos testando. Se `commit` retornado por
+      # /api/public/version divergir de $GITHUB_SHA, aborta.
+      - name: Verify preview matches commit
+        run: |
+          set -euo pipefail
+          if [ -z "${PLAYWRIGHT_BASE_URL:-}" ]; then
+            echo "PLAYWRIGHT_BASE_URL não configurado (variable do GitHub)." >&2
+            exit 1
+          fi
+          expected="${GITHUB_SHA,,}"
+          for i in {1..30}; do
+            resp=$(curl -sS "${PLAYWRIGHT_BASE_URL%/}/api/public/version" || echo "")
+            preview_commit=$(echo "$resp" | jq -r '.commit // empty' 2>/dev/null || echo "")
+            preview_commit="${preview_commit,,}"
+            if [ "$preview_commit" = "unknown" ]; then
+              echo "Preview reportou commit='unknown' — build sem SHA embutido. Abortando." >&2
+              exit 1
+            fi
+            if [ -n "$preview_commit" ] && [ "$preview_commit" = "$expected" ]; then
+              echo "Preview alinhado com commit $expected"
+              exit 0
+            fi
+            echo "Aguardando preview publicar $expected (atual: '$preview_commit')..."
+            sleep 10
+          done
+          echo "Preview não publicou o commit $expected a tempo." >&2
+          exit 1
+
+      - name: Run E2E tests
+        run: bun run test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          # Exclui o storageState (contém tokens) do artefato.
+          path: |
+            playwright-report/
+            test-results/
+            !**/.auth/**
+          retention-days: 7

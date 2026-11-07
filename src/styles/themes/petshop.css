@@ -1,0 +1,12 @@
+@layer utilities {
+  .theme-petshop {
+    --background: #FDFCFB;
+    --foreground: #111827;
+    --primary: #0A7A70;
+    --primary-foreground: #FFFFFF;
+    --muted: #F3F4F6;
+    --border: #E5E7EB;
+    --card: #FFFFFF;
+    --accent: #F97316;
+  }
+}

@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.hydrate_onboarding_defaults(uuid) FROM authenticated;

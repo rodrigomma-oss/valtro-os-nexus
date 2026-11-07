@@ -1,0 +1,296 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getCredentials, rotateCredentialFn, revokeCredentialFn } from '@/lib/os/api/credentials.functions';
+import { DataTable, type DataTableColumn } from '@/components/app/data-table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { RefreshCw, ShieldOff, Search, Plus, AlertCircle, Inbox } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
+import { useServerFn } from '@tanstack/react-start';
+import { NewCredentialDialog } from '@/components/os/api/credentials/NewCredentialDialog';
+import { SecretDisplayDialog } from '@/components/os/api/credentials/SecretDisplayDialog';
+import { RotateCredentialDialog } from '@/components/os/api/credentials/RotateCredentialDialog';
+import { RevokeCredentialDialog } from '@/components/os/api/credentials/RevokeCredentialDialog';
+
+export const Route = createFileRoute('/_authenticated/os/admin/api/credentials')({
+  component: CredentialsPage,
+});
+
+function CredentialsPage() {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  
+  // Modals state
+  const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
+  const [newSecretData, setNewSecretData] = useState<{ key_id: string; secret: string } | null>(null);
+  const [rotateTarget, setRotateTarget] = useState<any | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<any | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: credentials, isLoading, error } = useQuery({
+    queryKey: ['api-credentials'],
+    queryFn: () => getCredentials(),
+    refetchOnWindowFocus: false, // Evita refetch ao alternar abas durante cópia de segredo
+  });
+
+  const rotateFn = useServerFn(rotateCredentialFn);
+  const revokeFn = useServerFn(revokeCredentialFn);
+
+  const filteredCredentials = useMemo(() => {
+    if (!credentials) return [];
+    const term = search.toLowerCase();
+    return credentials.filter(c => 
+      (c.key_id?.toLowerCase().includes(term) ?? false) || 
+      (c.application?.display_name?.toLowerCase().includes(term) ?? false)
+    );
+  }, [credentials, search]);
+
+  const handleRotate = async () => {
+    if (!rotateTarget) return;
+    setIsSubmitting(true);
+    try {
+      const result = await rotateFn({ 
+        data: { 
+          credentialId: rotateTarget.id, 
+          applicationId: rotateTarget.application_id 
+        } 
+      });
+      setNewSecretData(result as { key_id: string; secret: string });
+      queryClient.invalidateQueries({ queryKey: ['api-credentials'] });
+      setRotateTarget(null);
+      toast.success("Credencial rotacionada com sucesso");
+    } catch (e) {
+      toast.error("Erro ao rotacionar credencial");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRevoke = async () => {
+    if (!revokeTarget) return;
+    setIsSubmitting(true);
+    try {
+      await revokeFn({ 
+        data: { 
+          credentialId: revokeTarget.id, 
+          reason: "Revogação manual via painel administrativo" 
+        } 
+      });
+      queryClient.invalidateQueries({ queryKey: ['api-credentials'] });
+      setRevokeTarget(null);
+      toast.success("Credencial revogada com sucesso");
+    } catch (e) {
+      toast.error("Erro ao revogar credencial");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const columns: DataTableColumn<any>[] = [
+    {
+      key: 'key_id',
+      header: 'Key ID',
+      className: "min-w-[160px]",
+      render: (cred) => <code className="text-xs font-mono bg-muted/60 px-2 py-1 rounded border border-border/50 select-all tracking-tight">{cred.key_id || '—'}</code>,
+    },
+    {
+      key: 'app',
+      header: 'Aplicação',
+      className: "w-full min-w-[200px]",
+      render: (cred) => (
+        <div className="flex flex-col gap-0.5">
+          <span className="font-semibold text-sm">{cred.application?.display_name || 'Desconhecida'}</span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{cred.application?.environment || '—'}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      className: "min-w-[100px]",
+      render: (cred) => {
+        const status = cred.status;
+        const variants: any = {
+          active: 'success',
+          revoked: 'destructive',
+          expired: 'warning',
+        };
+        return (
+          <Badge variant={variants[status] || 'outline'} className="capitalize px-2.5 py-0.5 font-medium">
+            {status === 'active' ? 'Ativa' : status === 'revoked' ? 'Revogada' : status}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: 'created_at',
+      header: 'Criação',
+      className: "min-w-[140px]",
+      render: (cred) => (
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {cred.created_at ? format(new Date(cred.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }) : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'last_used',
+      header: 'Último Uso',
+      className: "min-w-[140px]",
+      render: (cred) => (
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {cred.last_used_at 
+            ? format(new Date(cred.last_used_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+            : <span className="italic opacity-60">Nunca</span>}
+        </span>
+      ),
+    },
+    {
+      key: 'last_ip',
+      header: 'IP',
+      className: "min-w-[120px]",
+      render: (cred) => <span className="text-muted-foreground font-mono text-[11px] tracking-tighter">{cred.last_ip || '—'}</span>,
+    },
+    {
+      key: 'rotation_history',
+      header: 'Versão',
+      className: "min-w-[80px]",
+      render: (cred) => (
+        <div className="flex flex-col text-[10px] text-muted-foreground leading-tight">
+          <span className="font-mono">v{cred.version || 1}</span>
+          {cred.rotated_at && (
+            <span className="opacity-70 whitespace-nowrap">Rot: {format(new Date(cred.rotated_at), "dd/MM/yy")}</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      className: "text-right w-[180px] min-w-[180px]",
+      render: (cred) => {
+        if (cred.status !== 'active') return null;
+
+        return (
+          <div className="flex items-center justify-end gap-2 pr-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 gap-1.5 text-xs font-medium hover:bg-primary/5 border-border/60"
+              onClick={() => setRotateTarget(cred)}
+            >
+              <RefreshCw className="h-3 w-3" />
+              Rotacionar
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 gap-1.5 text-xs font-medium text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/20"
+              onClick={() => setRevokeTarget(cred)}
+            >
+              <ShieldOff className="h-3 w-3" />
+              Revogar
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-destructive/5 rounded-lg border border-destructive/10">
+        <AlertCircle className="h-10 w-10 text-destructive mb-4" />
+        <h3 className="text-lg font-semibold">Erro ao carregar credenciais</h3>
+        <p className="text-muted-foreground max-w-md mt-2">
+          Não foi possível recuperar a lista de credenciais da API. Por favor, tente novamente mais tarde.
+        </p>
+        <Button variant="outline" className="mt-6" onClick={() => queryClient.invalidateQueries({ queryKey: ['api-credentials'] })}>
+          Tentar novamente
+        </Button>
+      </div>
+    );
+  }
+
+  const emptyState = (
+    <div className="flex flex-col items-center justify-center p-12 text-center bg-muted/20 rounded-lg border border-dashed">
+      <Inbox className="h-10 w-10 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-semibold">Nenhuma credencial</h3>
+      <p className="text-muted-foreground max-w-md mt-2">
+        {search ? "Nenhuma credencial corresponde à sua busca." : "Ainda não existem credenciais geradas para as aplicações."}
+      </p>
+      {!search && (
+        <Button variant="outline" className="mt-6" onClick={() => setIsNewDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Gerar primeira credencial
+        </Button>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8 max-w-7xl">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight">Gestão de Credenciais</h1>
+        <p className="text-muted-foreground">Gerencie chaves de acesso para integração via API com o Valtro OS.</p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between pt-2">
+        <div className="relative w-full sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por Key ID ou Aplicação..."
+            className="pl-10 h-10 shadow-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <Button className="w-full sm:w-auto gap-2 h-10 px-6 shadow-sm" onClick={() => setIsNewDialogOpen(true)}>
+          <Plus className="h-4 w-4" />
+          Nova Credencial
+        </Button>
+      </div>
+
+      <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
+        <DataTable
+          columns={columns}
+          data={filteredCredentials}
+          loading={isLoading}
+          emptyState={emptyState}
+        />
+      </div>
+
+      {/* Modals */}
+      <NewCredentialDialog 
+        open={isNewDialogOpen} 
+        onOpenChange={setIsNewDialogOpen}
+        onSuccess={(data) => setNewSecretData(data)}
+      />
+
+      <SecretDisplayDialog 
+        data={newSecretData} 
+        onClose={() => {
+          setNewSecretData(null);
+          queryClient.invalidateQueries({ queryKey: ['api-credentials'] });
+        }}
+      />
+
+      <RotateCredentialDialog
+        open={!!rotateTarget}
+        onOpenChange={(open) => !open && setRotateTarget(null)}
+        onConfirm={handleRotate}
+        isSubmitting={isSubmitting}
+      />
+
+      <RevokeCredentialDialog
+        open={!!revokeTarget}
+        onOpenChange={(open) => !open && setRevokeTarget(null)}
+        onConfirm={handleRevoke}
+        isSubmitting={isSubmitting}
+      />
+    </div>
+  );
+}

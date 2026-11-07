@@ -1,0 +1,5 @@
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/_authenticated/os/produtos/valtro-pricing/beta")({
+  component: () => <Outlet />,
+});
