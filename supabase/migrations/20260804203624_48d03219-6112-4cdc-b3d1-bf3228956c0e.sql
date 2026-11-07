@@ -1,1 +1,0 @@
-ALTER TABLE public.api_applications DROP COLUMN IF EXISTS description;
