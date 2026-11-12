@@ -104,11 +104,11 @@
   "overrides": {
     "@tanstack/react-start": "^1.168.60",
     "@tanstack/start-server-core": "^1.169.39",
-    "@tanstack/start-client-core": "1.170.34"
+    "@tanstack/start-client-core": "^1.171.0"
   },
   "resolutions": {
     "@tanstack/react-start": "^1.168.60",
     "@tanstack/start-server-core": "^1.169.39",
-    "@tanstack/start-client-core": "1.170.34"
+    "@tanstack/start-client-core": "^1.171.0"
   }
 }
