@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
+    "env:create": "node scripts/create-env.mjs",
     "api:openapi:validate": "redocly lint docs/api/openapi-v1.yaml --extends=spec"
   },
   "dependencies": {
