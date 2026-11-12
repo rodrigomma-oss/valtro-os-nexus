@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,21 +69,26 @@ export function AuthPage() {
   }, [navigate, safeRedirect]);
 
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth" + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""),
+  
+const handleGoogle = async () => {
+  setLoading(true);
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin + "/auth" +
+        (redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""),
+    },
+  });
+
+  if (error) {
+    toast.error("Não foi possível entrar com o Google.", {
+      description: error.message,
     });
-    if (result.error) {
-      toast.error("Não foi possível entrar com o Google.", {
-        description: result.error.message,
-      });
-      setLoading(false);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: safeRedirect, replace: true });
-  };
+    setLoading(false);
+    return;
+  }
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
