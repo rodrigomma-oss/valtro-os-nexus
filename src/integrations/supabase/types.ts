@@ -1304,6 +1304,10 @@ export type Database = {
           service_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["client_service_status"]
+          terminated_at: string | null
+          terminated_by: string | null
+          termination_note: string | null
+          termination_reason: string | null
           unit_price_cents: number
           updated_at: string
         }
@@ -1331,6 +1335,10 @@ export type Database = {
           service_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["client_service_status"]
+          terminated_at?: string | null
+          terminated_by?: string | null
+          termination_note?: string | null
+          termination_reason?: string | null
           unit_price_cents?: number
           updated_at?: string
         }
@@ -1358,6 +1366,10 @@ export type Database = {
           service_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["client_service_status"]
+          terminated_at?: string | null
+          terminated_by?: string | null
+          termination_note?: string | null
+          termination_reason?: string | null
           unit_price_cents?: number
           updated_at?: string
         }
@@ -3242,6 +3254,7 @@ export type Database = {
         | "cycle_completed"
         | "cycle_cancelled"
         | "cycle_payment_registered"
+        | "terminated"
       client_service_status:
         | "pendente"
         | "ativo"
@@ -3717,6 +3730,7 @@ export const Constants = {
         "cycle_completed",
         "cycle_cancelled",
         "cycle_payment_registered",
+        "terminated",
       ],
       client_service_status: [
         "pendente",
