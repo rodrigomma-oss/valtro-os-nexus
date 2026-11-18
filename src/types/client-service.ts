@@ -32,6 +32,15 @@ export interface ClientService {
 
   status: ClientServiceStatus;
 
+  /**
+   * Fase 1A — encerramento. Persistidos apenas após a migração
+   * `fase1a_encerramento_contratacoes` estar aplicada no banco.
+   */
+  termination_reason?: TerminationReason | null;
+  termination_note?: string | null;
+  terminated_by?: string | null;
+  terminated_at?: string | null;
+
   contracted_at: string;
   started_at: string | null;
   completed_at: string | null;
@@ -69,6 +78,42 @@ export const CLIENT_SERVICE_STATUS_TONE: Record<ClientServiceStatus, string> = {
   concluido: "bg-blue-50 text-blue-700 border-blue-200",
   cancelado: "bg-rose-50 text-rose-700 border-rose-200",
 };
+
+// ============================================================
+// Fase 1A — Encerramento de contratação
+// ============================================================
+
+/**
+ * Motivos de encerramento. A "não renovação" é um MOTIVO, não um status:
+ * o status resultante é sempre `concluido` ou `cancelado`.
+ */
+export const TERMINATION_REASONS = [
+  "servico_concluido",
+  "cancelamento",
+  "nao_renovacao",
+] as const;
+
+export type TerminationReason = (typeof TERMINATION_REASONS)[number];
+
+export const TERMINATION_REASON_LABEL: Record<TerminationReason, string> = {
+  servico_concluido: "Serviço concluído",
+  cancelamento: "Cancelamento",
+  nao_renovacao: "Não renovação",
+};
+
+/** Status resultante de cada motivo (respeita o grafo de transições). */
+export const TERMINATION_REASON_TARGET: Record<TerminationReason, ClientServiceStatus> = {
+  servico_concluido: "concluido",
+  cancelamento: "cancelado",
+  nao_renovacao: "cancelado",
+};
+
+/** Status que ainda represents um vínculo comercial em aberto. */
+export const ONGOING_SERVICE_STATUSES: readonly ClientServiceStatus[] = [
+  "pendente",
+  "ativo",
+  "pausado",
+];
 
 export const BILLING_TYPE_LABEL: Record<ServiceBillingType, string> = {
   pontual: "Pontual",
@@ -163,6 +208,7 @@ export const CLIENT_SERVICE_EVENT_LABEL: Record<ClientServiceEventType, string> 
   cycle_completed: "Ciclo concluído",
   cycle_cancelled: "Ciclo cancelado",
   cycle_payment_registered: "Pagamento do ciclo",
+  terminated: "Encerrada",
 };
 
 // ============================================================
